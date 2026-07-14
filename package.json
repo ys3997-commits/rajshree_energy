@@ -1,14 +1,25 @@
 {
-  "name": "web",
+  "name": "rajshree",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "NODE_OPTIONS='--dns-result-order=ipv6first' next dev",
+    "build": "prisma generate && next build",
+    "start": "NODE_OPTIONS='--dns-result-order=ipv6first' next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "postinstall": "prisma generate",
+    "db:push": "NODE_OPTIONS='--dns-result-order=ipv6first' prisma db push",
+    "db:seed": "NODE_OPTIONS='--dns-result-order=ipv6first' prisma db seed",
+    "db:generate": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.110.2",
     "next": "16.2.10",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -20,7 +31,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.1",
+    "typescript": "^5",
+    "vitest": "^2.1.9"
   }
 }

@@ -1,0 +1,16 @@
+import { AppNav } from "@/components/AppNav";
+
+export const dynamic = "force-dynamic";
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="app-shell">
+      <AppNav />
+      <main className="app-main">{children}</main>
+    </div>
+  );
+}

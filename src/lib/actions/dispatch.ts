@@ -1,0 +1,724 @@
+"use server";
+
+import {
+  DispatchTerms,
+  OrderStatus,
+  OrderType,
+  ReceiptStatus,
+  type Prisma,
+} from "@/generated/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
+import {
+  balanceOrder,
+  balanceQuantity,
+  computeOrderStatus,
+  toDecimal,
+  type DecimalLike,
+} from "@/lib/domain/computations";
+
+/** Create an OPEN purchase order as part of a dispatch (quantity null). */
+export type OpenPurchaseForDispatch = {
+  poNumber: string;
+  importerId: string;
+  vesselId: string;
+  orderById?: string | null;
+  rate?: DecimalLike | null;
+  quality?: string | null;
+};
+
+export type CreateDispatchInput = {
+  poNumber: string;
+  /** Existing purchase PO — required unless openPurchase is set. */
+  purchasePoNumber?: string;
+  /** When set, creates an OPEN purchase order then dispatches against it. */
+  openPurchase?: OpenPurchaseForDispatch;
+  dispatchDate: Date | string;
+  dispatchedQuantity: DecimalLike;
+  dispatchTerms: DispatchTerms;
+  lorryNumber?: string | null;
+  transporterId?: string | null;
+  freight?: DecimalLike | null;
+  softCopyStatus?: boolean;
+  entryInTally?: boolean;
+  saleInvoiceNumber?: string | null;
+  purchaseInvoiceNumber?: string | null;
+  /** When true, skip sale-order balance check (open order with null quantity). */
+  skipOrderBalanceCheck?: boolean;
+};
+
+export type UpdateDispatchInput = {
+  dispatchedQuantity?: DecimalLike;
+  purchasePoNumber?: string;
+  poNumber?: string;
+  dispatchDate?: Date | string;
+  dispatchTerms?: DispatchTerms;
+  lorryNumber?: string | null;
+  transporterId?: string | null;
+  freight?: DecimalLike | null;
+  softCopyStatus?: boolean;
+  entryInTally?: boolean;
+  saleInvoiceNumber?: string | null;
+  purchaseInvoiceNumber?: string | null;
+};
+
+export type CreateOpenOrderDispatchInput = {
+  poNumber: string;
+  orderById: string;
+  customerId: string;
+  /** Existing purchase PO — required unless openPurchase is set. */
+  purchasePoNumber?: string;
+  /** When set, creates an OPEN purchase order then dispatches against it. */
+  openPurchase?: OpenPurchaseForDispatch;
+  dispatchDate: Date | string;
+  dispatchedQuantity: DecimalLike;
+  dispatchTerms: DispatchTerms;
+  lorryNumber?: string | null;
+  transporterId?: string | null;
+  freight?: DecimalLike | null;
+  softCopyStatus?: boolean;
+  entryInTally?: boolean;
+  saleInvoiceNumber?: string | null;
+  purchaseInvoiceNumber?: string | null;
+};
+
+export type CompleteOpenOrderInput = {
+  quantity: DecimalLike;
+  rate?: DecimalLike | null;
+  creditDays?: number | null;
+  quality?: string | null;
+  area?: string | null;
+};
+
+function asDate(value: Date | string): Date {
+  return value instanceof Date ? value : new Date(value);
+}
+
+function normalizeInvoiceNumber(
+  value: string | null | undefined,
+): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function resolveDispatchTermsFields(input: {
+  dispatchTerms: DispatchTerms;
+  transporterId?: string | null;
+  freight?: DecimalLike | null;
+}): { transporterId: string | null; freight: Decimal | null } {
+  if (input.dispatchTerms === DispatchTerms.FOR) {
+    if (!input.transporterId) {
+      throw new Error("Transporter is required for FOR dispatches");
+    }
+    if (
+      input.freight === undefined ||
+      input.freight === null ||
+      input.freight === ""
+    ) {
+      throw new Error("Freight (Rs/MT) is required for FOR dispatches");
+    }
+    const freight = toDecimal(input.freight);
+    if (freight.lt(0)) {
+      throw new Error("Freight cannot be negative");
+    }
+    return { transporterId: input.transporterId, freight };
+  }
+
+  return { transporterId: null, freight: null };
+}
+
+async function resolvePurchaseForDispatch(
+  tx: Prisma.TransactionClient,
+  input: {
+    purchasePoNumber?: string;
+    openPurchase?: OpenPurchaseForDispatch;
+    dispatchDate: Date | string;
+  },
+): Promise<{
+  purchasePoNumber: string;
+  vesselId: string;
+  importerId: string;
+  skipPurchaseBalanceCheck: boolean;
+}> {
+  if (input.openPurchase) {
+    const poNumber = input.openPurchase.poNumber.trim();
+    if (!poNumber) throw new Error("Purchase PO number is required");
+    if (!input.openPurchase.importerId) {
+      throw new Error("Importer is required");
+    }
+    if (!input.openPurchase.vesselId) {
+      throw new Error("Vessel is required");
+    }
+
+    const existing = await tx.purchaseOrder.findUnique({ where: { poNumber } });
+    if (existing) {
+      throw new Error(`Purchase PO number ${poNumber} is already taken`);
+    }
+
+    const vessel = await tx.vessel.findUnique({
+      where: { id: input.openPurchase.vesselId },
+    });
+    if (!vessel) throw new Error("Vessel not found");
+
+    const rate =
+      input.openPurchase.rate === undefined || input.openPurchase.rate === null
+        ? null
+        : toDecimal(input.openPurchase.rate);
+
+    const purchase = await tx.purchaseOrder.create({
+      data: {
+        poNumber,
+        orderType: OrderType.OPEN,
+        importerId: input.openPurchase.importerId,
+        vesselId: input.openPurchase.vesselId,
+        orderDate: asDate(input.dispatchDate),
+        quality: input.openPurchase.quality || null,
+        rate,
+        quantity: null,
+        orderById: input.openPurchase.orderById || null,
+        orderStatus: OrderStatus.OPEN,
+        dispatchedOrder: new Decimal(0),
+      },
+    });
+
+    return {
+      purchasePoNumber: purchase.poNumber,
+      vesselId: purchase.vesselId,
+      importerId: purchase.importerId,
+      skipPurchaseBalanceCheck: true,
+    };
+  }
+
+  const purchasePoNumber = input.purchasePoNumber?.trim();
+  if (!purchasePoNumber) {
+    throw new Error("Select a purchase order");
+  }
+
+  const purchase = await tx.purchaseOrder.findUnique({
+    where: { poNumber: purchasePoNumber },
+  });
+  if (!purchase) {
+    throw new Error(`Purchase order ${purchasePoNumber} not found`);
+  }
+
+  return {
+    purchasePoNumber: purchase.poNumber,
+    vesselId: purchase.vesselId,
+    importerId: purchase.importerId,
+    skipPurchaseBalanceCheck:
+      purchase.orderType === OrderType.OPEN && purchase.quantity == null,
+  };
+}
+
+function revalidateDispatchPaths() {
+  revalidatePath("/orders");
+  revalidatePath("/purchase-orders");
+  revalidatePath("/dispatches");
+  revalidatePath("/vessels");
+  revalidatePath("/receipts/pending");
+  revalidatePath("/reconciliation");
+}
+
+async function applyDispatchDelta(
+  tx: Prisma.TransactionClient,
+  args: {
+    poNumber: string;
+    purchasePoNumber: string;
+    qty: Decimal;
+    skipOrderBalanceCheck?: boolean;
+    skipPurchaseBalanceCheck?: boolean;
+  },
+) {
+  const order = await tx.order.findUnique({ where: { poNumber: args.poNumber } });
+  if (!order) {
+    throw new Error(`Sale order with poNumber ${args.poNumber} not found`);
+  }
+
+  const purchase = await tx.purchaseOrder.findUnique({
+    where: { poNumber: args.purchasePoNumber },
+  });
+  if (!purchase) {
+    throw new Error(
+      `Purchase order with poNumber ${args.purchasePoNumber} not found`,
+    );
+  }
+
+  const vessel = await tx.vessel.findUnique({ where: { id: purchase.vesselId } });
+  if (!vessel) {
+    throw new Error(`Vessel ${purchase.vesselId} not found`);
+  }
+
+  if (args.qty.gt(0)) {
+    if (!args.skipOrderBalanceCheck) {
+      const bal = balanceOrder(order);
+      if (bal == null) {
+        throw new Error(
+          `Sale order ${args.poNumber} has no quantity; cannot validate balance`,
+        );
+      }
+      if (args.qty.gt(bal)) {
+        throw new Error(
+          `Over-dispatch blocked: ${args.qty} exceeds sale order balance ${bal} for PO ${args.poNumber}`,
+        );
+      }
+    }
+
+    if (!args.skipPurchaseBalanceCheck) {
+      const pBal = balanceOrder(purchase);
+      if (pBal == null) {
+        throw new Error(
+          `Purchase order ${args.purchasePoNumber} has no quantity; cannot validate balance`,
+        );
+      }
+      if (args.qty.gt(pBal)) {
+        throw new Error(
+          `Over-dispatch blocked: ${args.qty} exceeds purchase order balance ${pBal} for ${args.purchasePoNumber}`,
+        );
+      }
+    }
+
+    const vesselBal = balanceQuantity(vessel);
+    if (args.qty.gt(vesselBal)) {
+      throw new Error(
+        `Over-dispatch blocked: ${args.qty} exceeds vessel balance ${vesselBal} for ${vessel.vesselName}`,
+      );
+    }
+  } else if (args.qty.lt(0)) {
+    if (order.dispatchedOrder.plus(args.qty).lt(0)) {
+      throw new Error("Cannot reverse more than sale order.dispatchedOrder");
+    }
+    if (purchase.dispatchedOrder.plus(args.qty).lt(0)) {
+      throw new Error(
+        "Cannot reverse more than purchase order.dispatchedOrder",
+      );
+    }
+    if (vessel.dispatchedQuantity.plus(args.qty).lt(0)) {
+      throw new Error("Cannot reverse more than vessel.dispatchedQuantity");
+    }
+  }
+
+  const nextDispatchedOrder = order.dispatchedOrder.plus(args.qty);
+  const nextSaleStatus = computeOrderStatus({
+    orderType: order.orderType,
+    quantity: order.quantity,
+    dispatchedOrder: nextDispatchedOrder,
+  });
+
+  await tx.order.update({
+    where: { id: order.id },
+    data: {
+      dispatchedOrder: nextDispatchedOrder,
+      orderStatus: nextSaleStatus,
+    },
+  });
+
+  const nextPurchaseDispatched = purchase.dispatchedOrder.plus(args.qty);
+  const nextPurchaseStatus = computeOrderStatus({
+    orderType: purchase.orderType,
+    quantity: purchase.quantity,
+    dispatchedOrder: nextPurchaseDispatched,
+  });
+
+  await tx.purchaseOrder.update({
+    where: { id: purchase.id },
+    data: {
+      dispatchedOrder: nextPurchaseDispatched,
+      orderStatus: nextPurchaseStatus,
+    },
+  });
+
+  await tx.vessel.update({
+    where: { id: vessel.id },
+    data: {
+      dispatchedQuantity: vessel.dispatchedQuantity.plus(args.qty),
+    },
+  });
+
+  return { vesselId: purchase.vesselId, importerId: purchase.importerId };
+}
+
+/**
+ * Suggest next sequential PO number (1, 2, 3, …) across sale orders.
+ * Only considers pure numeric POs; UI may override.
+ */
+export async function suggestNextPoNumber(): Promise<string> {
+  const rows = await prisma.order.findMany({
+    select: { poNumber: true },
+  });
+
+  let max = 0;
+  for (const row of rows) {
+    if (/^\d+$/.test(row.poNumber)) {
+      max = Math.max(max, Number(row.poNumber));
+    }
+  }
+
+  return String(max + 1);
+}
+
+export async function createDispatch(
+  input: CreateDispatchInput,
+): Promise<{ id: string }> {
+  const qty = toDecimal(input.dispatchedQuantity);
+  if (qty.lte(0)) {
+    throw new Error("Dispatched quantity must be positive");
+  }
+
+  const termsFields = resolveDispatchTermsFields(input);
+
+  const dispatch = await prisma.$transaction(async (tx) => {
+    const purchase = await resolvePurchaseForDispatch(tx, input);
+
+    await applyDispatchDelta(tx, {
+      poNumber: input.poNumber,
+      purchasePoNumber: purchase.purchasePoNumber,
+      qty,
+      skipOrderBalanceCheck: input.skipOrderBalanceCheck === true,
+      skipPurchaseBalanceCheck: purchase.skipPurchaseBalanceCheck,
+    });
+
+    return tx.dispatch.create({
+      data: {
+        poNumber: input.poNumber,
+        purchasePoNumber: purchase.purchasePoNumber,
+        vesselId: purchase.vesselId,
+        dispatchDate: asDate(input.dispatchDate),
+        dispatchedQuantity: qty,
+        dispatchTerms: input.dispatchTerms,
+        lorryNumber: input.lorryNumber ?? null,
+        transporterId: termsFields.transporterId,
+        freight: termsFields.freight,
+        importerId: purchase.importerId,
+        softCopyStatus: input.softCopyStatus ?? false,
+        entryInTally: input.entryInTally ?? false,
+        saleInvoiceNumber: normalizeInvoiceNumber(input.saleInvoiceNumber) ?? null,
+        purchaseInvoiceNumber:
+          normalizeInvoiceNumber(input.purchaseInvoiceNumber) ?? null,
+        receiptStatus: ReceiptStatus.PENDING,
+        receivingQuantity: null,
+        receiptDate: null,
+      },
+    });
+  });
+
+  revalidateDispatchPaths();
+  return { id: dispatch.id };
+}
+
+export async function createOpenOrderDispatch(
+  input: CreateOpenOrderDispatchInput,
+): Promise<{ id: string }> {
+  const poNumber = input.poNumber.trim();
+  if (!poNumber) throw new Error("PO number is required");
+  if (!input.customerId) throw new Error("Customer is required");
+
+  const existing = await prisma.order.findUnique({ where: { poNumber } });
+  if (existing) {
+    throw new Error(`PO number ${poNumber} is already taken`);
+  }
+
+  const qty = toDecimal(input.dispatchedQuantity);
+  if (qty.lte(0)) {
+    throw new Error("Dispatched quantity must be positive");
+  }
+
+  const termsFields = resolveDispatchTermsFields(input);
+
+  const dispatch = await prisma.$transaction(async (tx) => {
+    const purchase = await resolvePurchaseForDispatch(tx, input);
+
+    await tx.order.create({
+      data: {
+        poNumber,
+        orderType: OrderType.OPEN,
+        customerId: input.customerId,
+        orderDate: asDate(input.dispatchDate),
+        orderById: input.orderById,
+        quantity: null,
+        rate: null,
+        creditDays: null,
+        area: null,
+        quality: null,
+        orderStatus: OrderStatus.OPEN,
+        dispatchedOrder: new Decimal(0),
+      },
+    });
+
+    await applyDispatchDelta(tx, {
+      poNumber,
+      purchasePoNumber: purchase.purchasePoNumber,
+      qty,
+      skipOrderBalanceCheck: true,
+      skipPurchaseBalanceCheck: purchase.skipPurchaseBalanceCheck,
+    });
+
+    return tx.dispatch.create({
+      data: {
+        poNumber,
+        purchasePoNumber: purchase.purchasePoNumber,
+        vesselId: purchase.vesselId,
+        dispatchDate: asDate(input.dispatchDate),
+        dispatchedQuantity: qty,
+        dispatchTerms: input.dispatchTerms,
+        lorryNumber: input.lorryNumber ?? null,
+        transporterId: termsFields.transporterId,
+        freight: termsFields.freight,
+        importerId: purchase.importerId,
+        softCopyStatus: input.softCopyStatus ?? false,
+        entryInTally: input.entryInTally ?? false,
+        saleInvoiceNumber: normalizeInvoiceNumber(input.saleInvoiceNumber) ?? null,
+        purchaseInvoiceNumber:
+          normalizeInvoiceNumber(input.purchaseInvoiceNumber) ?? null,
+        receiptStatus: ReceiptStatus.PENDING,
+        receivingQuantity: null,
+        receiptDate: null,
+      },
+    });
+  });
+
+  revalidateDispatchPaths();
+  return { id: dispatch.id };
+}
+
+export async function updateDispatch(
+  id: string,
+  changes: UpdateDispatchInput,
+): Promise<{ id: string }> {
+  const updated = await prisma.$transaction(async (tx) => {
+    const existing = await tx.dispatch.findUnique({ where: { id } });
+    if (!existing) throw new Error("Dispatch not found");
+
+    const nextQty =
+      changes.dispatchedQuantity !== undefined
+        ? toDecimal(changes.dispatchedQuantity)
+        : existing.dispatchedQuantity;
+    const nextPurchasePo =
+      changes.purchasePoNumber ?? existing.purchasePoNumber;
+    const nextPo = changes.poNumber ?? existing.poNumber;
+    const nextTerms = changes.dispatchTerms ?? existing.dispatchTerms;
+
+    const balanceAffecting =
+      !nextQty.eq(existing.dispatchedQuantity) ||
+      nextPurchasePo !== existing.purchasePoNumber ||
+      nextPo !== existing.poNumber;
+
+    const termsChanging =
+      changes.dispatchTerms !== undefined ||
+      changes.transporterId !== undefined ||
+      changes.freight !== undefined;
+
+    let vesselId = existing.vesselId;
+    let importerId = existing.importerId;
+
+    if (balanceAffecting) {
+      if (nextQty.lte(0)) {
+        throw new Error("Dispatched quantity must be positive");
+      }
+
+      await applyDispatchDelta(tx, {
+        poNumber: existing.poNumber,
+        purchasePoNumber: existing.purchasePoNumber,
+        qty: existing.dispatchedQuantity.neg(),
+        skipOrderBalanceCheck: true,
+        skipPurchaseBalanceCheck: true,
+      });
+
+      const targetOrder = await tx.order.findUnique({
+        where: { poNumber: nextPo },
+      });
+      if (!targetOrder) {
+        throw new Error(`Sale order ${nextPo} not found`);
+      }
+      const skipSale =
+        targetOrder.orderType === OrderType.OPEN &&
+        targetOrder.quantity == null;
+
+      const targetPurchase = await tx.purchaseOrder.findUnique({
+        where: { poNumber: nextPurchasePo },
+      });
+      if (!targetPurchase) {
+        throw new Error(`Purchase order ${nextPurchasePo} not found`);
+      }
+      const skipPurchase =
+        targetPurchase.orderType === OrderType.OPEN &&
+        targetPurchase.quantity == null;
+
+      await applyDispatchDelta(tx, {
+        poNumber: nextPo,
+        purchasePoNumber: nextPurchasePo,
+        qty: nextQty,
+        skipOrderBalanceCheck: skipSale,
+        skipPurchaseBalanceCheck: skipPurchase,
+      });
+
+      vesselId = targetPurchase.vesselId;
+      importerId = targetPurchase.importerId;
+    }
+
+    // Use checked UpdateInput (relation connect) — scalar FKs like
+    // transporterId/vesselId are rejected when Prisma picks this path.
+    const data: Prisma.DispatchUpdateInput = {};
+
+    if (changes.dispatchedQuantity !== undefined || balanceAffecting) {
+      data.dispatchedQuantity = nextQty;
+    }
+
+    if (balanceAffecting) {
+      data.order = { connect: { poNumber: nextPo } };
+      data.purchaseOrder = { connect: { poNumber: nextPurchasePo } };
+      data.vessel = { connect: { id: vesselId } };
+      data.importer = importerId
+        ? { connect: { id: importerId } }
+        : { disconnect: true };
+    }
+
+    if (termsChanging) {
+      const termsFields = resolveDispatchTermsFields({
+        dispatchTerms: nextTerms,
+        transporterId:
+          changes.transporterId !== undefined
+            ? changes.transporterId
+            : existing.transporterId,
+        freight:
+          changes.freight !== undefined ? changes.freight : existing.freight,
+      });
+      data.dispatchTerms = nextTerms;
+      data.freight = termsFields.freight;
+      data.transporter = termsFields.transporterId
+        ? { connect: { id: termsFields.transporterId } }
+        : { disconnect: true };
+    }
+
+    if (changes.dispatchDate !== undefined) {
+      data.dispatchDate = asDate(changes.dispatchDate);
+    }
+    if (changes.lorryNumber !== undefined) {
+      data.lorryNumber = changes.lorryNumber;
+    }
+    if (changes.softCopyStatus !== undefined) {
+      data.softCopyStatus = changes.softCopyStatus;
+    }
+    if (changes.entryInTally !== undefined) {
+      data.entryInTally = changes.entryInTally;
+    }
+    if (changes.saleInvoiceNumber !== undefined) {
+      data.saleInvoiceNumber = normalizeInvoiceNumber(changes.saleInvoiceNumber);
+    }
+    if (changes.purchaseInvoiceNumber !== undefined) {
+      data.purchaseInvoiceNumber = normalizeInvoiceNumber(
+        changes.purchaseInvoiceNumber,
+      );
+    }
+
+    return tx.dispatch.update({
+      where: { id },
+      data,
+    });
+  });
+
+  revalidateDispatchPaths();
+  return { id: updated.id };
+}
+
+export async function deleteDispatch(id: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.dispatch.findUnique({ where: { id } });
+    if (!existing) throw new Error("Dispatch not found");
+
+    if (existing.receiptStatus !== ReceiptStatus.PENDING) {
+      throw new Error(
+        "Can only delete a dispatch while receiptStatus is PENDING",
+      );
+    }
+
+    await applyDispatchDelta(tx, {
+      poNumber: existing.poNumber,
+      purchasePoNumber: existing.purchasePoNumber,
+      qty: existing.dispatchedQuantity.neg(),
+      skipOrderBalanceCheck: true,
+      skipPurchaseBalanceCheck: true,
+    });
+
+    await tx.dispatch.delete({ where: { id } });
+  });
+
+  revalidateDispatchPaths();
+}
+
+export async function completeOpenOrder(
+  orderId: string,
+  details: CompleteOpenOrderInput,
+): Promise<void> {
+  const quantity = toDecimal(details.quantity);
+  if (quantity.lt(0)) {
+    throw new Error("Quantity must be non-negative");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.order.findUnique({ where: { id: orderId } });
+    if (!order) throw new Error("Order not found");
+    if (order.orderType !== OrderType.OPEN) {
+      throw new Error("Only OPEN orders can be completed this way");
+    }
+    if (quantity.lt(order.dispatchedOrder)) {
+      throw new Error(
+        `Cannot set quantity (${quantity}) below dispatchedOrder (${order.dispatchedOrder})`,
+      );
+    }
+
+    const rate =
+      details.rate === undefined || details.rate === null
+        ? null
+        : toDecimal(details.rate);
+
+    const nextStatus = computeOrderStatus({
+      orderType: order.orderType,
+      quantity,
+      dispatchedOrder: order.dispatchedOrder,
+    });
+
+    await tx.order.update({
+      where: { id: orderId },
+      data: {
+        quantity,
+        rate,
+        creditDays:
+          details.creditDays === undefined ? undefined : details.creditDays,
+        quality: details.quality === undefined ? undefined : details.quality,
+        area: details.area === undefined ? undefined : details.area,
+        orderStatus: nextStatus,
+      },
+    });
+  });
+
+  revalidatePath("/orders");
+  revalidatePath(`/orders/${orderId}`);
+}
+
+export async function confirmReceipt(
+  dispatchId: string,
+  receivingQuantity: DecimalLike,
+): Promise<{ id: string }> {
+  const qty = toDecimal(receivingQuantity);
+  if (qty.lt(0)) {
+    throw new Error("Receiving quantity must be non-negative");
+  }
+
+  const updated = await prisma.dispatch.update({
+    where: { id: dispatchId },
+    data: {
+      receivingQuantity: qty,
+      receiptDate: new Date(),
+      receiptStatus: ReceiptStatus.RECEIVED,
+    },
+  });
+
+  revalidatePath("/receipts/pending");
+  revalidatePath("/reconciliation");
+  revalidatePath("/orders");
+  revalidatePath("/dispatches");
+  return { id: updated.id };
+}
