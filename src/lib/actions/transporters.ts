@@ -31,18 +31,24 @@ export async function getTransporter(id: string) {
 
 export type TransporterInput = {
   name: string;
-  area?: string | null;
-  contactPersonName?: string | null;
-  contactNumber?: string | null;
+  ownerName?: string | null;
+  ownerContactNumber1?: string | null;
+  ownerContactNumber2?: string | null;
+  email?: string | null;
+  city?: string | null;
+  state?: string | null;
 };
 
 export async function createTransporter(input: TransporterInput) {
   const row = await prisma.transporter.create({
     data: {
       name: input.name,
-      area: input.area || null,
-      contactPersonName: input.contactPersonName || null,
-      contactNumber: input.contactNumber || null,
+      ownerName: input.ownerName || null,
+      ownerContactNumber1: input.ownerContactNumber1 || null,
+      ownerContactNumber2: input.ownerContactNumber2 || null,
+      email: input.email || null,
+      city: input.city || null,
+      state: input.state || null,
     },
   });
   revalidatePath("/transporters");
@@ -54,9 +60,12 @@ export async function updateTransporter(id: string, input: TransporterInput) {
     where: { id },
     data: {
       name: input.name,
-      area: input.area || null,
-      contactPersonName: input.contactPersonName || null,
-      contactNumber: input.contactNumber || null,
+      ownerName: input.ownerName || null,
+      ownerContactNumber1: input.ownerContactNumber1 || null,
+      ownerContactNumber2: input.ownerContactNumber2 || null,
+      email: input.email || null,
+      city: input.city || null,
+      state: input.state || null,
     },
   });
   revalidatePath("/transporters");

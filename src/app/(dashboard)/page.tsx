@@ -10,6 +10,8 @@ import { listCustomers } from "@/lib/actions/customers";
 import { listStaff } from "@/lib/actions/staff";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
+import { listPortOptions } from "@/lib/actions/ports";
+import { listQualityClasses } from "@/lib/actions/qualities";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { CustomerCategory } from "@/generated/prisma";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
@@ -31,10 +33,12 @@ export default async function HomePage() {
     topCustomers,
     customers,
     staff,
+    ports,
     balanceOrders,
     balancePurchases,
     vessels,
     transporters,
+    qualityClasses,
     suggestedPo,
     suggestedPurchasePo,
   ] = await Promise.all([
@@ -43,10 +47,12 @@ export default async function HomePage() {
     getTopCustomersByVolumeLastMonth(5),
     listCustomers(),
     listStaff(),
+    listPortOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listVessels(),
     listTransporters(),
+    listQualityClasses(),
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
   ]);
@@ -64,11 +70,23 @@ export default async function HomePage() {
     0,
   );
 
-  const customerOpts = customers.map((c) => ({ id: c.id, name: c.name }));
+  const customerOpts = customers.map((c) => ({
+    id: c.id,
+    name: c.name,
+    category: c.category,
+    creditDays: c.creditDays,
+  }));
   const importerOpts = customers
     .filter((c) => c.category === CustomerCategory.SUPPLIER)
     .map((c) => ({ id: c.id, name: c.name }));
   const staffOpts = staff.map((s) => ({ id: s.id, name: s.name }));
+  const portOpts = ports.map((p) => ({ id: p.id, name: p.name }));
+  const qualityClassOpts = qualityClasses.map((qc) => ({
+    id: qc.id,
+    domestic: qc.domestic,
+    origin: qc.origin,
+    qualityOption: qc.qualityOption,
+  }));
 
   return (
     <div className="home">
@@ -89,6 +107,7 @@ export default async function HomePage() {
           customers={customerOpts}
           importers={importerOpts}
           staff={staffOpts}
+          ports={portOpts}
           orders={balanceOrders.map((o) => ({
             poNumber: o.poNumber,
             balanceOrder: o.balanceOrder?.toString() ?? null,
@@ -103,10 +122,12 @@ export default async function HomePage() {
           vessels={vessels.map((v) => ({
             id: v.id,
             vesselName: v.vesselName,
-            importerId: v.importerId,
-            importer: v.importer,
+            qualityClassId: v.qualityClassId,
+            qualityClass: v.qualityClass,
+            port: v.port,
           }))}
           transporters={transporters.map((t) => ({ id: t.id, name: t.name }))}
+          qualityClasses={qualityClassOpts}
           suggestedPo={suggestedPo}
           suggestedPurchasePo={suggestedPurchasePo}
         />

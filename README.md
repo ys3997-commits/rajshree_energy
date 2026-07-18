@@ -47,9 +47,9 @@ All multi-table logic lives in `src/lib/actions/dispatch.ts` inside `prisma.$tra
 - `completeOpenOrder`
 - `confirmReceipt`
 
-Each dispatch links a **sale order** (`poNumber`) to a **purchase order** (`purchasePoNumber`). Vessel and importer are taken from the purchase order. Balances update on the sale order, purchase order, and vessel.
+Each dispatch links a **sale order** (`poNumber`) to a **purchase order** (`purchasePoNumber`). Vessel and importer are taken from the purchase order. Balances update on the sale order and purchase order.
 
-Derived values (`balanceOrder`, `balanceQuantity`, `gst`, `diffInQuantity`) are computed in TypeScript (`src/lib/domain/computations.ts`), not stored as columns.
+Derived values (`balanceOrder`, `gst`, `diffInQuantity`) are computed in TypeScript (`src/lib/domain/computations.ts`), not stored as columns.
 
 ## Tests
 

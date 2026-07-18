@@ -5,11 +5,13 @@ import {
   suggestNextPurchasePoNumber,
 } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
+import { listPortOptions } from "@/lib/actions/ports";
+import { listQualityClasses } from "@/lib/actions/qualities";
 import { listStaff } from "@/lib/actions/staff";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
-import { formatMt } from "@/lib/domain/computations";
+import { formatMt, formatRs } from "@/lib/domain/computations";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import Link from "next/link";
@@ -17,7 +19,7 @@ import Link from "next/link";
 type SearchParams = Promise<{
   status?: string;
   customerId?: string;
-  area?: string;
+  portId?: string;
   orderById?: string;
 }>;
 
@@ -31,34 +33,50 @@ export default async function OrdersPage({
     orders,
     customers,
     staff,
+    ports,
     balanceOrders,
     balancePurchases,
     transporters,
     vessels,
+    qualityClasses,
     suggestedPo,
     suggestedPurchasePo,
   ] = await Promise.all([
     listOrders({
       status: (sp.status as OrderStatus) || "",
       customerId: sp.customerId || "",
-      area: sp.area || "",
+      portId: sp.portId || "",
       orderById: sp.orderById || "",
     }),
     listCustomers(),
     listStaff(),
+    listPortOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listTransporters(),
     listVessels(),
+    listQualityClasses(),
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
   ]);
 
-  const customerOpts = customers.map((c) => ({ id: c.id, name: c.name }));
+  const customerOpts = customers.map((c) => ({
+    id: c.id,
+    name: c.name,
+    category: c.category,
+    creditDays: c.creditDays,
+  }));
   const importerOpts = customers
     .filter((c) => c.category === CustomerCategory.SUPPLIER)
     .map((c) => ({ id: c.id, name: c.name }));
   const staffOpts = staff.map((s) => ({ id: s.id, name: s.name }));
+  const portOpts = ports.map((p) => ({ id: p.id, name: p.name }));
+  const qualityClassOpts = qualityClasses.map((qc) => ({
+    id: qc.id,
+    domestic: qc.domestic,
+    origin: qc.origin,
+    qualityOption: qc.qualityOption,
+  }));
 
   return (
     <div>
@@ -71,6 +89,8 @@ export default async function OrdersPage({
           <CreateOrderButton
             customers={customerOpts}
             staff={staffOpts}
+            ports={portOpts}
+            qualityClasses={qualityClassOpts}
             suggestedPo={suggestedPo}
           />
           <CreateDispatchButton
@@ -86,13 +106,11 @@ export default async function OrdersPage({
               vessel: p.vessel,
             }))}
             transporters={transporters.map((t) => ({ id: t.id, name: t.name }))}
-            customers={customerOpts}
+            customers={customerOpts.map((c) => ({ id: c.id, name: c.name }))}
             importers={importerOpts}
             vessels={vessels.map((v) => ({
               id: v.id,
               vesselName: v.vesselName,
-              importerId: v.importerId,
-              importer: v.importer,
             }))}
             staff={staffOpts}
             suggestedPo={suggestedPo}
@@ -124,11 +142,18 @@ export default async function OrdersPage({
           </select>
         </label>
         <label>
-          Area
-          <input name="area" defaultValue={sp.area ?? ""} placeholder="Area" />
+          Port
+          <select name="portId" defaultValue={sp.portId ?? ""}>
+            <option value="">All</option>
+            {ports.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
         </label>
         <label>
-          Order by
+          Deal by
           <select name="orderById" defaultValue={sp.orderById ?? ""}>
             <option value="">All</option>
             {staff.map((s) => (
@@ -155,8 +180,10 @@ export default async function OrdersPage({
               <th>Balance (MT)</th>
               <th>Status</th>
               <th>Credit days</th>
-              <th>Area</th>
-              <th>Order by</th>
+              <th>Port</th>
+              <th>Base rate</th>
+              <th>Final rate</th>
+              <th>Deal by</th>
             </tr>
           </thead>
           <tbody>
@@ -177,13 +204,15 @@ export default async function OrdersPage({
                 <td>{formatMt(row.balanceOrder)}</td>
                 <td>{row.orderStatus}</td>
                 <td>{row.creditDays ?? "—"}</td>
-                <td>{row.area ?? "—"}</td>
+                <td>{row.port?.name ?? "—"}</td>
+                <td>{formatRs(row.rate)}</td>
+                <td>{formatRs(row.finalRate)}</td>
                 <td>{row.orderBy?.name ?? "—"}</td>
               </tr>
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={10}>No orders match filters.</td>
+                <td colSpan={12}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

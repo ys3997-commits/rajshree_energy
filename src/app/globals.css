@@ -436,6 +436,28 @@ table.data tr.month-divider:hover td {
   box-shadow: var(--shadow);
 }
 
+.form-grid-wide {
+  max-width: 960px;
+  grid-template-columns: 170px minmax(0, 1fr);
+}
+
+.role-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.role-fields-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .role-fields,
+  .role-fields-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
 .form-grid-plain {
   max-width: none;
   padding: 0;
@@ -643,6 +665,7 @@ table.data tr.month-divider:hover td {
 .filters input,
 .filters select,
 .field-input {
+  width: 100%;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   padding: 0.65rem 0.85rem;

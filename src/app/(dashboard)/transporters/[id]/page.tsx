@@ -78,21 +78,39 @@ export default async function TransporterDetailPage({
 
       <div className="detail-meta">
         <div className="detail-meta-item">
-          <span className="detail-meta-label">Area</span>
+          <span className="detail-meta-label">Owner</span>
           <span className="detail-meta-value">
-            {transporter.area || "—"}
+            {transporter.ownerName || "—"}
           </span>
         </div>
         <div className="detail-meta-item">
-          <span className="detail-meta-label">Contact</span>
+          <span className="detail-meta-label">Contact 1</span>
           <span className="detail-meta-value">
-            {transporter.contactPersonName || "—"}
+            {transporter.ownerContactNumber1 || "—"}
           </span>
         </div>
         <div className="detail-meta-item">
-          <span className="detail-meta-label">Phone</span>
+          <span className="detail-meta-label">Contact 2</span>
           <span className="detail-meta-value">
-            {transporter.contactNumber || "—"}
+            {transporter.ownerContactNumber2 || "—"}
+          </span>
+        </div>
+        <div className="detail-meta-item">
+          <span className="detail-meta-label">Email</span>
+          <span className="detail-meta-value">
+            {transporter.email || "—"}
+          </span>
+        </div>
+        <div className="detail-meta-item">
+          <span className="detail-meta-label">City</span>
+          <span className="detail-meta-value">
+            {transporter.city || "—"}
+          </span>
+        </div>
+        <div className="detail-meta-item">
+          <span className="detail-meta-label">State</span>
+          <span className="detail-meta-value">
+            {transporter.state || "—"}
           </span>
         </div>
       </div>

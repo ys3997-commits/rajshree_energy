@@ -1,25 +1,31 @@
-import { listCustomers } from "@/lib/actions/customers";
+import { listPortOptions } from "@/lib/actions/ports";
+import { listQualityClasses } from "@/lib/actions/qualities";
 import { listVessels } from "@/lib/actions/vessels";
 import { VesselsClient } from "./VesselsClient";
 
 export default async function VesselsPage() {
-  const [vessels, customers] = await Promise.all([
+  const [vessels, qualityClasses, ports] = await Promise.all([
     listVessels(),
-    listCustomers(),
+    listQualityClasses(),
+    listPortOptions(),
   ]);
   return (
     <VesselsClient
       initial={vessels.map((v) => ({
         id: v.id,
         vesselName: v.vesselName,
-        importerId: v.importerId,
-        quality: v.quality,
-        quantity: v.quantity.toString(),
-        dispatchedQuantity: v.dispatchedQuantity.toString(),
-        balanceQuantity: v.balanceQuantity.toString(),
-        importer: v.importer,
+        qualityClassId: v.qualityClassId,
+        qualityClass: v.qualityClass,
+        portId: v.portId,
+        port: v.port,
       }))}
-      customers={customers.map((c) => ({ id: c.id, name: c.name }))}
+      qualityClasses={qualityClasses.map((qc) => ({
+        id: qc.id,
+        domestic: qc.domestic,
+        origin: qc.origin,
+        qualityOption: qc.qualityOption,
+      }))}
+      ports={ports.map((p) => ({ id: p.id, name: p.name }))}
     />
   );
 }

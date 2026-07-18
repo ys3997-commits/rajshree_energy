@@ -6,26 +6,28 @@ import {
   createOpenPurchaseOrder,
   createRegularPurchaseOrder,
 } from "@/lib/actions/purchaseOrders";
+import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
+import { formatQualityClass, type QualityClassLabel } from "@/lib/domain/format";
+import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 
 type Option = { id: string; name: string };
 
 type VesselOpt = {
   id: string;
   vesselName: string;
-  importerId: string;
-  importer: { name: string } | null;
+  qualityClassId: string | null;
+  qualityClass: QualityClassLabel | null;
+  port: { id: string; name: string } | null;
 };
 
 export function NewPurchaseOrderForm({
   importers,
   vessels,
-  staff,
   suggestedPo,
   onCancel,
 }: {
   importers: Option[];
   vessels: VesselOpt[];
-  staff: Option[];
   suggestedPo: string;
   onCancel?: () => void;
 }) {
@@ -36,11 +38,17 @@ export function NewPurchaseOrderForm({
   const [poNumber, setPoNumber] = useState(suggestedPo);
   const [vesselId, setVesselId] = useState("");
   const [importerId, setImporterId] = useState("");
+  const [rate, setRate] = useState("");
 
-  const filteredVessels = useMemo(() => {
-    if (!importerId) return vessels;
-    return vessels.filter((v) => v.importerId === importerId);
-  }, [vessels, importerId]);
+  const selectedVessel = useMemo(
+    () => vessels.find((v) => v.id === vesselId) ?? null,
+    [vessels, vesselId],
+  );
+
+  const rateBreakdown = useMemo(() => {
+    if (rate === "") return null;
+    return computePurchaseRateBreakdown(rate);
+  }, [rate]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,9 +61,8 @@ export function NewPurchaseOrderForm({
         importerId: String(fd.get("importerId") || ""),
         vesselId: String(fd.get("vesselId") || ""),
         orderDate: String(fd.get("orderDate") || "") || null,
-        quality: String(fd.get("quality") || "") || null,
-        rate: String(fd.get("rate") || "") || null,
-        orderById: String(fd.get("orderById") || "") || null,
+        qualityClassId: selectedVessel?.qualityClassId || null,
+        rate: rate || null,
       };
 
       const order =
@@ -77,26 +84,45 @@ export function NewPurchaseOrderForm({
     <div>
       {error && <div className="error-box">{error}</div>}
 
-      <div className="mb-4 flex gap-4 text-sm">
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            checked={mode === "regular"}
-            onChange={() => setMode("regular")}
-          />
-          Regular
-        </label>
-        <label className="flex items-center gap-2">
-          <input
-            type="radio"
-            checked={mode === "open"}
-            onChange={() => setMode("open")}
-          />
-          Open
-        </label>
+      <div
+        className="option-cards"
+        role="radiogroup"
+        aria-label="Purchase order type"
+      >
+        <button
+          type="button"
+          role="radio"
+          aria-checked={mode === "regular"}
+          className={`option-card${mode === "regular" ? " option-card-selected" : ""}`}
+          onClick={() => setMode("regular")}
+        >
+          <span className="option-card-title">Regular</span>
+          <span className="option-card-desc">
+            Fixed quantity known up front
+          </span>
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={mode === "open"}
+          className={`option-card${mode === "open" ? " option-card-selected" : ""}`}
+          onClick={() => setMode("open")}
+        >
+          <span className="option-card-title">Open</span>
+          <span className="option-card-desc">
+            Quantity set later after dispatches
+          </span>
+        </button>
       </div>
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
+        <label>Order date</label>
+        <input
+          name="orderDate"
+          type="date"
+          defaultValue={new Date().toISOString().slice(0, 10)}
+        />
+
         <label>Purchase PO number</label>
         <input
           name="poNumber"
@@ -105,15 +131,12 @@ export function NewPurchaseOrderForm({
           onChange={(e) => setPoNumber(e.target.value)}
         />
 
-        <label>Importer</label>
+        <label>Vendor</label>
         <select
           name="importerId"
           required
           value={importerId}
-          onChange={(e) => {
-            setImporterId(e.target.value);
-            setVesselId("");
-          }}
+          onChange={(e) => setImporterId(e.target.value)}
         >
           <option value="">Select…</option>
           {importers.map((c) => (
@@ -128,28 +151,32 @@ export function NewPurchaseOrderForm({
           name="vesselId"
           required
           value={vesselId}
-          onChange={(e) => {
-            const id = e.target.value;
-            setVesselId(id);
-            const v = vessels.find((x) => x.id === id);
-            if (v) setImporterId(v.importerId);
-          }}
+          onChange={(e) => setVesselId(e.target.value)}
         >
           <option value="">Select…</option>
-          {filteredVessels.map((v) => (
+          {vessels.map((v) => (
             <option key={v.id} value={v.id}>
               {v.vesselName}
-              {v.importer?.name ? ` — ${v.importer.name}` : ""}
+              {v.qualityClass
+                ? ` — ${formatQualityClass(v.qualityClass)}`
+                : ""}
+              {v.port ? ` — ${v.port.name}` : ""}
             </option>
           ))}
         </select>
 
-        <label>Order date</label>
-        <input
-          name="orderDate"
-          type="date"
-          defaultValue={new Date().toISOString().slice(0, 10)}
-        />
+        {selectedVessel && (
+          <>
+            <label>Quality</label>
+            <div className="text-sm">
+              {formatQualityClass(selectedVessel.qualityClass)}
+            </div>
+            <label>Port</label>
+            <div className="text-sm">
+              {selectedVessel.port?.name ?? "—"}
+            </div>
+          </>
+        )}
 
         {mode === "regular" && (
           <>
@@ -169,22 +196,24 @@ export function NewPurchaseOrderForm({
 
         <label>Rate (cost)</label>
         <div className="field-with-unit">
-          <input name="rate" type="number" step="any" min="0" />
+          <input
+            name="rate"
+            type="number"
+            step="any"
+            min="0"
+            value={rate}
+            onChange={(e) => setRate(e.target.value)}
+          />
           <span className="field-unit">Rs</span>
         </div>
 
-        <label>Quality</label>
-        <input name="quality" />
-
-        <label>Order by</label>
-        <select name="orderById" defaultValue="">
-          <option value="">—</option>
-          {staff.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+        {rateBreakdown != null && (
+          <RateBreakdownFields
+            gst={rateBreakdown.gst}
+            tcs={rateBreakdown.tcs}
+            final={rateBreakdown.final}
+          />
+        )}
 
         {mode === "open" && (
           <p

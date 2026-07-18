@@ -133,9 +133,42 @@ exports.Prisma.StaffScalarFieldEnum = {
 exports.Prisma.TransporterScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  area: 'area',
-  contactPersonName: 'contactPersonName',
-  contactNumber: 'contactNumber',
+  ownerName: 'ownerName',
+  ownerContactNumber1: 'ownerContactNumber1',
+  ownerContactNumber2: 'ownerContactNumber2',
+  email: 'email',
+  city: 'city',
+  state: 'state',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.OriginOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QualityOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PortOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.QualityClassScalarFieldEnum = {
+  id: 'id',
+  originId: 'originId',
+  domestic: 'domestic',
+  qualityOptionId: 'qualityOptionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -144,10 +177,21 @@ exports.Prisma.CustomerScalarFieldEnum = {
   id: 'id',
   name: 'name',
   category: 'category',
-  contactNumber: 'contactNumber',
-  pocName: 'pocName',
-  area: 'area',
-  industrySector: 'industrySector',
+  ownerName: 'ownerName',
+  ownerContact: 'ownerContact',
+  purchaserName: 'purchaserName',
+  purchaserContact: 'purchaserContact',
+  purchaserRole: 'purchaserRole',
+  paymentInChargeName: 'paymentInChargeName',
+  paymentInChargeContact: 'paymentInChargeContact',
+  paymentInChargeRole: 'paymentInChargeRole',
+  accountantName: 'accountantName',
+  accountantContact: 'accountantContact',
+  email: 'email',
+  city: 'city',
+  state: 'state',
+  creditDays: 'creditDays',
+  sector: 'sector',
   dealById: 'dealById',
   approachForFundsId: 'approachForFundsId',
   createdAt: 'createdAt',
@@ -157,10 +201,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
 exports.Prisma.VesselScalarFieldEnum = {
   id: 'id',
   vesselName: 'vesselName',
-  importerId: 'importerId',
-  quality: 'quality',
-  quantity: 'quantity',
-  dispatchedQuantity: 'dispatchedQuantity',
+  qualityClassId: 'qualityClassId',
+  portId: 'portId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -171,10 +213,11 @@ exports.Prisma.OrderScalarFieldEnum = {
   orderType: 'orderType',
   customerId: 'customerId',
   orderDate: 'orderDate',
-  area: 'area',
+  portId: 'portId',
   creditDays: 'creditDays',
-  quality: 'quality',
+  qualityClassId: 'qualityClassId',
   rate: 'rate',
+  finalRate: 'finalRate',
   quantity: 'quantity',
   orderById: 'orderById',
   dispatchedOrder: 'dispatchedOrder',
@@ -190,10 +233,10 @@ exports.Prisma.PurchaseOrderScalarFieldEnum = {
   importerId: 'importerId',
   vesselId: 'vesselId',
   orderDate: 'orderDate',
-  quality: 'quality',
+  qualityClassId: 'qualityClassId',
   rate: 'rate',
+  finalRate: 'finalRate',
   quantity: 'quantity',
-  orderById: 'orderById',
   dispatchedOrder: 'dispatchedOrder',
   orderStatus: 'orderStatus',
   createdAt: 'createdAt',
@@ -239,7 +282,8 @@ exports.Prisma.NullsOrder = {
 };
 exports.CustomerCategory = exports.$Enums.CustomerCategory = {
   SUPPLIER: 'SUPPLIER',
-  INDUSTRY: 'INDUSTRY'
+  INDUSTRY: 'INDUSTRY',
+  TRADER: 'TRADER'
 };
 
 exports.OrderType = exports.$Enums.OrderType = {
@@ -251,6 +295,11 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   OPEN: 'OPEN',
   PENDING: 'PENDING',
   PARTIALLY_DISPATCHED: 'PARTIALLY_DISPATCHED',
+  COMPLETED: 'COMPLETED'
+};
+
+exports.PurchaseOrderStatus = exports.$Enums.PurchaseOrderStatus = {
+  RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
 };
 
@@ -267,6 +316,10 @@ exports.ReceiptStatus = exports.$Enums.ReceiptStatus = {
 exports.Prisma.ModelName = {
   Staff: 'Staff',
   Transporter: 'Transporter',
+  OriginOption: 'OriginOption',
+  QualityOption: 'QualityOption',
+  PortOption: 'PortOption',
+  QualityClass: 'QualityClass',
   Customer: 'Customer',
   Vessel: 'Vessel',
   Order: 'Order',

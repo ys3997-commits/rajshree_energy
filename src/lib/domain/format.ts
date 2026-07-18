@@ -37,3 +37,26 @@ export function formatDecimal(
   if (value == null) return "—";
   return value.toString();
 }
+
+export type QualityClassLabel = {
+  origin: { name: string };
+  domestic: boolean;
+  qualityOption: { name: string };
+};
+
+/** e.g. "Domestic · Indonesia · 6000 GCV" */
+export function formatQualityClass(
+  qc: QualityClassLabel | null | undefined,
+): string {
+  if (!qc) return "—";
+  const domestic = qc.domestic ? "Domestic" : "Imported";
+  return `${domestic} · ${qc.origin.name} · ${qc.qualityOption.name}`;
+}
+
+/** Purchase order status display: Running | Completed */
+export function formatPurchaseOrderStatus(
+  status: string | null | undefined,
+): string {
+  if (status === "COMPLETED") return "Completed";
+  return "Running";
+}

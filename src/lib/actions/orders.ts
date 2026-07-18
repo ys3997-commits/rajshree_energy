@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
   computeOrderStatus,
+  computeSaleFinalRate,
   toDecimal,
   withOrderComputed,
   type DecimalLike,
@@ -13,7 +14,7 @@ import {
 export type OrderFilters = {
   status?: OrderStatus | "";
   customerId?: string;
-  area?: string;
+  portId?: string;
   orderById?: string;
 };
 
@@ -21,14 +22,23 @@ export async function listOrders(filters: OrderFilters = {}) {
   const where: Prisma.OrderWhereInput = {};
   if (filters.status) where.orderStatus = filters.status;
   if (filters.customerId) where.customerId = filters.customerId;
-  if (filters.area) where.area = { contains: filters.area, mode: "insensitive" };
+  if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;
 
   const rows = await prisma.order.findMany({
     where,
     include: {
-      customer: { select: { id: true, name: true, area: true } },
+      customer: {
+        select: { id: true, name: true, city: true, state: true, category: true },
+      },
       orderBy: { select: { id: true, name: true } },
+      port: { select: { id: true, name: true } },
+      qualityClass: {
+        include: {
+          origin: { select: { id: true, name: true } },
+          qualityOption: { select: { id: true, name: true } },
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -42,6 +52,13 @@ export async function getOrder(id: string) {
     include: {
       customer: true,
       orderBy: true,
+      port: { select: { id: true, name: true } },
+      qualityClass: {
+        include: {
+          origin: { select: { id: true, name: true } },
+          qualityOption: { select: { id: true, name: true } },
+        },
+      },
       dispatches: {
         include: {
           vessel: { select: { vesselName: true } },
@@ -50,6 +67,7 @@ export async function getOrder(id: string) {
             select: {
               poNumber: true,
               rate: true,
+              finalRate: true,
               importer: { select: { name: true } },
               vessel: { select: { vesselName: true } },
             },
@@ -77,13 +95,22 @@ export type CreateRegularOrderInput = {
   poNumber: string;
   customerId: string;
   orderDate?: string | null;
-  area?: string | null;
+  portId?: string | null;
   creditDays?: number | null;
-  quality?: string | null;
+  qualityClassId?: string | null;
   rate?: DecimalLike | null;
   quantity: DecimalLike;
   orderById?: string | null;
 };
+
+async function resolveCustomerCategory(customerId: string) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    select: { category: true },
+  });
+  if (!customer) throw new Error("Customer not found");
+  return customer.category;
+}
 
 export async function createRegularOrder(input: CreateRegularOrderInput) {
   const quantity = toDecimal(input.quantity);
@@ -91,6 +118,8 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
     input.rate === undefined || input.rate === null
       ? null
       : toDecimal(input.rate);
+  const category = await resolveCustomerCategory(input.customerId);
+  const finalRate = computeSaleFinalRate(rate, category);
 
   const orderStatus = computeOrderStatus({
     orderType: OrderType.REGULAR,
@@ -104,10 +133,11 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
       orderType: OrderType.REGULAR,
       customerId: input.customerId,
       orderDate: input.orderDate ? new Date(input.orderDate) : null,
-      area: input.area || null,
+      portId: input.portId || null,
       creditDays: input.creditDays ?? null,
-      quality: input.quality || null,
+      qualityClassId: input.qualityClassId || null,
       rate,
+      finalRate,
       quantity,
       orderById: input.orderById || null,
       orderStatus,
@@ -124,11 +154,14 @@ export async function updateOrderFields(
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     creditDays?: number | null;
-    quality?: string | null;
-    area?: string | null;
+    qualityClassId?: string | null;
+    portId?: string | null;
   },
 ) {
-  const existing = await prisma.order.findUnique({ where: { id } });
+  const existing = await prisma.order.findUnique({
+    where: { id },
+    include: { customer: { select: { category: true } } },
+  });
   if (!existing) throw new Error("Order not found");
 
   const quantity =
@@ -144,6 +177,10 @@ export async function updateOrderFields(
   if (data.rate !== undefined) {
     rate = data.rate === null ? null : toDecimal(data.rate);
   }
+  const finalRate =
+    data.rate !== undefined
+      ? computeSaleFinalRate(rate, existing.customer.category)
+      : undefined;
 
   const orderStatus = computeOrderStatus({
     orderType: existing.orderType,
@@ -156,9 +193,11 @@ export async function updateOrderFields(
     data: {
       quantity,
       rate,
+      ...(finalRate !== undefined ? { finalRate } : {}),
       creditDays: data.creditDays === undefined ? undefined : data.creditDays,
-      quality: data.quality === undefined ? undefined : data.quality,
-      area: data.area === undefined ? undefined : data.area,
+      qualityClassId:
+        data.qualityClassId === undefined ? undefined : data.qualityClassId,
+      portId: data.portId === undefined ? undefined : data.portId || null,
       orderStatus,
     },
   });

@@ -11,16 +11,22 @@ import {
 type Row = {
   id: string;
   name: string;
-  area: string | null;
-  contactPersonName: string | null;
-  contactNumber: string | null;
+  ownerName: string | null;
+  ownerContactNumber1: string | null;
+  ownerContactNumber2: string | null;
+  email: string | null;
+  city: string | null;
+  state: string | null;
 };
 
 const empty = {
   name: "",
-  area: "",
-  contactPersonName: "",
-  contactNumber: "",
+  ownerName: "",
+  ownerContactNumber1: "",
+  ownerContactNumber2: "",
+  email: "",
+  city: "",
+  state: "",
 };
 
 export function TransportersClient({ initial }: { initial: Row[] }) {
@@ -66,30 +72,46 @@ export function TransportersClient({ initial }: { initial: Row[] }) {
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="mb-6 form-grid">
-        <label>Name</label>
+        <label>Company name</label>
         <input
           required
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
-        <label>Area</label>
+        <label>Owner name</label>
         <input
-          value={form.area}
-          onChange={(e) => setForm({ ...form, area: e.target.value })}
+          value={form.ownerName}
+          onChange={(e) => setForm({ ...form, ownerName: e.target.value })}
         />
-        <label>Contact person</label>
+        <label>Owner contact 1</label>
         <input
-          value={form.contactPersonName}
+          value={form.ownerContactNumber1}
           onChange={(e) =>
-            setForm({ ...form, contactPersonName: e.target.value })
+            setForm({ ...form, ownerContactNumber1: e.target.value })
           }
         />
-        <label>Contact number</label>
+        <label>Owner contact 2</label>
         <input
-          value={form.contactNumber}
+          value={form.ownerContactNumber2}
           onChange={(e) =>
-            setForm({ ...form, contactNumber: e.target.value })
+            setForm({ ...form, ownerContactNumber2: e.target.value })
           }
+        />
+        <label>Email</label>
+        <input
+          type="email"
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+        <label>City</label>
+        <input
+          value={form.city}
+          onChange={(e) => setForm({ ...form, city: e.target.value })}
+        />
+        <label>State</label>
+        <input
+          value={form.state}
+          onChange={(e) => setForm({ ...form, state: e.target.value })}
         />
         <div />
         <div className="flex gap-2">
@@ -115,10 +137,13 @@ export function TransportersClient({ initial }: { initial: Row[] }) {
         <table className="data">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Area</th>
-              <th>Contact person</th>
-              <th>Contact number</th>
+              <th>Company</th>
+              <th>Owner</th>
+              <th>Contact 1</th>
+              <th>Contact 2</th>
+              <th>Email</th>
+              <th>City</th>
+              <th>State</th>
               <th />
             </tr>
           </thead>
@@ -130,9 +155,12 @@ export function TransportersClient({ initial }: { initial: Row[] }) {
                     {row.name}
                   </Link>
                 </td>
-                <td>{row.area ?? "—"}</td>
-                <td>{row.contactPersonName ?? "—"}</td>
-                <td>{row.contactNumber ?? "—"}</td>
+                <td>{row.ownerName ?? "—"}</td>
+                <td>{row.ownerContactNumber1 ?? "—"}</td>
+                <td>{row.ownerContactNumber2 ?? "—"}</td>
+                <td>{row.email ?? "—"}</td>
+                <td>{row.city ?? "—"}</td>
+                <td>{row.state ?? "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">
                   <button
                     type="button"
@@ -141,9 +169,12 @@ export function TransportersClient({ initial }: { initial: Row[] }) {
                       setEditing(row);
                       setForm({
                         name: row.name,
-                        area: row.area ?? "",
-                        contactPersonName: row.contactPersonName ?? "",
-                        contactNumber: row.contactNumber ?? "",
+                        ownerName: row.ownerName ?? "",
+                        ownerContactNumber1: row.ownerContactNumber1 ?? "",
+                        ownerContactNumber2: row.ownerContactNumber2 ?? "",
+                        email: row.email ?? "",
+                        city: row.city ?? "",
+                        state: row.state ?? "",
                       });
                     }}
                   >
@@ -161,7 +192,7 @@ export function TransportersClient({ initial }: { initial: Row[] }) {
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5}>No transporters yet.</td>
+                <td colSpan={8}>No transporters yet.</td>
               </tr>
             )}
           </tbody>

@@ -8,9 +8,47 @@ async function main() {
   await prisma.purchaseOrder.deleteMany();
   await prisma.order.deleteMany();
   await prisma.vessel.deleteMany();
+  await prisma.portOption.deleteMany();
+  await prisma.qualityClass.deleteMany();
+  await prisma.qualityOption.deleteMany();
+  await prisma.originOption.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.transporter.deleteMany();
   await prisma.staff.deleteMany();
+
+  const ports = await Promise.all(
+    [
+      "Haldia Port",
+      "Jharkhand",
+      "West Bengal",
+      "Assam",
+      "Odisha",
+      "Vishakapatnam",
+    ].map((name) => prisma.portOption.create({ data: { name } })),
+  );
+
+  const origins = await Promise.all(
+    ["Indonesia", "USA", "South Africa", "Coal India", "Open Market"].map(
+      (name) => prisma.originOption.create({ data: { name } }),
+    ),
+  );
+
+  const qualities = await Promise.all(
+    ["6000 GCV", "Coal Fines", "Domestic ROM", "USA Coal"].map((name) =>
+      prisma.qualityOption.create({ data: { name } }),
+    ),
+  );
+
+  const indonesia = origins.find((o) => o.name === "Indonesia")!;
+  const gcv6000 = qualities.find((q) => q.name === "6000 GCV")!;
+
+  const qualityClass = await prisma.qualityClass.create({
+    data: {
+      originId: indonesia.id,
+      domestic: false,
+      qualityOptionId: gcv6000.id,
+    },
+  });
 
   const amit = await prisma.staff.create({
     data: { name: "Amit Sharma", role: "Trader" },
@@ -26,15 +64,21 @@ async function main() {
     data: [
       {
         name: "Singh Logistics",
-        area: "Nagpur",
-        contactPersonName: "Gurpreet Singh",
-        contactNumber: "9876500001",
+        ownerName: "Gurpreet Singh",
+        ownerContactNumber1: "9876500001",
+        ownerContactNumber2: "9876500003",
+        email: "gurpreet@singhlogistics.in",
+        city: "Nagpur",
+        state: "Maharashtra",
       },
       {
         name: "Deccan Transport",
-        area: "Raipur",
-        contactPersonName: "Suresh Rao",
-        contactNumber: "9876500002",
+        ownerName: "Suresh Rao",
+        ownerContactNumber1: "9876500002",
+        ownerContactNumber2: null,
+        email: "suresh@deccantransport.in",
+        city: "Raipur",
+        state: "Chhattisgarh",
       },
     ],
   });
@@ -43,9 +87,15 @@ async function main() {
     data: {
       name: "Eastern Coal Suppliers",
       category: CustomerCategory.SUPPLIER,
-      contactNumber: "9811100001",
-      pocName: "Vikram Das",
-      area: "Kolkata",
+      ownerName: "Vikram Das",
+      ownerContact: "9811100001",
+      purchaserName: "Suresh Mehta",
+      purchaserContact: "9811100011",
+      purchaserRole: "Purchase Manager",
+      city: "Kolkata",
+      state: "West Bengal",
+      creditDays: 30,
+      sector: "Trading",
       dealById: amit.id,
       approachForFundsId: rahul.id,
     },
@@ -55,10 +105,21 @@ async function main() {
     data: {
       name: "Bharat Steel Works",
       category: CustomerCategory.INDUSTRY,
-      contactNumber: "9811100002",
-      pocName: "Anil Kumar",
-      area: "Jamshedpur",
-      industrySector: "Steel",
+      ownerName: "Anil Kumar",
+      ownerContact: "9811100002",
+      purchaserName: "Ravi Singh",
+      purchaserContact: "9811100022",
+      purchaserRole: "GM Purchase",
+      paymentInChargeName: "Sunita Rao",
+      paymentInChargeContact: "9811100023",
+      paymentInChargeRole: "Finance Head",
+      accountantName: "Karan Shah",
+      accountantContact: "9811100024",
+      email: "accounts@bharatsteel.example",
+      city: "Jamshedpur",
+      state: "Jharkhand",
+      creditDays: 45,
+      sector: "Steel",
       dealById: amit.id,
     },
   });
@@ -67,21 +128,49 @@ async function main() {
     data: {
       name: "PowerGrid Cement",
       category: CustomerCategory.INDUSTRY,
-      contactNumber: "9811100003",
-      pocName: "Meera Joshi",
-      area: "Raipur",
-      industrySector: "Cement",
+      ownerName: "Meera Joshi",
+      ownerContact: "9811100003",
+      purchaserName: "Deepak Nair",
+      purchaserContact: "9811100033",
+      purchaserRole: "Buyer",
+      paymentInChargeName: "Neha Patel",
+      paymentInChargeContact: "9811100034",
+      paymentInChargeRole: "Collections",
+      email: "purchase@powergridcement.example",
+      city: "Raipur",
+      state: "Chhattisgarh",
+      creditDays: 21,
+      sector: "Cement",
       dealById: priya.id,
       approachForFundsId: rahul.id,
     },
   });
 
+  await prisma.customer.create({
+    data: {
+      name: "Coastal Coal Traders",
+      category: CustomerCategory.TRADER,
+      ownerName: "Imran Khan",
+      ownerContact: "9811100004",
+      purchaserName: "Farhan Ali",
+      purchaserContact: "9811100044",
+      purchaserRole: "Trader",
+      city: "Paradip",
+      state: "Odisha",
+      creditDays: 15,
+      sector: "Trading",
+      dealById: amit.id,
+      approachForFundsId: rahul.id,
+    },
+  });
+
+  const haldia = ports.find((p) => p.name === "Haldia Port")!;
+
   const vessel = await prisma.vessel.create({
     data: {
       vesselName: "MV Black Diamond",
-      importerId: eastern.id,
-      quality: "4800 GAR",
-      quantity: new Decimal(10000),
+      qualityClassId: qualityClass.id,
+      portId: haldia.id,
     },
   });
 
@@ -91,10 +180,12 @@ async function main() {
       orderType: OrderType.REGULAR,
       customerId: bharat.id,
       orderDate: new Date(),
-      area: "Jamshedpur",
+      portId: haldia.id,
       creditDays: 30,
-      quality: "4800 GAR",
+      qualityClassId: qualityClass.id,
       rate: new Decimal(8500),
+      // Industry: 8500 + 18% GST = 10030
+      finalRate: new Decimal(10030),
       quantity: new Decimal(2000),
       orderById: amit.id,
     },
@@ -107,10 +198,10 @@ async function main() {
       importerId: eastern.id,
       vesselId: vessel.id,
       orderDate: new Date(),
-      quality: "4800 GAR",
+      qualityClassId: qualityClass.id,
       rate: new Decimal(7200),
+      finalRate: new Decimal("8665.92"),
       quantity: new Decimal(5000),
-      orderById: amit.id,
     },
   });
 

@@ -1,6 +1,12 @@
 import { notFound } from "next/navigation";
 import { getOrder } from "@/lib/actions/orders";
-import { lineProfit } from "@/lib/domain/computations";
+import { listPortOptions } from "@/lib/actions/ports";
+import { listQualityClasses } from "@/lib/actions/qualities";
+import {
+  lineProfit,
+  purchaseCostRate,
+  saleRevenueRate,
+} from "@/lib/domain/computations";
 import { OrderDetailClient } from "./OrderDetailClient";
 
 export default async function OrderDetailPage({
@@ -9,11 +15,22 @@ export default async function OrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const order = await getOrder(id);
+  const [order, qualityClasses, ports] = await Promise.all([
+    getOrder(id),
+    listQualityClasses(),
+    listPortOptions(),
+  ]);
   if (!order) notFound();
 
   return (
     <OrderDetailClient
+      qualityClasses={qualityClasses.map((qc) => ({
+        id: qc.id,
+        domestic: qc.domestic,
+        origin: qc.origin,
+        qualityOption: qc.qualityOption,
+      }))}
+      ports={ports.map((p) => ({ id: p.id, name: p.name }))}
       order={{
         id: order.id,
         poNumber: order.poNumber,
@@ -25,10 +42,14 @@ export default async function OrderDetailPage({
         balanceOrder: order.balanceOrder?.toString() ?? null,
         gst: order.gst?.toString() ?? null,
         rate: order.rate?.toString() ?? null,
+        finalRate: order.finalRate?.toString() ?? null,
         creditDays: order.creditDays,
-        quality: order.quality,
-        area: order.area,
-        customer: { name: order.customer.name },
+        qualityClassId: order.qualityClassId,
+        portId: order.portId,
+        customer: {
+          name: order.customer.name,
+          category: order.customer.category,
+        },
         orderBy: order.orderBy ? { name: order.orderBy.name } : null,
         dispatches: order.dispatches.map((d) => ({
           id: d.id,
@@ -51,8 +72,10 @@ export default async function OrderDetailPage({
           transporter: d.transporter,
           lineProfit:
             lineProfit({
-              saleRate: order.rate,
-              costRate: d.purchaseOrder?.rate ?? null,
+              saleRate: saleRevenueRate(order),
+              costRate: d.purchaseOrder
+                ? purchaseCostRate(d.purchaseOrder)
+                : null,
               quantity: d.dispatchedQuantity,
               dispatchTerms: d.dispatchTerms,
               freight: d.freight,

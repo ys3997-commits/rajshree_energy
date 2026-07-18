@@ -22,8 +22,6 @@ type Opt = { id: string; name: string };
 type VesselOpt = {
   id: string;
   vesselName: string;
-  importerId: string;
-  importer: { name: string } | null;
 };
 
 export function CreateDispatchButton({

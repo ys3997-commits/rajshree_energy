@@ -1,12 +1,15 @@
-import { CustomerCategory, OrderStatus } from "@/generated/prisma";
+import { CustomerCategory, PurchaseOrderStatus } from "@/generated/prisma";
 import {
   listPurchaseOrders,
   suggestNextPurchasePoNumber,
 } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
-import { listStaff } from "@/lib/actions/staff";
 import { listVessels } from "@/lib/actions/vessels";
-import { formatMt, formatRs } from "@/lib/domain/computations";
+import {
+  formatMt,
+  formatPurchaseOrderStatus,
+  formatRs,
+} from "@/lib/domain/computations";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
 import Link from "next/link";
 
@@ -14,7 +17,6 @@ type SearchParams = Promise<{
   status?: string;
   importerId?: string;
   vesselId?: string;
-  orderById?: string;
 }>;
 
 export default async function PurchaseOrdersPage({
@@ -23,15 +25,19 @@ export default async function PurchaseOrdersPage({
   searchParams: SearchParams;
 }) {
   const sp = await searchParams;
-  const [orders, customers, staff, vessels, suggestedPo] = await Promise.all([
+  const statusFilter =
+    sp.status === PurchaseOrderStatus.RUNNING ||
+    sp.status === PurchaseOrderStatus.COMPLETED
+      ? sp.status
+      : "";
+
+  const [orders, customers, vessels, suggestedPo] = await Promise.all([
     listPurchaseOrders({
-      status: (sp.status as OrderStatus) || "",
+      status: statusFilter,
       importerId: sp.importerId || "",
       vesselId: sp.vesselId || "",
-      orderById: sp.orderById || "",
     }),
     listCustomers(),
-    listStaff(),
     listVessels(),
     suggestNextPurchasePoNumber(),
   ]);
@@ -46,7 +52,7 @@ export default async function PurchaseOrdersPage({
         <div>
           <h1 className="page-title">Purchase orders</h1>
           <p className="page-subtitle">
-            Costing POs by importer and vessel — used when dispatching.
+            Costing POs by vendor and vessel — used when dispatching.
           </p>
         </div>
         <CreatePurchaseOrderButton
@@ -54,10 +60,10 @@ export default async function PurchaseOrdersPage({
           vessels={vessels.map((v) => ({
             id: v.id,
             vesselName: v.vesselName,
-            importerId: v.importerId,
-            importer: v.importer,
+            qualityClassId: v.qualityClassId,
+            qualityClass: v.qualityClass,
+            port: v.port,
           }))}
-          staff={staff.map((s) => ({ id: s.id, name: s.name }))}
           suggestedPo={suggestedPo}
         />
       </div>
@@ -65,16 +71,14 @@ export default async function PurchaseOrdersPage({
       <form className="filters" method="get">
         <label>
           Status
-          <select name="status" defaultValue={sp.status ?? ""}>
+          <select name="status" defaultValue={statusFilter}>
             <option value="">All</option>
-            <option value="OPEN">OPEN</option>
-            <option value="PENDING">PENDING</option>
-            <option value="PARTIALLY_DISPATCHED">PARTIALLY_DISPATCHED</option>
-            <option value="COMPLETED">COMPLETED</option>
+            <option value="RUNNING">Running</option>
+            <option value="COMPLETED">Completed</option>
           </select>
         </label>
         <label>
-          Importer
+          Vendor
           <select name="importerId" defaultValue={sp.importerId ?? ""}>
             <option value="">All</option>
             {importers.map((c) => (
@@ -95,17 +99,6 @@ export default async function PurchaseOrdersPage({
             ))}
           </select>
         </label>
-        <label>
-          Order by
-          <select name="orderById" defaultValue={sp.orderById ?? ""}>
-            <option value="">All</option>
-            {staff.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>
@@ -116,15 +109,15 @@ export default async function PurchaseOrdersPage({
           <thead>
             <tr>
               <th>Purchase PO</th>
-              <th>Importer</th>
+              <th>Vendor</th>
               <th>Vessel</th>
               <th>Type</th>
               <th>Quantity (MT)</th>
               <th>Dispatched (MT)</th>
               <th>Balance (MT)</th>
               <th>Rate (Rs)</th>
+              <th>Final rate (Rs)</th>
               <th>Status</th>
-              <th>Order by</th>
             </tr>
           </thead>
           <tbody>
@@ -145,8 +138,8 @@ export default async function PurchaseOrdersPage({
                 <td>{formatMt(row.dispatchedOrder)}</td>
                 <td>{formatMt(row.balanceOrder)}</td>
                 <td>{formatRs(row.rate)}</td>
-                <td>{row.orderStatus}</td>
-                <td>{row.orderBy?.name ?? "—"}</td>
+                <td>{formatRs(row.finalRate)}</td>
+                <td>{formatPurchaseOrderStatus(row.orderStatus)}</td>
               </tr>
             ))}
             {orders.length === 0 && (

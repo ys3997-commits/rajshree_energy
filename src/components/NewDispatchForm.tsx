@@ -26,8 +26,6 @@ type Opt = { id: string; name: string };
 type VesselOpt = {
   id: string;
   vesselName: string;
-  importerId: string;
-  importer: { name: string } | null;
 };
 
 export function NewDispatchForm({
@@ -69,7 +67,6 @@ export function NewDispatchForm({
     useState(suggestedPurchasePo);
   const [importerId, setImporterId] = useState("");
   const [vesselId, setVesselId] = useState("");
-  const [purchaseOrderById, setPurchaseOrderById] = useState("");
   const [dispatchedQuantity, setDispatchedQuantity] = useState("");
   const [dispatchTerms, setDispatchTerms] = useState<DispatchTerms>(
     DispatchTerms.EX_PORT,
@@ -118,11 +115,7 @@ export function NewDispatchForm({
     );
   }, [purchaseOrders, purchaseSearch]);
 
-  const filteredVessels = useMemo(() => {
-    if (!importerId) return vessels;
-    return vessels.filter((v) => v.importerId === importerId);
-  }, [vessels, importerId]);
-
+  const filteredVessels = vessels;
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -135,7 +128,6 @@ export function NewDispatchForm({
               poNumber: openPurchasePoNumber,
               importerId,
               vesselId,
-              orderById: purchaseOrderById || null,
             }
           : undefined;
       const existingPurchasePo =
@@ -167,7 +159,7 @@ export function NewDispatchForm({
 
       if (mode === "open") {
         if (!customerId) throw new Error("Customer is required");
-        if (!orderById) throw new Error("Order by (staff) is required");
+        if (!orderById) throw new Error("Deal by (staff) is required");
         await createOpenOrderDispatch({
           poNumber: openPoNumber,
           orderById,
@@ -280,7 +272,7 @@ export function NewDispatchForm({
                 </option>
               ))}
             </select>
-            <label>Order by (staff)</label>
+            <label>Deal by (staff)</label>
             <select
               required
               value={orderById}
@@ -381,10 +373,7 @@ export function NewDispatchForm({
             <select
               required
               value={importerId}
-              onChange={(e) => {
-                setImporterId(e.target.value);
-                setVesselId("");
-              }}
+              onChange={(e) => setImporterId(e.target.value)}
             >
               <option value="">Select…</option>
               {importers.map((c) => (
@@ -397,30 +386,12 @@ export function NewDispatchForm({
             <select
               required
               value={vesselId}
-              onChange={(e) => {
-                const id = e.target.value;
-                setVesselId(id);
-                const v = vessels.find((x) => x.id === id);
-                if (v) setImporterId(v.importerId);
-              }}
+              onChange={(e) => setVesselId(e.target.value)}
             >
               <option value="">Select…</option>
               {filteredVessels.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.vesselName}
-                  {v.importer?.name ? ` — ${v.importer.name}` : ""}
-                </option>
-              ))}
-            </select>
-            <label>Order by (staff)</label>
-            <select
-              value={purchaseOrderById}
-              onChange={(e) => setPurchaseOrderById(e.target.value)}
-            >
-              <option value="">—</option>
-              {staff.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
                 </option>
               ))}
             </select>

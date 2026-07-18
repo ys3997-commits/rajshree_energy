@@ -1,11 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { DispatchTerms, OrderStatus, OrderType } from "@/generated/prisma";
+import {
+  CustomerCategory,
+  DispatchTerms,
+  OrderStatus,
+  OrderType,
+  PurchaseOrderStatus,
+} from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import {
   balanceOrder,
-  balanceQuantity,
   computeGst,
   computeOrderStatus,
+  computePurchaseFinalRate,
+  computePurchaseOrderStatus,
+  computeSaleFinalRate,
   diffInQuantity,
   effectiveSaleRate,
   lineProfit,
@@ -64,6 +72,35 @@ describe("computeOrderStatus", () => {
   });
 });
 
+describe("computePurchaseOrderStatus", () => {
+  it("is RUNNING when quantity is null (open)", () => {
+    expect(
+      computePurchaseOrderStatus({
+        quantity: null,
+        dispatchedOrder: new Decimal(10),
+      }),
+    ).toBe(PurchaseOrderStatus.RUNNING);
+  });
+
+  it("is RUNNING when not fully dispatched", () => {
+    expect(
+      computePurchaseOrderStatus({
+        quantity: new Decimal(100),
+        dispatchedOrder: new Decimal(40),
+      }),
+    ).toBe(PurchaseOrderStatus.RUNNING);
+  });
+
+  it("is COMPLETED when fully dispatched", () => {
+    expect(
+      computePurchaseOrderStatus({
+        quantity: new Decimal(100),
+        dispatchedOrder: new Decimal(100),
+      }),
+    ).toBe(PurchaseOrderStatus.COMPLETED);
+  });
+});
+
 describe("computed balances", () => {
   it("balanceOrder is null when quantity is null", () => {
     expect(
@@ -83,15 +120,6 @@ describe("computed balances", () => {
     ).toBe("75");
   });
 
-  it("balanceQuantity subtracts dispatched", () => {
-    expect(
-      balanceQuantity({
-        quantity: new Decimal(1000),
-        dispatchedQuantity: new Decimal(200),
-      }).toString(),
-    ).toBe("800");
-  });
-
   it("gst is rate * qty * 0.18", () => {
     expect(
       computeGst({
@@ -99,6 +127,27 @@ describe("computed balances", () => {
         quantity: new Decimal(10),
       })?.toString(),
     ).toBe("180");
+  });
+
+  it("purchase finalRate = rate + GST 18% + TCS 2% of (rate+GST)", () => {
+    // 1000 + 180 + 2% of 1180 = 1000 + 180 + 23.6 = 1203.6
+    expect(computePurchaseFinalRate(1000)?.toString()).toBe("1203.6");
+    expect(computePurchaseFinalRate(null)).toBeNull();
+  });
+
+  it("sale finalRate for industry = rate + GST 18% (no TCS)", () => {
+    // 1000 + 180 = 1180
+    expect(
+      computeSaleFinalRate(1000, CustomerCategory.INDUSTRY)?.toString(),
+    ).toBe("1180");
+    expect(computeSaleFinalRate(null, CustomerCategory.INDUSTRY)).toBeNull();
+  });
+
+  it("sale finalRate for trader = rate + GST 18% + TCS 2% of (rate+GST)", () => {
+    // 1000 + 180 + 2% of 1180 = 1203.6
+    expect(
+      computeSaleFinalRate(1000, CustomerCategory.TRADER)?.toString(),
+    ).toBe("1203.6");
   });
 
   it("diffInQuantity is null until receiving is set", () => {
@@ -135,15 +184,6 @@ describe("over-dispatch rules (pure checks mirroring createDispatch)", () => {
       quantity: new Decimal(50),
       dispatchedOrder: new Decimal(40),
     })!;
-    const requested = new Decimal(15);
-    expect(requested.gt(bal)).toBe(true);
-  });
-
-  it("detects vessel over-dispatch", () => {
-    const bal = balanceQuantity({
-      quantity: new Decimal(50),
-      dispatchedQuantity: new Decimal(40),
-    });
     const requested = new Decimal(15);
     expect(requested.gt(bal)).toBe(true);
   });

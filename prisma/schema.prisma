@@ -4,13 +4,15 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum CustomerCategory {
   SUPPLIER
   INDUSTRY
+  TRADER
 }
 
 enum OrderType {
@@ -22,6 +24,12 @@ enum OrderStatus {
   OPEN
   PENDING
   PARTIALLY_DISPATCHED
+  COMPLETED
+}
+
+/// Purchase order lifecycle — Running until fully dispatched, then Completed.
+enum PurchaseOrderStatus {
+  RUNNING
   COMPLETED
 }
 
@@ -46,106 +54,173 @@ model Staff {
   dealByCustomers           Customer[]      @relation("DealBy")
   approachForFundsCustomers Customer[]      @relation("ApproachForFunds")
   orders                    Order[]
-  purchaseOrders            PurchaseOrder[]
 }
 
 model Transporter {
-  id                String   @id @default(cuid())
-  name              String
-  area              String?
-  contactPersonName String?
-  contactNumber     String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                  String   @id @default(cuid())
+  /// Transport company name
+  name                String
+  ownerName           String?
+  ownerContactNumber1 String?
+  ownerContactNumber2 String?
+  email               String?
+  city                String?
+  state               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   dispatches Dispatch[]
 }
 
+/// Managed list of origin names (Indonesia, Coal India, …).
+model OriginOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  qualityClasses QualityClass[]
+}
+
+/// Managed list of quality grades (6000 GCV, Coal Fines, …).
+model QualityOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  qualityClasses QualityClass[]
+}
+
+/// Managed list of ports / locations (Haldia Port, Odisha, …).
+model PortOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vessels Vessel[]
+  orders  Order[]
+}
+
+/// A coal quality class: origin + domestic flag + quality grade.
+model QualityClass {
+  id              String   @id @default(cuid())
+  originId        String
+  domestic        Boolean
+  qualityOptionId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  origin         OriginOption    @relation(fields: [originId], references: [id])
+  qualityOption  QualityOption   @relation(fields: [qualityOptionId], references: [id])
+  vessels        Vessel[]
+  orders         Order[]
+  purchaseOrders PurchaseOrder[]
+
+  @@unique([originId, domestic, qualityOptionId])
+}
+
 model Customer {
-  id                 String           @id @default(cuid())
-  name               String
-  category           CustomerCategory
-  contactNumber      String?
-  pocName            String?
-  area               String?
-  industrySector     String?
-  dealById           String?
-  approachForFundsId String?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  id                       String           @id @default(cuid())
+  name                     String
+  category                 CustomerCategory
+  ownerName                String?
+  ownerContact             String?
+  purchaserName            String?
+  purchaserContact         String?
+  purchaserRole            String?
+  paymentInChargeName      String?
+  paymentInChargeContact   String?
+  paymentInChargeRole      String?
+  accountantName           String?
+  accountantContact        String?
+  email                    String?
+  city                     String?
+  state                    String?
+  creditDays               Int?
+  sector                   String?
+  dealById                 String?
+  approachForFundsId       String?
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
 
   dealBy           Staff?          @relation("DealBy", fields: [dealById], references: [id])
   approachForFunds Staff?          @relation("ApproachForFunds", fields: [approachForFundsId], references: [id])
-  vessels          Vessel[]
   orders           Order[]
   purchaseOrders   PurchaseOrder[]
   dispatches       Dispatch[]      @relation("DispatchImporter")
 }
 
 model Vessel {
-  id                 String   @id @default(cuid())
-  vesselName         String   @unique
-  importerId         String
-  quality            String?
-  quantity           Decimal  @db.Decimal(18, 3)
-  /// Accumulated by dispatch transactions only — never write from forms.
-  dispatchedQuantity Decimal  @default(0) @db.Decimal(18, 3)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id             String   @id @default(cuid())
+  vesselName     String   @unique
+  qualityClassId String?
+  portId         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  importer       Customer        @relation(fields: [importerId], references: [id])
+  qualityClass   QualityClass?    @relation(fields: [qualityClassId], references: [id])
+  port           PortOption?      @relation(fields: [portId], references: [id])
   purchaseOrders PurchaseOrder[]
   dispatches     Dispatch[]
 }
 
 /// Sale order (customer PO / selling side).
 model Order {
-  id        String      @id @default(cuid())
-  poNumber  String      @unique
-  orderType OrderType   @default(REGULAR)
-  customerId String
-  orderDate DateTime?
-  area      String?
-  creditDays Int?
-  quality   String?
-  rate      Decimal?    @db.Decimal(18, 3)
+  id             String      @id @default(cuid())
+  poNumber       String      @unique
+  orderType      OrderType   @default(REGULAR)
+  customerId     String
+  orderDate      DateTime?
+  portId         String?
+  creditDays     Int?
+  qualityClassId String?
+  /// Base sale rate entered by user (Rs/MT), before GST/TCS.
+  rate           Decimal?    @db.Decimal(18, 3)
+  /// All-in sale rate: rate + GST(18%); traders also add TCS(2% of rate+GST).
+  finalRate      Decimal?    @db.Decimal(18, 3)
   /// Null for open orders until completeOpenOrder fills it in.
-  quantity  Decimal?    @db.Decimal(18, 3)
-  orderById String?
+  quantity       Decimal?    @db.Decimal(18, 3)
+  orderById      String?
   /// Accumulated by dispatch transactions only — never write from forms.
-  dispatchedOrder Decimal @default(0) @db.Decimal(18, 3)
-  orderStatus OrderStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  dispatchedOrder Decimal    @default(0) @db.Decimal(18, 3)
+  orderStatus    OrderStatus @default(PENDING)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 
-  customer   Customer   @relation(fields: [customerId], references: [id])
-  orderBy    Staff?     @relation(fields: [orderById], references: [id])
-  dispatches Dispatch[]
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  orderBy      Staff?        @relation(fields: [orderById], references: [id])
+  port         PortOption?   @relation(fields: [portId], references: [id])
+  qualityClass QualityClass? @relation(fields: [qualityClassId], references: [id])
+  dispatches   Dispatch[]
 }
 
-/// Purchase order (importer / costing side). Linked to a vessel.
+/// Purchase order (vendor / costing side). Linked to a vessel.
 model PurchaseOrder {
   id         String      @id @default(cuid())
   poNumber   String      @unique
   orderType  OrderType   @default(REGULAR)
   importerId String
   vesselId   String
-  orderDate  DateTime?
-  quality    String?
-  rate       Decimal?    @db.Decimal(18, 3)
+  orderDate      DateTime?
+  qualityClassId String?
+  /// Base cost rate entered by user (Rs/MT), before GST/TCS.
+  rate           Decimal?    @db.Decimal(18, 3)
+  /// All-in cost: rate + GST(18%) + TCS(2% of rate+GST).
+  finalRate      Decimal?    @db.Decimal(18, 3)
   /// Null for open purchase orders until completed.
-  quantity   Decimal?    @db.Decimal(18, 3)
-  orderById  String?
+  quantity       Decimal?    @db.Decimal(18, 3)
   /// Accumulated by dispatch transactions only — never write from forms.
   dispatchedOrder Decimal     @default(0) @db.Decimal(18, 3)
-  orderStatus     OrderStatus @default(PENDING)
+  orderStatus     PurchaseOrderStatus @default(RUNNING)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
-  importer   Customer   @relation(fields: [importerId], references: [id])
-  vessel     Vessel     @relation(fields: [vesselId], references: [id])
-  orderBy    Staff?     @relation(fields: [orderById], references: [id])
-  dispatches Dispatch[]
+  importer     Customer      @relation(fields: [importerId], references: [id])
+  vessel       Vessel        @relation(fields: [vesselId], references: [id])
+  qualityClass QualityClass? @relation(fields: [qualityClassId], references: [id])
+  dispatches   Dispatch[]
 }
 
 model Dispatch {

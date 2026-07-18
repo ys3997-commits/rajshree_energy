@@ -4,6 +4,7 @@ import {
   DispatchTerms,
   OrderStatus,
   OrderType,
+  PurchaseOrderStatus,
   ReceiptStatus,
   type Prisma,
 } from "@/generated/prisma";
@@ -12,8 +13,10 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
   balanceOrder,
-  balanceQuantity,
   computeOrderStatus,
+  computePurchaseFinalRate,
+  computePurchaseOrderStatus,
+  computeSaleFinalRate,
   toDecimal,
   type DecimalLike,
 } from "@/lib/domain/computations";
@@ -23,9 +26,8 @@ export type OpenPurchaseForDispatch = {
   poNumber: string;
   importerId: string;
   vesselId: string;
-  orderById?: string | null;
   rate?: DecimalLike | null;
-  quality?: string | null;
+  qualityClassId?: string | null;
 };
 
 export type CreateDispatchInput = {
@@ -87,8 +89,8 @@ export type CompleteOpenOrderInput = {
   quantity: DecimalLike;
   rate?: DecimalLike | null;
   creditDays?: number | null;
-  quality?: string | null;
-  area?: string | null;
+  qualityClassId?: string | null;
+  portId?: string | null;
 };
 
 function asDate(value: Date | string): Date {
@@ -167,6 +169,7 @@ async function resolvePurchaseForDispatch(
       input.openPurchase.rate === undefined || input.openPurchase.rate === null
         ? null
         : toDecimal(input.openPurchase.rate);
+    const finalRate = computePurchaseFinalRate(rate);
 
     const purchase = await tx.purchaseOrder.create({
       data: {
@@ -175,11 +178,12 @@ async function resolvePurchaseForDispatch(
         importerId: input.openPurchase.importerId,
         vesselId: input.openPurchase.vesselId,
         orderDate: asDate(input.dispatchDate),
-        quality: input.openPurchase.quality || null,
+        qualityClassId:
+          input.openPurchase.qualityClassId || vessel.qualityClassId || null,
         rate,
+        finalRate,
         quantity: null,
-        orderById: input.openPurchase.orderById || null,
-        orderStatus: OrderStatus.OPEN,
+        orderStatus: PurchaseOrderStatus.RUNNING,
         dispatchedOrder: new Decimal(0),
       },
     });
@@ -279,13 +283,6 @@ async function applyDispatchDelta(
         );
       }
     }
-
-    const vesselBal = balanceQuantity(vessel);
-    if (args.qty.gt(vesselBal)) {
-      throw new Error(
-        `Over-dispatch blocked: ${args.qty} exceeds vessel balance ${vesselBal} for ${vessel.vesselName}`,
-      );
-    }
   } else if (args.qty.lt(0)) {
     if (order.dispatchedOrder.plus(args.qty).lt(0)) {
       throw new Error("Cannot reverse more than sale order.dispatchedOrder");
@@ -294,9 +291,6 @@ async function applyDispatchDelta(
       throw new Error(
         "Cannot reverse more than purchase order.dispatchedOrder",
       );
-    }
-    if (vessel.dispatchedQuantity.plus(args.qty).lt(0)) {
-      throw new Error("Cannot reverse more than vessel.dispatchedQuantity");
     }
   }
 
@@ -316,8 +310,7 @@ async function applyDispatchDelta(
   });
 
   const nextPurchaseDispatched = purchase.dispatchedOrder.plus(args.qty);
-  const nextPurchaseStatus = computeOrderStatus({
-    orderType: purchase.orderType,
+  const nextPurchaseStatus = computePurchaseOrderStatus({
     quantity: purchase.quantity,
     dispatchedOrder: nextPurchaseDispatched,
   });
@@ -327,13 +320,6 @@ async function applyDispatchDelta(
     data: {
       dispatchedOrder: nextPurchaseDispatched,
       orderStatus: nextPurchaseStatus,
-    },
-  });
-
-  await tx.vessel.update({
-    where: { id: vessel.id },
-    data: {
-      dispatchedQuantity: vessel.dispatchedQuantity.plus(args.qty),
     },
   });
 
@@ -439,9 +425,10 @@ export async function createOpenOrderDispatch(
         orderById: input.orderById,
         quantity: null,
         rate: null,
+        finalRate: null,
         creditDays: null,
-        area: null,
-        quality: null,
+        portId: null,
+        qualityClassId: null,
         orderStatus: OrderStatus.OPEN,
         dispatchedOrder: new Decimal(0),
       },
@@ -658,7 +645,10 @@ export async function completeOpenOrder(
   }
 
   await prisma.$transaction(async (tx) => {
-    const order = await tx.order.findUnique({ where: { id: orderId } });
+    const order = await tx.order.findUnique({
+      where: { id: orderId },
+      include: { customer: { select: { category: true } } },
+    });
     if (!order) throw new Error("Order not found");
     if (order.orderType !== OrderType.OPEN) {
       throw new Error("Only OPEN orders can be completed this way");
@@ -673,6 +663,10 @@ export async function completeOpenOrder(
       details.rate === undefined || details.rate === null
         ? null
         : toDecimal(details.rate);
+    const finalRate =
+      details.rate === undefined
+        ? undefined
+        : computeSaleFinalRate(rate, order.customer.category);
 
     const nextStatus = computeOrderStatus({
       orderType: order.orderType,
@@ -685,10 +679,15 @@ export async function completeOpenOrder(
       data: {
         quantity,
         rate,
+        ...(finalRate !== undefined ? { finalRate } : {}),
         creditDays:
           details.creditDays === undefined ? undefined : details.creditDays,
-        quality: details.quality === undefined ? undefined : details.quality,
-        area: details.area === undefined ? undefined : details.area,
+        qualityClassId:
+          details.qualityClassId === undefined
+            ? undefined
+            : details.qualityClassId,
+        portId:
+          details.portId === undefined ? undefined : details.portId || null,
         orderStatus: nextStatus,
       },
     });

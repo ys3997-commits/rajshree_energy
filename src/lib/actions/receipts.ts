@@ -2,7 +2,12 @@
 
 import { ReceiptStatus, type Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
-import { diffInQuantity, lineProfit } from "@/lib/domain/computations";
+import {
+  diffInQuantity,
+  lineProfit,
+  purchaseCostRate,
+  saleRevenueRate,
+} from "@/lib/domain/computations";
 
 export type DispatchFilters = {
   receiptStatus?: ReceiptStatus | "";
@@ -40,12 +45,21 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       vessel: { select: { id: true, vesselName: true } },
       importer: { select: { id: true, name: true } },
       transporter: { select: { id: true, name: true } },
-      order: { select: { id: true, poNumber: true, orderType: true, rate: true } },
+      order: {
+        select: {
+          id: true,
+          poNumber: true,
+          orderType: true,
+          rate: true,
+          finalRate: true,
+        },
+      },
       purchaseOrder: {
         select: {
           id: true,
           poNumber: true,
           rate: true,
+          finalRate: true,
           importer: { select: { name: true } },
           vessel: { select: { vesselName: true } },
         },
@@ -58,8 +72,10 @@ export async function listDispatches(filters: DispatchFilters = {}) {
     ...row,
     diffInQuantity: diffInQuantity(row),
     lineProfit: lineProfit({
-      saleRate: row.order?.rate ?? null,
-      costRate: row.purchaseOrder?.rate ?? null,
+      saleRate: row.order ? saleRevenueRate(row.order) : null,
+      costRate: row.purchaseOrder
+        ? purchaseCostRate(row.purchaseOrder)
+        : null,
       quantity: row.dispatchedQuantity,
       dispatchTerms: row.dispatchTerms,
       freight: row.freight,

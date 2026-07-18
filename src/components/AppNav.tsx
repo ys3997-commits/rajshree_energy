@@ -13,6 +13,7 @@ const links = [
   // { href: "/receipts/pending", label: "Receipts" },
   // { href: "/reconciliation", label: "Reconciliation" },
   { href: "/vessels", label: "Vessels" },
+  { href: "/qualities", label: "Qualities" },
   { href: "/customers", label: "Customers" },
   { href: "/transporters", label: "Transporters" },
   { href: "/staff", label: "People" },

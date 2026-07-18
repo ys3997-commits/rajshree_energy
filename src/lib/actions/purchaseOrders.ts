@@ -1,20 +1,24 @@
 "use server";
 
-import { OrderStatus, OrderType, type Prisma } from "@/generated/prisma";
+import {
+  OrderType,
+  PurchaseOrderStatus,
+  type Prisma,
+} from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
-  computeOrderStatus,
+  computePurchaseFinalRate,
+  computePurchaseOrderStatus,
   toDecimal,
   withPurchaseOrderComputed,
   type DecimalLike,
 } from "@/lib/domain/computations";
 
 export type PurchaseOrderFilters = {
-  status?: OrderStatus | "";
+  status?: PurchaseOrderStatus | "";
   importerId?: string;
   vesselId?: string;
-  orderById?: string;
 };
 
 export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
@@ -22,14 +26,18 @@ export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
   if (filters.status) where.orderStatus = filters.status;
   if (filters.importerId) where.importerId = filters.importerId;
   if (filters.vesselId) where.vesselId = filters.vesselId;
-  if (filters.orderById) where.orderById = filters.orderById;
 
   const rows = await prisma.purchaseOrder.findMany({
     where,
     include: {
       importer: { select: { id: true, name: true } },
       vessel: { select: { id: true, vesselName: true } },
-      orderBy: { select: { id: true, name: true } },
+      qualityClass: {
+        include: {
+          origin: { select: { id: true, name: true } },
+          qualityOption: { select: { id: true, name: true } },
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -43,10 +51,17 @@ export async function getPurchaseOrder(id: string) {
     include: {
       importer: true,
       vessel: true,
-      orderBy: true,
+      qualityClass: {
+        include: {
+          origin: { select: { id: true, name: true } },
+          qualityOption: { select: { id: true, name: true } },
+        },
+      },
       dispatches: {
         include: {
-          order: { select: { id: true, poNumber: true, rate: true } },
+          order: {
+            select: { id: true, poNumber: true, rate: true, finalRate: true },
+          },
           transporter: { select: { name: true } },
         },
         orderBy: { dispatchDate: "desc" },
@@ -90,10 +105,9 @@ export type CreateRegularPurchaseOrderInput = {
   importerId: string;
   vesselId: string;
   orderDate?: string | null;
-  quality?: string | null;
+  qualityClassId?: string | null;
   rate?: DecimalLike | null;
   quantity: DecimalLike;
-  orderById?: string | null;
 };
 
 export async function createRegularPurchaseOrder(
@@ -111,12 +125,16 @@ export async function createRegularPurchaseOrder(
     input.rate === undefined || input.rate === null
       ? null
       : toDecimal(input.rate);
+  const finalRate = computePurchaseFinalRate(rate);
 
-  const orderStatus = computeOrderStatus({
-    orderType: OrderType.REGULAR,
+  const orderStatus = computePurchaseOrderStatus({
     quantity,
     dispatchedOrder: toDecimal(0),
   });
+
+  // Prefer vessel quality when not explicitly provided.
+  const qualityClassId =
+    input.qualityClassId || vessel.qualityClassId || null;
 
   const order = await prisma.purchaseOrder.create({
     data: {
@@ -125,10 +143,10 @@ export async function createRegularPurchaseOrder(
       importerId: input.importerId,
       vesselId: input.vesselId,
       orderDate: input.orderDate ? new Date(input.orderDate) : null,
-      quality: input.quality || null,
+      qualityClassId,
       rate,
+      finalRate,
       quantity,
-      orderById: input.orderById || null,
       orderStatus,
     },
   });
@@ -143,9 +161,8 @@ export type CreateOpenPurchaseOrderInput = {
   importerId: string;
   vesselId: string;
   orderDate?: string | null;
-  quality?: string | null;
+  qualityClassId?: string | null;
   rate?: DecimalLike | null;
-  orderById?: string | null;
 };
 
 export async function createOpenPurchaseOrder(
@@ -160,6 +177,10 @@ export async function createOpenPurchaseOrder(
     input.rate === undefined || input.rate === null
       ? null
       : toDecimal(input.rate);
+  const finalRate = computePurchaseFinalRate(rate);
+
+  const qualityClassId =
+    input.qualityClassId || vessel.qualityClassId || null;
 
   const order = await prisma.purchaseOrder.create({
     data: {
@@ -168,11 +189,11 @@ export async function createOpenPurchaseOrder(
       importerId: input.importerId,
       vesselId: input.vesselId,
       orderDate: input.orderDate ? new Date(input.orderDate) : null,
-      quality: input.quality || null,
+      qualityClassId,
       rate,
+      finalRate,
       quantity: null,
-      orderById: input.orderById || null,
-      orderStatus: OrderStatus.OPEN,
+      orderStatus: PurchaseOrderStatus.RUNNING,
       dispatchedOrder: toDecimal(0),
     },
   });
@@ -187,7 +208,7 @@ export async function updatePurchaseOrderFields(
   data: {
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
-    quality?: string | null;
+    qualityClassId?: string | null;
   },
 ) {
   const existing = await prisma.purchaseOrder.findUnique({ where: { id } });
@@ -206,9 +227,10 @@ export async function updatePurchaseOrderFields(
   if (data.rate !== undefined) {
     rate = data.rate === null ? null : toDecimal(data.rate);
   }
+  const finalRate =
+    data.rate !== undefined ? computePurchaseFinalRate(rate) : undefined;
 
-  const orderStatus = computeOrderStatus({
-    orderType: existing.orderType,
+  const orderStatus = computePurchaseOrderStatus({
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
   });
@@ -218,7 +240,9 @@ export async function updatePurchaseOrderFields(
     data: {
       quantity,
       rate,
-      quality: data.quality === undefined ? undefined : data.quality,
+      ...(finalRate !== undefined ? { finalRate } : {}),
+      qualityClassId:
+        data.qualityClassId === undefined ? undefined : data.qualityClassId,
       orderStatus,
     },
   });
@@ -231,7 +255,7 @@ export async function updatePurchaseOrderFields(
 export type CompleteOpenPurchaseOrderInput = {
   quantity: DecimalLike;
   rate?: DecimalLike | null;
-  quality?: string | null;
+  qualityClassId?: string | null;
 };
 
 export async function completeOpenPurchaseOrder(
@@ -259,9 +283,10 @@ export async function completeOpenPurchaseOrder(
       details.rate === undefined || details.rate === null
         ? null
         : toDecimal(details.rate);
+    const finalRate =
+      details.rate === undefined ? undefined : computePurchaseFinalRate(rate);
 
-    const nextStatus = computeOrderStatus({
-      orderType: order.orderType,
+    const nextStatus = computePurchaseOrderStatus({
       quantity,
       dispatchedOrder: order.dispatchedOrder,
     });
@@ -271,7 +296,11 @@ export async function completeOpenPurchaseOrder(
       data: {
         quantity,
         rate,
-        quality: details.quality === undefined ? undefined : details.quality,
+        ...(finalRate !== undefined ? { finalRate } : {}),
+        qualityClassId:
+          details.qualityClassId === undefined
+            ? undefined
+            : details.qualityClassId,
         orderStatus: nextStatus,
       },
     });

@@ -6,38 +6,54 @@ import {
   deleteVessel,
   updateVessel,
 } from "@/lib/actions/vessels";
+import {
+  createPortOption,
+  deletePortOption,
+  updatePortOption,
+} from "@/lib/actions/ports";
+import {
+  QualityClassSelect,
+  type QualityClassOpt,
+} from "@/components/QualityClassSelect";
+import { formatQualityClass } from "@/lib/domain/format";
 
-type Customer = { id: string; name: string };
+type Opt = { id: string; name: string };
 type Row = {
   id: string;
   vesselName: string;
-  importerId: string;
-  quality: string | null;
-  quantity: string;
-  dispatchedQuantity: string;
-  balanceQuantity: string;
-  importer: Customer | null;
+  qualityClassId: string | null;
+  qualityClass: QualityClassOpt | null;
+  portId: string | null;
+  port: Opt | null;
 };
 
 const empty = {
   vesselName: "",
-  importerId: "",
-  quality: "",
-  quantity: "",
+  qualityClassId: "",
+  portId: "",
 };
 
 export function VesselsClient({
   initial,
-  customers,
+  qualityClasses,
+  ports: initialPorts,
 }: {
   initial: Row[];
-  customers: Customer[];
+  qualityClasses: QualityClassOpt[];
+  ports: Opt[];
 }) {
   const [rows, setRows] = useState(initial);
+  const [ports, setPorts] = useState(initialPorts);
   const [form, setForm] = useState(empty);
   const [editing, setEditing] = useState<Row | null>(null);
+  const [portName, setPortName] = useState("");
+  const [editingPort, setEditingPort] = useState<Opt | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  function reload() {
+    startTransition(() => window.location.reload());
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -45,15 +61,14 @@ export function VesselsClient({
     try {
       const payload = {
         vesselName: form.vesselName,
-        importerId: form.importerId,
-        quality: form.quality || null,
-        quantity: form.quantity,
+        qualityClassId: form.qualityClassId || null,
+        portId: form.portId || null,
       };
       if (editing) await updateVessel(editing.id, payload);
       else await createVessel(payload);
       setForm(empty);
       setEditing(null);
-      startTransition(() => window.location.reload());
+      reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     }
@@ -69,11 +84,43 @@ export function VesselsClient({
     }
   }
 
+  async function onSavePort(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      if (editingPort) {
+        await updatePortOption(editingPort.id, portName);
+        setEditingPort(null);
+      } else {
+        await createPortOption(portName);
+      }
+      setPortName("");
+      reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save port");
+    }
+  }
+
+  async function onDeletePort(id: string) {
+    if (!confirm("Delete this port option?")) return;
+    setError(null);
+    try {
+      await deletePortOption(id);
+      setPorts((prev) => prev.filter((p) => p.id !== id));
+      if (editingPort?.id === id) {
+        setEditingPort(null);
+        setPortName("");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not delete port");
+    }
+  }
+
   return (
     <div>
-      <h1 className="page-title">Vessels / Inventory</h1>
+      <h1 className="page-title">Vessels</h1>
       <p className="page-subtitle">
-        Live vessel balances. Rows near zero are highlighted.
+        Vessel registry with quality class and port.
       </p>
       {error && <div className="error-box">{error}</div>}
 
@@ -84,36 +131,24 @@ export function VesselsClient({
           value={form.vesselName}
           onChange={(e) => setForm({ ...form, vesselName: e.target.value })}
         />
-        <label>Importer</label>
+        <label>Quality class</label>
+        <QualityClassSelect
+          value={form.qualityClassId}
+          onChange={(qualityClassId) => setForm({ ...form, qualityClassId })}
+          options={qualityClasses}
+        />
+        <label>Port</label>
         <select
-          required
-          value={form.importerId}
-          onChange={(e) => setForm({ ...form, importerId: e.target.value })}
+          value={form.portId}
+          onChange={(e) => setForm({ ...form, portId: e.target.value })}
         >
-          <option value="">Select…</option>
-          {customers.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
+          <option value="">—</option>
+          {ports.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
             </option>
           ))}
         </select>
-        <label>Quality</label>
-        <input
-          value={form.quality}
-          onChange={(e) => setForm({ ...form, quality: e.target.value })}
-        />
-        <label>Quantity (total received)</label>
-        <div className="field-with-unit">
-          <input
-            required
-            type="number"
-            step="any"
-            min="0"
-            value={form.quantity}
-            onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-          />
-          <span className="field-unit">MT</span>
-        </div>
         <div />
         <div className="flex gap-2">
           <button type="submit" className="btn" disabled={pending}>
@@ -134,67 +169,125 @@ export function VesselsClient({
         </div>
       </form>
 
-      <div className="table-wrap">
+      <div className="table-wrap mb-10">
         <table className="data">
           <thead>
             <tr>
               <th>Vessel</th>
-              <th>Importer</th>
               <th>Quality</th>
-              <th>Quantity (MT)</th>
-              <th>Dispatched (MT)</th>
-              <th>Balance (MT)</th>
+              <th>Port</th>
               <th />
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => {
-              const qty = Number(row.quantity);
-              const bal = Number(row.balanceQuantity);
-              const low = qty > 0 && bal / qty <= 0.1;
-              return (
-                <tr key={row.id} className={low ? "low-balance" : undefined}>
-                  <td>{row.vesselName}</td>
-                  <td>{row.importer?.name ?? "—"}</td>
-                  <td>{row.quality ?? "—"}</td>
-                  <td>{row.quantity}</td>
-                  <td>{row.dispatchedQuantity}</td>
-                  <td>{row.balanceQuantity}</td>
-                  <td className="space-x-2 whitespace-nowrap">
-                    <button
-                      type="button"
-                      className="btn btn-secondary"
-                      onClick={() => {
-                        setEditing(row);
-                        setForm({
-                          vesselName: row.vesselName,
-                          importerId: row.importerId,
-                          quality: row.quality ?? "",
-                          quantity: row.quantity,
-                        });
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-danger"
-                      onClick={() => onDelete(row.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <td>{row.vesselName}</td>
+                <td>{formatQualityClass(row.qualityClass)}</td>
+                <td>{row.port?.name ?? "—"}</td>
+                <td className="space-x-2 whitespace-nowrap">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setEditing(row);
+                      setForm({
+                        vesselName: row.vesselName,
+                        qualityClassId: row.qualityClassId ?? "",
+                        portId: row.portId ?? "",
+                      });
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => onDelete(row.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7}>No vessels yet.</td>
+                <td colSpan={4}>No vessels yet.</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      <h2 className="mb-3 text-base font-semibold">Port options</h2>
+      <div className="table-wrap mb-3" style={{ maxWidth: 560 }}>
+        <table className="data">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {ports.map((p) => (
+              <tr key={p.id}>
+                <td>{p.name}</td>
+                <td className="space-x-2 whitespace-nowrap">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setEditingPort(p);
+                      setPortName(p.name);
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => onDeletePort(p.id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {ports.length === 0 && (
+              <tr>
+                <td colSpan={2}>No ports yet.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <form
+        onSubmit={onSavePort}
+        className="flex gap-2"
+        style={{ maxWidth: 560 }}
+      >
+        <input
+          required
+          placeholder={editingPort ? "Edit port" : "New port"}
+          value={portName}
+          onChange={(e) => setPortName(e.target.value)}
+        />
+        <button type="submit" className="btn" disabled={pending}>
+          {editingPort ? "Update" : "Add"}
+        </button>
+        {editingPort && (
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              setEditingPort(null);
+              setPortName("");
+            }}
+          >
+            Cancel
+          </button>
+        )}
+      </form>
     </div>
   );
 }

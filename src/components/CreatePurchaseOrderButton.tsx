@@ -3,25 +3,25 @@
 import { useState } from "react";
 import { Modal } from "@/components/Modal";
 import { NewPurchaseOrderForm } from "@/components/NewPurchaseOrderForm";
+import type { QualityClassLabel } from "@/lib/domain/format";
 
 type Option = { id: string; name: string };
 
 type VesselOpt = {
   id: string;
   vesselName: string;
-  importerId: string;
-  importer: { name: string } | null;
+  qualityClassId: string | null;
+  qualityClass: QualityClassLabel | null;
+  port: { id: string; name: string } | null;
 };
 
 export function CreatePurchaseOrderButton({
   importers,
   vessels,
-  staff,
   suggestedPo,
 }: {
   importers: Option[];
   vessels: VesselOpt[];
-  staff: Option[];
   suggestedPo: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -43,7 +43,6 @@ export function CreatePurchaseOrderButton({
         <NewPurchaseOrderForm
           importers={importers}
           vessels={vessels}
-          staff={staff}
           suggestedPo={suggestedPo}
           onCancel={() => setOpen(false)}
         />

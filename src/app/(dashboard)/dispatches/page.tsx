@@ -92,8 +92,6 @@ export default async function DispatchesPage({
           vessels={vessels.map((v) => ({
             id: v.id,
             vesselName: v.vesselName,
-            importerId: v.importerId,
-            importer: v.importer,
           }))}
           staff={staff.map((s) => ({ id: s.id, name: s.name }))}
           suggestedPo={suggestedPo}

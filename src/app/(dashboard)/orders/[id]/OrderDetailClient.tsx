@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
-import { DispatchTerms, OrderType } from "@/generated/prisma";
+import { FormEvent, useMemo, useState } from "react";
+import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
-import { formatDispatchTerms } from "@/lib/domain/format";
+import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
+import { formatDispatchTerms, formatRs } from "@/lib/domain/format";
+import { RateBreakdownFields } from "@/components/RateBreakdownFields";
+import { QualityClassSelect } from "@/components/QualityClassSelect";
 
 type DispatchRow = {
   id: string;
@@ -38,15 +41,33 @@ type OrderData = {
   balanceOrder: string | null;
   gst: string | null;
   rate: string | null;
+  finalRate: string | null;
   creditDays: number | null;
-  quality: string | null;
-  area: string | null;
-  customer: { name: string };
+  qualityClassId: string | null;
+  portId: string | null;
+  customer: { name: string; category: CustomerCategory };
   orderBy: { name: string } | null;
   dispatches: DispatchRow[];
 };
 
-export function OrderDetailClient({ order }: { order: OrderData }) {
+type QualityClassOpt = {
+  id: string;
+  domestic: boolean;
+  origin: { name: string };
+  qualityOption: { name: string };
+};
+
+type PortOpt = { id: string; name: string };
+
+export function OrderDetailClient({
+  order,
+  qualityClasses,
+  ports,
+}: {
+  order: OrderData;
+  qualityClasses: QualityClassOpt[];
+  ports: PortOpt[];
+}) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(order.quantity ?? "");
@@ -54,8 +75,15 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
   const [creditDays, setCreditDays] = useState(
     order.creditDays != null ? String(order.creditDays) : "",
   );
-  const [quality, setQuality] = useState(order.quality ?? "");
-  const [area, setArea] = useState(order.area ?? "");
+  const [qualityClassId, setQualityClassId] = useState(
+    order.qualityClassId ?? "",
+  );
+  const [portId, setPortId] = useState(order.portId ?? "");
+
+  const rateBreakdown = useMemo(() => {
+    if (rate === "") return null;
+    return computeSaleRateBreakdown(rate, order.customer.category);
+  }, [rate, order.customer.category]);
 
   async function onSave(e: FormEvent) {
     e.preventDefault();
@@ -67,16 +95,16 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
           quantity,
           rate: rate || null,
           creditDays: creditDays === "" ? null : Number(creditDays),
-          quality: quality || null,
-          area: area || null,
+          qualityClassId: qualityClassId || null,
+          portId: portId || null,
         });
       } else {
         await updateOrderFields(order.id, {
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
           creditDays: creditDays === "" ? null : Number(creditDays),
-          quality: quality || null,
-          area: area || null,
+          qualityClassId: qualityClassId || null,
+          portId: portId || null,
         });
       }
       setMessage("Order updated.");
@@ -106,7 +134,7 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
       </div>
 
       {error && <div className="error-box">{error}</div>}
-        {message && <div className="success-box">{message}</div>}
+      {message && <div className="success-box">{message}</div>}
 
       <div className="mb-6 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-2 text-sm">
         <div>
@@ -120,7 +148,7 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
           <span className="text-neutral-500">Status:</span> {order.orderStatus}
         </div>
         <div>
-          <span className="text-neutral-500">Order by:</span>{" "}
+          <span className="text-neutral-500">Deal by:</span>{" "}
           {order.orderBy?.name ?? "—"}
         </div>
         <div>
@@ -134,6 +162,10 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
         <div>
           <span className="text-neutral-500">GST (Rs):</span>{" "}
           {order.gst != null ? order.gst : "—"}
+        </div>
+        <div>
+          <span className="text-neutral-500">Final rate (Rs):</span>{" "}
+          {order.finalRate != null ? formatRs(order.finalRate) : "—"}
         </div>
         <div>
           <span className="text-neutral-500">Order date:</span>{" "}
@@ -161,7 +193,7 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
           />
           <span className="field-unit">MT</span>
         </div>
-        <label>Rate</label>
+        <label>Base rate</label>
         <div className="field-with-unit">
           <input
             type="number"
@@ -172,6 +204,13 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
           />
           <span className="field-unit">Rs</span>
         </div>
+        {rateBreakdown != null && (
+          <RateBreakdownFields
+            gst={rateBreakdown.gst}
+            tcs={rateBreakdown.tcs}
+            final={rateBreakdown.final}
+          />
+        )}
         <label>Credit days</label>
         <input
           type="number"
@@ -179,10 +218,21 @@ export function OrderDetailClient({ order }: { order: OrderData }) {
           value={creditDays}
           onChange={(e) => setCreditDays(e.target.value)}
         />
-        <label>Quality</label>
-        <input value={quality} onChange={(e) => setQuality(e.target.value)} />
-        <label>Area</label>
-        <input value={area} onChange={(e) => setArea(e.target.value)} />
+        <label>Quality class</label>
+        <QualityClassSelect
+          value={qualityClassId}
+          onChange={setQualityClassId}
+          options={qualityClasses}
+        />
+        <label>Port</label>
+        <select value={portId} onChange={(e) => setPortId(e.target.value)}>
+          <option value="">—</option>
+          {ports.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
         <div />
         <button type="submit" className="btn w-fit">
           Save order

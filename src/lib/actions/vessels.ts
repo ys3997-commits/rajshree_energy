@@ -2,42 +2,34 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import {
-  toDecimal,
-  withVesselComputed,
-  type DecimalLike,
-} from "@/lib/domain/computations";
+
+const qualityClassInclude = {
+  origin: { select: { id: true, name: true } },
+  qualityOption: { select: { id: true, name: true } },
+} as const;
 
 export async function listVessels() {
-  const rows = await prisma.vessel.findMany({
-    include: { importer: { select: { id: true, name: true } } },
+  return prisma.vessel.findMany({
+    include: {
+      qualityClass: { include: qualityClassInclude },
+      port: { select: { id: true, name: true } },
+    },
     orderBy: { vesselName: "asc" },
   });
-  return rows.map(withVesselComputed);
-}
-
-export async function listVesselsWithBalance() {
-  const rows = await listVessels();
-  return rows.filter((v) => v.balanceQuantity.gt(0));
 }
 
 export type VesselInput = {
   vesselName: string;
-  importerId: string;
-  quality?: string | null;
-  quantity: DecimalLike;
+  qualityClassId?: string | null;
+  portId?: string | null;
 };
 
 export async function createVessel(input: VesselInput) {
-  const quantity = toDecimal(input.quantity);
-  if (quantity.lt(0)) throw new Error("Quantity must be non-negative");
-
   const row = await prisma.vessel.create({
     data: {
       vesselName: input.vesselName,
-      importerId: input.importerId,
-      quality: input.quality || null,
-      quantity,
+      qualityClassId: input.qualityClassId || null,
+      portId: input.portId || null,
     },
   });
   revalidatePath("/vessels");
@@ -48,20 +40,12 @@ export async function updateVessel(id: string, input: VesselInput) {
   const existing = await prisma.vessel.findUnique({ where: { id } });
   if (!existing) throw new Error("Vessel not found");
 
-  const quantity = toDecimal(input.quantity);
-  if (quantity.lt(existing.dispatchedQuantity)) {
-    throw new Error(
-      `Cannot set quantity below dispatchedQuantity (${existing.dispatchedQuantity})`,
-    );
-  }
-
   const row = await prisma.vessel.update({
     where: { id },
     data: {
       vesselName: input.vesselName,
-      importerId: input.importerId,
-      quality: input.quality || null,
-      quantity,
+      qualityClassId: input.qualityClassId || null,
+      portId: input.portId || null,
     },
   });
   revalidatePath("/vessels");
@@ -69,6 +53,15 @@ export async function updateVessel(id: string, input: VesselInput) {
 }
 
 export async function deleteVessel(id: string) {
+  const [purchaseOrders, dispatches] = await Promise.all([
+    prisma.purchaseOrder.count({ where: { vesselId: id } }),
+    prisma.dispatch.count({ where: { vesselId: id } }),
+  ]);
+  if (purchaseOrders + dispatches > 0) {
+    throw new Error(
+      "Cannot delete: this vessel is used by purchase orders or dispatches",
+    );
+  }
   await prisma.vessel.delete({ where: { id } });
   revalidatePath("/vessels");
 }

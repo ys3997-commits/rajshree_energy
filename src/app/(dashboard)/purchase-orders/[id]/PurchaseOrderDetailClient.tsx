@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { DispatchTerms, OrderType } from "@/generated/prisma";
 import { deleteDispatch } from "@/lib/actions/dispatch";
 import {
   completeOpenPurchaseOrder,
   updatePurchaseOrderFields,
 } from "@/lib/actions/purchaseOrders";
-import { formatDispatchTerms } from "@/lib/domain/format";
+import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
+import { formatDispatchTerms, formatPurchaseOrderStatus } from "@/lib/domain/format";
+import { RateBreakdownFields } from "@/components/RateBreakdownFields";
+import { QualityClassSelect } from "@/components/QualityClassSelect";
 
 type DispatchRow = {
   id: string;
@@ -25,6 +28,13 @@ type DispatchRow = {
   transporter: { name: string } | null;
 };
 
+type QualityClassOpt = {
+  id: string;
+  domestic: boolean;
+  origin: { name: string };
+  qualityOption: { name: string };
+};
+
 type PurchaseOrderData = {
   id: string;
   poNumber: string;
@@ -35,23 +45,32 @@ type PurchaseOrderData = {
   dispatchedOrder: string;
   balanceOrder: string | null;
   rate: string | null;
-  quality: string | null;
+  finalRate: string | null;
+  qualityClassId: string | null;
   importer: { name: string };
   vessel: { vesselName: string };
-  orderBy: { name: string } | null;
   dispatches: DispatchRow[];
 };
 
 export function PurchaseOrderDetailClient({
   order,
+  qualityClasses,
 }: {
   order: PurchaseOrderData;
+  qualityClasses: QualityClassOpt[];
 }) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(order.quantity ?? "");
   const [rate, setRate] = useState(order.rate ?? "");
-  const [quality, setQuality] = useState(order.quality ?? "");
+  const [qualityClassId, setQualityClassId] = useState(
+    order.qualityClassId ?? "",
+  );
+
+  const rateBreakdown = useMemo(() => {
+    if (rate === "") return null;
+    return computePurchaseRateBreakdown(rate);
+  }, [rate]);
 
   async function onSave(e: FormEvent) {
     e.preventDefault();
@@ -62,13 +81,13 @@ export function PurchaseOrderDetailClient({
         await completeOpenPurchaseOrder(order.id, {
           quantity,
           rate: rate || null,
-          quality: quality || null,
+          qualityClassId: qualityClassId || null,
         });
       } else {
         await updatePurchaseOrderFields(order.id, {
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
-          quality: quality || null,
+          qualityClassId: qualityClassId || null,
         });
       }
       setMessage("Purchase order updated.");
@@ -102,7 +121,7 @@ export function PurchaseOrderDetailClient({
 
       <div className="mb-6 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-2 text-sm">
         <div>
-          <span className="text-neutral-500">Importer:</span>{" "}
+          <span className="text-neutral-500">Vendor:</span>{" "}
           {order.importer.name}
         </div>
         <div>
@@ -113,11 +132,8 @@ export function PurchaseOrderDetailClient({
           <span className="text-neutral-500">Type:</span> {order.orderType}
         </div>
         <div>
-          <span className="text-neutral-500">Status:</span> {order.orderStatus}
-        </div>
-        <div>
-          <span className="text-neutral-500">Order by:</span>{" "}
-          {order.orderBy?.name ?? "—"}
+          <span className="text-neutral-500">Status:</span>{" "}
+          {formatPurchaseOrderStatus(order.orderStatus)}
         </div>
         <div>
           <span className="text-neutral-500">Dispatched (MT):</span>{" "}
@@ -164,8 +180,24 @@ export function PurchaseOrderDetailClient({
           />
           <span className="field-unit">Rs</span>
         </div>
-        <label>Quality</label>
-        <input value={quality} onChange={(e) => setQuality(e.target.value)} />
+        {rateBreakdown != null ? (
+          <RateBreakdownFields
+            gst={rateBreakdown.gst}
+            tcs={rateBreakdown.tcs}
+            final={rateBreakdown.final}
+          />
+        ) : (
+          <>
+            <label>Final rate</label>
+            <div className="text-sm text-neutral-600">—</div>
+          </>
+        )}
+        <label>Quality class</label>
+        <QualityClassSelect
+          value={qualityClassId}
+          onChange={setQualityClassId}
+          options={qualityClasses}
+        />
         <div />
         <button type="submit" className="btn w-fit">
           Save purchase order

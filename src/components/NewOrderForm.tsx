@@ -1,19 +1,38 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CustomerCategory } from "@/generated/prisma";
+import { getCustomerOrderDefaults } from "@/lib/actions/customers";
 import { createRegularOrder } from "@/lib/actions/orders";
+import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
+import { RateBreakdownFields } from "@/components/RateBreakdownFields";
+import {
+  QualityClassSelect,
+  type QualityClassOpt,
+} from "@/components/QualityClassSelect";
+
+type CustomerOpt = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+  creditDays: number | null;
+};
 
 type Option = { id: string; name: string };
 
 export function NewOrderForm({
   customers,
   staff,
+  ports,
+  qualityClasses,
   suggestedPo,
   onCancel,
 }: {
-  customers: Option[];
+  customers: CustomerOpt[];
   staff: Option[];
+  ports: Option[];
+  qualityClasses: QualityClassOpt[];
   suggestedPo: string;
   onCancel?: () => void;
 }) {
@@ -21,6 +40,45 @@ export function NewOrderForm({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [poNumber, setPoNumber] = useState(suggestedPo);
+  const [customerId, setCustomerId] = useState("");
+  const [customerCategory, setCustomerCategory] =
+    useState<CustomerCategory | null>(null);
+  const [creditDays, setCreditDays] = useState("");
+  const [rate, setRate] = useState("");
+  const [qualityClassId, setQualityClassId] = useState("");
+
+  const rateBreakdown = useMemo(() => {
+    if (rate === "") return null;
+    return computeSaleRateBreakdown(rate, customerCategory);
+  }, [rate, customerCategory]);
+
+  async function onCustomerChange(id: string) {
+    setCustomerId(id);
+    if (!id) {
+      setCustomerCategory(null);
+      setCreditDays("");
+      return;
+    }
+
+    // Immediate fill from props (fast), then refresh from DB.
+    const cached = customers.find((c) => c.id === id);
+    if (cached) {
+      setCustomerCategory(cached.category);
+      setCreditDays(
+        cached.creditDays != null ? String(cached.creditDays) : "",
+      );
+    }
+
+    try {
+      const fresh = await getCustomerOrderDefaults(id);
+      setCustomerCategory(fresh.category);
+      setCreditDays(
+        fresh.creditDays != null ? String(fresh.creditDays) : "",
+      );
+    } catch {
+      // Keep cached values if lookup fails.
+    }
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -30,14 +88,12 @@ export function NewOrderForm({
     try {
       const order = await createRegularOrder({
         poNumber: String(fd.get("poNumber") || ""),
-        customerId: String(fd.get("customerId") || ""),
+        customerId,
         orderDate: String(fd.get("orderDate") || "") || null,
-        area: String(fd.get("area") || "") || null,
-        creditDays: fd.get("creditDays")
-          ? Number(fd.get("creditDays"))
-          : null,
-        quality: String(fd.get("quality") || "") || null,
-        rate: String(fd.get("rate") || "") || null,
+        portId: String(fd.get("portId") || "") || null,
+        creditDays: creditDays === "" ? null : Number(creditDays),
+        qualityClassId: qualityClassId || null,
+        rate: rate || null,
         quantity: String(fd.get("quantity") || ""),
         orderById: String(fd.get("orderById") || "") || null,
       });
@@ -53,6 +109,12 @@ export function NewOrderForm({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
+        <label>Order date</label>
+        <input
+          name="orderDate"
+          type="date"
+          defaultValue={new Date().toISOString().slice(0, 10)}
+        />
         <label>PO number</label>
         <input
           name="poNumber"
@@ -61,7 +123,12 @@ export function NewOrderForm({
           onChange={(e) => setPoNumber(e.target.value)}
         />
         <label>Customer</label>
-        <select name="customerId" required defaultValue="">
+        <select
+          name="customerId"
+          required
+          value={customerId}
+          onChange={(e) => void onCustomerChange(e.target.value)}
+        >
           <option value="">Select…</option>
           {customers.map((c) => (
             <option key={c.id} value={c.id}>
@@ -69,29 +136,54 @@ export function NewOrderForm({
             </option>
           ))}
         </select>
-        <label>Order date</label>
-        <input
-          name="orderDate"
-          type="date"
-          defaultValue={new Date().toISOString().slice(0, 10)}
-        />
         <label>Quantity</label>
         <div className="field-with-unit">
           <input name="quantity" required type="number" step="any" min="0" />
           <span className="field-unit">MT</span>
         </div>
-        <label>Rate</label>
+        <label>Base rate</label>
         <div className="field-with-unit">
-          <input name="rate" type="number" step="any" min="0" />
+          <input
+            name="rate"
+            type="number"
+            step="any"
+            min="0"
+            value={rate}
+            onChange={(e) => setRate(e.target.value)}
+          />
           <span className="field-unit">Rs</span>
         </div>
+        {rateBreakdown != null && (
+          <RateBreakdownFields
+            gst={rateBreakdown.gst}
+            tcs={rateBreakdown.tcs}
+            final={rateBreakdown.final}
+          />
+        )}
         <label>Credit days</label>
-        <input name="creditDays" type="number" min="0" />
-        <label>Quality</label>
-        <input name="quality" />
-        <label>Area</label>
-        <input name="area" />
-        <label>Order by</label>
+        <input
+          name="creditDays"
+          type="number"
+          min="0"
+          value={creditDays}
+          onChange={(e) => setCreditDays(e.target.value)}
+        />
+        <label>Quality class</label>
+        <QualityClassSelect
+          value={qualityClassId}
+          onChange={setQualityClassId}
+          options={qualityClasses}
+        />
+        <label>Port</label>
+        <select name="portId" defaultValue="">
+          <option value="">—</option>
+          {ports.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+        <label>Deal by</label>
         <select name="orderById" defaultValue="">
           <option value="">—</option>
           {staff.map((s) => (

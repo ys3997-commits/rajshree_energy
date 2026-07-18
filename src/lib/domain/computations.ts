@@ -1,12 +1,15 @@
 import {
+  CustomerCategory,
   DispatchTerms,
   OrderStatus,
   OrderType,
+  PurchaseOrderStatus,
   type Order,
   type PurchaseOrder,
-  type Vessel,
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
+import { PURCHASE_GST_RATE, PURCHASE_TCS_RATE } from "@/lib/domain/purchaseRate";
+import { SALE_GST_RATE, SALE_TCS_RATE } from "@/lib/domain/saleRate";
 
 export type DecimalLike = Decimal | number | string;
 
@@ -23,14 +26,6 @@ export function balanceOrder(order: {
   return order.quantity.minus(order.dispatchedOrder);
 }
 
-/** quantity - dispatchedQuantity */
-export function balanceQuantity(vessel: {
-  quantity: Decimal;
-  dispatchedQuantity: Decimal;
-}): Decimal {
-  return vessel.quantity.minus(vessel.dispatchedQuantity);
-}
-
 /** rate * quantity * 0.18 when both present */
 export function computeGst(order: {
   rate: Decimal | null;
@@ -38,6 +33,52 @@ export function computeGst(order: {
 }): Decimal | null {
   if (order.rate == null || order.quantity == null) return null;
   return order.rate.mul(order.quantity).mul(new Decimal("0.18"));
+}
+
+const GST_RATE = new Decimal(String(PURCHASE_GST_RATE));
+const TCS_RATE = new Decimal(String(PURCHASE_TCS_RATE));
+const SALE_GST = new Decimal(String(SALE_GST_RATE));
+const SALE_TCS = new Decimal(String(SALE_TCS_RATE));
+
+/**
+ * Purchase all-in rate per MT from base rate:
+ * GST = 18% of rate; TCS = 2% of (rate + GST); final = rate + GST + TCS.
+ */
+export function computePurchaseFinalRate(
+  rate: DecimalLike | null | undefined,
+): Decimal | null {
+  if (rate === undefined || rate === null || rate === "") return null;
+  const base = toDecimal(rate);
+  const gst = base.mul(GST_RATE);
+  const tcs = base.plus(gst).mul(TCS_RATE);
+  return base.plus(gst).plus(tcs);
+}
+
+/**
+ * Sale all-in rate per MT from base rate and customer category:
+ * GST = 18% of rate; traders also add TCS = 2% of (rate + GST).
+ */
+export function computeSaleFinalRate(
+  rate: DecimalLike | null | undefined,
+  category: CustomerCategory | null | undefined,
+): Decimal | null {
+  if (rate === undefined || rate === null || rate === "") return null;
+  const base = toDecimal(rate);
+  const gst = base.mul(SALE_GST);
+  const withGst = base.plus(gst);
+  if (category === CustomerCategory.TRADER) {
+    return withGst.plus(withGst.mul(SALE_TCS));
+  }
+  return withGst;
+}
+
+/** Prefer finalRate (all-in) for sale revenue; fall back to base rate. */
+export function saleRevenueRate(order: {
+  rate: Decimal | null;
+  finalRate?: Decimal | null;
+}): Decimal | null {
+  if (order.finalRate != null) return order.finalRate;
+  return order.rate;
 }
 
 /** dispatchedQuantity - receivingQuantity once receiving is set */
@@ -66,6 +107,22 @@ export function computeOrderStatus(order: {
   return OrderStatus.COMPLETED;
 }
 
+/**
+ * Purchase orders are Running until quantity is set and fully dispatched.
+ */
+export function computePurchaseOrderStatus(order: {
+  quantity: Decimal | null;
+  dispatchedOrder: Decimal;
+}): PurchaseOrderStatus {
+  if (
+    order.quantity != null &&
+    !order.dispatchedOrder.lt(order.quantity)
+  ) {
+    return PurchaseOrderStatus.COMPLETED;
+  }
+  return PurchaseOrderStatus.RUNNING;
+}
+
 export function formatDecimal(value: Decimal | null | undefined): string {
   if (value == null) return "—";
   return value.toString();
@@ -74,6 +131,7 @@ export function formatDecimal(value: Decimal | null | undefined): string {
 export {
   formatDispatchTerms,
   formatMt,
+  formatPurchaseOrderStatus,
   formatRs,
 } from "@/lib/domain/format";
 
@@ -84,10 +142,6 @@ export type OrderWithComputed = Order & {
 
 export type PurchaseOrderWithComputed = PurchaseOrder & {
   balanceOrder: Decimal | null;
-};
-
-export type VesselWithComputed = Vessel & {
-  balanceQuantity: Decimal;
 };
 
 export function withOrderComputed<T extends Order>(order: T): T & {
@@ -109,15 +163,6 @@ export function withPurchaseOrderComputed<T extends PurchaseOrder>(
   return {
     ...order,
     balanceOrder: balanceOrder(order),
-  };
-}
-
-export function withVesselComputed<T extends Vessel>(vessel: T): T & {
-  balanceQuantity: Decimal;
-} {
-  return {
-    ...vessel,
-    balanceQuantity: balanceQuantity(vessel),
   };
 }
 
@@ -155,6 +200,15 @@ export function profitPerMt(args: {
       : args.saleRate;
   if (goodsRate == null || args.costRate == null) return null;
   return goodsRate.minus(args.costRate);
+}
+
+/** Prefer finalRate (all-in) for costing; fall back to base rate. */
+export function purchaseCostRate(order: {
+  rate: Decimal | null;
+  finalRate?: Decimal | null;
+}): Decimal | null {
+  if (order.finalRate != null) return order.finalRate;
+  return order.rate;
 }
 
 /** (effective saleRate − costRate) × qty when rates present. */

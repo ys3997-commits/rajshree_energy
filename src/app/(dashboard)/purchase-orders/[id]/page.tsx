@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
 import { getPurchaseOrder } from "@/lib/actions/purchaseOrders";
-import { lineProfit } from "@/lib/domain/computations";
+import { listQualityClasses } from "@/lib/actions/qualities";
+import {
+  lineProfit,
+  purchaseCostRate,
+  saleRevenueRate,
+} from "@/lib/domain/computations";
 import { PurchaseOrderDetailClient } from "./PurchaseOrderDetailClient";
 
 export default async function PurchaseOrderDetailPage({
@@ -9,11 +14,22 @@ export default async function PurchaseOrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const order = await getPurchaseOrder(id);
+  const [order, qualityClasses] = await Promise.all([
+    getPurchaseOrder(id),
+    listQualityClasses(),
+  ]);
   if (!order) notFound();
+
+  const costRate = purchaseCostRate(order);
 
   return (
     <PurchaseOrderDetailClient
+      qualityClasses={qualityClasses.map((qc) => ({
+        id: qc.id,
+        domestic: qc.domestic,
+        origin: qc.origin,
+        qualityOption: qc.qualityOption,
+      }))}
       order={{
         id: order.id,
         poNumber: order.poNumber,
@@ -24,10 +40,10 @@ export default async function PurchaseOrderDetailPage({
         dispatchedOrder: order.dispatchedOrder.toString(),
         balanceOrder: order.balanceOrder?.toString() ?? null,
         rate: order.rate?.toString() ?? null,
-        quality: order.quality,
+        finalRate: order.finalRate?.toString() ?? null,
+        qualityClassId: order.qualityClassId,
         importer: { name: order.importer.name },
         vessel: { vesselName: order.vessel.vesselName },
-        orderBy: order.orderBy ? { name: order.orderBy.name } : null,
         dispatches: order.dispatches.map((d) => ({
           id: d.id,
           dispatchDate: d.dispatchDate.toISOString(),
@@ -44,8 +60,8 @@ export default async function PurchaseOrderDetailPage({
           transporter: d.transporter,
           lineProfit:
             lineProfit({
-              saleRate: d.order?.rate ?? null,
-              costRate: order.rate,
+              saleRate: d.order ? saleRevenueRate(d.order) : null,
+              costRate,
               quantity: d.dispatchedQuantity,
               dispatchTerms: d.dispatchTerms,
               freight: d.freight,
