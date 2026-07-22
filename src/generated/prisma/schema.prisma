@@ -103,6 +103,38 @@ model PortOption {
   orders  Order[]
 }
 
+/// Managed list of sales executives (suggested on customers; stored as text).
+model SaleExecutiveOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Managed list of cities (suggested on customers/transporters; stored as text).
+model CityOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Managed list of states (suggested on customers/transporters; stored as text).
+model StateOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Managed list of industry sectors (suggested on customers; stored as text).
+model SectorOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 /// A coal quality class: origin + domestic flag + quality grade.
 model QualityClass {
   id              String   @id @default(cuid())
@@ -125,6 +157,7 @@ model Customer {
   id                     String           @id @default(cuid())
   name                   String
   category               CustomerCategory
+  active                 Boolean          @default(true)
   ownerName              String?
   ownerContact           String?
   purchaserName          String?
@@ -140,6 +173,7 @@ model Customer {
   state                  String?
   creditDays             Int?
   sector                 String?
+  saleExecutive          String?
   dealById               String?
   approachForFundsId     String?
   createdAt              DateTime         @default(now())
@@ -157,6 +191,7 @@ model Vessel {
   vesselName     String   @unique
   qualityClassId String?
   portId         String?
+  active         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

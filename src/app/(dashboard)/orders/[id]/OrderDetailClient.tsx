@@ -6,7 +6,7 @@ import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
-import { formatDispatchTerms, formatRs } from "@/lib/domain/format";
+import { formatDispatchTerms, formatCreditPeriod, formatMt, formatRs } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -46,7 +46,6 @@ type OrderData = {
   qualityClassId: string | null;
   portId: string | null;
   customer: { name: string; category: CustomerCategory };
-  orderBy: { name: string } | null;
   dispatches: DispatchRow[];
 };
 
@@ -70,6 +69,7 @@ export function OrderDetailClient({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [poNumber, setPoNumber] = useState(order.poNumber);
   const [quantity, setQuantity] = useState(order.quantity ?? "");
   const [rate, setRate] = useState(order.rate ?? "");
   const [creditDays, setCreditDays] = useState(
@@ -98,8 +98,12 @@ export function OrderDetailClient({
           qualityClassId: qualityClassId || null,
           portId: portId || null,
         });
+        if (poNumber !== order.poNumber) {
+          await updateOrderFields(order.id, { poNumber });
+        }
       } else {
         await updateOrderFields(order.id, {
+          poNumber,
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
           creditDays: creditDays === "" ? null : Number(creditDays),
@@ -148,23 +152,19 @@ export function OrderDetailClient({
           <span className="text-neutral-500">Status:</span> {order.orderStatus}
         </div>
         <div>
-          <span className="text-neutral-500">Deal by:</span>{" "}
-          {order.orderBy?.name ?? "—"}
-        </div>
-        <div>
           <span className="text-neutral-500">Dispatched (MT):</span>{" "}
-          {order.dispatchedOrder}
+          {formatMt(order.dispatchedOrder)}
         </div>
         <div>
           <span className="text-neutral-500">Balance (MT):</span>{" "}
-          {order.balanceOrder != null ? order.balanceOrder : "—"}
+          {formatMt(order.balanceOrder)}
         </div>
         <div>
-          <span className="text-neutral-500">GST (Rs):</span>{" "}
-          {order.gst != null ? order.gst : "—"}
+          <span className="text-neutral-500">GST:</span>{" "}
+          {order.gst != null ? formatRs(order.gst) : "—"}
         </div>
         <div>
-          <span className="text-neutral-500">Final rate (Rs):</span>{" "}
+          <span className="text-neutral-500">Final rate:</span>{" "}
           {order.finalRate != null ? formatRs(order.finalRate) : "—"}
         </div>
         <div>
@@ -181,6 +181,13 @@ export function OrderDetailClient({
           : "Edit order fields"}
       </h2>
       <form onSubmit={onSave} className="mb-8 form-grid">
+        <label>Sale order number</label>
+        <input
+          required
+          value={poNumber}
+          onChange={(e) => setPoNumber(e.target.value)}
+          placeholder="SO 0001"
+        />
         <label>Quantity</label>
         <div className="field-with-unit">
           <input
@@ -193,16 +200,16 @@ export function OrderDetailClient({
           />
           <span className="field-unit">MT</span>
         </div>
-        <label>Base rate</label>
-        <div className="field-with-unit">
+        <label>Basic rate</label>
+        <div className="field-with-unit field-with-prefix">
+          <span className="field-unit">Rs</span>
           <input
             type="number"
-            step="any"
+            step="0.01"
             min="0"
             value={rate}
             onChange={(e) => setRate(e.target.value)}
           />
-          <span className="field-unit">Rs</span>
         </div>
         {rateBreakdown != null && (
           <RateBreakdownFields
@@ -211,13 +218,16 @@ export function OrderDetailClient({
             final={rateBreakdown.final}
           />
         )}
-        <label>Credit days</label>
-        <input
-          type="number"
-          min="0"
-          value={creditDays}
-          onChange={(e) => setCreditDays(e.target.value)}
-        />
+        <label>Credit period</label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            min="0"
+            value={creditDays}
+            onChange={(e) => setCreditDays(e.target.value)}
+          />
+          <span className="field-unit">days</span>
+        </div>
         <label>Quality class</label>
         <QualityClassSelect
           value={qualityClassId}
@@ -226,7 +236,7 @@ export function OrderDetailClient({
         />
         <label>Port</label>
         <select value={portId} onChange={(e) => setPortId(e.target.value)}>
-          <option value="">—</option>
+          <option value="">Select</option>
           {ports.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -248,10 +258,10 @@ export function OrderDetailClient({
               <th>Purchase PO</th>
               <th>Qty (MT)</th>
               <th>Terms</th>
-              <th>Freight (Rs/MT)</th>
+              <th>Freight</th>
               <th>Lorry</th>
               <th>Transporter</th>
-              <th>Profit (Rs)</th>
+              <th>Profit</th>
               <th>Receipt</th>
               <th>Soft copy</th>
               <th>Tally</th>
@@ -267,12 +277,12 @@ export function OrderDetailClient({
                     ? `${d.purchaseOrder.poNumber} — ${d.purchaseOrder.importer?.name ?? "?"} — ${d.purchaseOrder.vessel?.vesselName ?? "?"}`
                     : d.purchasePoNumber}
                 </td>
-                <td>{d.dispatchedQuantity}</td>
+                <td>{formatMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
-                <td>{d.freight != null ? d.freight : "—"}</td>
+                <td>{formatRs(d.freight)}</td>
                 <td>{d.lorryNumber ?? "—"}</td>
                 <td>{d.transporter?.name ?? "—"}</td>
-                <td>{d.lineProfit != null ? d.lineProfit : "—"}</td>
+                <td>{formatRs(d.lineProfit)}</td>
                 <td>{d.receiptStatus}</td>
                 <td>{d.softCopyStatus ? "yes" : "no"}</td>
                 <td>{d.entryInTally ? "yes" : "no"}</td>

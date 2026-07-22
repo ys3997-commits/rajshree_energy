@@ -11,14 +11,21 @@ export type SaleRateBreakdown = {
 };
 
 function roundAmount(n: number): string {
-  return String(Math.round(n * 1e6) / 1e6);
+  return (Math.round(n * 100) / 100).toFixed(2);
+}
+
+/** TCS applies for vendor and trader customers; industry is GST only. */
+export function saleTcsApplies(
+  category: string | null | undefined,
+): boolean {
+  return category === "TRADER" || category === "SUPPLIER";
 }
 
 /**
- * Sale all-in rate breakdown from base rate and customer category:
+ * Sale all-in rate breakdown from basic rate and customer category:
  * - Always: GST = 18% of base
- * - Trader: + TCS = 2% of (base + GST)
- * - Industry (and others): no TCS
+ * - Vendor / trader: + TCS = 2% of (base + GST)
+ * - Industry: no TCS
  * Safe to import from Client Components.
  */
 export function computeSaleRateBreakdown(
@@ -30,7 +37,7 @@ export function computeSaleRateBreakdown(
   if (!Number.isFinite(base)) return null;
   const gst = base * SALE_GST_RATE;
   const withGst = base + gst;
-  if (category === "TRADER") {
+  if (saleTcsApplies(category)) {
     const tcs = withGst * SALE_TCS_RATE;
     return {
       base: roundAmount(base),

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { CustomerCategory } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { NewDispatchForm } from "@/components/NewDispatchForm";
 
@@ -10,14 +11,27 @@ type OrderOpt = {
   customer: { name: string } | null;
 };
 
+type QualityClassOpt = {
+  domestic: boolean;
+  origin: { name: string };
+  qualityOption: { name: string };
+};
+
 type PurchaseOpt = {
   poNumber: string;
   balanceOrder: string | null;
   importer: { name: string } | null;
   vessel: { vesselName: string } | null;
+  qualityClass: QualityClassOpt | null;
 };
 
 type Opt = { id: string; name: string };
+
+type CustomerOpt = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+};
 
 type VesselOpt = {
   id: string;
@@ -29,7 +43,6 @@ export function CreateDispatchButton({
   purchaseOrders,
   transporters,
   customers,
-  importers,
   vessels,
   staff,
   suggestedPo,
@@ -38,8 +51,7 @@ export function CreateDispatchButton({
   orders: OrderOpt[];
   purchaseOrders: PurchaseOpt[];
   transporters: Opt[];
-  customers: Opt[];
-  importers: Opt[];
+  customers: CustomerOpt[];
   vessels: VesselOpt[];
   staff: Opt[];
   suggestedPo: string;
@@ -63,7 +75,6 @@ export function CreateDispatchButton({
           purchaseOrders={purchaseOrders}
           transporters={transporters}
           customers={customers}
-          importers={importers}
           vessels={vessels}
           staff={staff}
           suggestedPo={suggestedPo}

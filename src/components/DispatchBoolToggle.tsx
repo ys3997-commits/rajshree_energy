@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { updateDispatch } from "@/lib/actions/dispatch";
 
 type Field = "softCopyStatus" | "entryInTally";
@@ -15,11 +15,13 @@ export function DispatchBoolToggle({
   value: boolean;
 }) {
   const [checked, setChecked] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
   const [pending, startTransition] = useTransition();
 
-  useEffect(() => {
+  if (value !== prevValue) {
+    setPrevValue(value);
     setChecked(value);
-  }, [value]);
+  }
 
   function onChange(next: boolean) {
     const prev = checked;

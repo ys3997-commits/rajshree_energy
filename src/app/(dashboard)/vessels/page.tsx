@@ -18,6 +18,7 @@ export default async function VesselsPage() {
         qualityClass: v.qualityClass,
         portId: v.portId,
         port: v.port,
+        active: v.active,
       }))}
       qualityClasses={qualityClasses.map((qc) => ({
         id: qc.id,

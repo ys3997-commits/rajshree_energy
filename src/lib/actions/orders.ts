@@ -10,6 +10,7 @@ import {
   withOrderComputed,
   type DecimalLike,
 } from "@/lib/domain/computations";
+import { normalizeSaleOrderNumber } from "@/lib/domain/orderNumbers";
 
 export type OrderFilters = {
   status?: OrderStatus | "";
@@ -129,7 +130,7 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
 
   const order = await prisma.order.create({
     data: {
-      poNumber: input.poNumber.trim(),
+      poNumber: normalizeSaleOrderNumber(input.poNumber),
       orderType: OrderType.REGULAR,
       customerId: input.customerId,
       orderDate: input.orderDate ? new Date(input.orderDate) : null,
@@ -151,6 +152,7 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
 export async function updateOrderFields(
   id: string,
   data: {
+    poNumber?: string;
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     creditDays?: number | null;
@@ -163,6 +165,17 @@ export async function updateOrderFields(
     include: { customer: { select: { category: true } } },
   });
   if (!existing) throw new Error("Order not found");
+
+  let poNumber = existing.poNumber;
+  if (data.poNumber !== undefined) {
+    poNumber = normalizeSaleOrderNumber(data.poNumber);
+    if (poNumber !== existing.poNumber) {
+      const taken = await prisma.order.findUnique({ where: { poNumber } });
+      if (taken) {
+        throw new Error(`Sale order number ${poNumber} is already taken`);
+      }
+    }
+  }
 
   const quantity =
     data.quantity !== undefined ? toDecimal(data.quantity) : existing.quantity;
@@ -191,6 +204,7 @@ export async function updateOrderFields(
   const order = await prisma.order.update({
     where: { id },
     data: {
+      poNumber,
       quantity,
       rate,
       ...(finalRate !== undefined ? { finalRate } : {}),

@@ -12,6 +12,10 @@ async function main() {
   await prisma.qualityClass.deleteMany();
   await prisma.qualityOption.deleteMany();
   await prisma.originOption.deleteMany();
+  await prisma.saleExecutiveOption.deleteMany();
+  await prisma.cityOption.deleteMany();
+  await prisma.stateOption.deleteMany();
+  await prisma.sectorOption.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.transporter.deleteMany();
   await prisma.staff.deleteMany();
@@ -36,6 +40,34 @@ async function main() {
   const qualities = await Promise.all(
     ["6000 GCV", "Coal Fines", "Domestic ROM", "USA Coal"].map((name) =>
       prisma.qualityOption.create({ data: { name } }),
+    ),
+  );
+
+  await Promise.all(
+    ["Amit Sharma", "Priya Patel"].map((name) =>
+      prisma.saleExecutiveOption.create({ data: { name } }),
+    ),
+  );
+
+  await Promise.all(
+    ["Kolkata", "Jamshedpur", "Raipur", "Paradip", "Nagpur"].map((name) =>
+      prisma.cityOption.create({ data: { name } }),
+    ),
+  );
+
+  await Promise.all(
+    [
+      "West Bengal",
+      "Jharkhand",
+      "Chhattisgarh",
+      "Odisha",
+      "Maharashtra",
+    ].map((name) => prisma.stateOption.create({ data: { name } })),
+  );
+
+  await Promise.all(
+    ["Trading", "Steel", "Cement"].map((name) =>
+      prisma.sectorOption.create({ data: { name } }),
     ),
   );
 
@@ -96,7 +128,7 @@ async function main() {
       state: "West Bengal",
       creditDays: 30,
       sector: "Trading",
-      dealById: amit.id,
+      saleExecutive: "Amit Sharma",
       approachForFundsId: rahul.id,
     },
   });
@@ -120,7 +152,7 @@ async function main() {
       state: "Jharkhand",
       creditDays: 45,
       sector: "Steel",
-      dealById: amit.id,
+      saleExecutive: "Amit Sharma",
     },
   });
 
@@ -141,7 +173,7 @@ async function main() {
       state: "Chhattisgarh",
       creditDays: 21,
       sector: "Cement",
-      dealById: priya.id,
+      saleExecutive: "Priya Patel",
       approachForFundsId: rahul.id,
     },
   });
@@ -159,7 +191,7 @@ async function main() {
       state: "Odisha",
       creditDays: 15,
       sector: "Trading",
-      dealById: amit.id,
+      saleExecutive: "Amit Sharma",
       approachForFundsId: rahul.id,
     },
   });
@@ -176,7 +208,7 @@ async function main() {
 
   await prisma.order.create({
     data: {
-      poNumber: "PO-2026-0001",
+      poNumber: "SO 0001",
       orderType: OrderType.REGULAR,
       customerId: bharat.id,
       orderDate: new Date(),
@@ -193,7 +225,7 @@ async function main() {
 
   await prisma.purchaseOrder.create({
     data: {
-      poNumber: "PU-1",
+      poNumber: "PO 0001",
       orderType: OrderType.REGULAR,
       importerId: eastern.id,
       vesselId: vessel.id,

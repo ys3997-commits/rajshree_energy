@@ -20,6 +20,11 @@ import {
   toDecimal,
   type DecimalLike,
 } from "@/lib/domain/computations";
+import {
+  nextSaleOrderNumber,
+  normalizePurchaseOrderNumber,
+  normalizeSaleOrderNumber,
+} from "@/lib/domain/orderNumbers";
 
 /** Create an OPEN purchase order as part of a dispatch (quantity null). */
 export type OpenPurchaseForDispatch = {
@@ -69,6 +74,7 @@ export type CreateOpenOrderDispatchInput = {
   poNumber: string;
   orderById: string;
   customerId: string;
+  rate?: DecimalLike | null;
   /** Existing purchase PO — required unless openPurchase is set. */
   purchasePoNumber?: string;
   /** When set, creates an OPEN purchase order then dispatches against it. */
@@ -146,10 +152,9 @@ async function resolvePurchaseForDispatch(
   skipPurchaseBalanceCheck: boolean;
 }> {
   if (input.openPurchase) {
-    const poNumber = input.openPurchase.poNumber.trim();
-    if (!poNumber) throw new Error("Purchase PO number is required");
+    const poNumber = normalizePurchaseOrderNumber(input.openPurchase.poNumber);
     if (!input.openPurchase.importerId) {
-      throw new Error("Importer is required");
+      throw new Error("Vendor is required");
     }
     if (!input.openPurchase.vesselId) {
       throw new Error("Vessel is required");
@@ -327,22 +332,15 @@ async function applyDispatchDelta(
 }
 
 /**
- * Suggest next sequential PO number (1, 2, 3, …) across sale orders.
- * Only considers pure numeric POs; UI may override.
+ * Suggest next sequential sale order number (SO 0001, SO 0002, …).
+ * Considers current SO format and legacy numeric / PO-YYYY-#### values.
  */
 export async function suggestNextPoNumber(): Promise<string> {
   const rows = await prisma.order.findMany({
     select: { poNumber: true },
   });
 
-  let max = 0;
-  for (const row of rows) {
-    if (/^\d+$/.test(row.poNumber)) {
-      max = Math.max(max, Number(row.poNumber));
-    }
-  }
-
-  return String(max + 1);
+  return nextSaleOrderNumber(rows.map((row) => row.poNumber));
 }
 
 export async function createDispatch(
@@ -397,8 +395,7 @@ export async function createDispatch(
 export async function createOpenOrderDispatch(
   input: CreateOpenOrderDispatchInput,
 ): Promise<{ id: string }> {
-  const poNumber = input.poNumber.trim();
-  if (!poNumber) throw new Error("PO number is required");
+  const poNumber = normalizeSaleOrderNumber(input.poNumber);
   if (!input.customerId) throw new Error("Customer is required");
 
   const existing = await prisma.order.findUnique({ where: { poNumber } });
@@ -416,6 +413,18 @@ export async function createOpenOrderDispatch(
   const dispatch = await prisma.$transaction(async (tx) => {
     const purchase = await resolvePurchaseForDispatch(tx, input);
 
+    const customer = await tx.customer.findUnique({
+      where: { id: input.customerId },
+      select: { category: true },
+    });
+    if (!customer) throw new Error("Customer not found");
+
+    const rate =
+      input.rate === undefined || input.rate === null || input.rate === ""
+        ? null
+        : toDecimal(input.rate);
+    const finalRate = computeSaleFinalRate(rate, customer.category);
+
     await tx.order.create({
       data: {
         poNumber,
@@ -424,8 +433,8 @@ export async function createOpenOrderDispatch(
         orderDate: asDate(input.dispatchDate),
         orderById: input.orderById,
         quantity: null,
-        rate: null,
-        finalRate: null,
+        rate,
+        finalRate,
         creditDays: null,
         portId: null,
         qualityClassId: null,

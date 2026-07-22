@@ -150,6 +150,12 @@ describe("computed balances", () => {
     ).toBe("1203.6");
   });
 
+  it("sale finalRate for vendor = rate + GST 18% + TCS 2% of (rate+GST)", () => {
+    expect(
+      computeSaleFinalRate(1000, CustomerCategory.SUPPLIER)?.toString(),
+    ).toBe("1203.6");
+  });
+
   it("diffInQuantity is null until receiving is set", () => {
     expect(
       diffInQuantity({

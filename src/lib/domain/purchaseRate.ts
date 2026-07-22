@@ -10,7 +10,7 @@ export type RateBreakdown = {
 };
 
 function roundAmount(n: number): string {
-  return String(Math.round(n * 1e6) / 1e6);
+  return (Math.round(n * 100) / 100).toFixed(2);
 }
 
 /**

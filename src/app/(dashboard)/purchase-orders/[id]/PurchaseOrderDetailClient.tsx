@@ -9,7 +9,7 @@ import {
   updatePurchaseOrderFields,
 } from "@/lib/actions/purchaseOrders";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
-import { formatDispatchTerms, formatPurchaseOrderStatus } from "@/lib/domain/format";
+import { formatDispatchTerms, formatMt, formatPurchaseOrderStatus, formatRs } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -61,6 +61,7 @@ export function PurchaseOrderDetailClient({
 }) {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [poNumber, setPoNumber] = useState(order.poNumber);
   const [quantity, setQuantity] = useState(order.quantity ?? "");
   const [rate, setRate] = useState(order.rate ?? "");
   const [qualityClassId, setQualityClassId] = useState(
@@ -83,8 +84,12 @@ export function PurchaseOrderDetailClient({
           rate: rate || null,
           qualityClassId: qualityClassId || null,
         });
+        if (poNumber !== order.poNumber) {
+          await updatePurchaseOrderFields(order.id, { poNumber });
+        }
       } else {
         await updatePurchaseOrderFields(order.id, {
+          poNumber,
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
           qualityClassId: qualityClassId || null,
@@ -137,11 +142,11 @@ export function PurchaseOrderDetailClient({
         </div>
         <div>
           <span className="text-neutral-500">Dispatched (MT):</span>{" "}
-          {order.dispatchedOrder}
+          {formatMt(order.dispatchedOrder)}
         </div>
         <div>
           <span className="text-neutral-500">Balance (MT):</span>{" "}
-          {order.balanceOrder != null ? order.balanceOrder : "—"}
+          {formatMt(order.balanceOrder)}
         </div>
         <div>
           <span className="text-neutral-500">Order date:</span>{" "}
@@ -157,6 +162,13 @@ export function PurchaseOrderDetailClient({
           : "Edit purchase order fields"}
       </h2>
       <form onSubmit={onSave} className="mb-8 form-grid">
+        <label>Purchase order number</label>
+        <input
+          required
+          value={poNumber}
+          onChange={(e) => setPoNumber(e.target.value)}
+          placeholder="PO 0001"
+        />
         <label>Quantity</label>
         <div className="field-with-unit">
           <input
@@ -169,16 +181,16 @@ export function PurchaseOrderDetailClient({
           />
           <span className="field-unit">MT</span>
         </div>
-        <label>Rate (cost)</label>
-        <div className="field-with-unit">
+        <label>Basic rate</label>
+        <div className="field-with-unit field-with-prefix">
+          <span className="field-unit">Rs</span>
           <input
             type="number"
-            step="any"
+            step="0.01"
             min="0"
             value={rate}
             onChange={(e) => setRate(e.target.value)}
           />
-          <span className="field-unit">Rs</span>
         </div>
         {rateBreakdown != null ? (
           <RateBreakdownFields
@@ -213,10 +225,10 @@ export function PurchaseOrderDetailClient({
               <th>Sale PO</th>
               <th>Qty (MT)</th>
               <th>Terms</th>
-              <th>Freight (Rs/MT)</th>
+              <th>Freight</th>
               <th>Lorry</th>
               <th>Transporter</th>
-              <th>Profit (Rs)</th>
+              <th>Profit</th>
               <th>Receipt</th>
               <th>Soft copy</th>
               <th>Tally</th>
@@ -236,12 +248,12 @@ export function PurchaseOrderDetailClient({
                     "—"
                   )}
                 </td>
-                <td>{d.dispatchedQuantity}</td>
+                <td>{formatMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
-                <td>{d.freight != null ? d.freight : "—"}</td>
+                <td>{formatRs(d.freight)}</td>
                 <td>{d.lorryNumber ?? "—"}</td>
                 <td>{d.transporter?.name ?? "—"}</td>
-                <td>{d.lineProfit != null ? d.lineProfit : "—"}</td>
+                <td>{formatRs(d.lineProfit)}</td>
                 <td>{d.receiptStatus}</td>
                 <td>{d.softCopyStatus ? "yes" : "no"}</td>
                 <td>{d.entryInTally ? "yes" : "no"}</td>

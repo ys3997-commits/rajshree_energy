@@ -13,7 +13,6 @@ import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
-import { CustomerCategory } from "@/generated/prisma";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
 
 function formatQty(value: string): string {
@@ -45,12 +44,12 @@ export default async function HomePage() {
     getDispatchTotalsLast5Days(),
     getTopPendingOrdersByBalance(5),
     getTopCustomersByVolumeLastMonth(5),
-    listCustomers(),
+    listCustomers({ activeOnly: true }),
     listStaff(),
     listPortOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
-    listVessels(),
+    listVessels({ activeOnly: true }),
     listTransporters(),
     listQualityClasses(),
     suggestNextPoNumber(),
@@ -76,9 +75,7 @@ export default async function HomePage() {
     category: c.category,
     creditDays: c.creditDays,
   }));
-  const importerOpts = customers
-    .filter((c) => c.category === CustomerCategory.SUPPLIER)
-    .map((c) => ({ id: c.id, name: c.name }));
+  const importerOpts = customers.map((c) => ({ id: c.id, name: c.name }));
   const staffOpts = staff.map((s) => ({ id: s.id, name: s.name }));
   const portOpts = ports.map((p) => ({ id: p.id, name: p.name }));
   const qualityClassOpts = qualityClasses.map((qc) => ({
@@ -118,6 +115,7 @@ export default async function HomePage() {
             balanceOrder: p.balanceOrder?.toString() ?? null,
             importer: p.importer,
             vessel: p.vessel,
+            qualityClass: p.qualityClass,
           }))}
           vessels={vessels.map((v) => ({
             id: v.id,

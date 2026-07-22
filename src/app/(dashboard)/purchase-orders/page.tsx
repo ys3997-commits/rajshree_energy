@@ -1,4 +1,4 @@
-import { CustomerCategory, PurchaseOrderStatus } from "@/generated/prisma";
+import { PurchaseOrderStatus } from "@/generated/prisma";
 import {
   listPurchaseOrders,
   suggestNextPurchasePoNumber,
@@ -37,14 +37,13 @@ export default async function PurchaseOrdersPage({
       importerId: sp.importerId || "",
       vesselId: sp.vesselId || "",
     }),
-    listCustomers(),
+    listCustomers({ activeOnly: true }),
     listVessels(),
     suggestNextPurchasePoNumber(),
   ]);
 
-  const importers = customers
-    .filter((c) => c.category === CustomerCategory.SUPPLIER)
-    .map((c) => ({ id: c.id, name: c.name }));
+  const importers = customers.map((c) => ({ id: c.id, name: c.name }));
+  const activeVessels = vessels.filter((v) => v.active);
 
   return (
     <div>
@@ -57,7 +56,7 @@ export default async function PurchaseOrdersPage({
         </div>
         <CreatePurchaseOrderButton
           importers={importers}
-          vessels={vessels.map((v) => ({
+          vessels={activeVessels.map((v) => ({
             id: v.id,
             vesselName: v.vesselName,
             qualityClassId: v.qualityClassId,
@@ -115,8 +114,8 @@ export default async function PurchaseOrdersPage({
               <th>Quantity (MT)</th>
               <th>Dispatched (MT)</th>
               <th>Balance (MT)</th>
-              <th>Rate (Rs)</th>
-              <th>Final rate (Rs)</th>
+              <th>Basic rate</th>
+              <th>Final rate</th>
               <th>Status</th>
             </tr>
           </thead>

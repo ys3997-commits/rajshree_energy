@@ -14,6 +14,10 @@ import {
   withPurchaseOrderComputed,
   type DecimalLike,
 } from "@/lib/domain/computations";
+import {
+  nextPurchaseOrderNumber,
+  normalizePurchaseOrderNumber,
+} from "@/lib/domain/orderNumbers";
 
 export type PurchaseOrderFilters = {
   status?: PurchaseOrderStatus | "";
@@ -77,6 +81,12 @@ export async function listPurchaseOrdersWithBalance() {
     include: {
       importer: { select: { name: true } },
       vessel: { select: { vesselName: true } },
+      qualityClass: {
+        include: {
+          origin: { select: { name: true } },
+          qualityOption: { select: { name: true } },
+        },
+      },
     },
     orderBy: { poNumber: "asc" },
   });
@@ -85,19 +95,13 @@ export async function listPurchaseOrdersWithBalance() {
     .filter((o) => o.balanceOrder == null || o.balanceOrder.gt(0));
 }
 
-/** Suggest next sequential purchase PO like PU-1, PU-2, … */
+/** Suggest next sequential purchase order number (PO 0001, PO 0002, …). */
 export async function suggestNextPurchasePoNumber(): Promise<string> {
   const rows = await prisma.purchaseOrder.findMany({
     select: { poNumber: true },
   });
 
-  let max = 0;
-  for (const row of rows) {
-    const m = /^PU-(\d+)$/i.exec(row.poNumber);
-    if (m) max = Math.max(max, Number(m[1]));
-  }
-
-  return `PU-${max + 1}`;
+  return nextPurchaseOrderNumber(rows.map((row) => row.poNumber));
 }
 
 export type CreateRegularPurchaseOrderInput = {
@@ -138,7 +142,7 @@ export async function createRegularPurchaseOrder(
 
   const order = await prisma.purchaseOrder.create({
     data: {
-      poNumber: input.poNumber.trim(),
+      poNumber: normalizePurchaseOrderNumber(input.poNumber),
       orderType: OrderType.REGULAR,
       importerId: input.importerId,
       vesselId: input.vesselId,
@@ -184,7 +188,7 @@ export async function createOpenPurchaseOrder(
 
   const order = await prisma.purchaseOrder.create({
     data: {
-      poNumber: input.poNumber.trim(),
+      poNumber: normalizePurchaseOrderNumber(input.poNumber),
       orderType: OrderType.OPEN,
       importerId: input.importerId,
       vesselId: input.vesselId,
@@ -206,6 +210,7 @@ export async function createOpenPurchaseOrder(
 export async function updatePurchaseOrderFields(
   id: string,
   data: {
+    poNumber?: string;
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     qualityClassId?: string | null;
@@ -213,6 +218,17 @@ export async function updatePurchaseOrderFields(
 ) {
   const existing = await prisma.purchaseOrder.findUnique({ where: { id } });
   if (!existing) throw new Error("Purchase order not found");
+
+  let poNumber = existing.poNumber;
+  if (data.poNumber !== undefined) {
+    poNumber = normalizePurchaseOrderNumber(data.poNumber);
+    if (poNumber !== existing.poNumber) {
+      const taken = await prisma.purchaseOrder.findUnique({ where: { poNumber } });
+      if (taken) {
+        throw new Error(`Purchase order number ${poNumber} is already taken`);
+      }
+    }
+  }
 
   const quantity =
     data.quantity !== undefined ? toDecimal(data.quantity) : existing.quantity;
@@ -238,6 +254,7 @@ export async function updatePurchaseOrderFields(
   const order = await prisma.purchaseOrder.update({
     where: { id },
     data: {
+      poNumber,
       quantity,
       rate,
       ...(finalRate !== undefined ? { finalRate } : {}),

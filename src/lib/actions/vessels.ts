@@ -8,8 +8,9 @@ const qualityClassInclude = {
   qualityOption: { select: { id: true, name: true } },
 } as const;
 
-export async function listVessels() {
+export async function listVessels(options?: { activeOnly?: boolean }) {
   return prisma.vessel.findMany({
+    where: options?.activeOnly ? { active: true } : undefined,
     include: {
       qualityClass: { include: qualityClassInclude },
       port: { select: { id: true, name: true } },
@@ -20,36 +21,59 @@ export async function listVessels() {
 
 export type VesselInput = {
   vesselName: string;
-  qualityClassId?: string | null;
-  portId?: string | null;
+  qualityClassId: string;
+  portId: string;
+  active?: boolean;
 };
 
+function validateVesselInput(input: VesselInput) {
+  if (!input.vesselName.trim()) throw new Error("Vessel name is required");
+  if (!input.qualityClassId) throw new Error("Quality class is required");
+  if (!input.portId) throw new Error("Port is required");
+}
+
+function vesselRelationData(input: VesselInput) {
+  return {
+    vesselName: input.vesselName.trim(),
+    active: input.active ?? true,
+    qualityClass: { connect: { id: input.qualityClassId } },
+    port: { connect: { id: input.portId } },
+  };
+}
+
 export async function createVessel(input: VesselInput) {
+  validateVesselInput(input);
+
   const row = await prisma.vessel.create({
-    data: {
-      vesselName: input.vesselName,
-      qualityClassId: input.qualityClassId || null,
-      portId: input.portId || null,
-    },
+    data: vesselRelationData(input),
   });
   revalidatePath("/vessels");
   return { id: row.id };
 }
 
 export async function updateVessel(id: string, input: VesselInput) {
+  validateVesselInput(input);
+
   const existing = await prisma.vessel.findUnique({ where: { id } });
   if (!existing) throw new Error("Vessel not found");
 
   const row = await prisma.vessel.update({
     where: { id },
-    data: {
-      vesselName: input.vesselName,
-      qualityClassId: input.qualityClassId || null,
-      portId: input.portId || null,
-    },
+    data: vesselRelationData(input),
   });
   revalidatePath("/vessels");
   return { id: row.id };
+}
+
+export async function updateVesselActive(id: string, active: boolean) {
+  const existing = await prisma.vessel.findUnique({ where: { id } });
+  if (!existing) throw new Error("Vessel not found");
+
+  await prisma.vessel.update({
+    where: { id },
+    data: { active },
+  });
+  revalidatePath("/vessels");
 }
 
 export async function deleteVessel(id: string) {

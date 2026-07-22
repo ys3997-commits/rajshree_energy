@@ -164,6 +164,34 @@ exports.Prisma.PortOptionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.SaleExecutiveOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CityOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StateOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SectorOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.QualityClassScalarFieldEnum = {
   id: 'id',
   originId: 'originId',
@@ -177,6 +205,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   id: 'id',
   name: 'name',
   category: 'category',
+  active: 'active',
   ownerName: 'ownerName',
   ownerContact: 'ownerContact',
   purchaserName: 'purchaserName',
@@ -192,6 +221,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   state: 'state',
   creditDays: 'creditDays',
   sector: 'sector',
+  saleExecutive: 'saleExecutive',
   dealById: 'dealById',
   approachForFundsId: 'approachForFundsId',
   createdAt: 'createdAt',
@@ -203,6 +233,7 @@ exports.Prisma.VesselScalarFieldEnum = {
   vesselName: 'vesselName',
   qualityClassId: 'qualityClassId',
   portId: 'portId',
+  active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -319,6 +350,10 @@ exports.Prisma.ModelName = {
   OriginOption: 'OriginOption',
   QualityOption: 'QualityOption',
   PortOption: 'PortOption',
+  SaleExecutiveOption: 'SaleExecutiveOption',
+  CityOption: 'CityOption',
+  StateOption: 'StateOption',
+  SectorOption: 'SectorOption',
   QualityClass: 'QualityClass',
   Customer: 'Customer',
   Vessel: 'Vessel',

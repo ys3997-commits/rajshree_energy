@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CustomerCategory, ReceiptStatus } from "@/generated/prisma";
+import { ReceiptStatus } from "@/generated/prisma";
 import { listDispatches } from "@/lib/actions/receipts";
 import { listCustomers } from "@/lib/actions/customers";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
@@ -50,7 +50,7 @@ export default async function DispatchesPage({
       importerId: sp.importerId || "",
       dispatchDate: sp.dispatchDate || "",
     }),
-    listCustomers(),
+    listCustomers({ activeOnly: true }),
     listVessels(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
@@ -60,10 +60,12 @@ export default async function DispatchesPage({
     suggestNextPurchasePoNumber(),
   ]);
 
-  const customerOpts = customers.map((c) => ({ id: c.id, name: c.name }));
-  const importerOpts = customers
-    .filter((c) => c.category === CustomerCategory.SUPPLIER)
-    .map((c) => ({ id: c.id, name: c.name }));
+  const customerOpts = customers.map((c) => ({
+    id: c.id,
+    name: c.name,
+    category: c.category,
+  }));
+  const activeVessels = vessels.filter((v) => v.active);
 
   return (
     <div>
@@ -85,11 +87,11 @@ export default async function DispatchesPage({
             balanceOrder: p.balanceOrder?.toString() ?? null,
             importer: p.importer,
             vessel: p.vessel,
+            qualityClass: p.qualityClass,
           }))}
           transporters={transporters.map((t) => ({ id: t.id, name: t.name }))}
           customers={customerOpts}
-          importers={importerOpts}
-          vessels={vessels.map((v) => ({
+          vessels={activeVessels.map((v) => ({
             id: v.id,
             vesselName: v.vesselName,
           }))}

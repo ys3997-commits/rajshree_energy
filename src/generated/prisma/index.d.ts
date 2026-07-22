@@ -39,6 +39,26 @@ export type QualityOption = $Result.DefaultSelection<Prisma.$QualityOptionPayloa
  */
 export type PortOption = $Result.DefaultSelection<Prisma.$PortOptionPayload>
 /**
+ * Model SaleExecutiveOption
+ * Managed list of sales executives (suggested on customers; stored as text).
+ */
+export type SaleExecutiveOption = $Result.DefaultSelection<Prisma.$SaleExecutiveOptionPayload>
+/**
+ * Model CityOption
+ * Managed list of cities (suggested on customers/transporters; stored as text).
+ */
+export type CityOption = $Result.DefaultSelection<Prisma.$CityOptionPayload>
+/**
+ * Model StateOption
+ * Managed list of states (suggested on customers/transporters; stored as text).
+ */
+export type StateOption = $Result.DefaultSelection<Prisma.$StateOptionPayload>
+/**
+ * Model SectorOption
+ * Managed list of industry sectors (suggested on customers; stored as text).
+ */
+export type SectorOption = $Result.DefaultSelection<Prisma.$SectorOptionPayload>
+/**
  * Model QualityClass
  * A coal quality class: origin + domestic flag + quality grade.
  */
@@ -321,6 +341,46 @@ export class PrismaClient<
     * ```
     */
   get portOption(): Prisma.PortOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.saleExecutiveOption`: Exposes CRUD operations for the **SaleExecutiveOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SaleExecutiveOptions
+    * const saleExecutiveOptions = await prisma.saleExecutiveOption.findMany()
+    * ```
+    */
+  get saleExecutiveOption(): Prisma.SaleExecutiveOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.cityOption`: Exposes CRUD operations for the **CityOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CityOptions
+    * const cityOptions = await prisma.cityOption.findMany()
+    * ```
+    */
+  get cityOption(): Prisma.CityOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.stateOption`: Exposes CRUD operations for the **StateOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StateOptions
+    * const stateOptions = await prisma.stateOption.findMany()
+    * ```
+    */
+  get stateOption(): Prisma.StateOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.sectorOption`: Exposes CRUD operations for the **SectorOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SectorOptions
+    * const sectorOptions = await prisma.sectorOption.findMany()
+    * ```
+    */
+  get sectorOption(): Prisma.SectorOptionDelegate<ExtArgs>;
 
   /**
    * `prisma.qualityClass`: Exposes CRUD operations for the **QualityClass** model.
@@ -827,6 +887,10 @@ export namespace Prisma {
     OriginOption: 'OriginOption',
     QualityOption: 'QualityOption',
     PortOption: 'PortOption',
+    SaleExecutiveOption: 'SaleExecutiveOption',
+    CityOption: 'CityOption',
+    StateOption: 'StateOption',
+    SectorOption: 'SectorOption',
     QualityClass: 'QualityClass',
     Customer: 'Customer',
     Vessel: 'Vessel',
@@ -848,7 +912,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1199,6 +1263,286 @@ export namespace Prisma {
           count: {
             args: Prisma.PortOptionCountArgs<ExtArgs>
             result: $Utils.Optional<PortOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      SaleExecutiveOption: {
+        payload: Prisma.$SaleExecutiveOptionPayload<ExtArgs>
+        fields: Prisma.SaleExecutiveOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SaleExecutiveOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SaleExecutiveOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.SaleExecutiveOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SaleExecutiveOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>
+          }
+          findMany: {
+            args: Prisma.SaleExecutiveOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>[]
+          }
+          create: {
+            args: Prisma.SaleExecutiveOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>
+          }
+          createMany: {
+            args: Prisma.SaleExecutiveOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SaleExecutiveOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.SaleExecutiveOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>
+          }
+          update: {
+            args: Prisma.SaleExecutiveOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.SaleExecutiveOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SaleExecutiveOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SaleExecutiveOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SaleExecutiveOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.SaleExecutiveOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSaleExecutiveOption>
+          }
+          groupBy: {
+            args: Prisma.SaleExecutiveOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SaleExecutiveOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SaleExecutiveOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<SaleExecutiveOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      CityOption: {
+        payload: Prisma.$CityOptionPayload<ExtArgs>
+        fields: Prisma.CityOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CityOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CityOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.CityOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CityOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>
+          }
+          findMany: {
+            args: Prisma.CityOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>[]
+          }
+          create: {
+            args: Prisma.CityOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>
+          }
+          createMany: {
+            args: Prisma.CityOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CityOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.CityOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>
+          }
+          update: {
+            args: Prisma.CityOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.CityOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CityOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CityOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CityOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.CityOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCityOption>
+          }
+          groupBy: {
+            args: Prisma.CityOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CityOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CityOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<CityOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      StateOption: {
+        payload: Prisma.$StateOptionPayload<ExtArgs>
+        fields: Prisma.StateOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StateOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StateOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.StateOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StateOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>
+          }
+          findMany: {
+            args: Prisma.StateOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>[]
+          }
+          create: {
+            args: Prisma.StateOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>
+          }
+          createMany: {
+            args: Prisma.StateOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StateOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.StateOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>
+          }
+          update: {
+            args: Prisma.StateOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.StateOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StateOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.StateOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StateOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.StateOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStateOption>
+          }
+          groupBy: {
+            args: Prisma.StateOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StateOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StateOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<StateOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      SectorOption: {
+        payload: Prisma.$SectorOptionPayload<ExtArgs>
+        fields: Prisma.SectorOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SectorOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SectorOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.SectorOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SectorOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>
+          }
+          findMany: {
+            args: Prisma.SectorOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>[]
+          }
+          create: {
+            args: Prisma.SectorOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>
+          }
+          createMany: {
+            args: Prisma.SectorOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.SectorOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.SectorOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>
+          }
+          update: {
+            args: Prisma.SectorOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.SectorOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SectorOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SectorOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SectorOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.SectorOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSectorOption>
+          }
+          groupBy: {
+            args: Prisma.SectorOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SectorOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SectorOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<SectorOptionCountAggregateOutputType> | number
           }
         }
       }
@@ -7004,6 +7348,3470 @@ export namespace Prisma {
 
 
   /**
+   * Model SaleExecutiveOption
+   */
+
+  export type AggregateSaleExecutiveOption = {
+    _count: SaleExecutiveOptionCountAggregateOutputType | null
+    _min: SaleExecutiveOptionMinAggregateOutputType | null
+    _max: SaleExecutiveOptionMaxAggregateOutputType | null
+  }
+
+  export type SaleExecutiveOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SaleExecutiveOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SaleExecutiveOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SaleExecutiveOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SaleExecutiveOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SaleExecutiveOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SaleExecutiveOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SaleExecutiveOption to aggregate.
+     */
+    where?: SaleExecutiveOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SaleExecutiveOptions to fetch.
+     */
+    orderBy?: SaleExecutiveOptionOrderByWithRelationInput | SaleExecutiveOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SaleExecutiveOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SaleExecutiveOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SaleExecutiveOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SaleExecutiveOptions
+    **/
+    _count?: true | SaleExecutiveOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SaleExecutiveOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SaleExecutiveOptionMaxAggregateInputType
+  }
+
+  export type GetSaleExecutiveOptionAggregateType<T extends SaleExecutiveOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateSaleExecutiveOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSaleExecutiveOption[P]>
+      : GetScalarType<T[P], AggregateSaleExecutiveOption[P]>
+  }
+
+
+
+
+  export type SaleExecutiveOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SaleExecutiveOptionWhereInput
+    orderBy?: SaleExecutiveOptionOrderByWithAggregationInput | SaleExecutiveOptionOrderByWithAggregationInput[]
+    by: SaleExecutiveOptionScalarFieldEnum[] | SaleExecutiveOptionScalarFieldEnum
+    having?: SaleExecutiveOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SaleExecutiveOptionCountAggregateInputType | true
+    _min?: SaleExecutiveOptionMinAggregateInputType
+    _max?: SaleExecutiveOptionMaxAggregateInputType
+  }
+
+  export type SaleExecutiveOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: SaleExecutiveOptionCountAggregateOutputType | null
+    _min: SaleExecutiveOptionMinAggregateOutputType | null
+    _max: SaleExecutiveOptionMaxAggregateOutputType | null
+  }
+
+  type GetSaleExecutiveOptionGroupByPayload<T extends SaleExecutiveOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SaleExecutiveOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SaleExecutiveOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SaleExecutiveOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], SaleExecutiveOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SaleExecutiveOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["saleExecutiveOption"]>
+
+  export type SaleExecutiveOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["saleExecutiveOption"]>
+
+  export type SaleExecutiveOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $SaleExecutiveOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SaleExecutiveOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["saleExecutiveOption"]>
+    composites: {}
+  }
+
+  type SaleExecutiveOptionGetPayload<S extends boolean | null | undefined | SaleExecutiveOptionDefaultArgs> = $Result.GetResult<Prisma.$SaleExecutiveOptionPayload, S>
+
+  type SaleExecutiveOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SaleExecutiveOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SaleExecutiveOptionCountAggregateInputType | true
+    }
+
+  export interface SaleExecutiveOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SaleExecutiveOption'], meta: { name: 'SaleExecutiveOption' } }
+    /**
+     * Find zero or one SaleExecutiveOption that matches the filter.
+     * @param {SaleExecutiveOptionFindUniqueArgs} args - Arguments to find a SaleExecutiveOption
+     * @example
+     * // Get one SaleExecutiveOption
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SaleExecutiveOptionFindUniqueArgs>(args: SelectSubset<T, SaleExecutiveOptionFindUniqueArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one SaleExecutiveOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SaleExecutiveOptionFindUniqueOrThrowArgs} args - Arguments to find a SaleExecutiveOption
+     * @example
+     * // Get one SaleExecutiveOption
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SaleExecutiveOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, SaleExecutiveOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first SaleExecutiveOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionFindFirstArgs} args - Arguments to find a SaleExecutiveOption
+     * @example
+     * // Get one SaleExecutiveOption
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SaleExecutiveOptionFindFirstArgs>(args?: SelectSubset<T, SaleExecutiveOptionFindFirstArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first SaleExecutiveOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionFindFirstOrThrowArgs} args - Arguments to find a SaleExecutiveOption
+     * @example
+     * // Get one SaleExecutiveOption
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SaleExecutiveOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, SaleExecutiveOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more SaleExecutiveOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SaleExecutiveOptions
+     * const saleExecutiveOptions = await prisma.saleExecutiveOption.findMany()
+     * 
+     * // Get first 10 SaleExecutiveOptions
+     * const saleExecutiveOptions = await prisma.saleExecutiveOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const saleExecutiveOptionWithIdOnly = await prisma.saleExecutiveOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SaleExecutiveOptionFindManyArgs>(args?: SelectSubset<T, SaleExecutiveOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a SaleExecutiveOption.
+     * @param {SaleExecutiveOptionCreateArgs} args - Arguments to create a SaleExecutiveOption.
+     * @example
+     * // Create one SaleExecutiveOption
+     * const SaleExecutiveOption = await prisma.saleExecutiveOption.create({
+     *   data: {
+     *     // ... data to create a SaleExecutiveOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends SaleExecutiveOptionCreateArgs>(args: SelectSubset<T, SaleExecutiveOptionCreateArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many SaleExecutiveOptions.
+     * @param {SaleExecutiveOptionCreateManyArgs} args - Arguments to create many SaleExecutiveOptions.
+     * @example
+     * // Create many SaleExecutiveOptions
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SaleExecutiveOptionCreateManyArgs>(args?: SelectSubset<T, SaleExecutiveOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SaleExecutiveOptions and returns the data saved in the database.
+     * @param {SaleExecutiveOptionCreateManyAndReturnArgs} args - Arguments to create many SaleExecutiveOptions.
+     * @example
+     * // Create many SaleExecutiveOptions
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SaleExecutiveOptions and only return the `id`
+     * const saleExecutiveOptionWithIdOnly = await prisma.saleExecutiveOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SaleExecutiveOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, SaleExecutiveOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a SaleExecutiveOption.
+     * @param {SaleExecutiveOptionDeleteArgs} args - Arguments to delete one SaleExecutiveOption.
+     * @example
+     * // Delete one SaleExecutiveOption
+     * const SaleExecutiveOption = await prisma.saleExecutiveOption.delete({
+     *   where: {
+     *     // ... filter to delete one SaleExecutiveOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SaleExecutiveOptionDeleteArgs>(args: SelectSubset<T, SaleExecutiveOptionDeleteArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one SaleExecutiveOption.
+     * @param {SaleExecutiveOptionUpdateArgs} args - Arguments to update one SaleExecutiveOption.
+     * @example
+     * // Update one SaleExecutiveOption
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SaleExecutiveOptionUpdateArgs>(args: SelectSubset<T, SaleExecutiveOptionUpdateArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more SaleExecutiveOptions.
+     * @param {SaleExecutiveOptionDeleteManyArgs} args - Arguments to filter SaleExecutiveOptions to delete.
+     * @example
+     * // Delete a few SaleExecutiveOptions
+     * const { count } = await prisma.saleExecutiveOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SaleExecutiveOptionDeleteManyArgs>(args?: SelectSubset<T, SaleExecutiveOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SaleExecutiveOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SaleExecutiveOptions
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SaleExecutiveOptionUpdateManyArgs>(args: SelectSubset<T, SaleExecutiveOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SaleExecutiveOption.
+     * @param {SaleExecutiveOptionUpsertArgs} args - Arguments to update or create a SaleExecutiveOption.
+     * @example
+     * // Update or create a SaleExecutiveOption
+     * const saleExecutiveOption = await prisma.saleExecutiveOption.upsert({
+     *   create: {
+     *     // ... data to create a SaleExecutiveOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SaleExecutiveOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SaleExecutiveOptionUpsertArgs>(args: SelectSubset<T, SaleExecutiveOptionUpsertArgs<ExtArgs>>): Prisma__SaleExecutiveOptionClient<$Result.GetResult<Prisma.$SaleExecutiveOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of SaleExecutiveOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionCountArgs} args - Arguments to filter SaleExecutiveOptions to count.
+     * @example
+     * // Count the number of SaleExecutiveOptions
+     * const count = await prisma.saleExecutiveOption.count({
+     *   where: {
+     *     // ... the filter for the SaleExecutiveOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends SaleExecutiveOptionCountArgs>(
+      args?: Subset<T, SaleExecutiveOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SaleExecutiveOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SaleExecutiveOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SaleExecutiveOptionAggregateArgs>(args: Subset<T, SaleExecutiveOptionAggregateArgs>): Prisma.PrismaPromise<GetSaleExecutiveOptionAggregateType<T>>
+
+    /**
+     * Group by SaleExecutiveOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SaleExecutiveOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SaleExecutiveOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SaleExecutiveOptionGroupByArgs['orderBy'] }
+        : { orderBy?: SaleExecutiveOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SaleExecutiveOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSaleExecutiveOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SaleExecutiveOption model
+   */
+  readonly fields: SaleExecutiveOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SaleExecutiveOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SaleExecutiveOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SaleExecutiveOption model
+   */ 
+  interface SaleExecutiveOptionFieldRefs {
+    readonly id: FieldRef<"SaleExecutiveOption", 'String'>
+    readonly name: FieldRef<"SaleExecutiveOption", 'String'>
+    readonly createdAt: FieldRef<"SaleExecutiveOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"SaleExecutiveOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SaleExecutiveOption findUnique
+   */
+  export type SaleExecutiveOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SaleExecutiveOption to fetch.
+     */
+    where: SaleExecutiveOptionWhereUniqueInput
+  }
+
+  /**
+   * SaleExecutiveOption findUniqueOrThrow
+   */
+  export type SaleExecutiveOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SaleExecutiveOption to fetch.
+     */
+    where: SaleExecutiveOptionWhereUniqueInput
+  }
+
+  /**
+   * SaleExecutiveOption findFirst
+   */
+  export type SaleExecutiveOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SaleExecutiveOption to fetch.
+     */
+    where?: SaleExecutiveOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SaleExecutiveOptions to fetch.
+     */
+    orderBy?: SaleExecutiveOptionOrderByWithRelationInput | SaleExecutiveOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SaleExecutiveOptions.
+     */
+    cursor?: SaleExecutiveOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SaleExecutiveOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SaleExecutiveOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SaleExecutiveOptions.
+     */
+    distinct?: SaleExecutiveOptionScalarFieldEnum | SaleExecutiveOptionScalarFieldEnum[]
+  }
+
+  /**
+   * SaleExecutiveOption findFirstOrThrow
+   */
+  export type SaleExecutiveOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SaleExecutiveOption to fetch.
+     */
+    where?: SaleExecutiveOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SaleExecutiveOptions to fetch.
+     */
+    orderBy?: SaleExecutiveOptionOrderByWithRelationInput | SaleExecutiveOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SaleExecutiveOptions.
+     */
+    cursor?: SaleExecutiveOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SaleExecutiveOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SaleExecutiveOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SaleExecutiveOptions.
+     */
+    distinct?: SaleExecutiveOptionScalarFieldEnum | SaleExecutiveOptionScalarFieldEnum[]
+  }
+
+  /**
+   * SaleExecutiveOption findMany
+   */
+  export type SaleExecutiveOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SaleExecutiveOptions to fetch.
+     */
+    where?: SaleExecutiveOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SaleExecutiveOptions to fetch.
+     */
+    orderBy?: SaleExecutiveOptionOrderByWithRelationInput | SaleExecutiveOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SaleExecutiveOptions.
+     */
+    cursor?: SaleExecutiveOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SaleExecutiveOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SaleExecutiveOptions.
+     */
+    skip?: number
+    distinct?: SaleExecutiveOptionScalarFieldEnum | SaleExecutiveOptionScalarFieldEnum[]
+  }
+
+  /**
+   * SaleExecutiveOption create
+   */
+  export type SaleExecutiveOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a SaleExecutiveOption.
+     */
+    data: XOR<SaleExecutiveOptionCreateInput, SaleExecutiveOptionUncheckedCreateInput>
+  }
+
+  /**
+   * SaleExecutiveOption createMany
+   */
+  export type SaleExecutiveOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SaleExecutiveOptions.
+     */
+    data: SaleExecutiveOptionCreateManyInput | SaleExecutiveOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SaleExecutiveOption createManyAndReturn
+   */
+  export type SaleExecutiveOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many SaleExecutiveOptions.
+     */
+    data: SaleExecutiveOptionCreateManyInput | SaleExecutiveOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SaleExecutiveOption update
+   */
+  export type SaleExecutiveOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a SaleExecutiveOption.
+     */
+    data: XOR<SaleExecutiveOptionUpdateInput, SaleExecutiveOptionUncheckedUpdateInput>
+    /**
+     * Choose, which SaleExecutiveOption to update.
+     */
+    where: SaleExecutiveOptionWhereUniqueInput
+  }
+
+  /**
+   * SaleExecutiveOption updateMany
+   */
+  export type SaleExecutiveOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SaleExecutiveOptions.
+     */
+    data: XOR<SaleExecutiveOptionUpdateManyMutationInput, SaleExecutiveOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which SaleExecutiveOptions to update
+     */
+    where?: SaleExecutiveOptionWhereInput
+  }
+
+  /**
+   * SaleExecutiveOption upsert
+   */
+  export type SaleExecutiveOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the SaleExecutiveOption to update in case it exists.
+     */
+    where: SaleExecutiveOptionWhereUniqueInput
+    /**
+     * In case the SaleExecutiveOption found by the `where` argument doesn't exist, create a new SaleExecutiveOption with this data.
+     */
+    create: XOR<SaleExecutiveOptionCreateInput, SaleExecutiveOptionUncheckedCreateInput>
+    /**
+     * In case the SaleExecutiveOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SaleExecutiveOptionUpdateInput, SaleExecutiveOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * SaleExecutiveOption delete
+   */
+  export type SaleExecutiveOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+    /**
+     * Filter which SaleExecutiveOption to delete.
+     */
+    where: SaleExecutiveOptionWhereUniqueInput
+  }
+
+  /**
+   * SaleExecutiveOption deleteMany
+   */
+  export type SaleExecutiveOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SaleExecutiveOptions to delete
+     */
+    where?: SaleExecutiveOptionWhereInput
+  }
+
+  /**
+   * SaleExecutiveOption without action
+   */
+  export type SaleExecutiveOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SaleExecutiveOption
+     */
+    select?: SaleExecutiveOptionSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CityOption
+   */
+
+  export type AggregateCityOption = {
+    _count: CityOptionCountAggregateOutputType | null
+    _min: CityOptionMinAggregateOutputType | null
+    _max: CityOptionMaxAggregateOutputType | null
+  }
+
+  export type CityOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CityOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CityOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CityOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CityOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CityOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CityOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CityOption to aggregate.
+     */
+    where?: CityOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CityOptions to fetch.
+     */
+    orderBy?: CityOptionOrderByWithRelationInput | CityOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CityOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CityOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CityOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CityOptions
+    **/
+    _count?: true | CityOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CityOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CityOptionMaxAggregateInputType
+  }
+
+  export type GetCityOptionAggregateType<T extends CityOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateCityOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCityOption[P]>
+      : GetScalarType<T[P], AggregateCityOption[P]>
+  }
+
+
+
+
+  export type CityOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CityOptionWhereInput
+    orderBy?: CityOptionOrderByWithAggregationInput | CityOptionOrderByWithAggregationInput[]
+    by: CityOptionScalarFieldEnum[] | CityOptionScalarFieldEnum
+    having?: CityOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CityOptionCountAggregateInputType | true
+    _min?: CityOptionMinAggregateInputType
+    _max?: CityOptionMaxAggregateInputType
+  }
+
+  export type CityOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: CityOptionCountAggregateOutputType | null
+    _min: CityOptionMinAggregateOutputType | null
+    _max: CityOptionMaxAggregateOutputType | null
+  }
+
+  type GetCityOptionGroupByPayload<T extends CityOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CityOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CityOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CityOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], CityOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CityOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["cityOption"]>
+
+  export type CityOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["cityOption"]>
+
+  export type CityOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $CityOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CityOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["cityOption"]>
+    composites: {}
+  }
+
+  type CityOptionGetPayload<S extends boolean | null | undefined | CityOptionDefaultArgs> = $Result.GetResult<Prisma.$CityOptionPayload, S>
+
+  type CityOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CityOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CityOptionCountAggregateInputType | true
+    }
+
+  export interface CityOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CityOption'], meta: { name: 'CityOption' } }
+    /**
+     * Find zero or one CityOption that matches the filter.
+     * @param {CityOptionFindUniqueArgs} args - Arguments to find a CityOption
+     * @example
+     * // Get one CityOption
+     * const cityOption = await prisma.cityOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CityOptionFindUniqueArgs>(args: SelectSubset<T, CityOptionFindUniqueArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CityOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CityOptionFindUniqueOrThrowArgs} args - Arguments to find a CityOption
+     * @example
+     * // Get one CityOption
+     * const cityOption = await prisma.cityOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CityOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, CityOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CityOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionFindFirstArgs} args - Arguments to find a CityOption
+     * @example
+     * // Get one CityOption
+     * const cityOption = await prisma.cityOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CityOptionFindFirstArgs>(args?: SelectSubset<T, CityOptionFindFirstArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CityOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionFindFirstOrThrowArgs} args - Arguments to find a CityOption
+     * @example
+     * // Get one CityOption
+     * const cityOption = await prisma.cityOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CityOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, CityOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CityOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CityOptions
+     * const cityOptions = await prisma.cityOption.findMany()
+     * 
+     * // Get first 10 CityOptions
+     * const cityOptions = await prisma.cityOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cityOptionWithIdOnly = await prisma.cityOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CityOptionFindManyArgs>(args?: SelectSubset<T, CityOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CityOption.
+     * @param {CityOptionCreateArgs} args - Arguments to create a CityOption.
+     * @example
+     * // Create one CityOption
+     * const CityOption = await prisma.cityOption.create({
+     *   data: {
+     *     // ... data to create a CityOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends CityOptionCreateArgs>(args: SelectSubset<T, CityOptionCreateArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CityOptions.
+     * @param {CityOptionCreateManyArgs} args - Arguments to create many CityOptions.
+     * @example
+     * // Create many CityOptions
+     * const cityOption = await prisma.cityOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CityOptionCreateManyArgs>(args?: SelectSubset<T, CityOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CityOptions and returns the data saved in the database.
+     * @param {CityOptionCreateManyAndReturnArgs} args - Arguments to create many CityOptions.
+     * @example
+     * // Create many CityOptions
+     * const cityOption = await prisma.cityOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CityOptions and only return the `id`
+     * const cityOptionWithIdOnly = await prisma.cityOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CityOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, CityOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CityOption.
+     * @param {CityOptionDeleteArgs} args - Arguments to delete one CityOption.
+     * @example
+     * // Delete one CityOption
+     * const CityOption = await prisma.cityOption.delete({
+     *   where: {
+     *     // ... filter to delete one CityOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CityOptionDeleteArgs>(args: SelectSubset<T, CityOptionDeleteArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CityOption.
+     * @param {CityOptionUpdateArgs} args - Arguments to update one CityOption.
+     * @example
+     * // Update one CityOption
+     * const cityOption = await prisma.cityOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CityOptionUpdateArgs>(args: SelectSubset<T, CityOptionUpdateArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CityOptions.
+     * @param {CityOptionDeleteManyArgs} args - Arguments to filter CityOptions to delete.
+     * @example
+     * // Delete a few CityOptions
+     * const { count } = await prisma.cityOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CityOptionDeleteManyArgs>(args?: SelectSubset<T, CityOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CityOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CityOptions
+     * const cityOption = await prisma.cityOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CityOptionUpdateManyArgs>(args: SelectSubset<T, CityOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CityOption.
+     * @param {CityOptionUpsertArgs} args - Arguments to update or create a CityOption.
+     * @example
+     * // Update or create a CityOption
+     * const cityOption = await prisma.cityOption.upsert({
+     *   create: {
+     *     // ... data to create a CityOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CityOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CityOptionUpsertArgs>(args: SelectSubset<T, CityOptionUpsertArgs<ExtArgs>>): Prisma__CityOptionClient<$Result.GetResult<Prisma.$CityOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CityOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionCountArgs} args - Arguments to filter CityOptions to count.
+     * @example
+     * // Count the number of CityOptions
+     * const count = await prisma.cityOption.count({
+     *   where: {
+     *     // ... the filter for the CityOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends CityOptionCountArgs>(
+      args?: Subset<T, CityOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CityOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CityOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CityOptionAggregateArgs>(args: Subset<T, CityOptionAggregateArgs>): Prisma.PrismaPromise<GetCityOptionAggregateType<T>>
+
+    /**
+     * Group by CityOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CityOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CityOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CityOptionGroupByArgs['orderBy'] }
+        : { orderBy?: CityOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CityOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCityOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CityOption model
+   */
+  readonly fields: CityOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CityOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CityOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CityOption model
+   */ 
+  interface CityOptionFieldRefs {
+    readonly id: FieldRef<"CityOption", 'String'>
+    readonly name: FieldRef<"CityOption", 'String'>
+    readonly createdAt: FieldRef<"CityOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"CityOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CityOption findUnique
+   */
+  export type CityOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which CityOption to fetch.
+     */
+    where: CityOptionWhereUniqueInput
+  }
+
+  /**
+   * CityOption findUniqueOrThrow
+   */
+  export type CityOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which CityOption to fetch.
+     */
+    where: CityOptionWhereUniqueInput
+  }
+
+  /**
+   * CityOption findFirst
+   */
+  export type CityOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which CityOption to fetch.
+     */
+    where?: CityOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CityOptions to fetch.
+     */
+    orderBy?: CityOptionOrderByWithRelationInput | CityOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CityOptions.
+     */
+    cursor?: CityOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CityOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CityOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CityOptions.
+     */
+    distinct?: CityOptionScalarFieldEnum | CityOptionScalarFieldEnum[]
+  }
+
+  /**
+   * CityOption findFirstOrThrow
+   */
+  export type CityOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which CityOption to fetch.
+     */
+    where?: CityOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CityOptions to fetch.
+     */
+    orderBy?: CityOptionOrderByWithRelationInput | CityOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CityOptions.
+     */
+    cursor?: CityOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CityOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CityOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CityOptions.
+     */
+    distinct?: CityOptionScalarFieldEnum | CityOptionScalarFieldEnum[]
+  }
+
+  /**
+   * CityOption findMany
+   */
+  export type CityOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which CityOptions to fetch.
+     */
+    where?: CityOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CityOptions to fetch.
+     */
+    orderBy?: CityOptionOrderByWithRelationInput | CityOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CityOptions.
+     */
+    cursor?: CityOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CityOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CityOptions.
+     */
+    skip?: number
+    distinct?: CityOptionScalarFieldEnum | CityOptionScalarFieldEnum[]
+  }
+
+  /**
+   * CityOption create
+   */
+  export type CityOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a CityOption.
+     */
+    data: XOR<CityOptionCreateInput, CityOptionUncheckedCreateInput>
+  }
+
+  /**
+   * CityOption createMany
+   */
+  export type CityOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CityOptions.
+     */
+    data: CityOptionCreateManyInput | CityOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CityOption createManyAndReturn
+   */
+  export type CityOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CityOptions.
+     */
+    data: CityOptionCreateManyInput | CityOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CityOption update
+   */
+  export type CityOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a CityOption.
+     */
+    data: XOR<CityOptionUpdateInput, CityOptionUncheckedUpdateInput>
+    /**
+     * Choose, which CityOption to update.
+     */
+    where: CityOptionWhereUniqueInput
+  }
+
+  /**
+   * CityOption updateMany
+   */
+  export type CityOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CityOptions.
+     */
+    data: XOR<CityOptionUpdateManyMutationInput, CityOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which CityOptions to update
+     */
+    where?: CityOptionWhereInput
+  }
+
+  /**
+   * CityOption upsert
+   */
+  export type CityOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the CityOption to update in case it exists.
+     */
+    where: CityOptionWhereUniqueInput
+    /**
+     * In case the CityOption found by the `where` argument doesn't exist, create a new CityOption with this data.
+     */
+    create: XOR<CityOptionCreateInput, CityOptionUncheckedCreateInput>
+    /**
+     * In case the CityOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CityOptionUpdateInput, CityOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * CityOption delete
+   */
+  export type CityOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+    /**
+     * Filter which CityOption to delete.
+     */
+    where: CityOptionWhereUniqueInput
+  }
+
+  /**
+   * CityOption deleteMany
+   */
+  export type CityOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CityOptions to delete
+     */
+    where?: CityOptionWhereInput
+  }
+
+  /**
+   * CityOption without action
+   */
+  export type CityOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CityOption
+     */
+    select?: CityOptionSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model StateOption
+   */
+
+  export type AggregateStateOption = {
+    _count: StateOptionCountAggregateOutputType | null
+    _min: StateOptionMinAggregateOutputType | null
+    _max: StateOptionMaxAggregateOutputType | null
+  }
+
+  export type StateOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StateOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type StateOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type StateOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StateOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type StateOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type StateOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StateOption to aggregate.
+     */
+    where?: StateOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StateOptions to fetch.
+     */
+    orderBy?: StateOptionOrderByWithRelationInput | StateOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StateOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StateOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StateOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StateOptions
+    **/
+    _count?: true | StateOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StateOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StateOptionMaxAggregateInputType
+  }
+
+  export type GetStateOptionAggregateType<T extends StateOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateStateOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStateOption[P]>
+      : GetScalarType<T[P], AggregateStateOption[P]>
+  }
+
+
+
+
+  export type StateOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StateOptionWhereInput
+    orderBy?: StateOptionOrderByWithAggregationInput | StateOptionOrderByWithAggregationInput[]
+    by: StateOptionScalarFieldEnum[] | StateOptionScalarFieldEnum
+    having?: StateOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StateOptionCountAggregateInputType | true
+    _min?: StateOptionMinAggregateInputType
+    _max?: StateOptionMaxAggregateInputType
+  }
+
+  export type StateOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: StateOptionCountAggregateOutputType | null
+    _min: StateOptionMinAggregateOutputType | null
+    _max: StateOptionMaxAggregateOutputType | null
+  }
+
+  type GetStateOptionGroupByPayload<T extends StateOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StateOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StateOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StateOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], StateOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StateOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["stateOption"]>
+
+  export type StateOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["stateOption"]>
+
+  export type StateOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $StateOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StateOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["stateOption"]>
+    composites: {}
+  }
+
+  type StateOptionGetPayload<S extends boolean | null | undefined | StateOptionDefaultArgs> = $Result.GetResult<Prisma.$StateOptionPayload, S>
+
+  type StateOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<StateOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: StateOptionCountAggregateInputType | true
+    }
+
+  export interface StateOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StateOption'], meta: { name: 'StateOption' } }
+    /**
+     * Find zero or one StateOption that matches the filter.
+     * @param {StateOptionFindUniqueArgs} args - Arguments to find a StateOption
+     * @example
+     * // Get one StateOption
+     * const stateOption = await prisma.stateOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StateOptionFindUniqueArgs>(args: SelectSubset<T, StateOptionFindUniqueArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one StateOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {StateOptionFindUniqueOrThrowArgs} args - Arguments to find a StateOption
+     * @example
+     * // Get one StateOption
+     * const stateOption = await prisma.stateOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StateOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, StateOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first StateOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionFindFirstArgs} args - Arguments to find a StateOption
+     * @example
+     * // Get one StateOption
+     * const stateOption = await prisma.stateOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StateOptionFindFirstArgs>(args?: SelectSubset<T, StateOptionFindFirstArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first StateOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionFindFirstOrThrowArgs} args - Arguments to find a StateOption
+     * @example
+     * // Get one StateOption
+     * const stateOption = await prisma.stateOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StateOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, StateOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more StateOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StateOptions
+     * const stateOptions = await prisma.stateOption.findMany()
+     * 
+     * // Get first 10 StateOptions
+     * const stateOptions = await prisma.stateOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stateOptionWithIdOnly = await prisma.stateOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StateOptionFindManyArgs>(args?: SelectSubset<T, StateOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a StateOption.
+     * @param {StateOptionCreateArgs} args - Arguments to create a StateOption.
+     * @example
+     * // Create one StateOption
+     * const StateOption = await prisma.stateOption.create({
+     *   data: {
+     *     // ... data to create a StateOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends StateOptionCreateArgs>(args: SelectSubset<T, StateOptionCreateArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many StateOptions.
+     * @param {StateOptionCreateManyArgs} args - Arguments to create many StateOptions.
+     * @example
+     * // Create many StateOptions
+     * const stateOption = await prisma.stateOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StateOptionCreateManyArgs>(args?: SelectSubset<T, StateOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StateOptions and returns the data saved in the database.
+     * @param {StateOptionCreateManyAndReturnArgs} args - Arguments to create many StateOptions.
+     * @example
+     * // Create many StateOptions
+     * const stateOption = await prisma.stateOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StateOptions and only return the `id`
+     * const stateOptionWithIdOnly = await prisma.stateOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StateOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, StateOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a StateOption.
+     * @param {StateOptionDeleteArgs} args - Arguments to delete one StateOption.
+     * @example
+     * // Delete one StateOption
+     * const StateOption = await prisma.stateOption.delete({
+     *   where: {
+     *     // ... filter to delete one StateOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StateOptionDeleteArgs>(args: SelectSubset<T, StateOptionDeleteArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one StateOption.
+     * @param {StateOptionUpdateArgs} args - Arguments to update one StateOption.
+     * @example
+     * // Update one StateOption
+     * const stateOption = await prisma.stateOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StateOptionUpdateArgs>(args: SelectSubset<T, StateOptionUpdateArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more StateOptions.
+     * @param {StateOptionDeleteManyArgs} args - Arguments to filter StateOptions to delete.
+     * @example
+     * // Delete a few StateOptions
+     * const { count } = await prisma.stateOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StateOptionDeleteManyArgs>(args?: SelectSubset<T, StateOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StateOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StateOptions
+     * const stateOption = await prisma.stateOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StateOptionUpdateManyArgs>(args: SelectSubset<T, StateOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one StateOption.
+     * @param {StateOptionUpsertArgs} args - Arguments to update or create a StateOption.
+     * @example
+     * // Update or create a StateOption
+     * const stateOption = await prisma.stateOption.upsert({
+     *   create: {
+     *     // ... data to create a StateOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StateOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StateOptionUpsertArgs>(args: SelectSubset<T, StateOptionUpsertArgs<ExtArgs>>): Prisma__StateOptionClient<$Result.GetResult<Prisma.$StateOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of StateOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionCountArgs} args - Arguments to filter StateOptions to count.
+     * @example
+     * // Count the number of StateOptions
+     * const count = await prisma.stateOption.count({
+     *   where: {
+     *     // ... the filter for the StateOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends StateOptionCountArgs>(
+      args?: Subset<T, StateOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StateOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StateOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StateOptionAggregateArgs>(args: Subset<T, StateOptionAggregateArgs>): Prisma.PrismaPromise<GetStateOptionAggregateType<T>>
+
+    /**
+     * Group by StateOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StateOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StateOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StateOptionGroupByArgs['orderBy'] }
+        : { orderBy?: StateOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StateOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStateOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StateOption model
+   */
+  readonly fields: StateOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StateOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StateOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StateOption model
+   */ 
+  interface StateOptionFieldRefs {
+    readonly id: FieldRef<"StateOption", 'String'>
+    readonly name: FieldRef<"StateOption", 'String'>
+    readonly createdAt: FieldRef<"StateOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"StateOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StateOption findUnique
+   */
+  export type StateOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which StateOption to fetch.
+     */
+    where: StateOptionWhereUniqueInput
+  }
+
+  /**
+   * StateOption findUniqueOrThrow
+   */
+  export type StateOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which StateOption to fetch.
+     */
+    where: StateOptionWhereUniqueInput
+  }
+
+  /**
+   * StateOption findFirst
+   */
+  export type StateOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which StateOption to fetch.
+     */
+    where?: StateOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StateOptions to fetch.
+     */
+    orderBy?: StateOptionOrderByWithRelationInput | StateOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StateOptions.
+     */
+    cursor?: StateOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StateOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StateOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StateOptions.
+     */
+    distinct?: StateOptionScalarFieldEnum | StateOptionScalarFieldEnum[]
+  }
+
+  /**
+   * StateOption findFirstOrThrow
+   */
+  export type StateOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which StateOption to fetch.
+     */
+    where?: StateOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StateOptions to fetch.
+     */
+    orderBy?: StateOptionOrderByWithRelationInput | StateOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StateOptions.
+     */
+    cursor?: StateOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StateOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StateOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StateOptions.
+     */
+    distinct?: StateOptionScalarFieldEnum | StateOptionScalarFieldEnum[]
+  }
+
+  /**
+   * StateOption findMany
+   */
+  export type StateOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which StateOptions to fetch.
+     */
+    where?: StateOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StateOptions to fetch.
+     */
+    orderBy?: StateOptionOrderByWithRelationInput | StateOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StateOptions.
+     */
+    cursor?: StateOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StateOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StateOptions.
+     */
+    skip?: number
+    distinct?: StateOptionScalarFieldEnum | StateOptionScalarFieldEnum[]
+  }
+
+  /**
+   * StateOption create
+   */
+  export type StateOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a StateOption.
+     */
+    data: XOR<StateOptionCreateInput, StateOptionUncheckedCreateInput>
+  }
+
+  /**
+   * StateOption createMany
+   */
+  export type StateOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StateOptions.
+     */
+    data: StateOptionCreateManyInput | StateOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StateOption createManyAndReturn
+   */
+  export type StateOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many StateOptions.
+     */
+    data: StateOptionCreateManyInput | StateOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StateOption update
+   */
+  export type StateOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a StateOption.
+     */
+    data: XOR<StateOptionUpdateInput, StateOptionUncheckedUpdateInput>
+    /**
+     * Choose, which StateOption to update.
+     */
+    where: StateOptionWhereUniqueInput
+  }
+
+  /**
+   * StateOption updateMany
+   */
+  export type StateOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StateOptions.
+     */
+    data: XOR<StateOptionUpdateManyMutationInput, StateOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which StateOptions to update
+     */
+    where?: StateOptionWhereInput
+  }
+
+  /**
+   * StateOption upsert
+   */
+  export type StateOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the StateOption to update in case it exists.
+     */
+    where: StateOptionWhereUniqueInput
+    /**
+     * In case the StateOption found by the `where` argument doesn't exist, create a new StateOption with this data.
+     */
+    create: XOR<StateOptionCreateInput, StateOptionUncheckedCreateInput>
+    /**
+     * In case the StateOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StateOptionUpdateInput, StateOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * StateOption delete
+   */
+  export type StateOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+    /**
+     * Filter which StateOption to delete.
+     */
+    where: StateOptionWhereUniqueInput
+  }
+
+  /**
+   * StateOption deleteMany
+   */
+  export type StateOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StateOptions to delete
+     */
+    where?: StateOptionWhereInput
+  }
+
+  /**
+   * StateOption without action
+   */
+  export type StateOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StateOption
+     */
+    select?: StateOptionSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model SectorOption
+   */
+
+  export type AggregateSectorOption = {
+    _count: SectorOptionCountAggregateOutputType | null
+    _min: SectorOptionMinAggregateOutputType | null
+    _max: SectorOptionMaxAggregateOutputType | null
+  }
+
+  export type SectorOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SectorOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type SectorOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type SectorOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SectorOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type SectorOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type SectorOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SectorOption to aggregate.
+     */
+    where?: SectorOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SectorOptions to fetch.
+     */
+    orderBy?: SectorOptionOrderByWithRelationInput | SectorOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SectorOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SectorOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SectorOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SectorOptions
+    **/
+    _count?: true | SectorOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SectorOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SectorOptionMaxAggregateInputType
+  }
+
+  export type GetSectorOptionAggregateType<T extends SectorOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateSectorOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSectorOption[P]>
+      : GetScalarType<T[P], AggregateSectorOption[P]>
+  }
+
+
+
+
+  export type SectorOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SectorOptionWhereInput
+    orderBy?: SectorOptionOrderByWithAggregationInput | SectorOptionOrderByWithAggregationInput[]
+    by: SectorOptionScalarFieldEnum[] | SectorOptionScalarFieldEnum
+    having?: SectorOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SectorOptionCountAggregateInputType | true
+    _min?: SectorOptionMinAggregateInputType
+    _max?: SectorOptionMaxAggregateInputType
+  }
+
+  export type SectorOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: SectorOptionCountAggregateOutputType | null
+    _min: SectorOptionMinAggregateOutputType | null
+    _max: SectorOptionMaxAggregateOutputType | null
+  }
+
+  type GetSectorOptionGroupByPayload<T extends SectorOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SectorOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SectorOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SectorOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], SectorOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SectorOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["sectorOption"]>
+
+  export type SectorOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["sectorOption"]>
+
+  export type SectorOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $SectorOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SectorOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["sectorOption"]>
+    composites: {}
+  }
+
+  type SectorOptionGetPayload<S extends boolean | null | undefined | SectorOptionDefaultArgs> = $Result.GetResult<Prisma.$SectorOptionPayload, S>
+
+  type SectorOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<SectorOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: SectorOptionCountAggregateInputType | true
+    }
+
+  export interface SectorOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SectorOption'], meta: { name: 'SectorOption' } }
+    /**
+     * Find zero or one SectorOption that matches the filter.
+     * @param {SectorOptionFindUniqueArgs} args - Arguments to find a SectorOption
+     * @example
+     * // Get one SectorOption
+     * const sectorOption = await prisma.sectorOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SectorOptionFindUniqueArgs>(args: SelectSubset<T, SectorOptionFindUniqueArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one SectorOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {SectorOptionFindUniqueOrThrowArgs} args - Arguments to find a SectorOption
+     * @example
+     * // Get one SectorOption
+     * const sectorOption = await prisma.sectorOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SectorOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, SectorOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first SectorOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionFindFirstArgs} args - Arguments to find a SectorOption
+     * @example
+     * // Get one SectorOption
+     * const sectorOption = await prisma.sectorOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SectorOptionFindFirstArgs>(args?: SelectSubset<T, SectorOptionFindFirstArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first SectorOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionFindFirstOrThrowArgs} args - Arguments to find a SectorOption
+     * @example
+     * // Get one SectorOption
+     * const sectorOption = await prisma.sectorOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SectorOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, SectorOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more SectorOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SectorOptions
+     * const sectorOptions = await prisma.sectorOption.findMany()
+     * 
+     * // Get first 10 SectorOptions
+     * const sectorOptions = await prisma.sectorOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const sectorOptionWithIdOnly = await prisma.sectorOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SectorOptionFindManyArgs>(args?: SelectSubset<T, SectorOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a SectorOption.
+     * @param {SectorOptionCreateArgs} args - Arguments to create a SectorOption.
+     * @example
+     * // Create one SectorOption
+     * const SectorOption = await prisma.sectorOption.create({
+     *   data: {
+     *     // ... data to create a SectorOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends SectorOptionCreateArgs>(args: SelectSubset<T, SectorOptionCreateArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many SectorOptions.
+     * @param {SectorOptionCreateManyArgs} args - Arguments to create many SectorOptions.
+     * @example
+     * // Create many SectorOptions
+     * const sectorOption = await prisma.sectorOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SectorOptionCreateManyArgs>(args?: SelectSubset<T, SectorOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many SectorOptions and returns the data saved in the database.
+     * @param {SectorOptionCreateManyAndReturnArgs} args - Arguments to create many SectorOptions.
+     * @example
+     * // Create many SectorOptions
+     * const sectorOption = await prisma.sectorOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many SectorOptions and only return the `id`
+     * const sectorOptionWithIdOnly = await prisma.sectorOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends SectorOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, SectorOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a SectorOption.
+     * @param {SectorOptionDeleteArgs} args - Arguments to delete one SectorOption.
+     * @example
+     * // Delete one SectorOption
+     * const SectorOption = await prisma.sectorOption.delete({
+     *   where: {
+     *     // ... filter to delete one SectorOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SectorOptionDeleteArgs>(args: SelectSubset<T, SectorOptionDeleteArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one SectorOption.
+     * @param {SectorOptionUpdateArgs} args - Arguments to update one SectorOption.
+     * @example
+     * // Update one SectorOption
+     * const sectorOption = await prisma.sectorOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SectorOptionUpdateArgs>(args: SelectSubset<T, SectorOptionUpdateArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more SectorOptions.
+     * @param {SectorOptionDeleteManyArgs} args - Arguments to filter SectorOptions to delete.
+     * @example
+     * // Delete a few SectorOptions
+     * const { count } = await prisma.sectorOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SectorOptionDeleteManyArgs>(args?: SelectSubset<T, SectorOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SectorOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SectorOptions
+     * const sectorOption = await prisma.sectorOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SectorOptionUpdateManyArgs>(args: SelectSubset<T, SectorOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SectorOption.
+     * @param {SectorOptionUpsertArgs} args - Arguments to update or create a SectorOption.
+     * @example
+     * // Update or create a SectorOption
+     * const sectorOption = await prisma.sectorOption.upsert({
+     *   create: {
+     *     // ... data to create a SectorOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SectorOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SectorOptionUpsertArgs>(args: SelectSubset<T, SectorOptionUpsertArgs<ExtArgs>>): Prisma__SectorOptionClient<$Result.GetResult<Prisma.$SectorOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of SectorOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionCountArgs} args - Arguments to filter SectorOptions to count.
+     * @example
+     * // Count the number of SectorOptions
+     * const count = await prisma.sectorOption.count({
+     *   where: {
+     *     // ... the filter for the SectorOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends SectorOptionCountArgs>(
+      args?: Subset<T, SectorOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SectorOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SectorOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SectorOptionAggregateArgs>(args: Subset<T, SectorOptionAggregateArgs>): Prisma.PrismaPromise<GetSectorOptionAggregateType<T>>
+
+    /**
+     * Group by SectorOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SectorOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SectorOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SectorOptionGroupByArgs['orderBy'] }
+        : { orderBy?: SectorOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SectorOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSectorOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SectorOption model
+   */
+  readonly fields: SectorOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SectorOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SectorOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SectorOption model
+   */ 
+  interface SectorOptionFieldRefs {
+    readonly id: FieldRef<"SectorOption", 'String'>
+    readonly name: FieldRef<"SectorOption", 'String'>
+    readonly createdAt: FieldRef<"SectorOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"SectorOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SectorOption findUnique
+   */
+  export type SectorOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SectorOption to fetch.
+     */
+    where: SectorOptionWhereUniqueInput
+  }
+
+  /**
+   * SectorOption findUniqueOrThrow
+   */
+  export type SectorOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SectorOption to fetch.
+     */
+    where: SectorOptionWhereUniqueInput
+  }
+
+  /**
+   * SectorOption findFirst
+   */
+  export type SectorOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SectorOption to fetch.
+     */
+    where?: SectorOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SectorOptions to fetch.
+     */
+    orderBy?: SectorOptionOrderByWithRelationInput | SectorOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SectorOptions.
+     */
+    cursor?: SectorOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SectorOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SectorOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SectorOptions.
+     */
+    distinct?: SectorOptionScalarFieldEnum | SectorOptionScalarFieldEnum[]
+  }
+
+  /**
+   * SectorOption findFirstOrThrow
+   */
+  export type SectorOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SectorOption to fetch.
+     */
+    where?: SectorOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SectorOptions to fetch.
+     */
+    orderBy?: SectorOptionOrderByWithRelationInput | SectorOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SectorOptions.
+     */
+    cursor?: SectorOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SectorOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SectorOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SectorOptions.
+     */
+    distinct?: SectorOptionScalarFieldEnum | SectorOptionScalarFieldEnum[]
+  }
+
+  /**
+   * SectorOption findMany
+   */
+  export type SectorOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which SectorOptions to fetch.
+     */
+    where?: SectorOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SectorOptions to fetch.
+     */
+    orderBy?: SectorOptionOrderByWithRelationInput | SectorOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SectorOptions.
+     */
+    cursor?: SectorOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SectorOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SectorOptions.
+     */
+    skip?: number
+    distinct?: SectorOptionScalarFieldEnum | SectorOptionScalarFieldEnum[]
+  }
+
+  /**
+   * SectorOption create
+   */
+  export type SectorOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a SectorOption.
+     */
+    data: XOR<SectorOptionCreateInput, SectorOptionUncheckedCreateInput>
+  }
+
+  /**
+   * SectorOption createMany
+   */
+  export type SectorOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SectorOptions.
+     */
+    data: SectorOptionCreateManyInput | SectorOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SectorOption createManyAndReturn
+   */
+  export type SectorOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many SectorOptions.
+     */
+    data: SectorOptionCreateManyInput | SectorOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SectorOption update
+   */
+  export type SectorOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a SectorOption.
+     */
+    data: XOR<SectorOptionUpdateInput, SectorOptionUncheckedUpdateInput>
+    /**
+     * Choose, which SectorOption to update.
+     */
+    where: SectorOptionWhereUniqueInput
+  }
+
+  /**
+   * SectorOption updateMany
+   */
+  export type SectorOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SectorOptions.
+     */
+    data: XOR<SectorOptionUpdateManyMutationInput, SectorOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which SectorOptions to update
+     */
+    where?: SectorOptionWhereInput
+  }
+
+  /**
+   * SectorOption upsert
+   */
+  export type SectorOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the SectorOption to update in case it exists.
+     */
+    where: SectorOptionWhereUniqueInput
+    /**
+     * In case the SectorOption found by the `where` argument doesn't exist, create a new SectorOption with this data.
+     */
+    create: XOR<SectorOptionCreateInput, SectorOptionUncheckedCreateInput>
+    /**
+     * In case the SectorOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SectorOptionUpdateInput, SectorOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * SectorOption delete
+   */
+  export type SectorOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+    /**
+     * Filter which SectorOption to delete.
+     */
+    where: SectorOptionWhereUniqueInput
+  }
+
+  /**
+   * SectorOption deleteMany
+   */
+  export type SectorOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SectorOptions to delete
+     */
+    where?: SectorOptionWhereInput
+  }
+
+  /**
+   * SectorOption without action
+   */
+  export type SectorOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SectorOption
+     */
+    select?: SectorOptionSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Model QualityClass
    */
 
@@ -8052,6 +11860,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     category: $Enums.CustomerCategory | null
+    active: boolean | null
     ownerName: string | null
     ownerContact: string | null
     purchaserName: string | null
@@ -8067,6 +11876,7 @@ export namespace Prisma {
     state: string | null
     creditDays: number | null
     sector: string | null
+    saleExecutive: string | null
     dealById: string | null
     approachForFundsId: string | null
     createdAt: Date | null
@@ -8077,6 +11887,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     category: $Enums.CustomerCategory | null
+    active: boolean | null
     ownerName: string | null
     ownerContact: string | null
     purchaserName: string | null
@@ -8092,6 +11903,7 @@ export namespace Prisma {
     state: string | null
     creditDays: number | null
     sector: string | null
+    saleExecutive: string | null
     dealById: string | null
     approachForFundsId: string | null
     createdAt: Date | null
@@ -8102,6 +11914,7 @@ export namespace Prisma {
     id: number
     name: number
     category: number
+    active: number
     ownerName: number
     ownerContact: number
     purchaserName: number
@@ -8117,6 +11930,7 @@ export namespace Prisma {
     state: number
     creditDays: number
     sector: number
+    saleExecutive: number
     dealById: number
     approachForFundsId: number
     createdAt: number
@@ -8137,6 +11951,7 @@ export namespace Prisma {
     id?: true
     name?: true
     category?: true
+    active?: true
     ownerName?: true
     ownerContact?: true
     purchaserName?: true
@@ -8152,6 +11967,7 @@ export namespace Prisma {
     state?: true
     creditDays?: true
     sector?: true
+    saleExecutive?: true
     dealById?: true
     approachForFundsId?: true
     createdAt?: true
@@ -8162,6 +11978,7 @@ export namespace Prisma {
     id?: true
     name?: true
     category?: true
+    active?: true
     ownerName?: true
     ownerContact?: true
     purchaserName?: true
@@ -8177,6 +11994,7 @@ export namespace Prisma {
     state?: true
     creditDays?: true
     sector?: true
+    saleExecutive?: true
     dealById?: true
     approachForFundsId?: true
     createdAt?: true
@@ -8187,6 +12005,7 @@ export namespace Prisma {
     id?: true
     name?: true
     category?: true
+    active?: true
     ownerName?: true
     ownerContact?: true
     purchaserName?: true
@@ -8202,6 +12021,7 @@ export namespace Prisma {
     state?: true
     creditDays?: true
     sector?: true
+    saleExecutive?: true
     dealById?: true
     approachForFundsId?: true
     createdAt?: true
@@ -8299,6 +12119,7 @@ export namespace Prisma {
     id: string
     name: string
     category: $Enums.CustomerCategory
+    active: boolean
     ownerName: string | null
     ownerContact: string | null
     purchaserName: string | null
@@ -8314,6 +12135,7 @@ export namespace Prisma {
     state: string | null
     creditDays: number | null
     sector: string | null
+    saleExecutive: string | null
     dealById: string | null
     approachForFundsId: string | null
     createdAt: Date
@@ -8343,6 +12165,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    active?: boolean
     ownerName?: boolean
     ownerContact?: boolean
     purchaserName?: boolean
@@ -8358,6 +12181,7 @@ export namespace Prisma {
     state?: boolean
     creditDays?: boolean
     sector?: boolean
+    saleExecutive?: boolean
     dealById?: boolean
     approachForFundsId?: boolean
     createdAt?: boolean
@@ -8374,6 +12198,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    active?: boolean
     ownerName?: boolean
     ownerContact?: boolean
     purchaserName?: boolean
@@ -8389,6 +12214,7 @@ export namespace Prisma {
     state?: boolean
     creditDays?: boolean
     sector?: boolean
+    saleExecutive?: boolean
     dealById?: boolean
     approachForFundsId?: boolean
     createdAt?: boolean
@@ -8401,6 +12227,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     category?: boolean
+    active?: boolean
     ownerName?: boolean
     ownerContact?: boolean
     purchaserName?: boolean
@@ -8416,6 +12243,7 @@ export namespace Prisma {
     state?: boolean
     creditDays?: boolean
     sector?: boolean
+    saleExecutive?: boolean
     dealById?: boolean
     approachForFundsId?: boolean
     createdAt?: boolean
@@ -8448,6 +12276,7 @@ export namespace Prisma {
       id: string
       name: string
       category: $Enums.CustomerCategory
+      active: boolean
       ownerName: string | null
       ownerContact: string | null
       purchaserName: string | null
@@ -8463,6 +12292,7 @@ export namespace Prisma {
       state: string | null
       creditDays: number | null
       sector: string | null
+      saleExecutive: string | null
       dealById: string | null
       approachForFundsId: string | null
       createdAt: Date
@@ -8868,6 +12698,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Customer", 'String'>
     readonly name: FieldRef<"Customer", 'String'>
     readonly category: FieldRef<"Customer", 'CustomerCategory'>
+    readonly active: FieldRef<"Customer", 'Boolean'>
     readonly ownerName: FieldRef<"Customer", 'String'>
     readonly ownerContact: FieldRef<"Customer", 'String'>
     readonly purchaserName: FieldRef<"Customer", 'String'>
@@ -8883,6 +12714,7 @@ export namespace Prisma {
     readonly state: FieldRef<"Customer", 'String'>
     readonly creditDays: FieldRef<"Customer", 'Int'>
     readonly sector: FieldRef<"Customer", 'String'>
+    readonly saleExecutive: FieldRef<"Customer", 'String'>
     readonly dealById: FieldRef<"Customer", 'String'>
     readonly approachForFundsId: FieldRef<"Customer", 'String'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
@@ -9324,6 +13156,7 @@ export namespace Prisma {
     vesselName: string | null
     qualityClassId: string | null
     portId: string | null
+    active: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9333,6 +13166,7 @@ export namespace Prisma {
     vesselName: string | null
     qualityClassId: string | null
     portId: string | null
+    active: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9342,6 +13176,7 @@ export namespace Prisma {
     vesselName: number
     qualityClassId: number
     portId: number
+    active: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9353,6 +13188,7 @@ export namespace Prisma {
     vesselName?: true
     qualityClassId?: true
     portId?: true
+    active?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9362,6 +13198,7 @@ export namespace Prisma {
     vesselName?: true
     qualityClassId?: true
     portId?: true
+    active?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9371,6 +13208,7 @@ export namespace Prisma {
     vesselName?: true
     qualityClassId?: true
     portId?: true
+    active?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9453,6 +13291,7 @@ export namespace Prisma {
     vesselName: string
     qualityClassId: string | null
     portId: string | null
+    active: boolean
     createdAt: Date
     updatedAt: Date
     _count: VesselCountAggregateOutputType | null
@@ -9479,6 +13318,7 @@ export namespace Prisma {
     vesselName?: boolean
     qualityClassId?: boolean
     portId?: boolean
+    active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     qualityClass?: boolean | Vessel$qualityClassArgs<ExtArgs>
@@ -9493,6 +13333,7 @@ export namespace Prisma {
     vesselName?: boolean
     qualityClassId?: boolean
     portId?: boolean
+    active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     qualityClass?: boolean | Vessel$qualityClassArgs<ExtArgs>
@@ -9504,6 +13345,7 @@ export namespace Prisma {
     vesselName?: boolean
     qualityClassId?: boolean
     portId?: boolean
+    active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -9533,6 +13375,7 @@ export namespace Prisma {
       vesselName: string
       qualityClassId: string | null
       portId: string | null
+      active: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["vessel"]>
@@ -9936,6 +13779,7 @@ export namespace Prisma {
     readonly vesselName: FieldRef<"Vessel", 'String'>
     readonly qualityClassId: FieldRef<"Vessel", 'String'>
     readonly portId: FieldRef<"Vessel", 'String'>
+    readonly active: FieldRef<"Vessel", 'Boolean'>
     readonly createdAt: FieldRef<"Vessel", 'DateTime'>
     readonly updatedAt: FieldRef<"Vessel", 'DateTime'>
   }
@@ -13997,6 +17841,46 @@ export namespace Prisma {
   export type PortOptionScalarFieldEnum = (typeof PortOptionScalarFieldEnum)[keyof typeof PortOptionScalarFieldEnum]
 
 
+  export const SaleExecutiveOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SaleExecutiveOptionScalarFieldEnum = (typeof SaleExecutiveOptionScalarFieldEnum)[keyof typeof SaleExecutiveOptionScalarFieldEnum]
+
+
+  export const CityOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CityOptionScalarFieldEnum = (typeof CityOptionScalarFieldEnum)[keyof typeof CityOptionScalarFieldEnum]
+
+
+  export const StateOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type StateOptionScalarFieldEnum = (typeof StateOptionScalarFieldEnum)[keyof typeof StateOptionScalarFieldEnum]
+
+
+  export const SectorOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type SectorOptionScalarFieldEnum = (typeof SectorOptionScalarFieldEnum)[keyof typeof SectorOptionScalarFieldEnum]
+
+
   export const QualityClassScalarFieldEnum: {
     id: 'id',
     originId: 'originId',
@@ -14013,6 +17897,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     category: 'category',
+    active: 'active',
     ownerName: 'ownerName',
     ownerContact: 'ownerContact',
     purchaserName: 'purchaserName',
@@ -14028,6 +17913,7 @@ export namespace Prisma {
     state: 'state',
     creditDays: 'creditDays',
     sector: 'sector',
+    saleExecutive: 'saleExecutive',
     dealById: 'dealById',
     approachForFundsId: 'approachForFundsId',
     createdAt: 'createdAt',
@@ -14042,6 +17928,7 @@ export namespace Prisma {
     vesselName: 'vesselName',
     qualityClassId: 'qualityClassId',
     portId: 'portId',
+    active: 'active',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -14604,6 +18491,194 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"PortOption"> | Date | string
   }
 
+  export type SaleExecutiveOptionWhereInput = {
+    AND?: SaleExecutiveOptionWhereInput | SaleExecutiveOptionWhereInput[]
+    OR?: SaleExecutiveOptionWhereInput[]
+    NOT?: SaleExecutiveOptionWhereInput | SaleExecutiveOptionWhereInput[]
+    id?: StringFilter<"SaleExecutiveOption"> | string
+    name?: StringFilter<"SaleExecutiveOption"> | string
+    createdAt?: DateTimeFilter<"SaleExecutiveOption"> | Date | string
+    updatedAt?: DateTimeFilter<"SaleExecutiveOption"> | Date | string
+  }
+
+  export type SaleExecutiveOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SaleExecutiveOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: SaleExecutiveOptionWhereInput | SaleExecutiveOptionWhereInput[]
+    OR?: SaleExecutiveOptionWhereInput[]
+    NOT?: SaleExecutiveOptionWhereInput | SaleExecutiveOptionWhereInput[]
+    createdAt?: DateTimeFilter<"SaleExecutiveOption"> | Date | string
+    updatedAt?: DateTimeFilter<"SaleExecutiveOption"> | Date | string
+  }, "id" | "name">
+
+  export type SaleExecutiveOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SaleExecutiveOptionCountOrderByAggregateInput
+    _max?: SaleExecutiveOptionMaxOrderByAggregateInput
+    _min?: SaleExecutiveOptionMinOrderByAggregateInput
+  }
+
+  export type SaleExecutiveOptionScalarWhereWithAggregatesInput = {
+    AND?: SaleExecutiveOptionScalarWhereWithAggregatesInput | SaleExecutiveOptionScalarWhereWithAggregatesInput[]
+    OR?: SaleExecutiveOptionScalarWhereWithAggregatesInput[]
+    NOT?: SaleExecutiveOptionScalarWhereWithAggregatesInput | SaleExecutiveOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SaleExecutiveOption"> | string
+    name?: StringWithAggregatesFilter<"SaleExecutiveOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"SaleExecutiveOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SaleExecutiveOption"> | Date | string
+  }
+
+  export type CityOptionWhereInput = {
+    AND?: CityOptionWhereInput | CityOptionWhereInput[]
+    OR?: CityOptionWhereInput[]
+    NOT?: CityOptionWhereInput | CityOptionWhereInput[]
+    id?: StringFilter<"CityOption"> | string
+    name?: StringFilter<"CityOption"> | string
+    createdAt?: DateTimeFilter<"CityOption"> | Date | string
+    updatedAt?: DateTimeFilter<"CityOption"> | Date | string
+  }
+
+  export type CityOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CityOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: CityOptionWhereInput | CityOptionWhereInput[]
+    OR?: CityOptionWhereInput[]
+    NOT?: CityOptionWhereInput | CityOptionWhereInput[]
+    createdAt?: DateTimeFilter<"CityOption"> | Date | string
+    updatedAt?: DateTimeFilter<"CityOption"> | Date | string
+  }, "id" | "name">
+
+  export type CityOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CityOptionCountOrderByAggregateInput
+    _max?: CityOptionMaxOrderByAggregateInput
+    _min?: CityOptionMinOrderByAggregateInput
+  }
+
+  export type CityOptionScalarWhereWithAggregatesInput = {
+    AND?: CityOptionScalarWhereWithAggregatesInput | CityOptionScalarWhereWithAggregatesInput[]
+    OR?: CityOptionScalarWhereWithAggregatesInput[]
+    NOT?: CityOptionScalarWhereWithAggregatesInput | CityOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CityOption"> | string
+    name?: StringWithAggregatesFilter<"CityOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CityOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CityOption"> | Date | string
+  }
+
+  export type StateOptionWhereInput = {
+    AND?: StateOptionWhereInput | StateOptionWhereInput[]
+    OR?: StateOptionWhereInput[]
+    NOT?: StateOptionWhereInput | StateOptionWhereInput[]
+    id?: StringFilter<"StateOption"> | string
+    name?: StringFilter<"StateOption"> | string
+    createdAt?: DateTimeFilter<"StateOption"> | Date | string
+    updatedAt?: DateTimeFilter<"StateOption"> | Date | string
+  }
+
+  export type StateOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StateOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: StateOptionWhereInput | StateOptionWhereInput[]
+    OR?: StateOptionWhereInput[]
+    NOT?: StateOptionWhereInput | StateOptionWhereInput[]
+    createdAt?: DateTimeFilter<"StateOption"> | Date | string
+    updatedAt?: DateTimeFilter<"StateOption"> | Date | string
+  }, "id" | "name">
+
+  export type StateOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: StateOptionCountOrderByAggregateInput
+    _max?: StateOptionMaxOrderByAggregateInput
+    _min?: StateOptionMinOrderByAggregateInput
+  }
+
+  export type StateOptionScalarWhereWithAggregatesInput = {
+    AND?: StateOptionScalarWhereWithAggregatesInput | StateOptionScalarWhereWithAggregatesInput[]
+    OR?: StateOptionScalarWhereWithAggregatesInput[]
+    NOT?: StateOptionScalarWhereWithAggregatesInput | StateOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StateOption"> | string
+    name?: StringWithAggregatesFilter<"StateOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"StateOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"StateOption"> | Date | string
+  }
+
+  export type SectorOptionWhereInput = {
+    AND?: SectorOptionWhereInput | SectorOptionWhereInput[]
+    OR?: SectorOptionWhereInput[]
+    NOT?: SectorOptionWhereInput | SectorOptionWhereInput[]
+    id?: StringFilter<"SectorOption"> | string
+    name?: StringFilter<"SectorOption"> | string
+    createdAt?: DateTimeFilter<"SectorOption"> | Date | string
+    updatedAt?: DateTimeFilter<"SectorOption"> | Date | string
+  }
+
+  export type SectorOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SectorOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: SectorOptionWhereInput | SectorOptionWhereInput[]
+    OR?: SectorOptionWhereInput[]
+    NOT?: SectorOptionWhereInput | SectorOptionWhereInput[]
+    createdAt?: DateTimeFilter<"SectorOption"> | Date | string
+    updatedAt?: DateTimeFilter<"SectorOption"> | Date | string
+  }, "id" | "name">
+
+  export type SectorOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: SectorOptionCountOrderByAggregateInput
+    _max?: SectorOptionMaxOrderByAggregateInput
+    _min?: SectorOptionMinOrderByAggregateInput
+  }
+
+  export type SectorOptionScalarWhereWithAggregatesInput = {
+    AND?: SectorOptionScalarWhereWithAggregatesInput | SectorOptionScalarWhereWithAggregatesInput[]
+    OR?: SectorOptionScalarWhereWithAggregatesInput[]
+    NOT?: SectorOptionScalarWhereWithAggregatesInput | SectorOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"SectorOption"> | string
+    name?: StringWithAggregatesFilter<"SectorOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"SectorOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"SectorOption"> | Date | string
+  }
+
   export type QualityClassWhereInput = {
     AND?: QualityClassWhereInput | QualityClassWhereInput[]
     OR?: QualityClassWhereInput[]
@@ -14684,6 +18759,7 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     category?: EnumCustomerCategoryFilter<"Customer"> | $Enums.CustomerCategory
+    active?: BoolFilter<"Customer"> | boolean
     ownerName?: StringNullableFilter<"Customer"> | string | null
     ownerContact?: StringNullableFilter<"Customer"> | string | null
     purchaserName?: StringNullableFilter<"Customer"> | string | null
@@ -14699,6 +18775,7 @@ export namespace Prisma {
     state?: StringNullableFilter<"Customer"> | string | null
     creditDays?: IntNullableFilter<"Customer"> | number | null
     sector?: StringNullableFilter<"Customer"> | string | null
+    saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFundsId?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
@@ -14714,6 +18791,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    active?: SortOrder
     ownerName?: SortOrderInput | SortOrder
     ownerContact?: SortOrderInput | SortOrder
     purchaserName?: SortOrderInput | SortOrder
@@ -14729,6 +18807,7 @@ export namespace Prisma {
     state?: SortOrderInput | SortOrder
     creditDays?: SortOrderInput | SortOrder
     sector?: SortOrderInput | SortOrder
+    saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
     approachForFundsId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -14747,6 +18826,7 @@ export namespace Prisma {
     NOT?: CustomerWhereInput | CustomerWhereInput[]
     name?: StringFilter<"Customer"> | string
     category?: EnumCustomerCategoryFilter<"Customer"> | $Enums.CustomerCategory
+    active?: BoolFilter<"Customer"> | boolean
     ownerName?: StringNullableFilter<"Customer"> | string | null
     ownerContact?: StringNullableFilter<"Customer"> | string | null
     purchaserName?: StringNullableFilter<"Customer"> | string | null
@@ -14762,6 +18842,7 @@ export namespace Prisma {
     state?: StringNullableFilter<"Customer"> | string | null
     creditDays?: IntNullableFilter<"Customer"> | number | null
     sector?: StringNullableFilter<"Customer"> | string | null
+    saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFundsId?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
@@ -14777,6 +18858,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    active?: SortOrder
     ownerName?: SortOrderInput | SortOrder
     ownerContact?: SortOrderInput | SortOrder
     purchaserName?: SortOrderInput | SortOrder
@@ -14792,6 +18874,7 @@ export namespace Prisma {
     state?: SortOrderInput | SortOrder
     creditDays?: SortOrderInput | SortOrder
     sector?: SortOrderInput | SortOrder
+    saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
     approachForFundsId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -14810,6 +18893,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Customer"> | string
     name?: StringWithAggregatesFilter<"Customer"> | string
     category?: EnumCustomerCategoryWithAggregatesFilter<"Customer"> | $Enums.CustomerCategory
+    active?: BoolWithAggregatesFilter<"Customer"> | boolean
     ownerName?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     ownerContact?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     purchaserName?: StringNullableWithAggregatesFilter<"Customer"> | string | null
@@ -14825,6 +18909,7 @@ export namespace Prisma {
     state?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     creditDays?: IntNullableWithAggregatesFilter<"Customer"> | number | null
     sector?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    saleExecutive?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     dealById?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     approachForFundsId?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
@@ -14839,6 +18924,7 @@ export namespace Prisma {
     vesselName?: StringFilter<"Vessel"> | string
     qualityClassId?: StringNullableFilter<"Vessel"> | string | null
     portId?: StringNullableFilter<"Vessel"> | string | null
+    active?: BoolFilter<"Vessel"> | boolean
     createdAt?: DateTimeFilter<"Vessel"> | Date | string
     updatedAt?: DateTimeFilter<"Vessel"> | Date | string
     qualityClass?: XOR<QualityClassNullableRelationFilter, QualityClassWhereInput> | null
@@ -14852,6 +18938,7 @@ export namespace Prisma {
     vesselName?: SortOrder
     qualityClassId?: SortOrderInput | SortOrder
     portId?: SortOrderInput | SortOrder
+    active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     qualityClass?: QualityClassOrderByWithRelationInput
@@ -14868,6 +18955,7 @@ export namespace Prisma {
     NOT?: VesselWhereInput | VesselWhereInput[]
     qualityClassId?: StringNullableFilter<"Vessel"> | string | null
     portId?: StringNullableFilter<"Vessel"> | string | null
+    active?: BoolFilter<"Vessel"> | boolean
     createdAt?: DateTimeFilter<"Vessel"> | Date | string
     updatedAt?: DateTimeFilter<"Vessel"> | Date | string
     qualityClass?: XOR<QualityClassNullableRelationFilter, QualityClassWhereInput> | null
@@ -14881,6 +18969,7 @@ export namespace Prisma {
     vesselName?: SortOrder
     qualityClassId?: SortOrderInput | SortOrder
     portId?: SortOrderInput | SortOrder
+    active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: VesselCountOrderByAggregateInput
@@ -14896,6 +18985,7 @@ export namespace Prisma {
     vesselName?: StringWithAggregatesFilter<"Vessel"> | string
     qualityClassId?: StringNullableWithAggregatesFilter<"Vessel"> | string | null
     portId?: StringNullableWithAggregatesFilter<"Vessel"> | string | null
+    active?: BoolWithAggregatesFilter<"Vessel"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Vessel"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Vessel"> | Date | string
   }
@@ -15605,6 +19695,202 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SaleExecutiveOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SaleExecutiveOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SaleExecutiveOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SaleExecutiveOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SaleExecutiveOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SaleExecutiveOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SaleExecutiveOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CityOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CityOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CityOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CityOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CityOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CityOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CityOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StateOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StateOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StateOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StateOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StateOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StateOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StateOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SectorOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SectorOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SectorOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SectorOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SectorOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type SectorOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type SectorOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type QualityClassCreateInput = {
     id?: string
     domestic: boolean
@@ -15682,6 +19968,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -15697,6 +19984,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -15710,6 +19998,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -15725,6 +20014,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
@@ -15738,6 +20028,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15753,6 +20044,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -15766,6 +20058,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15781,6 +20074,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15794,6 +20088,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -15809,6 +20104,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
@@ -15819,6 +20115,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15834,6 +20131,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15842,6 +20140,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15857,6 +20156,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15866,6 +20166,7 @@ export namespace Prisma {
   export type VesselCreateInput = {
     id?: string
     vesselName: string
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
@@ -15879,6 +20180,7 @@ export namespace Prisma {
     vesselName: string
     qualityClassId?: string | null
     portId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
@@ -15888,6 +20190,7 @@ export namespace Prisma {
   export type VesselUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
@@ -15901,6 +20204,7 @@ export namespace Prisma {
     vesselName?: StringFieldUpdateOperationsInput | string
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
@@ -15912,6 +20216,7 @@ export namespace Prisma {
     vesselName: string
     qualityClassId?: string | null
     portId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15919,6 +20224,7 @@ export namespace Prisma {
   export type VesselUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15928,6 +20234,7 @@ export namespace Prisma {
     vesselName?: StringFieldUpdateOperationsInput | string
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16613,6 +20920,90 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type SaleExecutiveOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SaleExecutiveOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SaleExecutiveOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CityOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CityOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CityOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StateOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StateOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type StateOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SectorOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SectorOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type SectorOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -16706,6 +21097,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    active?: SortOrder
     ownerName?: SortOrder
     ownerContact?: SortOrder
     purchaserName?: SortOrder
@@ -16721,6 +21113,7 @@ export namespace Prisma {
     state?: SortOrder
     creditDays?: SortOrder
     sector?: SortOrder
+    saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFundsId?: SortOrder
     createdAt?: SortOrder
@@ -16735,6 +21128,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    active?: SortOrder
     ownerName?: SortOrder
     ownerContact?: SortOrder
     purchaserName?: SortOrder
@@ -16750,6 +21144,7 @@ export namespace Prisma {
     state?: SortOrder
     creditDays?: SortOrder
     sector?: SortOrder
+    saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFundsId?: SortOrder
     createdAt?: SortOrder
@@ -16760,6 +21155,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     category?: SortOrder
+    active?: SortOrder
     ownerName?: SortOrder
     ownerContact?: SortOrder
     purchaserName?: SortOrder
@@ -16775,6 +21171,7 @@ export namespace Prisma {
     state?: SortOrder
     creditDays?: SortOrder
     sector?: SortOrder
+    saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFundsId?: SortOrder
     createdAt?: SortOrder
@@ -16826,6 +21223,7 @@ export namespace Prisma {
     vesselName?: SortOrder
     qualityClassId?: SortOrder
     portId?: SortOrder
+    active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16835,6 +21233,7 @@ export namespace Prisma {
     vesselName?: SortOrder
     qualityClassId?: SortOrder
     portId?: SortOrder
+    active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16844,6 +21243,7 @@ export namespace Prisma {
     vesselName?: SortOrder
     qualityClassId?: SortOrder
     portId?: SortOrder
+    active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18691,6 +23091,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -18706,6 +23107,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     approachForFunds?: StaffCreateNestedOneWithoutApproachForFundsCustomersInput
@@ -18718,6 +23120,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -18733,6 +23136,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18755,6 +23159,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -18770,6 +23175,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -18782,6 +23188,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -18797,6 +23204,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -18886,6 +23294,7 @@ export namespace Prisma {
     id?: StringFilter<"Customer"> | string
     name?: StringFilter<"Customer"> | string
     category?: EnumCustomerCategoryFilter<"Customer"> | $Enums.CustomerCategory
+    active?: BoolFilter<"Customer"> | boolean
     ownerName?: StringNullableFilter<"Customer"> | string | null
     ownerContact?: StringNullableFilter<"Customer"> | string | null
     purchaserName?: StringNullableFilter<"Customer"> | string | null
@@ -18901,6 +23310,7 @@ export namespace Prisma {
     state?: StringNullableFilter<"Customer"> | string | null
     creditDays?: IntNullableFilter<"Customer"> | number | null
     sector?: StringNullableFilter<"Customer"> | string | null
+    saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFundsId?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
@@ -19168,6 +23578,7 @@ export namespace Prisma {
   export type VesselCreateWithoutPortInput = {
     id?: string
     vesselName: string
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
@@ -19179,6 +23590,7 @@ export namespace Prisma {
     id?: string
     vesselName: string
     qualityClassId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
@@ -19267,6 +23679,7 @@ export namespace Prisma {
     vesselName?: StringFilter<"Vessel"> | string
     qualityClassId?: StringNullableFilter<"Vessel"> | string | null
     portId?: StringNullableFilter<"Vessel"> | string | null
+    active?: BoolFilter<"Vessel"> | boolean
     createdAt?: DateTimeFilter<"Vessel"> | Date | string
     updatedAt?: DateTimeFilter<"Vessel"> | Date | string
   }
@@ -19328,6 +23741,7 @@ export namespace Prisma {
   export type VesselCreateWithoutQualityClassInput = {
     id?: string
     vesselName: string
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     port?: PortOptionCreateNestedOneWithoutVesselsInput
@@ -19339,6 +23753,7 @@ export namespace Prisma {
     id?: string
     vesselName: string
     portId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
@@ -20113,6 +24528,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -20128,6 +24544,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -20140,6 +24557,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -20155,6 +24573,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
@@ -20310,6 +24729,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20325,6 +24745,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -20337,6 +24758,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20352,6 +24774,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20471,6 +24894,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -20486,6 +24910,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -20498,6 +24923,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -20513,6 +24939,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
@@ -20529,6 +24956,7 @@ export namespace Prisma {
   export type VesselCreateWithoutPurchaseOrdersInput = {
     id?: string
     vesselName: string
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
@@ -20541,6 +24969,7 @@ export namespace Prisma {
     vesselName: string
     qualityClassId?: string | null
     portId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatches?: DispatchUncheckedCreateNestedManyWithoutVesselInput
@@ -20647,6 +25076,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20662,6 +25092,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -20674,6 +25105,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -20689,6 +25121,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20711,6 +25144,7 @@ export namespace Prisma {
   export type VesselUpdateWithoutPurchaseOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
@@ -20723,6 +25157,7 @@ export namespace Prisma {
     vesselName?: StringFieldUpdateOperationsInput | string
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUncheckedUpdateManyWithoutVesselNestedInput
@@ -20862,6 +25297,7 @@ export namespace Prisma {
   export type VesselCreateWithoutDispatchesInput = {
     id?: string
     vesselName: string
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
@@ -20874,6 +25310,7 @@ export namespace Prisma {
     vesselName: string
     qualityClassId?: string | null
     portId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
@@ -20919,6 +25356,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -20934,6 +25372,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -20946,6 +25385,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -20961,6 +25401,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
@@ -21082,6 +25523,7 @@ export namespace Prisma {
   export type VesselUpdateWithoutDispatchesInput = {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
@@ -21094,6 +25536,7 @@ export namespace Prisma {
     vesselName?: StringFieldUpdateOperationsInput | string
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
@@ -21151,6 +25594,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21166,6 +25610,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -21178,6 +25623,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21193,6 +25639,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21205,6 +25652,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -21220,6 +25668,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     approachForFundsId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21229,6 +25678,7 @@ export namespace Prisma {
     id?: string
     name: string
     category: $Enums.CustomerCategory
+    active?: boolean
     ownerName?: string | null
     ownerContact?: string | null
     purchaserName?: string | null
@@ -21244,6 +25694,7 @@ export namespace Prisma {
     state?: string | null
     creditDays?: number | null
     sector?: string | null
+    saleExecutive?: string | null
     dealById?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21271,6 +25722,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21286,6 +25738,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     approachForFunds?: StaffUpdateOneWithoutApproachForFundsCustomersNestedInput
@@ -21298,6 +25751,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21313,6 +25767,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21325,6 +25780,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21340,6 +25796,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21349,6 +25806,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21364,6 +25822,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -21376,6 +25835,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21391,6 +25851,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21403,6 +25864,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
     ownerName?: NullableStringFieldUpdateOperationsInput | string | null
     ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
     purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21418,6 +25880,7 @@ export namespace Prisma {
     state?: NullableStringFieldUpdateOperationsInput | string | null
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21647,6 +26110,7 @@ export namespace Prisma {
     id?: string
     vesselName: string
     qualityClassId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21672,6 +26136,7 @@ export namespace Prisma {
   export type VesselUpdateWithoutPortInput = {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
@@ -21683,6 +26148,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
@@ -21693,6 +26159,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21757,6 +26224,7 @@ export namespace Prisma {
     id?: string
     vesselName: string
     portId?: string | null
+    active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21798,6 +26266,7 @@ export namespace Prisma {
   export type VesselUpdateWithoutQualityClassInput = {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     port?: PortOptionUpdateOneWithoutVesselsNestedInput
@@ -21809,6 +26278,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
     portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
@@ -21819,6 +26289,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     vesselName?: StringFieldUpdateOperationsInput | string
     portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22552,6 +27023,22 @@ export namespace Prisma {
      * @deprecated Use PortOptionDefaultArgs instead
      */
     export type PortOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SaleExecutiveOptionDefaultArgs instead
+     */
+    export type SaleExecutiveOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SaleExecutiveOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CityOptionDefaultArgs instead
+     */
+    export type CityOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CityOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use StateOptionDefaultArgs instead
+     */
+    export type StateOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StateOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use SectorOptionDefaultArgs instead
+     */
+    export type SectorOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SectorOptionDefaultArgs<ExtArgs>
     /**
      * @deprecated Use QualityClassDefaultArgs instead
      */

@@ -1,13 +1,14 @@
 "use server";
 
 import { CustomerCategory } from "@/generated/prisma";
+import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-export async function listCustomers() {
+export async function listCustomers(options?: { activeOnly?: boolean }) {
   return prisma.customer.findMany({
+    where: options?.activeOnly ? { active: true } : undefined,
     include: {
-      dealBy: { select: { id: true, name: true } },
       approachForFunds: { select: { id: true, name: true } },
     },
     orderBy: { name: "asc" },
@@ -18,15 +19,17 @@ export async function listCustomers() {
 export async function getCustomerOrderDefaults(customerId: string) {
   const customer = await prisma.customer.findUnique({
     where: { id: customerId },
-    select: { id: true, category: true, creditDays: true },
+    select: { id: true, category: true, creditDays: true, active: true },
   });
   if (!customer) throw new Error("Customer not found");
+  if (!customer.active) throw new Error("Customer is inactive");
   return customer;
 }
 
 export type CustomerInput = {
   name: string;
   category: CustomerCategory;
+  active?: boolean;
   ownerName?: string | null;
   ownerContact?: string | null;
   purchaserName?: string | null;
@@ -42,24 +45,31 @@ export type CustomerInput = {
   state?: string | null;
   creditDays?: number | null;
   sector?: string | null;
-  dealById?: string | null;
+  saleExecutive?: string | null;
   approachForFundsId?: string | null;
 };
 
+function normalizePhone(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const digits = value.replace(/\D/g, "");
+  return digits || null;
+}
+
 function toCustomerData(input: CustomerInput) {
   return {
-    name: input.name,
+    name: capitalizeName(input.name) ?? input.name.trim(),
     category: input.category,
-    ownerName: input.ownerName || null,
-    ownerContact: input.ownerContact || null,
-    purchaserName: input.purchaserName || null,
-    purchaserContact: input.purchaserContact || null,
+    active: input.active ?? true,
+    ownerName: capitalizeName(input.ownerName),
+    ownerContact: normalizePhone(input.ownerContact),
+    purchaserName: capitalizeName(input.purchaserName),
+    purchaserContact: normalizePhone(input.purchaserContact),
     purchaserRole: input.purchaserRole || null,
-    paymentInChargeName: input.paymentInChargeName || null,
-    paymentInChargeContact: input.paymentInChargeContact || null,
+    paymentInChargeName: capitalizeName(input.paymentInChargeName),
+    paymentInChargeContact: normalizePhone(input.paymentInChargeContact),
     paymentInChargeRole: input.paymentInChargeRole || null,
-    accountantName: input.accountantName || null,
-    accountantContact: input.accountantContact || null,
+    accountantName: capitalizeName(input.accountantName),
+    accountantContact: normalizePhone(input.accountantContact),
     email: input.email || null,
     city: input.city || null,
     state: input.state || null,
@@ -68,7 +78,7 @@ function toCustomerData(input: CustomerInput) {
         ? null
         : input.creditDays,
     sector: input.sector || null,
-    dealById: input.dealById || null,
+    saleExecutive: input.saleExecutive || null,
     approachForFundsId: input.approachForFundsId || null,
   };
 }

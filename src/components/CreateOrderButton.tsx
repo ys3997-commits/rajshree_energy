@@ -17,13 +17,11 @@ type Option = { id: string; name: string };
 
 export function CreateOrderButton({
   customers,
-  staff,
   ports,
   qualityClasses,
   suggestedPo,
 }: {
   customers: CustomerOpt[];
-  staff: Option[];
   ports: Option[];
   qualityClasses: QualityClassOpt[];
   suggestedPo: string;
@@ -37,16 +35,15 @@ export function CreateOrderButton({
         className="btn btn-secondary"
         onClick={() => setOpen(true)}
       >
-        New order
+        New sale order
       </button>
       <Modal
         open={open}
-        title="New regular order"
+        title="New sale order"
         onClose={() => setOpen(false)}
       >
         <NewOrderForm
           customers={customers}
-          staff={staff}
           ports={ports}
           qualityClasses={qualityClasses}
           suggestedPo={suggestedPo}

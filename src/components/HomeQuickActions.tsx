@@ -28,6 +28,7 @@ type PurchaseOpt = {
   balanceOrder: string | null;
   importer: { name: string } | null;
   vessel: { vesselName: string } | null;
+  qualityClass: QualityClassLabel | null;
 };
 
 type VesselOpt = {
@@ -67,7 +68,6 @@ export function HomeQuickActions({
     <div className="home-quick">
       <CreateOrderButton
         customers={customers}
-        staff={staff}
         ports={ports}
         qualityClasses={qualityClasses}
         suggestedPo={suggestedPo}
@@ -81,8 +81,11 @@ export function HomeQuickActions({
         orders={orders}
         purchaseOrders={purchaseOrders}
         transporters={transporters}
-        customers={customers.map((c) => ({ id: c.id, name: c.name }))}
-        importers={importers}
+        customers={customers.map((c) => ({
+          id: c.id,
+          name: c.name,
+          category: c.category,
+        }))}
         vessels={vessels}
         staff={staff}
         suggestedPo={suggestedPo}

@@ -9,7 +9,7 @@ import {
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { PURCHASE_GST_RATE, PURCHASE_TCS_RATE } from "@/lib/domain/purchaseRate";
-import { SALE_GST_RATE, SALE_TCS_RATE } from "@/lib/domain/saleRate";
+import { SALE_GST_RATE, SALE_TCS_RATE, saleTcsApplies } from "@/lib/domain/saleRate";
 
 export type DecimalLike = Decimal | number | string;
 
@@ -55,8 +55,8 @@ export function computePurchaseFinalRate(
 }
 
 /**
- * Sale all-in rate per MT from base rate and customer category:
- * GST = 18% of rate; traders also add TCS = 2% of (rate + GST).
+ * Sale all-in rate per MT from basic rate and customer category:
+ * GST = 18% of rate; vendors and traders also add TCS = 2% of (rate + GST).
  */
 export function computeSaleFinalRate(
   rate: DecimalLike | null | undefined,
@@ -66,7 +66,7 @@ export function computeSaleFinalRate(
   const base = toDecimal(rate);
   const gst = base.mul(SALE_GST);
   const withGst = base.plus(gst);
-  if (category === CustomerCategory.TRADER) {
+  if (saleTcsApplies(category)) {
     return withGst.plus(withGst.mul(SALE_TCS));
   }
   return withGst;

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { formatQualityClass } from "@/lib/domain/format";
 import { prisma } from "@/lib/prisma";
 
 const qualityClassInclude = {
@@ -17,10 +18,12 @@ export async function listQualityOptions() {
 }
 
 export async function listQualityClasses() {
-  return prisma.qualityClass.findMany({
+  const rows = await prisma.qualityClass.findMany({
     include: qualityClassInclude,
-    orderBy: [{ origin: { name: "asc" } }, { qualityOption: { name: "asc" } }],
   });
+  return rows.sort((a, b) =>
+    formatQualityClass(a).localeCompare(formatQualityClass(b)),
+  );
 }
 
 export async function createOriginOption(name: string) {
@@ -28,6 +31,7 @@ export async function createOriginOption(name: string) {
   if (!trimmed) throw new Error("Origin name is required");
   const row = await prisma.originOption.create({ data: { name: trimmed } });
   revalidatePath("/qualities");
+  revalidatePath("/options");
   return { id: row.id };
 }
 
@@ -39,6 +43,7 @@ export async function updateOriginOption(id: string, name: string) {
     data: { name: trimmed },
   });
   revalidatePath("/qualities");
+  revalidatePath("/options");
   revalidatePath("/vessels");
   revalidatePath("/orders");
   revalidatePath("/purchase-orders");
@@ -54,6 +59,7 @@ export async function deleteOriginOption(id: string) {
   }
   await prisma.originOption.delete({ where: { id } });
   revalidatePath("/qualities");
+  revalidatePath("/options");
 }
 
 export async function createQualityOption(name: string) {
@@ -61,6 +67,7 @@ export async function createQualityOption(name: string) {
   if (!trimmed) throw new Error("Quality name is required");
   const row = await prisma.qualityOption.create({ data: { name: trimmed } });
   revalidatePath("/qualities");
+  revalidatePath("/options");
   return { id: row.id };
 }
 
@@ -72,6 +79,7 @@ export async function updateQualityOption(id: string, name: string) {
     data: { name: trimmed },
   });
   revalidatePath("/qualities");
+  revalidatePath("/options");
   revalidatePath("/vessels");
   revalidatePath("/orders");
   revalidatePath("/purchase-orders");
@@ -89,6 +97,7 @@ export async function deleteQualityOption(id: string) {
   }
   await prisma.qualityOption.delete({ where: { id } });
   revalidatePath("/qualities");
+  revalidatePath("/options");
 }
 
 export type QualityClassInput = {
@@ -109,6 +118,7 @@ export async function createQualityClass(input: QualityClassInput) {
     },
   });
   revalidatePath("/qualities");
+  revalidatePath("/options");
   revalidatePath("/vessels");
   revalidatePath("/orders");
   revalidatePath("/purchase-orders");
@@ -128,6 +138,7 @@ export async function updateQualityClass(id: string, input: QualityClassInput) {
     },
   });
   revalidatePath("/qualities");
+  revalidatePath("/options");
   revalidatePath("/vessels");
   revalidatePath("/orders");
   revalidatePath("/purchase-orders");
@@ -147,4 +158,5 @@ export async function deleteQualityClass(id: string) {
   }
   await prisma.qualityClass.delete({ where: { id } });
   revalidatePath("/qualities");
+  revalidatePath("/options");
 }

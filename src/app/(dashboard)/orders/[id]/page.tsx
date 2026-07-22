@@ -50,7 +50,6 @@ export default async function OrderDetailPage({
           name: order.customer.name,
           category: order.customer.category,
         },
-        orderBy: order.orderBy ? { name: order.orderBy.name } : null,
         dispatches: order.dispatches.map((d) => ({
           id: d.id,
           dispatchDate: d.dispatchDate.toISOString(),

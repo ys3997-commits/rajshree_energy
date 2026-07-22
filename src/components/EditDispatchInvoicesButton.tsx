@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
@@ -26,12 +26,12 @@ export function EditDispatchInvoicesButton({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
+  function openModal() {
     setSaleInvoice(saleInvoiceNumber ?? "");
     setPurchaseInvoice(purchaseInvoiceNumber ?? "");
     setError(null);
-  }, [open, saleInvoiceNumber, purchaseInvoiceNumber]);
+    setOpen(true);
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -56,7 +56,7 @@ export function EditDispatchInvoicesButton({
       <button
         type="button"
         className="btn btn-secondary"
-        onClick={() => setOpen(true)}
+        onClick={openModal}
       >
         {label ?? "Edit invoices"}
       </button>

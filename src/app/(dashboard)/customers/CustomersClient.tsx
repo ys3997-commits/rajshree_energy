@@ -7,12 +7,20 @@ import {
   deleteCustomer,
   updateCustomer,
 } from "@/lib/actions/customers";
+import {
+  capitalizeName,
+  formatCreditPeriod,
+  formatCustomerCategory,
+} from "@/lib/domain/format";
+import { FormStatusToggle } from "@/components/FormStatusToggle";
+import { OptionSelect } from "@/components/OptionSelect";
 
 type Staff = { id: string; name: string };
 type Row = {
   id: string;
   name: string;
   category: CustomerCategory;
+  active: boolean;
   ownerName: string | null;
   ownerContact: string | null;
   purchaserName: string | null;
@@ -28,15 +36,15 @@ type Row = {
   state: string | null;
   creditDays: number | null;
   sector: string | null;
-  dealById: string | null;
+  saleExecutive: string | null;
   approachForFundsId: string | null;
-  dealBy: Staff | null;
   approachForFunds: Staff | null;
 };
 
 const empty = {
   name: "",
   category: CustomerCategory.INDUSTRY as CustomerCategory,
+  active: true,
   ownerName: "",
   ownerContact: "",
   purchaserName: "",
@@ -52,7 +60,7 @@ const empty = {
   state: "",
   creditDays: "",
   sector: "",
-  dealById: "",
+  saleExecutive: "",
   approachForFundsId: "",
 };
 
@@ -64,12 +72,34 @@ function parseCreditDays(value: string): number | null {
   return Math.round(n);
 }
 
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
+
+function formatNameField(value: string): string {
+  return capitalizeName(value) ?? value;
+}
+
+function formatContact(name: string | null, contact: string | null): string {
+  const formattedName = name ? (capitalizeName(name) ?? name) : null;
+  if (!formattedName) return "—";
+  return `${formattedName}${contact ? ` · ${contact}` : ""}`;
+}
+
 export function CustomersClient({
   initial,
   staff,
+  cities,
+  states,
+  sectors,
+  saleExecutives,
 }: {
   initial: Row[];
   staff: Staff[];
+  cities: string[];
+  states: string[];
+  sectors: string[];
+  saleExecutives: string[];
 }) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState(empty);
@@ -83,6 +113,7 @@ export function CustomersClient({
     const payload = {
       name: form.name,
       category: form.category,
+      active: editing ? form.active : undefined,
       ownerName: form.ownerName || null,
       ownerContact: form.ownerContact || null,
       purchaserName: form.purchaserName || null,
@@ -98,7 +129,7 @@ export function CustomersClient({
       state: form.state || null,
       creditDays: parseCreditDays(form.creditDays),
       sector: form.sector || null,
-      dealById: form.dealById || null,
+      saleExecutive: form.saleExecutive || null,
       approachForFundsId: form.approachForFundsId || null,
     };
     try {
@@ -127,6 +158,7 @@ export function CustomersClient({
     setForm({
       name: row.name,
       category: row.category,
+      active: row.active,
       ownerName: row.ownerName ?? "",
       ownerContact: row.ownerContact ?? "",
       purchaserName: row.purchaserName ?? "",
@@ -142,16 +174,34 @@ export function CustomersClient({
       state: row.state ?? "",
       creditDays: row.creditDays != null ? String(row.creditDays) : "",
       sector: row.sector ?? "",
-      dealById: row.dealById ?? "",
+      saleExecutive: row.saleExecutive ?? "",
       approachForFundsId: row.approachForFundsId ?? "",
     });
+  }
+
+  function setNameField<K extends keyof typeof empty>(
+    key: K,
+    value: string,
+  ) {
+    setForm({ ...form, [key]: value });
+  }
+
+  function blurNameField<K extends keyof typeof empty>(key: K) {
+    const value = form[key];
+    if (typeof value === "string" && value.trim()) {
+      setForm({ ...form, [key]: formatNameField(value) });
+    }
+  }
+
+  function setPhoneField<K extends keyof typeof empty>(key: K, value: string) {
+    setForm({ ...form, [key]: digitsOnly(value) });
   }
 
   return (
     <div>
       <h1 className="page-title">Customers</h1>
       <p className="page-subtitle">
-        Suppliers, industry buyers, and traders.
+        Vendors, traders, and industry buyers.
       </p>
       {error && <div className="error-box">{error}</div>}
 
@@ -160,7 +210,8 @@ export function CustomersClient({
         <input
           required
           value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          onChange={(e) => setNameField("name", e.target.value)}
+          onBlur={() => blurNameField("name")}
         />
 
         <label>Category</label>
@@ -173,24 +224,37 @@ export function CustomersClient({
             })
           }
         >
-          <option value={CustomerCategory.INDUSTRY}>Industry</option>
+          <option value={CustomerCategory.SUPPLIER}>Vendor</option>
           <option value={CustomerCategory.TRADER}>Trader</option>
-          <option value={CustomerCategory.SUPPLIER}>Supplier</option>
+          <option value={CustomerCategory.INDUSTRY}>Industry</option>
         </select>
+
+        {editing && (
+          <>
+            <label>Status</label>
+            <FormStatusToggle
+              active={form.active}
+              onChange={(active) => setForm({ ...form, active })}
+              disabled={pending}
+              label="Customer status"
+            />
+          </>
+        )}
 
         <label>Owner</label>
         <div className="role-fields">
           <input
             placeholder="Name"
             value={form.ownerName}
-            onChange={(e) => setForm({ ...form, ownerName: e.target.value })}
+            onChange={(e) => setNameField("ownerName", e.target.value)}
+            onBlur={() => blurNameField("ownerName")}
           />
           <input
             placeholder="Phone"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={form.ownerContact}
-            onChange={(e) =>
-              setForm({ ...form, ownerContact: e.target.value })
-            }
+            onChange={(e) => setPhoneField("ownerContact", e.target.value)}
           />
         </div>
 
@@ -199,15 +263,16 @@ export function CustomersClient({
           <input
             placeholder="Name"
             value={form.purchaserName}
-            onChange={(e) =>
-              setForm({ ...form, purchaserName: e.target.value })
-            }
+            onChange={(e) => setNameField("purchaserName", e.target.value)}
+            onBlur={() => blurNameField("purchaserName")}
           />
           <input
             placeholder="Phone"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={form.purchaserContact}
             onChange={(e) =>
-              setForm({ ...form, purchaserContact: e.target.value })
+              setPhoneField("purchaserContact", e.target.value)
             }
           />
           <input
@@ -225,14 +290,17 @@ export function CustomersClient({
             placeholder="Name"
             value={form.paymentInChargeName}
             onChange={(e) =>
-              setForm({ ...form, paymentInChargeName: e.target.value })
+              setNameField("paymentInChargeName", e.target.value)
             }
+            onBlur={() => blurNameField("paymentInChargeName")}
           />
           <input
             placeholder="Phone"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={form.paymentInChargeContact}
             onChange={(e) =>
-              setForm({ ...form, paymentInChargeContact: e.target.value })
+              setPhoneField("paymentInChargeContact", e.target.value)
             }
           />
           <input
@@ -249,15 +317,16 @@ export function CustomersClient({
           <input
             placeholder="Name"
             value={form.accountantName}
-            onChange={(e) =>
-              setForm({ ...form, accountantName: e.target.value })
-            }
+            onChange={(e) => setNameField("accountantName", e.target.value)}
+            onBlur={() => blurNameField("accountantName")}
           />
           <input
             placeholder="Phone"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={form.accountantContact}
             onChange={(e) =>
-              setForm({ ...form, accountantContact: e.target.value })
+              setPhoneField("accountantContact", e.target.value)
             }
           />
         </div>
@@ -270,38 +339,38 @@ export function CustomersClient({
         />
 
         <label>City</label>
-        <input
+        <OptionSelect
           value={form.city}
-          onChange={(e) => setForm({ ...form, city: e.target.value })}
+          onChange={(city) => setForm({ ...form, city })}
+          options={cities}
         />
 
         <label>State</label>
-        <input
+        <OptionSelect
           value={form.state}
-          onChange={(e) => setForm({ ...form, state: e.target.value })}
+          onChange={(state) => setForm({ ...form, state })}
+          options={states}
         />
 
-        <label>Credit days</label>
-        <input
-          type="number"
-          min={0}
-          step={1}
-          value={form.creditDays}
-          onChange={(e) => setForm({ ...form, creditDays: e.target.value })}
-        />
+        <label>Credit period</label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            min={0}
+            step={1}
+            placeholder="0"
+            value={form.creditDays}
+            onChange={(e) => setForm({ ...form, creditDays: e.target.value })}
+          />
+          <span className="field-unit">days</span>
+        </div>
 
-        <label>Deal by</label>
-        <select
-          value={form.dealById}
-          onChange={(e) => setForm({ ...form, dealById: e.target.value })}
-        >
-          <option value="">—</option>
-          {staff.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+        <label>Sales executive</label>
+        <OptionSelect
+          value={form.saleExecutive}
+          onChange={(saleExecutive) => setForm({ ...form, saleExecutive })}
+          options={saleExecutives}
+        />
 
         <label>Approach for funds</label>
         <select
@@ -310,7 +379,7 @@ export function CustomersClient({
             setForm({ ...form, approachForFundsId: e.target.value })
           }
         >
-          <option value="">—</option>
+          <option value="">Select</option>
           {staff.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -319,9 +388,10 @@ export function CustomersClient({
         </select>
 
         <label>Sector</label>
-        <input
+        <OptionSelect
           value={form.sector}
-          onChange={(e) => setForm({ ...form, sector: e.target.value })}
+          onChange={(sector) => setForm({ ...form, sector })}
+          options={sectors}
         />
 
         <div />
@@ -354,38 +424,36 @@ export function CustomersClient({
               <th>Owner</th>
               <th>Purchaser</th>
               <th>Payment</th>
-              <th>Credit days</th>
+              <th>Credit period</th>
               <th>Sector</th>
-              <th>Deal by</th>
+              <th>Sales Executive</th>
               <th />
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id}>
-                <td>{row.name}</td>
-                <td>{row.category}</td>
+              <tr
+                key={row.id}
+                className={row.active ? undefined : "customer-row-inactive"}
+              >
+                <td>{capitalizeName(row.name) ?? row.name}</td>
+                <td>{formatCustomerCategory(row.category)}</td>
                 <td>
                   {[row.city, row.state].filter(Boolean).join(", ") || "—"}
                 </td>
+                <td>{formatContact(row.ownerName, row.ownerContact)}</td>
                 <td>
-                  {row.ownerName
-                    ? `${row.ownerName}${row.ownerContact ? ` · ${row.ownerContact}` : ""}`
-                    : "—"}
+                  {formatContact(row.purchaserName, row.purchaserContact)}
                 </td>
                 <td>
-                  {row.purchaserName
-                    ? `${row.purchaserName}${row.purchaserContact ? ` · ${row.purchaserContact}` : ""}`
-                    : "—"}
+                  {formatContact(
+                    row.paymentInChargeName,
+                    row.paymentInChargeContact,
+                  )}
                 </td>
-                <td>
-                  {row.paymentInChargeName
-                    ? `${row.paymentInChargeName}${row.paymentInChargeContact ? ` · ${row.paymentInChargeContact}` : ""}`
-                    : "—"}
-                </td>
-                <td>{row.creditDays ?? "—"}</td>
+                <td>{formatCreditPeriod(row.creditDays)}</td>
                 <td>{row.sector ?? "—"}</td>
-                <td>{row.dealBy?.name ?? "—"}</td>
+                <td>{row.saleExecutive ?? "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">
                   <button
                     type="button"

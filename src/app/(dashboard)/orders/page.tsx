@@ -12,6 +12,7 @@ import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { formatMt, formatRs } from "@/lib/domain/computations";
+import { formatCreditPeriod } from "@/lib/domain/format";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import Link from "next/link";
@@ -48,13 +49,13 @@ export default async function OrdersPage({
       portId: sp.portId || "",
       orderById: sp.orderById || "",
     }),
-    listCustomers(),
+    listCustomers({ activeOnly: true }),
     listStaff(),
     listPortOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listTransporters(),
-    listVessels(),
+    listVessels({ activeOnly: true }),
     listQualityClasses(),
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
@@ -88,7 +89,6 @@ export default async function OrdersPage({
         <div className="flex gap-2">
           <CreateOrderButton
             customers={customerOpts}
-            staff={staffOpts}
             ports={portOpts}
             qualityClasses={qualityClassOpts}
             suggestedPo={suggestedPo}
@@ -104,10 +104,10 @@ export default async function OrdersPage({
               balanceOrder: p.balanceOrder?.toString() ?? null,
               importer: p.importer,
               vessel: p.vessel,
+              qualityClass: p.qualityClass,
             }))}
             transporters={transporters.map((t) => ({ id: t.id, name: t.name }))}
-            customers={customerOpts.map((c) => ({ id: c.id, name: c.name }))}
-            importers={importerOpts}
+            customers={customerOpts}
             vessels={vessels.map((v) => ({
               id: v.id,
               vesselName: v.vesselName,
@@ -152,17 +152,6 @@ export default async function OrdersPage({
             ))}
           </select>
         </label>
-        <label>
-          Deal by
-          <select name="orderById" defaultValue={sp.orderById ?? ""}>
-            <option value="">All</option>
-            {staff.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>
@@ -179,11 +168,10 @@ export default async function OrdersPage({
               <th>Dispatched (MT)</th>
               <th>Balance (MT)</th>
               <th>Status</th>
-              <th>Credit days</th>
+              <th>Credit period</th>
               <th>Port</th>
-              <th>Base rate</th>
+              <th>Basic rate</th>
               <th>Final rate</th>
-              <th>Deal by</th>
             </tr>
           </thead>
           <tbody>
@@ -203,16 +191,15 @@ export default async function OrdersPage({
                 <td>{formatMt(row.dispatchedOrder)}</td>
                 <td>{formatMt(row.balanceOrder)}</td>
                 <td>{row.orderStatus}</td>
-                <td>{row.creditDays ?? "—"}</td>
+                <td>{formatCreditPeriod(row.creditDays)}</td>
                 <td>{row.port?.name ?? "—"}</td>
                 <td>{formatRs(row.rate)}</td>
                 <td>{formatRs(row.finalRate)}</td>
-                <td>{row.orderBy?.name ?? "—"}</td>
               </tr>
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={12}>No orders match filters.</td>
+                <td colSpan={11}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

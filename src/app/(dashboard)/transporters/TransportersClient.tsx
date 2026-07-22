@@ -7,6 +7,7 @@ import {
   deleteTransporter,
   updateTransporter,
 } from "@/lib/actions/transporters";
+import { OptionSelect } from "@/components/OptionSelect";
 
 type Row = {
   id: string;
@@ -29,7 +30,15 @@ const empty = {
   state: "",
 };
 
-export function TransportersClient({ initial }: { initial: Row[] }) {
+export function TransportersClient({
+  initial,
+  cities,
+  states,
+}: {
+  initial: Row[];
+  cities: string[];
+  states: string[];
+}) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState(empty);
   const [editing, setEditing] = useState<Row | null>(null);
@@ -104,14 +113,16 @@ export function TransportersClient({ initial }: { initial: Row[] }) {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
         <label>City</label>
-        <input
+        <OptionSelect
           value={form.city}
-          onChange={(e) => setForm({ ...form, city: e.target.value })}
+          onChange={(city) => setForm({ ...form, city })}
+          options={cities}
         />
         <label>State</label>
-        <input
+        <OptionSelect
           value={form.state}
-          onChange={(e) => setForm({ ...form, state: e.target.value })}
+          onChange={(state) => setForm({ ...form, state })}
+          options={states}
         />
         <div />
         <div className="flex gap-2">

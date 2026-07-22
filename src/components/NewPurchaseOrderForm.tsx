@@ -2,10 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  createOpenPurchaseOrder,
-  createRegularPurchaseOrder,
-} from "@/lib/actions/purchaseOrders";
+import { createRegularPurchaseOrder } from "@/lib/actions/purchaseOrders";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import { formatQualityClass, type QualityClassLabel } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
@@ -32,7 +29,6 @@ export function NewPurchaseOrderForm({
   onCancel?: () => void;
 }) {
   const router = useRouter();
-  const [mode, setMode] = useState<"regular" | "open">("regular");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [poNumber, setPoNumber] = useState(suggestedPo);
@@ -56,22 +52,15 @@ export function NewPurchaseOrderForm({
     setError(null);
     const fd = new FormData(e.currentTarget);
     try {
-      const base = {
+      const order = await createRegularPurchaseOrder({
         poNumber: String(fd.get("poNumber") || ""),
         importerId: String(fd.get("importerId") || ""),
         vesselId: String(fd.get("vesselId") || ""),
         orderDate: String(fd.get("orderDate") || "") || null,
         qualityClassId: selectedVessel?.qualityClassId || null,
         rate: rate || null,
-      };
-
-      const order =
-        mode === "regular"
-          ? await createRegularPurchaseOrder({
-              ...base,
-              quantity: String(fd.get("quantity") || ""),
-            })
-          : await createOpenPurchaseOrder(base);
+        quantity: String(fd.get("quantity") || ""),
+      });
 
       router.push(`/purchase-orders/${order.id}`);
     } catch (err) {
@@ -84,51 +73,21 @@ export function NewPurchaseOrderForm({
     <div>
       {error && <div className="error-box">{error}</div>}
 
-      <div
-        className="option-cards"
-        role="radiogroup"
-        aria-label="Purchase order type"
-      >
-        <button
-          type="button"
-          role="radio"
-          aria-checked={mode === "regular"}
-          className={`option-card${mode === "regular" ? " option-card-selected" : ""}`}
-          onClick={() => setMode("regular")}
-        >
-          <span className="option-card-title">Regular</span>
-          <span className="option-card-desc">
-            Fixed quantity known up front
-          </span>
-        </button>
-        <button
-          type="button"
-          role="radio"
-          aria-checked={mode === "open"}
-          className={`option-card${mode === "open" ? " option-card-selected" : ""}`}
-          onClick={() => setMode("open")}
-        >
-          <span className="option-card-title">Open</span>
-          <span className="option-card-desc">
-            Quantity set later after dispatches
-          </span>
-        </button>
-      </div>
-
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-        <label>Order date</label>
-        <input
-          name="orderDate"
-          type="date"
-          defaultValue={new Date().toISOString().slice(0, 10)}
-        />
-
-        <label>Purchase PO number</label>
+        <label>Purchase order number</label>
         <input
           name="poNumber"
           required
           value={poNumber}
           onChange={(e) => setPoNumber(e.target.value)}
+          placeholder="PO 0001"
+        />
+
+        <label>Order date</label>
+        <input
+          name="orderDate"
+          type="date"
+          defaultValue={new Date().toISOString().slice(0, 10)}
         />
 
         <label>Vendor</label>
@@ -138,7 +97,7 @@ export function NewPurchaseOrderForm({
           value={importerId}
           onChange={(e) => setImporterId(e.target.value)}
         >
-          <option value="">Select…</option>
+          <option value="">Select</option>
           {importers.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -153,7 +112,7 @@ export function NewPurchaseOrderForm({
           value={vesselId}
           onChange={(e) => setVesselId(e.target.value)}
         >
-          <option value="">Select…</option>
+          <option value="">Select</option>
           {vessels.map((v) => (
             <option key={v.id} value={v.id}>
               {v.vesselName}
@@ -178,33 +137,29 @@ export function NewPurchaseOrderForm({
           </>
         )}
 
-        {mode === "regular" && (
-          <>
-            <label>Quantity</label>
-            <div className="field-with-unit">
-              <input
-                name="quantity"
-                required
-                type="number"
-                step="any"
-                min="0"
-              />
-              <span className="field-unit">MT</span>
-            </div>
-          </>
-        )}
-
-        <label>Rate (cost)</label>
+        <label>Quantity</label>
         <div className="field-with-unit">
+          <input
+            name="quantity"
+            required
+            type="number"
+            step="any"
+            min="0"
+          />
+          <span className="field-unit">MT</span>
+        </div>
+
+        <label>Basic rate</label>
+        <div className="field-with-unit field-with-prefix">
+          <span className="field-unit">Rs</span>
           <input
             name="rate"
             type="number"
-            step="any"
+            step="0.01"
             min="0"
             value={rate}
             onChange={(e) => setRate(e.target.value)}
           />
-          <span className="field-unit">Rs</span>
         </div>
 
         {rateBreakdown != null && (
@@ -213,16 +168,6 @@ export function NewPurchaseOrderForm({
             tcs={rateBreakdown.tcs}
             final={rateBreakdown.final}
           />
-        )}
-
-        {mode === "open" && (
-          <p
-            className="text-sm text-neutral-600"
-            style={{ gridColumn: "1 / -1" }}
-          >
-            Open purchase orders start with no quantity. Set quantity later
-            after dispatches, same as open sale orders.
-          </p>
         )}
 
         <div />

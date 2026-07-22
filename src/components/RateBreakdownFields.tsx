@@ -13,13 +13,13 @@ export function RateBreakdownFields({
   return (
     <>
       <label>GST (18%)</label>
-      <div className="text-sm">{formatRs(gst)} Rs</div>
+      <div className="text-sm">{formatRs(gst)}</div>
       <label>TCS (2%)</label>
       <div className="text-sm">
-        {tcs != null ? `${formatRs(tcs)} Rs` : "—"}
+        {tcs != null ? formatRs(tcs) : "—"}
       </div>
       <label>Final rate</label>
-      <div className="text-sm font-medium">{formatRs(final)} Rs</div>
+      <div className="text-sm font-medium">{formatRs(final)}</div>
     </>
   );
 }

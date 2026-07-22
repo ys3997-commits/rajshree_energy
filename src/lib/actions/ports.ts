@@ -12,6 +12,7 @@ export async function createPortOption(name: string) {
   if (!trimmed) throw new Error("Port name is required");
   const row = await prisma.portOption.create({ data: { name: trimmed } });
   revalidatePath("/vessels");
+  revalidatePath("/options");
   return { id: row.id };
 }
 
@@ -23,6 +24,7 @@ export async function updatePortOption(id: string, name: string) {
     data: { name: trimmed },
   });
   revalidatePath("/vessels");
+  revalidatePath("/options");
   return { id: row.id };
 }
 
@@ -38,4 +40,5 @@ export async function deletePortOption(id: string) {
   }
   await prisma.portOption.delete({ where: { id } });
   revalidatePath("/vessels");
+  revalidatePath("/options");
 }

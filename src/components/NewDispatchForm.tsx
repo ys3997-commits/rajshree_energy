@@ -2,11 +2,17 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DispatchTerms } from "@/generated/prisma";
+import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import {
   createDispatch,
   createOpenOrderDispatch,
 } from "@/lib/actions/dispatch";
+import {
+  formatQualityClass,
+  formatRateBreakdownLine,
+} from "@/lib/domain/format";
+import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
+import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
 
 type OrderOpt = {
   poNumber: string;
@@ -14,14 +20,27 @@ type OrderOpt = {
   customer: { name: string } | null;
 };
 
+type QualityClassOpt = {
+  domestic: boolean;
+  origin: { name: string };
+  qualityOption: { name: string };
+};
+
 type PurchaseOpt = {
   poNumber: string;
   balanceOrder: string | null;
   importer: { name: string } | null;
   vessel: { vesselName: string } | null;
+  qualityClass: QualityClassOpt | null;
 };
 
 type Opt = { id: string; name: string };
+
+type CustomerOpt = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+};
 
 type VesselOpt = {
   id: string;
@@ -33,7 +52,6 @@ export function NewDispatchForm({
   purchaseOrders,
   transporters,
   customers,
-  importers,
   vessels,
   staff,
   suggestedPo,
@@ -44,8 +62,7 @@ export function NewDispatchForm({
   orders: OrderOpt[];
   purchaseOrders: PurchaseOpt[];
   transporters: Opt[];
-  customers: Opt[];
-  importers: Opt[];
+  customers: CustomerOpt[];
   vessels: VesselOpt[];
   staff: Opt[];
   suggestedPo: string;
@@ -62,11 +79,13 @@ export function NewDispatchForm({
   const [openPoNumber, setOpenPoNumber] = useState(suggestedPo);
   const [orderById, setOrderById] = useState("");
   const [customerId, setCustomerId] = useState("");
+  const [saleRate, setSaleRate] = useState("");
   const [purchasePoNumber, setPurchasePoNumber] = useState("");
   const [openPurchasePoNumber, setOpenPurchasePoNumber] =
     useState(suggestedPurchasePo);
-  const [importerId, setImporterId] = useState("");
+  const [vendorId, setVendorId] = useState("");
   const [vesselId, setVesselId] = useState("");
+  const [purchaseRate, setPurchaseRate] = useState("");
   const [dispatchedQuantity, setDispatchedQuantity] = useState("");
   const [dispatchTerms, setDispatchTerms] = useState<DispatchTerms>(
     DispatchTerms.EX_PORT,
@@ -94,6 +113,21 @@ export function NewDispatchForm({
     [purchaseOrders, purchasePoNumber],
   );
 
+  const purchaseRateBreakdown = useMemo(
+    () => computePurchaseRateBreakdown(purchaseRate),
+    [purchaseRate],
+  );
+
+  const selectedCustomer = useMemo(
+    () => customers.find((c) => c.id === customerId) ?? null,
+    [customers, customerId],
+  );
+
+  const saleRateBreakdown = useMemo(
+    () => computeSaleRateBreakdown(saleRate, selectedCustomer?.category),
+    [saleRate, selectedCustomer?.category],
+  );
+
   const filteredOrders = useMemo(() => {
     const q = orderSearch.trim().toLowerCase();
     if (!q) return orders;
@@ -111,11 +145,13 @@ export function NewDispatchForm({
       (p) =>
         p.poNumber.toLowerCase().includes(q) ||
         p.importer?.name?.toLowerCase().includes(q) ||
-        p.vessel?.vesselName?.toLowerCase().includes(q),
+        p.vessel?.vesselName?.toLowerCase().includes(q) ||
+        formatQualityClass(p.qualityClass).toLowerCase().includes(q),
     );
   }, [purchaseOrders, purchaseSearch]);
 
   const filteredVessels = vessels;
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -126,8 +162,9 @@ export function NewDispatchForm({
         purchaseMode === "open"
           ? {
               poNumber: openPurchasePoNumber,
-              importerId,
+              importerId: vendorId,
               vesselId,
+              rate: purchaseRate.trim() || null,
             }
           : undefined;
       const existingPurchasePo =
@@ -140,7 +177,7 @@ export function NewDispatchForm({
         if (!openPurchasePoNumber.trim()) {
           throw new Error("Purchase PO number is required");
         }
-        if (!importerId) throw new Error("Importer is required");
+        if (!vendorId) throw new Error("Vendor is required");
         if (!vesselId) throw new Error("Vessel is required");
       }
 
@@ -164,6 +201,7 @@ export function NewDispatchForm({
           poNumber: openPoNumber,
           orderById,
           customerId,
+          rate: saleRate.trim() || null,
           ...shared,
         });
       } else {
@@ -190,109 +228,33 @@ export function NewDispatchForm({
     <div>
       {error && <div className="error-box">{error}</div>}
 
-      <div className="option-cards" role="radiogroup" aria-label="Sale order type">
-        <button
-          type="button"
-          role="radio"
-          aria-checked={mode === "existing"}
-          className={`option-card${mode === "existing" ? " option-card-selected" : ""}`}
-          onClick={() => setMode("existing")}
-        >
-          <span className="option-card-title">Existing sale PO</span>
-          <span className="option-card-desc">
-            Link dispatch to a sale order already on file
-          </span>
-        </button>
-        <button
-          type="button"
-          role="radio"
-          aria-checked={mode === "open"}
-          className={`option-card${mode === "open" ? " option-card-selected" : ""}`}
-          onClick={() => setMode("open")}
-        >
-          <span className="option-card-title">Open sale order</span>
-          <span className="option-card-desc">
-            Create a new open order, then dispatch against purchase stock
-          </span>
-        </button>
-      </div>
-
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-        {mode === "existing" ? (
-          <>
-            <label>Search sale PO</label>
-            <input
-              value={orderSearch}
-              onChange={(e) => setOrderSearch(e.target.value)}
-              placeholder="Filter by PO or customer"
-            />
-            <label>Sale PO number</label>
-            <select
-              required
-              value={poNumber}
-              onChange={(e) => setPoNumber(e.target.value)}
-            >
-              <option value="">Select…</option>
-              {filteredOrders.map((o) => (
-                <option key={o.poNumber} value={o.poNumber}>
-                  {o.poNumber} — {o.customer?.name} (bal{" "}
-                  {o.balanceOrder != null ? `${o.balanceOrder} MT` : "n/a"})
-                </option>
-              ))}
-            </select>
-            {selectedOrder && (
-              <>
-                <label>Sale balance</label>
-                <div className="text-sm">
-                  {selectedOrder.balanceOrder != null
-                    ? `${selectedOrder.balanceOrder} MT`
-                    : "—"}
-                </div>
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <label>Sale PO number</label>
-            <input
-              required
-              value={openPoNumber}
-              onChange={(e) => setOpenPoNumber(e.target.value)}
-            />
-            <label>Customer</label>
-            <select
-              required
-              value={customerId}
-              onChange={(e) => setCustomerId(e.target.value)}
-            >
-              <option value="">Select…</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <label>Deal by (staff)</label>
-            <select
-              required
-              value={orderById}
-              onChange={(e) => setOrderById(e.target.value)}
-            >
-              <option value="">Select…</option>
-              {staff.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <p
-              className="text-sm text-neutral-600"
-              style={{ gridColumn: "1 / -1" }}
-            >
-              Creates an OPEN sale order with quantity null, then the dispatch.
-            </p>
-          </>
-        )}
+        <label>Dispatch date</label>
+        <input
+          required
+          type="date"
+          value={dispatchDate}
+          onChange={(e) => setDispatchDate(e.target.value)}
+        />
+
+        <label>Lorry number</label>
+        <input
+          value={lorryNumber}
+          onChange={(e) => setLorryNumber(e.target.value)}
+        />
+
+        <label>Dispatched quantity</label>
+        <div className="field-with-unit">
+          <input
+            required
+            type="number"
+            step="any"
+            min="0.0001"
+            value={dispatchedQuantity}
+            onChange={(e) => setDispatchedQuantity(e.target.value)}
+          />
+          <span className="field-unit">MT</span>
+        </div>
 
         <div
           className="option-cards"
@@ -332,7 +294,7 @@ export function NewDispatchForm({
             <input
               value={purchaseSearch}
               onChange={(e) => setPurchaseSearch(e.target.value)}
-              placeholder="Filter by PO, importer, or vessel"
+              placeholder="Filter by PO, vendor, vessel, or quality"
             />
 
             <label>Purchase order</label>
@@ -341,7 +303,7 @@ export function NewDispatchForm({
               value={purchasePoNumber}
               onChange={(e) => setPurchasePoNumber(e.target.value)}
             >
-              <option value="">Select…</option>
+              <option value="">Select</option>
               {filteredPurchases.map((p) => (
                 <option key={p.poNumber} value={p.poNumber}>
                   {p.poNumber} — {p.importer?.name ?? "?"} —{" "}
@@ -358,25 +320,34 @@ export function NewDispatchForm({
                     ? `${selectedPurchase.balanceOrder} MT`
                     : "—"}
                 </div>
+                <label>Vessel</label>
+                <div className="text-sm">
+                  {selectedPurchase.vessel?.vesselName ?? "—"}
+                </div>
+                <label>Quality</label>
+                <div className="text-sm">
+                  {formatQualityClass(selectedPurchase.qualityClass)}
+                </div>
               </>
             )}
           </>
         ) : (
           <>
-            <label>Purchase PO number</label>
+            <label>Purchase order number</label>
             <input
               required
               value={openPurchasePoNumber}
               onChange={(e) => setOpenPurchasePoNumber(e.target.value)}
+              placeholder="PO 0001"
             />
-            <label>Importer</label>
+            <label>Vendor</label>
             <select
               required
-              value={importerId}
-              onChange={(e) => setImporterId(e.target.value)}
+              value={vendorId}
+              onChange={(e) => setVendorId(e.target.value)}
             >
-              <option value="">Select…</option>
-              {importers.map((c) => (
+              <option value="">Select</option>
+              {customers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -388,13 +359,32 @@ export function NewDispatchForm({
               value={vesselId}
               onChange={(e) => setVesselId(e.target.value)}
             >
-              <option value="">Select…</option>
+              <option value="">Select</option>
               {filteredVessels.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.vesselName}
                 </option>
               ))}
             </select>
+            <label>Basic rate</label>
+            <div className="field-with-unit field-with-prefix">
+              <span className="field-unit">Rs</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={purchaseRate}
+                onChange={(e) => setPurchaseRate(e.target.value)}
+              />
+            </div>
+            {purchaseRateBreakdown != null && (
+              <>
+                <label>Rate breakdown</label>
+                <div className="text-sm font-medium">
+                  {formatRateBreakdownLine(purchaseRateBreakdown)}
+                </div>
+              </>
+            )}
             <p
               className="text-sm text-neutral-600"
               style={{ gridColumn: "1 / -1" }}
@@ -405,26 +395,133 @@ export function NewDispatchForm({
           </>
         )}
 
-        <label>Dispatched quantity</label>
-        <div className="field-with-unit">
-          <input
-            required
-            type="number"
-            step="any"
-            min="0.0001"
-            value={dispatchedQuantity}
-            onChange={(e) => setDispatchedQuantity(e.target.value)}
-          />
-          <span className="field-unit">MT</span>
+        <div
+          className="option-cards"
+          role="radiogroup"
+          aria-label="Sale order type"
+          style={{ gridColumn: "1 / -1" }}
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={mode === "existing"}
+            className={`option-card${mode === "existing" ? " option-card-selected" : ""}`}
+            onClick={() => setMode("existing")}
+          >
+            <span className="option-card-title">Existing sale PO</span>
+            <span className="option-card-desc">
+              Link dispatch to a sale order already on file
+            </span>
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={mode === "open"}
+            className={`option-card${mode === "open" ? " option-card-selected" : ""}`}
+            onClick={() => setMode("open")}
+          >
+            <span className="option-card-title">Open sale order</span>
+            <span className="option-card-desc">
+              Create a new open order, then dispatch against purchase stock
+            </span>
+          </button>
         </div>
 
-        <label>Dispatch date</label>
-        <input
-          required
-          type="date"
-          value={dispatchDate}
-          onChange={(e) => setDispatchDate(e.target.value)}
-        />
+        {mode === "existing" ? (
+          <>
+            <label>Search sale PO</label>
+            <input
+              value={orderSearch}
+              onChange={(e) => setOrderSearch(e.target.value)}
+              placeholder="Filter by PO or customer"
+            />
+            <label>Sale order number</label>
+            <select
+              required
+              value={poNumber}
+              onChange={(e) => setPoNumber(e.target.value)}
+            >
+              <option value="">Select</option>
+              {filteredOrders.map((o) => (
+                <option key={o.poNumber} value={o.poNumber}>
+                  {o.poNumber} — {o.customer?.name} (bal{" "}
+                  {o.balanceOrder != null ? `${o.balanceOrder} MT` : "n/a"})
+                </option>
+              ))}
+            </select>
+            {selectedOrder && (
+              <>
+                <label>Sale balance</label>
+                <div className="text-sm">
+                  {selectedOrder.balanceOrder != null
+                    ? `${selectedOrder.balanceOrder} MT`
+                    : "—"}
+                </div>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <label>Sale order number</label>
+            <input
+              required
+              value={openPoNumber}
+              onChange={(e) => setOpenPoNumber(e.target.value)}
+              placeholder="SO 0001"
+            />
+            <label>Customer</label>
+            <select
+              required
+              value={customerId}
+              onChange={(e) => setCustomerId(e.target.value)}
+            >
+              <option value="">Select</option>
+              {customers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            <label>Deal by (staff)</label>
+            <select
+              required
+              value={orderById}
+              onChange={(e) => setOrderById(e.target.value)}
+            >
+              <option value="">Select</option>
+              {staff.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <label>Basic rate</label>
+            <div className="field-with-unit field-with-prefix">
+              <span className="field-unit">Rs</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={saleRate}
+                onChange={(e) => setSaleRate(e.target.value)}
+              />
+            </div>
+            {saleRateBreakdown != null && (
+              <>
+                <label>Rate breakdown</label>
+                <div className="text-sm font-medium">
+                  {formatRateBreakdownLine(saleRateBreakdown)}
+                </div>
+              </>
+            )}
+            <p
+              className="text-sm text-neutral-600"
+              style={{ gridColumn: "1 / -1" }}
+            >
+              Creates an OPEN sale order with quantity null, then the dispatch.
+            </p>
+          </>
+        )}
 
         <label>Delivery terms</label>
         <div
@@ -456,26 +553,6 @@ export function NewDispatchForm({
           </button>
         </div>
 
-        <label>Lorry number</label>
-        <input
-          value={lorryNumber}
-          onChange={(e) => setLorryNumber(e.target.value)}
-        />
-
-        <label>Sale invoice</label>
-        <input
-          value={saleInvoiceNumber}
-          onChange={(e) => setSaleInvoiceNumber(e.target.value)}
-          placeholder="Optional — can add later"
-        />
-
-        <label>Purchase invoice</label>
-        <input
-          value={purchaseInvoiceNumber}
-          onChange={(e) => setPurchaseInvoiceNumber(e.target.value)}
-          placeholder="Optional — can add later"
-        />
-
         <label>Transporter</label>
         {dispatchTerms === DispatchTerms.FOR ? (
           <select
@@ -483,7 +560,7 @@ export function NewDispatchForm({
             value={transporterId}
             onChange={(e) => setTransporterId(e.target.value)}
           >
-            <option value="">Select…</option>
+            <option value="">Select</option>
             {transporters.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name}
@@ -523,6 +600,18 @@ export function NewDispatchForm({
             <div />
           </>
         )}
+
+        <label>Sale invoice</label>
+        <input
+          value={saleInvoiceNumber}
+          onChange={(e) => setSaleInvoiceNumber(e.target.value)}
+        />
+
+        <label>Purchase invoice</label>
+        <input
+          value={purchaseInvoiceNumber}
+          onChange={(e) => setPurchaseInvoiceNumber(e.target.value)}
+        />
 
         <div />
         <div className="modal-actions">

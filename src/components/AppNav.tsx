@@ -16,7 +16,7 @@ const links = [
   { href: "/qualities", label: "Qualities" },
   { href: "/customers", label: "Customers" },
   { href: "/transporters", label: "Transporters" },
-  { href: "/staff", label: "People" },
+  { href: "/options", label: "Options" },
 ];
 
 export function AppNav() {

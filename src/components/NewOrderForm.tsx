@@ -23,14 +23,12 @@ type Option = { id: string; name: string };
 
 export function NewOrderForm({
   customers,
-  staff,
   ports,
   qualityClasses,
   suggestedPo,
   onCancel,
 }: {
   customers: CustomerOpt[];
-  staff: Option[];
   ports: Option[];
   qualityClasses: QualityClassOpt[];
   suggestedPo: string;
@@ -60,7 +58,6 @@ export function NewOrderForm({
       return;
     }
 
-    // Immediate fill from props (fast), then refresh from DB.
     const cached = customers.find((c) => c.id === id);
     if (cached) {
       setCustomerCategory(cached.category);
@@ -95,7 +92,6 @@ export function NewOrderForm({
         qualityClassId: qualityClassId || null,
         rate: rate || null,
         quantity: String(fd.get("quantity") || ""),
-        orderById: String(fd.get("orderById") || "") || null,
       });
       router.push(`/orders/${order.id}`);
     } catch (err) {
@@ -109,19 +105,22 @@ export function NewOrderForm({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
+        <label>Sale order number</label>
+        <input
+          name="poNumber"
+          required
+          value={poNumber}
+          onChange={(e) => setPoNumber(e.target.value)}
+          placeholder="SO 0001"
+        />
+
         <label>Order date</label>
         <input
           name="orderDate"
           type="date"
           defaultValue={new Date().toISOString().slice(0, 10)}
         />
-        <label>PO number</label>
-        <input
-          name="poNumber"
-          required
-          value={poNumber}
-          onChange={(e) => setPoNumber(e.target.value)}
-        />
+
         <label>Customer</label>
         <select
           name="customerId"
@@ -129,30 +128,33 @@ export function NewOrderForm({
           value={customerId}
           onChange={(e) => void onCustomerChange(e.target.value)}
         >
-          <option value="">Select…</option>
+          <option value="">Select</option>
           {customers.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
             </option>
           ))}
         </select>
+
         <label>Quantity</label>
         <div className="field-with-unit">
           <input name="quantity" required type="number" step="any" min="0" />
           <span className="field-unit">MT</span>
         </div>
-        <label>Base rate</label>
-        <div className="field-with-unit">
+
+        <label>Basic rate</label>
+        <div className="field-with-unit field-with-prefix">
+          <span className="field-unit">Rs</span>
           <input
             name="rate"
             type="number"
-            step="any"
+            step="0.01"
             min="0"
             value={rate}
             onChange={(e) => setRate(e.target.value)}
           />
-          <span className="field-unit">Rs</span>
         </div>
+
         {rateBreakdown != null && (
           <RateBreakdownFields
             gst={rateBreakdown.gst}
@@ -160,38 +162,36 @@ export function NewOrderForm({
             final={rateBreakdown.final}
           />
         )}
-        <label>Credit days</label>
-        <input
-          name="creditDays"
-          type="number"
-          min="0"
-          value={creditDays}
-          onChange={(e) => setCreditDays(e.target.value)}
-        />
+
+        <label>Credit period</label>
+        <div className="field-with-unit">
+          <input
+            name="creditDays"
+            type="number"
+            min="0"
+            value={creditDays}
+            onChange={(e) => setCreditDays(e.target.value)}
+          />
+          <span className="field-unit">days</span>
+        </div>
+
         <label>Quality class</label>
         <QualityClassSelect
           value={qualityClassId}
           onChange={setQualityClassId}
           options={qualityClasses}
         />
+
         <label>Port</label>
         <select name="portId" defaultValue="">
-          <option value="">—</option>
+          <option value="">Select</option>
           {ports.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
             </option>
           ))}
         </select>
-        <label>Deal by</label>
-        <select name="orderById" defaultValue="">
-          <option value="">—</option>
-          {staff.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+
         <div />
         <div className="modal-actions">
           {onCancel && (
@@ -205,7 +205,7 @@ export function NewOrderForm({
             </button>
           )}
           <button type="submit" className="btn" disabled={saving}>
-            {saving ? "Saving…" : "Create order"}
+            {saving ? "Saving…" : "Create sale order"}
           </button>
         </div>
       </form>
