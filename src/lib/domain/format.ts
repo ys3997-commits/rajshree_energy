@@ -117,6 +117,46 @@ export function capitalizeName(
     .join(" ");
 }
 
+/** Format lorry number as PREFIX-1234 (exactly 4 trailing digits). */
+export function normalizeLorryNumber(
+  value: string | null | undefined,
+): string | null | undefined {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  const trimmed = value.trim().toUpperCase();
+  if (!trimmed) return null;
+
+  const cleaned = trimmed.replace(/[\s-]+/g, "");
+  if (!/^[A-Z0-9]+$/.test(cleaned)) {
+    throw new Error(
+      "Lorry number must contain only letters and digits (e.g. WBAS2N-1234)",
+    );
+  }
+
+  const match = /^([A-Z0-9]+?)(\d+)$/.exec(cleaned);
+  if (!match || match[2].length !== 4) {
+    throw new Error(
+      "Lorry number must end with exactly 4 digits (e.g. WBAS2N-1234)",
+    );
+  }
+
+  return `${match[1]}-${match[2]}`;
+}
+
+/** Display helper — formats when possible, otherwise uppercases. */
+export function formatLorryNumber(
+  value: string | null | undefined,
+): string | null {
+  if (value == null) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  try {
+    return normalizeLorryNumber(trimmed) ?? trimmed.toUpperCase();
+  } catch {
+    return trimmed.toUpperCase();
+  }
+}
+
 /** e.g. "30 days" */
 export function formatCreditPeriod(
   days: number | null | undefined,

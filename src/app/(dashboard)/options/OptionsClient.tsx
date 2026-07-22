@@ -34,6 +34,7 @@ import {
   updateStaff,
 } from "@/lib/actions/staff";
 import { Modal } from "@/components/Modal";
+import { capitalizeName } from "@/lib/domain/format";
 
 type Opt = { id: string; name: string };
 type PeopleOpt = { id: string; name: string; role: string | null };
@@ -247,20 +248,20 @@ export function OptionsClient({
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    const name = draft.trim();
+    const name = capitalizeName(draft);
     if (!name) return;
+    const role = capitalizeName(roleDraft);
 
     startTransition(async () => {
       try {
-        const role = roleDraft.trim();
         if (editing) {
-          await updateItem(editing.id, name, role);
+          await updateItem(editing.id, name, role ?? undefined);
           if (activeId === "people") {
             setPeopleItems(
               peopleItems
                 .map((item) =>
                   item.id === editing.id
-                    ? { ...item, name, role: role || null }
+                    ? { ...item, name, role }
                     : item,
                 )
                 .sort((a, b) => a.name.localeCompare(b.name)),
@@ -275,10 +276,10 @@ export function OptionsClient({
           }
           setEditing(null);
         } else {
-          const { id } = await createItem(name, role);
+          const { id } = await createItem(name, role ?? undefined);
           if (activeId === "people") {
             setPeopleItems(
-              [...peopleItems, { id, name, role: role || null }].sort((a, b) =>
+              [...peopleItems, { id, name, role }].sort((a, b) =>
                 a.name.localeCompare(b.name),
               ),
             );
@@ -387,6 +388,9 @@ export function OptionsClient({
             placeholder={editing ? `Edit ${active.label.toLowerCase()}` : active.placeholder}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
+            onBlur={() => {
+              if (draft.trim()) setDraft(capitalizeName(draft) ?? draft);
+            }}
           />
           {activeId === "people" && (
             <input
@@ -394,6 +398,11 @@ export function OptionsClient({
               placeholder="Role (optional)"
               value={roleDraft}
               onChange={(e) => setRoleDraft(e.target.value)}
+              onBlur={() => {
+                if (roleDraft.trim()) {
+                  setRoleDraft(capitalizeName(roleDraft) ?? roleDraft);
+                }
+              }}
             />
           )}
           <button type="submit" className="btn" disabled={pending}>

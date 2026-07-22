@@ -1,5 +1,6 @@
 "use server";
 
+import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -16,10 +17,10 @@ export async function listStaff() {
 }
 
 export async function createStaff(input: { name: string; role?: string | null }) {
-  const name = input.name.trim();
+  const name = capitalizeName(input.name);
   if (!name) throw new Error("Name is required");
   const row = await prisma.staff.create({
-    data: { name, role: input.role?.trim() || null },
+    data: { name, role: capitalizeName(input.role) },
   });
   revalidateStaffPaths();
   return row;
@@ -29,11 +30,11 @@ export async function updateStaff(
   id: string,
   input: { name: string; role?: string | null },
 ) {
-  const name = input.name.trim();
+  const name = capitalizeName(input.name);
   if (!name) throw new Error("Name is required");
   const row = await prisma.staff.update({
     where: { id },
-    data: { name, role: input.role?.trim() || null },
+    data: { name, role: capitalizeName(input.role) },
   });
   revalidateStaffPaths();
   return row;

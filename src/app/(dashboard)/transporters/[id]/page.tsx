@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { getTransporter } from "@/lib/actions/transporters";
 import { formatMt } from "@/lib/domain/computations";
+import { capitalizeName, formatLorryNumber } from "@/lib/domain/format";
 
 function monthKey(date: Date | string): string {
   const d = date instanceof Date ? date : new Date(date);
@@ -69,7 +70,9 @@ export default async function TransporterDetailPage({
 
       <div className="page-header">
         <div>
-          <h1 className="page-title">{transporter.name}</h1>
+          <h1 className="page-title">
+            {capitalizeName(transporter.name) ?? transporter.name}
+          </h1>
           <p className="page-subtitle">
             Dispatches moved by this transporter, month by month.
           </p>
@@ -80,7 +83,9 @@ export default async function TransporterDetailPage({
         <div className="detail-meta-item">
           <span className="detail-meta-label">Owner</span>
           <span className="detail-meta-value">
-            {transporter.ownerName || "—"}
+            {transporter.ownerName
+              ? (capitalizeName(transporter.ownerName) ?? transporter.ownerName)
+              : "—"}
           </span>
         </div>
         <div className="detail-meta-item">
@@ -165,7 +170,7 @@ export default async function TransporterDetailPage({
                     <tr key={row.id}>
                       <td className="cell-date">{formatDate(row.dispatchDate)}</td>
                       <td className={row.lorryNumber ? undefined : "cell-muted"}>
-                        {row.lorryNumber ?? "—"}
+                        {formatLorryNumber(row.lorryNumber) ?? "—"}
                       </td>
                       <td className="num">
                         {formatMt(row.dispatchedQuantity.toString())}

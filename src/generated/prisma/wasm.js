@@ -223,7 +223,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   sector: 'sector',
   saleExecutive: 'saleExecutive',
   dealById: 'dealById',
-  approachForFundsId: 'approachForFundsId',
+  approachForFunds: 'approachForFunds',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

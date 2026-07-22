@@ -20,6 +20,7 @@ import {
   toDecimal,
   type DecimalLike,
 } from "@/lib/domain/computations";
+import { normalizeLorryNumber } from "@/lib/domain/format";
 import {
   nextSaleOrderNumber,
   normalizePurchaseOrderNumber,
@@ -372,7 +373,7 @@ export async function createDispatch(
         dispatchDate: asDate(input.dispatchDate),
         dispatchedQuantity: qty,
         dispatchTerms: input.dispatchTerms,
-        lorryNumber: input.lorryNumber ?? null,
+        lorryNumber: normalizeLorryNumber(input.lorryNumber) ?? null,
         transporterId: termsFields.transporterId,
         freight: termsFields.freight,
         importerId: purchase.importerId,
@@ -459,7 +460,7 @@ export async function createOpenOrderDispatch(
         dispatchDate: asDate(input.dispatchDate),
         dispatchedQuantity: qty,
         dispatchTerms: input.dispatchTerms,
-        lorryNumber: input.lorryNumber ?? null,
+        lorryNumber: normalizeLorryNumber(input.lorryNumber) ?? null,
         transporterId: termsFields.transporterId,
         freight: termsFields.freight,
         importerId: purchase.importerId,
@@ -592,7 +593,7 @@ export async function updateDispatch(
       data.dispatchDate = asDate(changes.dispatchDate);
     }
     if (changes.lorryNumber !== undefined) {
-      data.lorryNumber = changes.lorryNumber;
+      data.lorryNumber = normalizeLorryNumber(changes.lorryNumber) ?? null;
     }
     if (changes.softCopyStatus !== undefined) {
       data.softCopyStatus = changes.softCopyStatus;

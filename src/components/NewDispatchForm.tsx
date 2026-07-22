@@ -10,6 +10,7 @@ import {
 import {
   formatQualityClass,
   formatRateBreakdownLine,
+  normalizeLorryNumber,
 } from "@/lib/domain/format";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
@@ -187,7 +188,9 @@ export function NewDispatchForm({
         dispatchDate,
         dispatchedQuantity,
         dispatchTerms,
-        lorryNumber: lorryNumber || null,
+        lorryNumber: lorryNumber
+          ? (normalizeLorryNumber(lorryNumber) ?? null)
+          : null,
         transporterId: transporterId || null,
         freight: freight || null,
         saleInvoiceNumber: saleInvoiceNumber || null,
@@ -240,7 +243,17 @@ export function NewDispatchForm({
         <label>Lorry number</label>
         <input
           value={lorryNumber}
-          onChange={(e) => setLorryNumber(e.target.value)}
+          placeholder="e.g. WBAS2N-1234"
+          onChange={(e) => setLorryNumber(e.target.value.toUpperCase())}
+          onBlur={() => {
+            if (!lorryNumber.trim()) return;
+            try {
+              const formatted = normalizeLorryNumber(lorryNumber);
+              if (formatted) setLorryNumber(formatted);
+            } catch {
+              // Keep typed value; submit will surface the error.
+            }
+          }}
         />
 
         <label>Dispatched quantity</label>

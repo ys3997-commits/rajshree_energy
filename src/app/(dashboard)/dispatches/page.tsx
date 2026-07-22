@@ -15,6 +15,7 @@ import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { DispatchBoolToggle } from "@/components/DispatchBoolToggle";
 import { EditDispatchInvoicesButton } from "@/components/EditDispatchInvoicesButton";
 import { formatDispatchTerms, formatRs } from "@/lib/domain/computations";
+import { formatLorryNumber } from "@/lib/domain/format";
 
 type SearchParams = Promise<{
   receiptStatus?: string;
@@ -226,7 +227,7 @@ export default async function DispatchesPage({
                 </td>
                 <td>{formatRs(row.lineProfit)}</td>
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
-                  {row.lorryNumber ?? "—"}
+                  {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
                 <td
                   className={

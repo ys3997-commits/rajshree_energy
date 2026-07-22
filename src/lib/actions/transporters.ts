@@ -1,5 +1,6 @@
 "use server";
 
+import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -39,17 +40,27 @@ export type TransporterInput = {
   state?: string | null;
 };
 
+function normalizePhone(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const digits = value.replace(/\D/g, "");
+  return digits || null;
+}
+
+function toTransporterData(input: TransporterInput) {
+  return {
+    name: capitalizeName(input.name) ?? input.name.trim(),
+    ownerName: capitalizeName(input.ownerName),
+    ownerContactNumber1: normalizePhone(input.ownerContactNumber1),
+    ownerContactNumber2: normalizePhone(input.ownerContactNumber2),
+    email: input.email || null,
+    city: input.city || null,
+    state: input.state || null,
+  };
+}
+
 export async function createTransporter(input: TransporterInput) {
   const row = await prisma.transporter.create({
-    data: {
-      name: input.name,
-      ownerName: input.ownerName || null,
-      ownerContactNumber1: input.ownerContactNumber1 || null,
-      ownerContactNumber2: input.ownerContactNumber2 || null,
-      email: input.email || null,
-      city: input.city || null,
-      state: input.state || null,
-    },
+    data: toTransporterData(input),
   });
   revalidatePath("/transporters");
   return row;
@@ -58,15 +69,7 @@ export async function createTransporter(input: TransporterInput) {
 export async function updateTransporter(id: string, input: TransporterInput) {
   const row = await prisma.transporter.update({
     where: { id },
-    data: {
-      name: input.name,
-      ownerName: input.ownerName || null,
-      ownerContactNumber1: input.ownerContactNumber1 || null,
-      ownerContactNumber2: input.ownerContactNumber2 || null,
-      email: input.email || null,
-      city: input.city || null,
-      state: input.state || null,
-    },
+    data: toTransporterData(input),
   });
   revalidatePath("/transporters");
   return row;

@@ -154,13 +154,6 @@ export type Database = {
             referencedRelation: "staff";
             referencedColumns: ["id"];
           },
-          {
-            foreignKeyName: "customers_approach_for_funds_fkey";
-            columns: ["approach_for_funds"];
-            isOneToOne: false;
-            referencedRelation: "staff";
-            referencedColumns: ["id"];
-          },
         ];
       };
       vessels: {

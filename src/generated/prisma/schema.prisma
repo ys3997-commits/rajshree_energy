@@ -51,9 +51,8 @@ model Staff {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  dealByCustomers           Customer[] @relation("DealBy")
-  approachForFundsCustomers Customer[] @relation("ApproachForFunds")
-  orders                    Order[]
+  dealByCustomers Customer[] @relation("DealBy")
+  orders          Order[]
 }
 
 model Transporter {
@@ -175,15 +174,14 @@ model Customer {
   sector                 String?
   saleExecutive          String?
   dealById               String?
-  approachForFundsId     String?
+  approachForFunds       String?
   createdAt              DateTime         @default(now())
   updatedAt              DateTime         @updatedAt
 
-  dealBy           Staff?          @relation("DealBy", fields: [dealById], references: [id])
-  approachForFunds Staff?          @relation("ApproachForFunds", fields: [approachForFundsId], references: [id])
-  orders           Order[]
-  purchaseOrders   PurchaseOrder[]
-  dispatches       Dispatch[]      @relation("DispatchImporter")
+  dealBy         Staff?          @relation("DealBy", fields: [dealById], references: [id])
+  orders         Order[]
+  purchaseOrders PurchaseOrder[]
+  dispatches     Dispatch[]      @relation("DispatchImporter")
 }
 
 model Vessel {

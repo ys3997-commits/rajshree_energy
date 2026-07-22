@@ -88,7 +88,7 @@ async function main() {
   const priya = await prisma.staff.create({
     data: { name: "Priya Patel", role: "Operations" },
   });
-  const rahul = await prisma.staff.create({
+  await prisma.staff.create({
     data: { name: "Rahul Mehta", role: "Finance" },
   });
 
@@ -129,7 +129,7 @@ async function main() {
       creditDays: 30,
       sector: "Trading",
       saleExecutive: "Amit Sharma",
-      approachForFundsId: rahul.id,
+      approachForFunds: "Amit Sharma",
     },
   });
 
@@ -174,7 +174,7 @@ async function main() {
       creditDays: 21,
       sector: "Cement",
       saleExecutive: "Priya Patel",
-      approachForFundsId: rahul.id,
+      approachForFunds: "Collection Officer",
     },
   });
 
@@ -192,7 +192,7 @@ async function main() {
       creditDays: 15,
       sector: "Trading",
       saleExecutive: "Amit Sharma",
-      approachForFundsId: rahul.id,
+      approachForFunds: "Amit Sharma",
     },
   });
 

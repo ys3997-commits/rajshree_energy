@@ -2128,13 +2128,11 @@ export namespace Prisma {
 
   export type StaffCountOutputType = {
     dealByCustomers: number
-    approachForFundsCustomers: number
     orders: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealByCustomers?: boolean | StaffCountOutputTypeCountDealByCustomersArgs
-    approachForFundsCustomers?: boolean | StaffCountOutputTypeCountApproachForFundsCustomersArgs
     orders?: boolean | StaffCountOutputTypeCountOrdersArgs
   }
 
@@ -2153,13 +2151,6 @@ export namespace Prisma {
    * StaffCountOutputType without action
    */
   export type StaffCountOutputTypeCountDealByCustomersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: CustomerWhereInput
-  }
-
-  /**
-   * StaffCountOutputType without action
-   */
-  export type StaffCountOutputTypeCountApproachForFundsCustomersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CustomerWhereInput
   }
 
@@ -2673,7 +2664,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
-    approachForFundsCustomers?: boolean | Staff$approachForFundsCustomersArgs<ExtArgs>
     orders?: boolean | Staff$ordersArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
@@ -2696,7 +2686,6 @@ export namespace Prisma {
 
   export type StaffInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
-    approachForFundsCustomers?: boolean | Staff$approachForFundsCustomersArgs<ExtArgs>
     orders?: boolean | Staff$ordersArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -2706,7 +2695,6 @@ export namespace Prisma {
     name: "Staff"
     objects: {
       dealByCustomers: Prisma.$CustomerPayload<ExtArgs>[]
-      approachForFundsCustomers: Prisma.$CustomerPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3080,7 +3068,6 @@ export namespace Prisma {
   export interface Prisma__StaffClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dealByCustomers<T extends Staff$dealByCustomersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$dealByCustomersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany"> | Null>
-    approachForFundsCustomers<T extends Staff$approachForFundsCustomersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$approachForFundsCustomersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany"> | Null>
     orders<T extends Staff$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3433,26 +3420,6 @@ export namespace Prisma {
    * Staff.dealByCustomers
    */
   export type Staff$dealByCustomersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Customer
-     */
-    select?: CustomerSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CustomerInclude<ExtArgs> | null
-    where?: CustomerWhereInput
-    orderBy?: CustomerOrderByWithRelationInput | CustomerOrderByWithRelationInput[]
-    cursor?: CustomerWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: CustomerScalarFieldEnum | CustomerScalarFieldEnum[]
-  }
-
-  /**
-   * Staff.approachForFundsCustomers
-   */
-  export type Staff$approachForFundsCustomersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Customer
      */
@@ -11878,7 +11845,7 @@ export namespace Prisma {
     sector: string | null
     saleExecutive: string | null
     dealById: string | null
-    approachForFundsId: string | null
+    approachForFunds: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11905,7 +11872,7 @@ export namespace Prisma {
     sector: string | null
     saleExecutive: string | null
     dealById: string | null
-    approachForFundsId: string | null
+    approachForFunds: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11932,7 +11899,7 @@ export namespace Prisma {
     sector: number
     saleExecutive: number
     dealById: number
-    approachForFundsId: number
+    approachForFunds: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -11969,7 +11936,7 @@ export namespace Prisma {
     sector?: true
     saleExecutive?: true
     dealById?: true
-    approachForFundsId?: true
+    approachForFunds?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11996,7 +11963,7 @@ export namespace Prisma {
     sector?: true
     saleExecutive?: true
     dealById?: true
-    approachForFundsId?: true
+    approachForFunds?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12023,7 +11990,7 @@ export namespace Prisma {
     sector?: true
     saleExecutive?: true
     dealById?: true
-    approachForFundsId?: true
+    approachForFunds?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -12137,7 +12104,7 @@ export namespace Prisma {
     sector: string | null
     saleExecutive: string | null
     dealById: string | null
-    approachForFundsId: string | null
+    approachForFunds: string | null
     createdAt: Date
     updatedAt: Date
     _count: CustomerCountAggregateOutputType | null
@@ -12183,11 +12150,10 @@ export namespace Prisma {
     sector?: boolean
     saleExecutive?: boolean
     dealById?: boolean
-    approachForFundsId?: boolean
+    approachForFunds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealBy?: boolean | Customer$dealByArgs<ExtArgs>
-    approachForFunds?: boolean | Customer$approachForFundsArgs<ExtArgs>
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     purchaseOrders?: boolean | Customer$purchaseOrdersArgs<ExtArgs>
     dispatches?: boolean | Customer$dispatchesArgs<ExtArgs>
@@ -12216,11 +12182,10 @@ export namespace Prisma {
     sector?: boolean
     saleExecutive?: boolean
     dealById?: boolean
-    approachForFundsId?: boolean
+    approachForFunds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealBy?: boolean | Customer$dealByArgs<ExtArgs>
-    approachForFunds?: boolean | Customer$approachForFundsArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
   export type CustomerSelectScalar = {
@@ -12245,14 +12210,13 @@ export namespace Prisma {
     sector?: boolean
     saleExecutive?: boolean
     dealById?: boolean
-    approachForFundsId?: boolean
+    approachForFunds?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
   export type CustomerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealBy?: boolean | Customer$dealByArgs<ExtArgs>
-    approachForFunds?: boolean | Customer$approachForFundsArgs<ExtArgs>
     orders?: boolean | Customer$ordersArgs<ExtArgs>
     purchaseOrders?: boolean | Customer$purchaseOrdersArgs<ExtArgs>
     dispatches?: boolean | Customer$dispatchesArgs<ExtArgs>
@@ -12260,14 +12224,12 @@ export namespace Prisma {
   }
   export type CustomerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealBy?: boolean | Customer$dealByArgs<ExtArgs>
-    approachForFunds?: boolean | Customer$approachForFundsArgs<ExtArgs>
   }
 
   export type $CustomerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Customer"
     objects: {
       dealBy: Prisma.$StaffPayload<ExtArgs> | null
-      approachForFunds: Prisma.$StaffPayload<ExtArgs> | null
       orders: Prisma.$OrderPayload<ExtArgs>[]
       purchaseOrders: Prisma.$PurchaseOrderPayload<ExtArgs>[]
       dispatches: Prisma.$DispatchPayload<ExtArgs>[]
@@ -12294,7 +12256,7 @@ export namespace Prisma {
       sector: string | null
       saleExecutive: string | null
       dealById: string | null
-      approachForFundsId: string | null
+      approachForFunds: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["customer"]>
@@ -12662,7 +12624,6 @@ export namespace Prisma {
   export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dealBy<T extends Customer$dealByArgs<ExtArgs> = {}>(args?: Subset<T, Customer$dealByArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
-    approachForFunds<T extends Customer$approachForFundsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$approachForFundsArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     orders<T extends Customer$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Customer$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany"> | Null>
     purchaseOrders<T extends Customer$purchaseOrdersArgs<ExtArgs> = {}>(args?: Subset<T, Customer$purchaseOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany"> | Null>
     dispatches<T extends Customer$dispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$dispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
@@ -12716,7 +12677,7 @@ export namespace Prisma {
     readonly sector: FieldRef<"Customer", 'String'>
     readonly saleExecutive: FieldRef<"Customer", 'String'>
     readonly dealById: FieldRef<"Customer", 'String'>
-    readonly approachForFundsId: FieldRef<"Customer", 'String'>
+    readonly approachForFunds: FieldRef<"Customer", 'String'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
     readonly updatedAt: FieldRef<"Customer", 'DateTime'>
   }
@@ -13040,21 +13001,6 @@ export namespace Prisma {
    * Customer.dealBy
    */
   export type Customer$dealByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Staff
-     */
-    select?: StaffSelect<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: StaffInclude<ExtArgs> | null
-    where?: StaffWhereInput
-  }
-
-  /**
-   * Customer.approachForFunds
-   */
-  export type Customer$approachForFundsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Staff
      */
@@ -17915,7 +17861,7 @@ export namespace Prisma {
     sector: 'sector',
     saleExecutive: 'saleExecutive',
     dealById: 'dealById',
-    approachForFundsId: 'approachForFundsId',
+    approachForFunds: 'approachForFunds',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -18207,7 +18153,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
-    approachForFundsCustomers?: CustomerListRelationFilter
     orders?: OrderListRelationFilter
   }
 
@@ -18218,7 +18163,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealByCustomers?: CustomerOrderByRelationAggregateInput
-    approachForFundsCustomers?: CustomerOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
   }
 
@@ -18232,7 +18176,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
-    approachForFundsCustomers?: CustomerListRelationFilter
     orders?: OrderListRelationFilter
   }, "id">
 
@@ -18777,11 +18720,10 @@ export namespace Prisma {
     sector?: StringNullableFilter<"Customer"> | string | null
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
-    approachForFundsId?: StringNullableFilter<"Customer"> | string | null
+    approachForFunds?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
     dealBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
-    approachForFunds?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     orders?: OrderListRelationFilter
     purchaseOrders?: PurchaseOrderListRelationFilter
     dispatches?: DispatchListRelationFilter
@@ -18809,11 +18751,10 @@ export namespace Prisma {
     sector?: SortOrderInput | SortOrder
     saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
-    approachForFundsId?: SortOrderInput | SortOrder
+    approachForFunds?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealBy?: StaffOrderByWithRelationInput
-    approachForFunds?: StaffOrderByWithRelationInput
     orders?: OrderOrderByRelationAggregateInput
     purchaseOrders?: PurchaseOrderOrderByRelationAggregateInput
     dispatches?: DispatchOrderByRelationAggregateInput
@@ -18844,11 +18785,10 @@ export namespace Prisma {
     sector?: StringNullableFilter<"Customer"> | string | null
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
-    approachForFundsId?: StringNullableFilter<"Customer"> | string | null
+    approachForFunds?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
     dealBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
-    approachForFunds?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
     orders?: OrderListRelationFilter
     purchaseOrders?: PurchaseOrderListRelationFilter
     dispatches?: DispatchListRelationFilter
@@ -18876,7 +18816,7 @@ export namespace Prisma {
     sector?: SortOrderInput | SortOrder
     saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
-    approachForFundsId?: SortOrderInput | SortOrder
+    approachForFunds?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CustomerCountOrderByAggregateInput
@@ -18911,7 +18851,7 @@ export namespace Prisma {
     sector?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     saleExecutive?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     dealById?: StringNullableWithAggregatesFilter<"Customer"> | string | null
-    approachForFundsId?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    approachForFunds?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
   }
@@ -19376,7 +19316,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
-    approachForFundsCustomers?: CustomerCreateNestedManyWithoutApproachForFundsInput
     orders?: OrderCreateNestedManyWithoutOrderByInput
   }
 
@@ -19387,7 +19326,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
-    approachForFundsCustomers?: CustomerUncheckedCreateNestedManyWithoutApproachForFundsInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
   }
 
@@ -19398,7 +19336,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
-    approachForFundsCustomers?: CustomerUpdateManyWithoutApproachForFundsNestedInput
     orders?: OrderUpdateManyWithoutOrderByNestedInput
   }
 
@@ -19409,7 +19346,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
-    approachForFundsCustomers?: CustomerUncheckedUpdateManyWithoutApproachForFundsNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
   }
 
@@ -19985,10 +19921,10 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
-    approachForFunds?: StaffCreateNestedOneWithoutApproachForFundsCustomersInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
@@ -20016,7 +19952,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     dealById?: string | null
-    approachForFundsId?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -20045,10 +19981,10 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
-    approachForFunds?: StaffUpdateOneWithoutApproachForFundsCustomersNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
@@ -20076,7 +20012,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -20106,7 +20042,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     dealById?: string | null
-    approachForFundsId?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -20132,6 +20068,7 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20158,7 +20095,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21115,7 +21052,7 @@ export namespace Prisma {
     sector?: SortOrder
     saleExecutive?: SortOrder
     dealById?: SortOrder
-    approachForFundsId?: SortOrder
+    approachForFunds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21146,7 +21083,7 @@ export namespace Prisma {
     sector?: SortOrder
     saleExecutive?: SortOrder
     dealById?: SortOrder
-    approachForFundsId?: SortOrder
+    approachForFunds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21173,7 +21110,7 @@ export namespace Prisma {
     sector?: SortOrder
     saleExecutive?: SortOrder
     dealById?: SortOrder
-    approachForFundsId?: SortOrder
+    approachForFunds?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -21668,13 +21605,6 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
   }
 
-  export type CustomerCreateNestedManyWithoutApproachForFundsInput = {
-    create?: XOR<CustomerCreateWithoutApproachForFundsInput, CustomerUncheckedCreateWithoutApproachForFundsInput> | CustomerCreateWithoutApproachForFundsInput[] | CustomerUncheckedCreateWithoutApproachForFundsInput[]
-    connectOrCreate?: CustomerCreateOrConnectWithoutApproachForFundsInput | CustomerCreateOrConnectWithoutApproachForFundsInput[]
-    createMany?: CustomerCreateManyApproachForFundsInputEnvelope
-    connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-  }
-
   export type OrderCreateNestedManyWithoutOrderByInput = {
     create?: XOR<OrderCreateWithoutOrderByInput, OrderUncheckedCreateWithoutOrderByInput> | OrderCreateWithoutOrderByInput[] | OrderUncheckedCreateWithoutOrderByInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutOrderByInput | OrderCreateOrConnectWithoutOrderByInput[]
@@ -21686,13 +21616,6 @@ export namespace Prisma {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
     createMany?: CustomerCreateManyDealByInputEnvelope
-    connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-  }
-
-  export type CustomerUncheckedCreateNestedManyWithoutApproachForFundsInput = {
-    create?: XOR<CustomerCreateWithoutApproachForFundsInput, CustomerUncheckedCreateWithoutApproachForFundsInput> | CustomerCreateWithoutApproachForFundsInput[] | CustomerUncheckedCreateWithoutApproachForFundsInput[]
-    connectOrCreate?: CustomerCreateOrConnectWithoutApproachForFundsInput | CustomerCreateOrConnectWithoutApproachForFundsInput[]
-    createMany?: CustomerCreateManyApproachForFundsInputEnvelope
     connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
   }
 
@@ -21729,20 +21652,6 @@ export namespace Prisma {
     deleteMany?: CustomerScalarWhereInput | CustomerScalarWhereInput[]
   }
 
-  export type CustomerUpdateManyWithoutApproachForFundsNestedInput = {
-    create?: XOR<CustomerCreateWithoutApproachForFundsInput, CustomerUncheckedCreateWithoutApproachForFundsInput> | CustomerCreateWithoutApproachForFundsInput[] | CustomerUncheckedCreateWithoutApproachForFundsInput[]
-    connectOrCreate?: CustomerCreateOrConnectWithoutApproachForFundsInput | CustomerCreateOrConnectWithoutApproachForFundsInput[]
-    upsert?: CustomerUpsertWithWhereUniqueWithoutApproachForFundsInput | CustomerUpsertWithWhereUniqueWithoutApproachForFundsInput[]
-    createMany?: CustomerCreateManyApproachForFundsInputEnvelope
-    set?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    disconnect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    delete?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    update?: CustomerUpdateWithWhereUniqueWithoutApproachForFundsInput | CustomerUpdateWithWhereUniqueWithoutApproachForFundsInput[]
-    updateMany?: CustomerUpdateManyWithWhereWithoutApproachForFundsInput | CustomerUpdateManyWithWhereWithoutApproachForFundsInput[]
-    deleteMany?: CustomerScalarWhereInput | CustomerScalarWhereInput[]
-  }
-
   export type OrderUpdateManyWithoutOrderByNestedInput = {
     create?: XOR<OrderCreateWithoutOrderByInput, OrderUncheckedCreateWithoutOrderByInput> | OrderCreateWithoutOrderByInput[] | OrderUncheckedCreateWithoutOrderByInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutOrderByInput | OrderCreateOrConnectWithoutOrderByInput[]
@@ -21768,20 +21677,6 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
     update?: CustomerUpdateWithWhereUniqueWithoutDealByInput | CustomerUpdateWithWhereUniqueWithoutDealByInput[]
     updateMany?: CustomerUpdateManyWithWhereWithoutDealByInput | CustomerUpdateManyWithWhereWithoutDealByInput[]
-    deleteMany?: CustomerScalarWhereInput | CustomerScalarWhereInput[]
-  }
-
-  export type CustomerUncheckedUpdateManyWithoutApproachForFundsNestedInput = {
-    create?: XOR<CustomerCreateWithoutApproachForFundsInput, CustomerUncheckedCreateWithoutApproachForFundsInput> | CustomerCreateWithoutApproachForFundsInput[] | CustomerUncheckedCreateWithoutApproachForFundsInput[]
-    connectOrCreate?: CustomerCreateOrConnectWithoutApproachForFundsInput | CustomerCreateOrConnectWithoutApproachForFundsInput[]
-    upsert?: CustomerUpsertWithWhereUniqueWithoutApproachForFundsInput | CustomerUpsertWithWhereUniqueWithoutApproachForFundsInput[]
-    createMany?: CustomerCreateManyApproachForFundsInputEnvelope
-    set?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    disconnect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    delete?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    connect?: CustomerWhereUniqueInput | CustomerWhereUniqueInput[]
-    update?: CustomerUpdateWithWhereUniqueWithoutApproachForFundsInput | CustomerUpdateWithWhereUniqueWithoutApproachForFundsInput[]
-    updateMany?: CustomerUpdateManyWithWhereWithoutApproachForFundsInput | CustomerUpdateManyWithWhereWithoutApproachForFundsInput[]
     deleteMany?: CustomerScalarWhereInput | CustomerScalarWhereInput[]
   }
 
@@ -22173,12 +22068,6 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput
   }
 
-  export type StaffCreateNestedOneWithoutApproachForFundsCustomersInput = {
-    create?: XOR<StaffCreateWithoutApproachForFundsCustomersInput, StaffUncheckedCreateWithoutApproachForFundsCustomersInput>
-    connectOrCreate?: StaffCreateOrConnectWithoutApproachForFundsCustomersInput
-    connect?: StaffWhereUniqueInput
-  }
-
   export type OrderCreateNestedManyWithoutCustomerInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -22241,16 +22130,6 @@ export namespace Prisma {
     delete?: StaffWhereInput | boolean
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutDealByCustomersInput, StaffUpdateWithoutDealByCustomersInput>, StaffUncheckedUpdateWithoutDealByCustomersInput>
-  }
-
-  export type StaffUpdateOneWithoutApproachForFundsCustomersNestedInput = {
-    create?: XOR<StaffCreateWithoutApproachForFundsCustomersInput, StaffUncheckedCreateWithoutApproachForFundsCustomersInput>
-    connectOrCreate?: StaffCreateOrConnectWithoutApproachForFundsCustomersInput
-    upsert?: StaffUpsertWithoutApproachForFundsCustomersInput
-    disconnect?: StaffWhereInput | boolean
-    delete?: StaffWhereInput | boolean
-    connect?: StaffWhereUniqueInput
-    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutApproachForFundsCustomersInput, StaffUpdateWithoutApproachForFundsCustomersInput>, StaffUncheckedUpdateWithoutApproachForFundsCustomersInput>
   }
 
   export type OrderUpdateManyWithoutCustomerNestedInput = {
@@ -23108,9 +22987,9 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    approachForFunds?: StaffCreateNestedOneWithoutApproachForFundsCustomersInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
@@ -23137,7 +23016,7 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
-    approachForFundsId?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -23152,74 +23031,6 @@ export namespace Prisma {
 
   export type CustomerCreateManyDealByInputEnvelope = {
     data: CustomerCreateManyDealByInput | CustomerCreateManyDealByInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type CustomerCreateWithoutApproachForFundsInput = {
-    id?: string
-    name: string
-    category: $Enums.CustomerCategory
-    active?: boolean
-    ownerName?: string | null
-    ownerContact?: string | null
-    purchaserName?: string | null
-    purchaserContact?: string | null
-    purchaserRole?: string | null
-    paymentInChargeName?: string | null
-    paymentInChargeContact?: string | null
-    paymentInChargeRole?: string | null
-    accountantName?: string | null
-    accountantContact?: string | null
-    email?: string | null
-    city?: string | null
-    state?: string | null
-    creditDays?: number | null
-    sector?: string | null
-    saleExecutive?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
-    orders?: OrderCreateNestedManyWithoutCustomerInput
-    purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
-    dispatches?: DispatchCreateNestedManyWithoutImporterInput
-  }
-
-  export type CustomerUncheckedCreateWithoutApproachForFundsInput = {
-    id?: string
-    name: string
-    category: $Enums.CustomerCategory
-    active?: boolean
-    ownerName?: string | null
-    ownerContact?: string | null
-    purchaserName?: string | null
-    purchaserContact?: string | null
-    purchaserRole?: string | null
-    paymentInChargeName?: string | null
-    paymentInChargeContact?: string | null
-    paymentInChargeRole?: string | null
-    accountantName?: string | null
-    accountantContact?: string | null
-    email?: string | null
-    city?: string | null
-    state?: string | null
-    creditDays?: number | null
-    sector?: string | null
-    saleExecutive?: string | null
-    dealById?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
-    purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
-    dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
-  }
-
-  export type CustomerCreateOrConnectWithoutApproachForFundsInput = {
-    where: CustomerWhereUniqueInput
-    create: XOR<CustomerCreateWithoutApproachForFundsInput, CustomerUncheckedCreateWithoutApproachForFundsInput>
-  }
-
-  export type CustomerCreateManyApproachForFundsInputEnvelope = {
-    data: CustomerCreateManyApproachForFundsInput | CustomerCreateManyApproachForFundsInput[]
     skipDuplicates?: boolean
   }
 
@@ -23312,25 +23123,9 @@ export namespace Prisma {
     sector?: StringNullableFilter<"Customer"> | string | null
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
-    approachForFundsId?: StringNullableFilter<"Customer"> | string | null
+    approachForFunds?: StringNullableFilter<"Customer"> | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
-  }
-
-  export type CustomerUpsertWithWhereUniqueWithoutApproachForFundsInput = {
-    where: CustomerWhereUniqueInput
-    update: XOR<CustomerUpdateWithoutApproachForFundsInput, CustomerUncheckedUpdateWithoutApproachForFundsInput>
-    create: XOR<CustomerCreateWithoutApproachForFundsInput, CustomerUncheckedCreateWithoutApproachForFundsInput>
-  }
-
-  export type CustomerUpdateWithWhereUniqueWithoutApproachForFundsInput = {
-    where: CustomerWhereUniqueInput
-    data: XOR<CustomerUpdateWithoutApproachForFundsInput, CustomerUncheckedUpdateWithoutApproachForFundsInput>
-  }
-
-  export type CustomerUpdateManyWithWhereWithoutApproachForFundsInput = {
-    where: CustomerScalarWhereInput
-    data: XOR<CustomerUpdateManyMutationInput, CustomerUncheckedUpdateManyWithoutApproachForFundsInput>
   }
 
   export type OrderUpsertWithWhereUniqueWithoutOrderByInput = {
@@ -23986,7 +23781,6 @@ export namespace Prisma {
     role?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    approachForFundsCustomers?: CustomerCreateNestedManyWithoutApproachForFundsInput
     orders?: OrderCreateNestedManyWithoutOrderByInput
   }
 
@@ -23996,38 +23790,12 @@ export namespace Prisma {
     role?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    approachForFundsCustomers?: CustomerUncheckedCreateNestedManyWithoutApproachForFundsInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
   }
 
   export type StaffCreateOrConnectWithoutDealByCustomersInput = {
     where: StaffWhereUniqueInput
     create: XOR<StaffCreateWithoutDealByCustomersInput, StaffUncheckedCreateWithoutDealByCustomersInput>
-  }
-
-  export type StaffCreateWithoutApproachForFundsCustomersInput = {
-    id?: string
-    name: string
-    role?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
-    orders?: OrderCreateNestedManyWithoutOrderByInput
-  }
-
-  export type StaffUncheckedCreateWithoutApproachForFundsCustomersInput = {
-    id?: string
-    name: string
-    role?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
-    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
-  }
-
-  export type StaffCreateOrConnectWithoutApproachForFundsCustomersInput = {
-    where: StaffWhereUniqueInput
-    create: XOR<StaffCreateWithoutApproachForFundsCustomersInput, StaffUncheckedCreateWithoutApproachForFundsCustomersInput>
   }
 
   export type OrderCreateWithoutCustomerInput = {
@@ -24193,7 +23961,6 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    approachForFundsCustomers?: CustomerUpdateManyWithoutApproachForFundsNestedInput
     orders?: OrderUpdateManyWithoutOrderByNestedInput
   }
 
@@ -24203,38 +23970,6 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    approachForFundsCustomers?: CustomerUncheckedUpdateManyWithoutApproachForFundsNestedInput
-    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
-  }
-
-  export type StaffUpsertWithoutApproachForFundsCustomersInput = {
-    update: XOR<StaffUpdateWithoutApproachForFundsCustomersInput, StaffUncheckedUpdateWithoutApproachForFundsCustomersInput>
-    create: XOR<StaffCreateWithoutApproachForFundsCustomersInput, StaffUncheckedCreateWithoutApproachForFundsCustomersInput>
-    where?: StaffWhereInput
-  }
-
-  export type StaffUpdateToOneWithWhereWithoutApproachForFundsCustomersInput = {
-    where?: StaffWhereInput
-    data: XOR<StaffUpdateWithoutApproachForFundsCustomersInput, StaffUncheckedUpdateWithoutApproachForFundsCustomersInput>
-  }
-
-  export type StaffUpdateWithoutApproachForFundsCustomersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
-    orders?: OrderUpdateManyWithoutOrderByNestedInput
-  }
-
-  export type StaffUncheckedUpdateWithoutApproachForFundsCustomersInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    role?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
   }
 
@@ -24545,10 +24280,10 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
-    approachForFunds?: StaffCreateNestedOneWithoutApproachForFundsCustomersInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
   }
@@ -24575,7 +24310,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     dealById?: string | null
-    approachForFundsId?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
@@ -24594,7 +24329,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
-    approachForFundsCustomers?: CustomerCreateNestedManyWithoutApproachForFundsInput
   }
 
   export type StaffUncheckedCreateWithoutOrdersInput = {
@@ -24604,7 +24338,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
-    approachForFundsCustomers?: CustomerUncheckedCreateNestedManyWithoutApproachForFundsInput
   }
 
   export type StaffCreateOrConnectWithoutOrdersInput = {
@@ -24746,10 +24479,10 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
-    approachForFunds?: StaffUpdateOneWithoutApproachForFundsCustomersNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
   }
@@ -24776,7 +24509,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
@@ -24801,7 +24534,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
-    approachForFundsCustomers?: CustomerUpdateManyWithoutApproachForFundsNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutOrdersInput = {
@@ -24811,7 +24543,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
-    approachForFundsCustomers?: CustomerUncheckedUpdateManyWithoutApproachForFundsNestedInput
   }
 
   export type PortOptionUpsertWithoutOrdersInput = {
@@ -24911,10 +24642,10 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
-    approachForFunds?: StaffCreateNestedOneWithoutApproachForFundsCustomersInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
   }
@@ -24941,7 +24672,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     dealById?: string | null
-    approachForFundsId?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -25093,10 +24824,10 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
-    approachForFunds?: StaffUpdateOneWithoutApproachForFundsCustomersNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
   }
@@ -25123,7 +24854,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -25373,10 +25104,10 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
-    approachForFunds?: StaffCreateNestedOneWithoutApproachForFundsCustomersInput
     orders?: OrderCreateNestedManyWithoutCustomerInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
   }
@@ -25403,7 +25134,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     dealById?: string | null
-    approachForFundsId?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -25611,10 +25342,10 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
-    approachForFunds?: StaffUpdateOneWithoutApproachForFundsCustomersNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
   }
@@ -25641,7 +25372,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -25669,33 +25400,7 @@ export namespace Prisma {
     creditDays?: number | null
     sector?: string | null
     saleExecutive?: string | null
-    approachForFundsId?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type CustomerCreateManyApproachForFundsInput = {
-    id?: string
-    name: string
-    category: $Enums.CustomerCategory
-    active?: boolean
-    ownerName?: string | null
-    ownerContact?: string | null
-    purchaserName?: string | null
-    purchaserContact?: string | null
-    purchaserRole?: string | null
-    paymentInChargeName?: string | null
-    paymentInChargeContact?: string | null
-    paymentInChargeRole?: string | null
-    accountantName?: string | null
-    accountantContact?: string | null
-    email?: string | null
-    city?: string | null
-    state?: string | null
-    creditDays?: number | null
-    sector?: string | null
-    saleExecutive?: string | null
-    dealById?: string | null
+    approachForFunds?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -25739,9 +25444,9 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    approachForFunds?: StaffUpdateOneWithoutApproachForFundsCustomersNestedInput
     orders?: OrderUpdateManyWithoutCustomerNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
@@ -25768,7 +25473,7 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -25797,91 +25502,7 @@ export namespace Prisma {
     creditDays?: NullableIntFieldUpdateOperationsInput | number | null
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
-    approachForFundsId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type CustomerUpdateWithoutApproachForFundsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
-    active?: BoolFieldUpdateOperationsInput | boolean
-    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
-    ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserContact?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserRole?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeName?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeContact?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
-    accountantName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    creditDays?: NullableIntFieldUpdateOperationsInput | number | null
-    sector?: NullableStringFieldUpdateOperationsInput | string | null
-    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
-    orders?: OrderUpdateManyWithoutCustomerNestedInput
-    purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
-    dispatches?: DispatchUpdateManyWithoutImporterNestedInput
-  }
-
-  export type CustomerUncheckedUpdateWithoutApproachForFundsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
-    active?: BoolFieldUpdateOperationsInput | boolean
-    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
-    ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserContact?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserRole?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeName?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeContact?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
-    accountantName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    creditDays?: NullableIntFieldUpdateOperationsInput | number | null
-    sector?: NullableStringFieldUpdateOperationsInput | string | null
-    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
-    dealById?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
-    purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
-    dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
-  }
-
-  export type CustomerUncheckedUpdateManyWithoutApproachForFundsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
-    active?: BoolFieldUpdateOperationsInput | boolean
-    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
-    ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserContact?: NullableStringFieldUpdateOperationsInput | string | null
-    purchaserRole?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeName?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeContact?: NullableStringFieldUpdateOperationsInput | string | null
-    paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
-    accountantName?: NullableStringFieldUpdateOperationsInput | string | null
-    accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
-    email?: NullableStringFieldUpdateOperationsInput | string | null
-    city?: NullableStringFieldUpdateOperationsInput | string | null
-    state?: NullableStringFieldUpdateOperationsInput | string | null
-    creditDays?: NullableIntFieldUpdateOperationsInput | number | null
-    sector?: NullableStringFieldUpdateOperationsInput | string | null
-    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
-    dealById?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

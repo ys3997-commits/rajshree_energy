@@ -1075,10 +1075,27 @@ table.data tr.month-divider:hover td {
 
 .customer-row-inactive td {
   color: var(--muted);
+  background: rgba(20, 23, 28, 0.028);
 }
 
 .customer-row-inactive td:first-child {
   color: var(--ink-soft);
+  box-shadow: inset 3px 0 0 rgba(20, 23, 28, 0.16);
+}
+
+table.data tbody tr.customer-row-inactive:hover td {
+  background: rgba(20, 23, 28, 0.045);
+}
+
+.customer-inactive-label {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  vertical-align: 0.05em;
 }
 
 .dispatch-bool-toggle {

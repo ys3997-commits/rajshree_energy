@@ -15,7 +15,8 @@ import {
 import { FormStatusToggle } from "@/components/FormStatusToggle";
 import { OptionSelect } from "@/components/OptionSelect";
 
-type Staff = { id: string; name: string };
+const COLLECTION_OFFICER = "Collection Officer";
+
 type Row = {
   id: string;
   name: string;
@@ -37,13 +38,12 @@ type Row = {
   creditDays: number | null;
   sector: string | null;
   saleExecutive: string | null;
-  approachForFundsId: string | null;
-  approachForFunds: Staff | null;
+  approachForFunds: string | null;
 };
 
 const empty = {
   name: "",
-  category: CustomerCategory.INDUSTRY as CustomerCategory,
+  category: "" as CustomerCategory | "",
   active: true,
   ownerName: "",
   ownerContact: "",
@@ -61,7 +61,7 @@ const empty = {
   creditDays: "",
   sector: "",
   saleExecutive: "",
-  approachForFundsId: "",
+  approachForFunds: "",
 };
 
 function parseCreditDays(value: string): number | null {
@@ -88,14 +88,12 @@ function formatContact(name: string | null, contact: string | null): string {
 
 export function CustomersClient({
   initial,
-  staff,
   cities,
   states,
   sectors,
   saleExecutives,
 }: {
   initial: Row[];
-  staff: Staff[];
   cities: string[];
   states: string[];
   sectors: string[];
@@ -110,6 +108,10 @@ export function CustomersClient({
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!form.category) {
+      setError("Category is required");
+      return;
+    }
     const payload = {
       name: form.name,
       category: form.category,
@@ -130,7 +132,7 @@ export function CustomersClient({
       creditDays: parseCreditDays(form.creditDays),
       sector: form.sector || null,
       saleExecutive: form.saleExecutive || null,
-      approachForFundsId: form.approachForFundsId || null,
+      approachForFunds: form.approachForFunds || null,
     };
     try {
       if (editing) await updateCustomer(editing.id, payload);
@@ -175,7 +177,7 @@ export function CustomersClient({
       creditDays: row.creditDays != null ? String(row.creditDays) : "",
       sector: row.sector ?? "",
       saleExecutive: row.saleExecutive ?? "",
-      approachForFundsId: row.approachForFundsId ?? "",
+      approachForFunds: row.approachForFunds ?? "",
     });
   }
 
@@ -216,17 +218,21 @@ export function CustomersClient({
 
         <label>Category</label>
         <select
+          required
           value={form.category}
           onChange={(e) =>
             setForm({
               ...form,
-              category: e.target.value as CustomerCategory,
+              category: e.target.value as CustomerCategory | "",
             })
           }
         >
-          <option value={CustomerCategory.SUPPLIER}>Vendor</option>
-          <option value={CustomerCategory.TRADER}>Trader</option>
+          <option value="" disabled>
+            Select
+          </option>
           <option value={CustomerCategory.INDUSTRY}>Industry</option>
+          <option value={CustomerCategory.TRADER}>Trader</option>
+          <option value={CustomerCategory.SUPPLIER}>Vendor</option>
         </select>
 
         {editing && (
@@ -373,19 +379,16 @@ export function CustomersClient({
         />
 
         <label>Approach for funds</label>
-        <select
-          value={form.approachForFundsId}
-          onChange={(e) =>
-            setForm({ ...form, approachForFundsId: e.target.value })
+        <OptionSelect
+          value={form.approachForFunds}
+          onChange={(approachForFunds) =>
+            setForm({ ...form, approachForFunds })
           }
-        >
-          <option value="">Select</option>
-          {staff.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
+          options={[
+            COLLECTION_OFFICER,
+            ...saleExecutives.filter((name) => name !== COLLECTION_OFFICER),
+          ]}
+        />
 
         <label>Sector</label>
         <OptionSelect
@@ -436,7 +439,12 @@ export function CustomersClient({
                 key={row.id}
                 className={row.active ? undefined : "customer-row-inactive"}
               >
-                <td>{capitalizeName(row.name) ?? row.name}</td>
+                <td>
+                  {capitalizeName(row.name) ?? row.name}
+                  {!row.active && (
+                    <span className="customer-inactive-label">Inactive</span>
+                  )}
+                </td>
                 <td>{formatCustomerCategory(row.category)}</td>
                 <td>
                   {[row.city, row.state].filter(Boolean).join(", ") || "—"}

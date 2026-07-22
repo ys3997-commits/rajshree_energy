@@ -1,4 +1,5 @@
 import { listReconciliation } from "@/lib/actions/receipts";
+import { formatLorryNumber } from "@/lib/domain/format";
 
 export default async function ReconciliationPage() {
   const rows = await listReconciliation();
@@ -48,7 +49,7 @@ export default async function ReconciliationPage() {
                     ? row.diffInQuantity.toString()
                     : "—"}
                 </td>
-                <td>{row.lorryNumber ?? "—"}</td>
+                <td>{formatLorryNumber(row.lorryNumber) ?? "—"}</td>
               </tr>
             ))}
             {rows.length === 0 && (

@@ -1,5 +1,6 @@
 "use server";
 
+import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -8,7 +9,7 @@ export async function listPortOptions() {
 }
 
 export async function createPortOption(name: string) {
-  const trimmed = name.trim();
+  const trimmed = capitalizeName(name);
   if (!trimmed) throw new Error("Port name is required");
   const row = await prisma.portOption.create({ data: { name: trimmed } });
   revalidatePath("/vessels");
@@ -17,7 +18,7 @@ export async function createPortOption(name: string) {
 }
 
 export async function updatePortOption(id: string, name: string) {
-  const trimmed = name.trim();
+  const trimmed = capitalizeName(name);
   if (!trimmed) throw new Error("Port name is required");
   const row = await prisma.portOption.update({
     where: { id },

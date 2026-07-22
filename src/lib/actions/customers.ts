@@ -8,9 +8,6 @@ import { prisma } from "@/lib/prisma";
 export async function listCustomers(options?: { activeOnly?: boolean }) {
   return prisma.customer.findMany({
     where: options?.activeOnly ? { active: true } : undefined,
-    include: {
-      approachForFunds: { select: { id: true, name: true } },
-    },
     orderBy: { name: "asc" },
   });
 }
@@ -46,7 +43,7 @@ export type CustomerInput = {
   creditDays?: number | null;
   sector?: string | null;
   saleExecutive?: string | null;
-  approachForFundsId?: string | null;
+  approachForFunds?: string | null;
 };
 
 function normalizePhone(value: string | null | undefined): string | null {
@@ -79,7 +76,7 @@ function toCustomerData(input: CustomerInput) {
         : input.creditDays,
     sector: input.sector || null,
     saleExecutive: input.saleExecutive || null,
-    approachForFundsId: input.approachForFundsId || null,
+    approachForFunds: input.approachForFunds || null,
   };
 }
 

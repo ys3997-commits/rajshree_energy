@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { confirmReceipt } from "@/lib/actions/dispatch";
+import { formatLorryNumber } from "@/lib/domain/format";
 
 type Row = {
   id: string;
@@ -61,7 +62,7 @@ export function PendingReceiptsClient({ initial }: { initial: Row[] }) {
                 <td>{row.vessel?.vesselName}</td>
                 <td>{row.importer?.name ?? "—"}</td>
                 <td>{row.dispatchedQuantity}</td>
-                <td>{row.lorryNumber ?? "—"}</td>
+                <td>{formatLorryNumber(row.lorryNumber) ?? "—"}</td>
                 <td>
                   {activeId === row.id ? (
                     <form

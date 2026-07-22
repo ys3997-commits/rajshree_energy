@@ -1,5 +1,6 @@
 "use server";
 
+import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -16,7 +17,7 @@ function revalidateOptionPaths() {
 }
 
 function trimName(name: string, label: string) {
-  const trimmed = name.trim();
+  const trimmed = capitalizeName(name);
   if (!trimmed) throw new Error(`${label} is required`);
   return trimmed;
 }

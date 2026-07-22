@@ -1,13 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { formatQualityClass } from "@/lib/domain/format";
+import { capitalizeName, formatQualityClass } from "@/lib/domain/format";
 import { prisma } from "@/lib/prisma";
 
 const qualityClassInclude = {
   origin: { select: { id: true, name: true } },
   qualityOption: { select: { id: true, name: true } },
 } as const;
+
+function normalizeOptionName(name: string, label: string) {
+  const trimmed = capitalizeName(name);
+  if (!trimmed) throw new Error(`${label} is required`);
+  return trimmed;
+}
 
 export async function listOriginOptions() {
   return prisma.originOption.findMany({ orderBy: { name: "asc" } });
@@ -27,8 +33,7 @@ export async function listQualityClasses() {
 }
 
 export async function createOriginOption(name: string) {
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("Origin name is required");
+  const trimmed = normalizeOptionName(name, "Origin name");
   const row = await prisma.originOption.create({ data: { name: trimmed } });
   revalidatePath("/qualities");
   revalidatePath("/options");
@@ -36,8 +41,7 @@ export async function createOriginOption(name: string) {
 }
 
 export async function updateOriginOption(id: string, name: string) {
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("Origin name is required");
+  const trimmed = normalizeOptionName(name, "Origin name");
   const row = await prisma.originOption.update({
     where: { id },
     data: { name: trimmed },
@@ -63,8 +67,7 @@ export async function deleteOriginOption(id: string) {
 }
 
 export async function createQualityOption(name: string) {
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("Quality name is required");
+  const trimmed = normalizeOptionName(name, "Quality name");
   const row = await prisma.qualityOption.create({ data: { name: trimmed } });
   revalidatePath("/qualities");
   revalidatePath("/options");
@@ -72,8 +75,7 @@ export async function createQualityOption(name: string) {
 }
 
 export async function updateQualityOption(id: string, name: string) {
-  const trimmed = name.trim();
-  if (!trimmed) throw new Error("Quality name is required");
+  const trimmed = normalizeOptionName(name, "Quality name");
   const row = await prisma.qualityOption.update({
     where: { id },
     data: { name: trimmed },

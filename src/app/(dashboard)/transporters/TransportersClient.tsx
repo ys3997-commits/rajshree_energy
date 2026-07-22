@@ -7,6 +7,7 @@ import {
   deleteTransporter,
   updateTransporter,
 } from "@/lib/actions/transporters";
+import { capitalizeName } from "@/lib/domain/format";
 import { OptionSelect } from "@/components/OptionSelect";
 
 type Row = {
@@ -29,6 +30,14 @@ const empty = {
   city: "",
   state: "",
 };
+
+function formatNameField(value: string): string {
+  return capitalizeName(value) ?? value;
+}
+
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, "");
+}
 
 export function TransportersClient({
   initial,
@@ -72,6 +81,21 @@ export function TransportersClient({
     }
   }
 
+  function setNameField<K extends keyof typeof empty>(key: K, value: string) {
+    setForm({ ...form, [key]: value });
+  }
+
+  function blurNameField<K extends keyof typeof empty>(key: K) {
+    const value = form[key];
+    if (typeof value === "string" && value.trim()) {
+      setForm({ ...form, [key]: formatNameField(value) });
+    }
+  }
+
+  function setPhoneField<K extends keyof typeof empty>(key: K, value: string) {
+    setForm({ ...form, [key]: digitsOnly(value) });
+  }
+
   return (
     <div>
       <h1 className="page-title">Transporters</h1>
@@ -85,25 +109,29 @@ export function TransportersClient({
         <input
           required
           value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          onChange={(e) => setNameField("name", e.target.value)}
+          onBlur={() => blurNameField("name")}
         />
         <label>Owner name</label>
         <input
           value={form.ownerName}
-          onChange={(e) => setForm({ ...form, ownerName: e.target.value })}
+          onChange={(e) => setNameField("ownerName", e.target.value)}
+          onBlur={() => blurNameField("ownerName")}
         />
         <label>Owner contact 1</label>
         <input
+          inputMode="numeric"
           value={form.ownerContactNumber1}
           onChange={(e) =>
-            setForm({ ...form, ownerContactNumber1: e.target.value })
+            setPhoneField("ownerContactNumber1", e.target.value)
           }
         />
         <label>Owner contact 2</label>
         <input
+          inputMode="numeric"
           value={form.ownerContactNumber2}
           onChange={(e) =>
-            setForm({ ...form, ownerContactNumber2: e.target.value })
+            setPhoneField("ownerContactNumber2", e.target.value)
           }
         />
         <label>Email</label>
@@ -163,10 +191,14 @@ export function TransportersClient({
               <tr key={row.id}>
                 <td>
                   <Link href={`/transporters/${row.id}`} className="font-medium">
-                    {row.name}
+                    {capitalizeName(row.name) ?? row.name}
                   </Link>
                 </td>
-                <td>{row.ownerName ?? "—"}</td>
+                <td>
+                  {row.ownerName
+                    ? (capitalizeName(row.ownerName) ?? row.ownerName)
+                    : "—"}
+                </td>
                 <td>{row.ownerContactNumber1 ?? "—"}</td>
                 <td>{row.ownerContactNumber2 ?? "—"}</td>
                 <td>{row.email ?? "—"}</td>

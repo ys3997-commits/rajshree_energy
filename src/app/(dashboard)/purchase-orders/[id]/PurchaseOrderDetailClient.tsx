@@ -9,7 +9,7 @@ import {
   updatePurchaseOrderFields,
 } from "@/lib/actions/purchaseOrders";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
-import { formatDispatchTerms, formatMt, formatPurchaseOrderStatus, formatRs } from "@/lib/domain/format";
+import { formatDispatchTerms, formatMt, formatPurchaseOrderStatus, formatRs, formatLorryNumber } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -251,7 +251,7 @@ export function PurchaseOrderDetailClient({
                 <td>{formatMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
                 <td>{formatRs(d.freight)}</td>
-                <td>{d.lorryNumber ?? "—"}</td>
+                <td>{formatLorryNumber(d.lorryNumber) ?? "—"}</td>
                 <td>{d.transporter?.name ?? "—"}</td>
                 <td>{formatRs(d.lineProfit)}</td>
                 <td>{d.receiptStatus}</td>

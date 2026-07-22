@@ -6,7 +6,7 @@ import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
-import { formatDispatchTerms, formatCreditPeriod, formatMt, formatRs } from "@/lib/domain/format";
+import { formatDispatchTerms, formatCreditPeriod, formatLorryNumber, formatMt, formatRs } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -280,7 +280,7 @@ export function OrderDetailClient({
                 <td>{formatMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
                 <td>{formatRs(d.freight)}</td>
-                <td>{d.lorryNumber ?? "—"}</td>
+                <td>{formatLorryNumber(d.lorryNumber) ?? "—"}</td>
                 <td>{d.transporter?.name ?? "—"}</td>
                 <td>{formatRs(d.lineProfit)}</td>
                 <td>{d.receiptStatus}</td>
