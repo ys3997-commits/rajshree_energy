@@ -20,14 +20,12 @@ enum OrderType {
   OPEN
 }
 
+/// Sale / purchase order lifecycle — Running until fully dispatched, then Completed.
 enum OrderStatus {
-  OPEN
-  PENDING
-  PARTIALLY_DISPATCHED
+  RUNNING
   COMPLETED
 }
 
-/// Purchase order lifecycle — Running until fully dispatched, then Completed.
 enum PurchaseOrderStatus {
   RUNNING
   COMPLETED
@@ -218,7 +216,7 @@ model Order {
   orderById       String?
   /// Accumulated by dispatch transactions only — never write from forms.
   dispatchedOrder Decimal     @default(0) @db.Decimal(18, 3)
-  orderStatus     OrderStatus @default(PENDING)
+  orderStatus     OrderStatus @default(RUNNING)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 

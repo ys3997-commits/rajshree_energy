@@ -19,9 +19,28 @@ export type OrderFilters = {
   orderById?: string;
 };
 
+/** Accept only current enum values; map legacy sale statuses to Running. */
+function normalizeOrderStatusFilter(
+  status: string | null | undefined,
+): OrderStatus | undefined {
+  if (!status) return undefined;
+  if (status === OrderStatus.RUNNING || status === OrderStatus.COMPLETED) {
+    return status;
+  }
+  if (
+    status === "PENDING" ||
+    status === "OPEN" ||
+    status === "PARTIALLY_DISPATCHED"
+  ) {
+    return OrderStatus.RUNNING;
+  }
+  return undefined;
+}
+
 export async function listOrders(filters: OrderFilters = {}) {
   const where: Prisma.OrderWhereInput = {};
-  if (filters.status) where.orderStatus = filters.status;
+  const status = normalizeOrderStatusFilter(filters.status);
+  if (status) where.orderStatus = status;
   if (filters.customerId) where.customerId = filters.customerId;
   if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;
@@ -84,7 +103,7 @@ export async function getOrder(id: string) {
 
 export async function listOrdersWithBalance() {
   const rows = await prisma.order.findMany({
-    include: { customer: { select: { name: true } } },
+    include: { customer: { select: { name: true, category: true } } },
     orderBy: { poNumber: "asc" },
   });
   return rows

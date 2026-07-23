@@ -1,5 +1,6 @@
 "use server";
 
+import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -34,7 +35,7 @@ function validateVesselInput(input: VesselInput) {
 
 function vesselRelationData(input: VesselInput) {
   return {
-    vesselName: input.vesselName.trim(),
+    vesselName: capitalizeName(input.vesselName) ?? input.vesselName.trim(),
     active: input.active ?? true,
     qualityClass: { connect: { id: input.qualityClassId } },
     port: { connect: { id: input.portId } },

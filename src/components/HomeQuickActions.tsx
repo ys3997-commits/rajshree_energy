@@ -20,12 +20,14 @@ type CustomerOpt = {
 type OrderOpt = {
   poNumber: string;
   balanceOrder: string | null;
-  customer: { name: string } | null;
+  rate: string | null;
+  customer: { name: string; category: CustomerCategory } | null;
 };
 
 type PurchaseOpt = {
   poNumber: string;
   balanceOrder: string | null;
+  rate: string | null;
   importer: { name: string } | null;
   vessel: { vesselName: string } | null;
   qualityClass: QualityClassLabel | null;

@@ -18,7 +18,8 @@ import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
 type OrderOpt = {
   poNumber: string;
   balanceOrder: string | null;
-  customer: { name: string } | null;
+  rate: string | null;
+  customer: { name: string; category: CustomerCategory } | null;
 };
 
 type QualityClassOpt = {
@@ -30,6 +31,7 @@ type QualityClassOpt = {
 type PurchaseOpt = {
   poNumber: string;
   balanceOrder: string | null;
+  rate: string | null;
   importer: { name: string } | null;
   vessel: { vesselName: string } | null;
   qualityClass: QualityClassOpt | null;
@@ -99,8 +101,6 @@ export function NewDispatchForm({
   const [dispatchDate, setDispatchDate] = useState(
     () => new Date().toISOString().slice(0, 10),
   );
-  const [orderSearch, setOrderSearch] = useState("");
-  const [purchaseSearch, setPurchaseSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -119,6 +119,11 @@ export function NewDispatchForm({
     [purchaseRate],
   );
 
+  const selectedPurchaseRateBreakdown = useMemo(
+    () => computePurchaseRateBreakdown(selectedPurchase?.rate),
+    [selectedPurchase?.rate],
+  );
+
   const selectedCustomer = useMemo(
     () => customers.find((c) => c.id === customerId) ?? null,
     [customers, customerId],
@@ -129,29 +134,14 @@ export function NewDispatchForm({
     [saleRate, selectedCustomer?.category],
   );
 
-  const filteredOrders = useMemo(() => {
-    const q = orderSearch.trim().toLowerCase();
-    if (!q) return orders;
-    return orders.filter(
-      (o) =>
-        o.poNumber.toLowerCase().includes(q) ||
-        o.customer?.name?.toLowerCase().includes(q),
-    );
-  }, [orders, orderSearch]);
-
-  const filteredPurchases = useMemo(() => {
-    const q = purchaseSearch.trim().toLowerCase();
-    if (!q) return purchaseOrders;
-    return purchaseOrders.filter(
-      (p) =>
-        p.poNumber.toLowerCase().includes(q) ||
-        p.importer?.name?.toLowerCase().includes(q) ||
-        p.vessel?.vesselName?.toLowerCase().includes(q) ||
-        formatQualityClass(p.qualityClass).toLowerCase().includes(q),
-    );
-  }, [purchaseOrders, purchaseSearch]);
-
-  const filteredVessels = vessels;
+  const selectedSaleRateBreakdown = useMemo(
+    () =>
+      computeSaleRateBreakdown(
+        selectedOrder?.rate,
+        selectedOrder?.customer?.category,
+      ),
+    [selectedOrder?.rate, selectedOrder?.customer?.category],
+  );
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -243,7 +233,6 @@ export function NewDispatchForm({
         <label>Lorry number</label>
         <input
           value={lorryNumber}
-          placeholder="e.g. WBAS2N-1234"
           onChange={(e) => setLorryNumber(e.target.value.toUpperCase())}
           onBlur={() => {
             if (!lorryNumber.trim()) return;
@@ -303,13 +292,6 @@ export function NewDispatchForm({
 
         {purchaseMode === "existing" ? (
           <>
-            <label>Search purchase PO</label>
-            <input
-              value={purchaseSearch}
-              onChange={(e) => setPurchaseSearch(e.target.value)}
-              placeholder="Filter by PO, vendor, vessel, or quality"
-            />
-
             <label>Purchase order</label>
             <select
               required
@@ -317,7 +299,7 @@ export function NewDispatchForm({
               onChange={(e) => setPurchasePoNumber(e.target.value)}
             >
               <option value="">Select</option>
-              {filteredPurchases.map((p) => (
+              {purchaseOrders.map((p) => (
                 <option key={p.poNumber} value={p.poNumber}>
                   {p.poNumber} — {p.importer?.name ?? "?"} —{" "}
                   {p.vessel?.vesselName ?? "?"} (bal{" "}
@@ -340,6 +322,12 @@ export function NewDispatchForm({
                 <label>Quality</label>
                 <div className="text-sm">
                   {formatQualityClass(selectedPurchase.qualityClass)}
+                </div>
+                <label>Rate breakdown</label>
+                <div className="text-sm font-medium">
+                  {selectedPurchaseRateBreakdown != null
+                    ? formatRateBreakdownLine(selectedPurchaseRateBreakdown)
+                    : "—"}
                 </div>
               </>
             )}
@@ -373,7 +361,7 @@ export function NewDispatchForm({
               onChange={(e) => setVesselId(e.target.value)}
             >
               <option value="">Select</option>
-              {filteredVessels.map((v) => (
+              {vessels.map((v) => (
                 <option key={v.id} value={v.id}>
                   {v.vesselName}
                 </option>
@@ -442,12 +430,6 @@ export function NewDispatchForm({
 
         {mode === "existing" ? (
           <>
-            <label>Search sale PO</label>
-            <input
-              value={orderSearch}
-              onChange={(e) => setOrderSearch(e.target.value)}
-              placeholder="Filter by PO or customer"
-            />
             <label>Sale order number</label>
             <select
               required
@@ -455,7 +437,7 @@ export function NewDispatchForm({
               onChange={(e) => setPoNumber(e.target.value)}
             >
               <option value="">Select</option>
-              {filteredOrders.map((o) => (
+              {orders.map((o) => (
                 <option key={o.poNumber} value={o.poNumber}>
                   {o.poNumber} — {o.customer?.name} (bal{" "}
                   {o.balanceOrder != null ? `${o.balanceOrder} MT` : "n/a"})
@@ -468,6 +450,12 @@ export function NewDispatchForm({
                 <div className="text-sm">
                   {selectedOrder.balanceOrder != null
                     ? `${selectedOrder.balanceOrder} MT`
+                    : "—"}
+                </div>
+                <label>Rate breakdown</label>
+                <div className="text-sm font-medium">
+                  {selectedSaleRateBreakdown != null
+                    ? formatRateBreakdownLine(selectedSaleRateBreakdown)
                     : "—"}
                 </div>
               </>

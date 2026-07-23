@@ -92,12 +92,19 @@ export function formatRateBreakdownLine(breakdown: {
   return `${parts.join(" + ")} = ${formatRs(breakdown.final)}`;
 }
 
-/** Purchase order status display: Running | Completed */
+/** Purchase / sale order status display: Running | Completed */
 export function formatPurchaseOrderStatus(
   status: string | null | undefined,
 ): string {
   if (status === "COMPLETED") return "Completed";
   return "Running";
+}
+
+/** Alias — sale orders use the same Running / Completed labels. */
+export function formatSaleOrderStatus(
+  status: string | null | undefined,
+): string {
+  return formatPurchaseOrderStatus(status);
 }
 
 /** Capitalize the first letter of each word in a name. */

@@ -193,11 +193,7 @@ export function PurchaseOrderDetailClient({
           />
         </div>
         {rateBreakdown != null ? (
-          <RateBreakdownFields
-            gst={rateBreakdown.gst}
-            tcs={rateBreakdown.tcs}
-            final={rateBreakdown.final}
-          />
+          <RateBreakdownFields breakdown={rateBreakdown} />
         ) : (
           <>
             <label>Final rate</label>

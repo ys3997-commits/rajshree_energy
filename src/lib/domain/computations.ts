@@ -91,20 +91,17 @@ export function diffInQuantity(dispatch: {
 }
 
 export function computeOrderStatus(order: {
-  orderType: OrderType;
+  orderType?: OrderType;
   quantity: Decimal | null;
   dispatchedOrder: Decimal;
 }): OrderStatus {
-  if (order.orderType === OrderType.OPEN && order.quantity == null) {
-    return OrderStatus.OPEN;
+  if (
+    order.quantity != null &&
+    !order.dispatchedOrder.lt(order.quantity)
+  ) {
+    return OrderStatus.COMPLETED;
   }
-  if (order.dispatchedOrder.isZero()) {
-    return OrderStatus.PENDING;
-  }
-  if (order.quantity != null && order.dispatchedOrder.lt(order.quantity)) {
-    return OrderStatus.PARTIALLY_DISPATCHED;
-  }
-  return OrderStatus.COMPLETED;
+  return OrderStatus.RUNNING;
 }
 
 /**

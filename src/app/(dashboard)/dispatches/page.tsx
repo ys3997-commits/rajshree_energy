@@ -81,11 +81,13 @@ export default async function DispatchesPage({
           orders={balanceOrders.map((o) => ({
             poNumber: o.poNumber,
             balanceOrder: o.balanceOrder?.toString() ?? null,
+            rate: o.rate?.toString() ?? null,
             customer: o.customer,
           }))}
           purchaseOrders={balancePurchases.map((p) => ({
             poNumber: p.poNumber,
             balanceOrder: p.balanceOrder?.toString() ?? null,
+            rate: p.rate?.toString() ?? null,
             importer: p.importer,
             vessel: p.vessel,
             qualityClass: p.qualityClass,

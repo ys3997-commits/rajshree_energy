@@ -1,4 +1,4 @@
-import { CustomerCategory, OrderStatus } from "@/generated/prisma";
+import { CustomerCategory } from "@/generated/prisma";
 import { listOrders, listOrdersWithBalance } from "@/lib/actions/orders";
 import {
   listPurchaseOrdersWithBalance,
@@ -12,7 +12,7 @@ import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { formatMt, formatRs } from "@/lib/domain/computations";
-import { formatCreditPeriod } from "@/lib/domain/format";
+import { formatCreditPeriod, formatSaleOrderStatus } from "@/lib/domain/format";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import Link from "next/link";
@@ -44,7 +44,7 @@ export default async function OrdersPage({
     suggestedPurchasePo,
   ] = await Promise.all([
     listOrders({
-      status: (sp.status as OrderStatus) || "",
+      status: sp.status || "",
       customerId: sp.customerId || "",
       portId: sp.portId || "",
       orderById: sp.orderById || "",
@@ -97,11 +97,13 @@ export default async function OrdersPage({
             orders={balanceOrders.map((o) => ({
               poNumber: o.poNumber,
               balanceOrder: o.balanceOrder?.toString() ?? null,
+              rate: o.rate?.toString() ?? null,
               customer: o.customer,
             }))}
             purchaseOrders={balancePurchases.map((p) => ({
               poNumber: p.poNumber,
               balanceOrder: p.balanceOrder?.toString() ?? null,
+              rate: p.rate?.toString() ?? null,
               importer: p.importer,
               vessel: p.vessel,
               qualityClass: p.qualityClass,
@@ -124,10 +126,8 @@ export default async function OrdersPage({
           Status
           <select name="status" defaultValue={sp.status ?? ""}>
             <option value="">All</option>
-            <option value="OPEN">OPEN</option>
-            <option value="PENDING">PENDING</option>
-            <option value="PARTIALLY_DISPATCHED">PARTIALLY_DISPATCHED</option>
-            <option value="COMPLETED">COMPLETED</option>
+            <option value="RUNNING">Running</option>
+            <option value="COMPLETED">Completed</option>
           </select>
         </label>
         <label>
@@ -190,7 +190,7 @@ export default async function OrdersPage({
                 <td>{formatMt(row.quantity)}</td>
                 <td>{formatMt(row.dispatchedOrder)}</td>
                 <td>{formatMt(row.balanceOrder)}</td>
-                <td>{row.orderStatus}</td>
+                <td>{formatSaleOrderStatus(row.orderStatus)}</td>
                 <td>{formatCreditPeriod(row.creditDays)}</td>
                 <td>{row.port?.name ?? "—"}</td>
                 <td>{formatRs(row.rate)}</td>

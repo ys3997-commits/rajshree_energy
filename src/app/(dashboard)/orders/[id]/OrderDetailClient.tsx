@@ -6,7 +6,7 @@ import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
-import { formatDispatchTerms, formatCreditPeriod, formatLorryNumber, formatMt, formatRs } from "@/lib/domain/format";
+import { formatDispatchTerms, formatCreditPeriod, formatLorryNumber, formatMt, formatRs, formatSaleOrderStatus } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -70,8 +70,10 @@ export function OrderDetailClient({
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [poNumber, setPoNumber] = useState(order.poNumber);
-  const [quantity, setQuantity] = useState(order.quantity ?? "");
-  const [rate, setRate] = useState(order.rate ?? "");
+  const [quantity, setQuantity] = useState(
+    order.quantity ??
+      (order.orderType === OrderType.OPEN ? order.dispatchedOrder : ""),
+  );  const [rate, setRate] = useState(order.rate ?? "");
   const [creditDays, setCreditDays] = useState(
     order.creditDays != null ? String(order.creditDays) : "",
   );
@@ -149,7 +151,8 @@ export function OrderDetailClient({
           <span className="text-neutral-500">Type:</span> {order.orderType}
         </div>
         <div>
-          <span className="text-neutral-500">Status:</span> {order.orderStatus}
+          <span className="text-neutral-500">Status:</span>{" "}
+          {formatSaleOrderStatus(order.orderStatus)}
         </div>
         <div>
           <span className="text-neutral-500">Dispatched (MT):</span>{" "}
@@ -212,11 +215,7 @@ export function OrderDetailClient({
           />
         </div>
         {rateBreakdown != null && (
-          <RateBreakdownFields
-            gst={rateBreakdown.gst}
-            tcs={rateBreakdown.tcs}
-            final={rateBreakdown.final}
-          />
+          <RateBreakdownFields breakdown={rateBreakdown} />
         )}
         <label>Credit period</label>
         <div className="field-with-unit">

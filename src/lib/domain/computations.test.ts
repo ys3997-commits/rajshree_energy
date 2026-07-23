@@ -21,37 +21,37 @@ import {
 } from "./computations";
 
 describe("computeOrderStatus", () => {
-  it("returns OPEN for open orders with null quantity", () => {
+  it("is RUNNING when quantity is null (open)", () => {
     expect(
       computeOrderStatus({
         orderType: OrderType.OPEN,
         quantity: null,
         dispatchedOrder: new Decimal(50),
       }),
-    ).toBe(OrderStatus.OPEN);
+    ).toBe(OrderStatus.RUNNING);
   });
 
-  it("returns PENDING when nothing dispatched", () => {
+  it("is RUNNING when nothing dispatched", () => {
     expect(
       computeOrderStatus({
         orderType: OrderType.REGULAR,
         quantity: new Decimal(100),
         dispatchedOrder: new Decimal(0),
       }),
-    ).toBe(OrderStatus.PENDING);
+    ).toBe(OrderStatus.RUNNING);
   });
 
-  it("returns PARTIALLY_DISPATCHED when under quantity", () => {
+  it("is RUNNING when under quantity", () => {
     expect(
       computeOrderStatus({
         orderType: OrderType.REGULAR,
         quantity: new Decimal(100),
         dispatchedOrder: new Decimal(40),
       }),
-    ).toBe(OrderStatus.PARTIALLY_DISPATCHED);
+    ).toBe(OrderStatus.RUNNING);
   });
 
-  it("returns COMPLETED when dispatched >= quantity", () => {
+  it("is COMPLETED when dispatched >= quantity", () => {
     expect(
       computeOrderStatus({
         orderType: OrderType.REGULAR,
@@ -61,14 +61,14 @@ describe("computeOrderStatus", () => {
     ).toBe(OrderStatus.COMPLETED);
   });
 
-  it("recomputes out of OPEN once quantity is set on an open order", () => {
+  it("stays RUNNING until an open order is fully dispatched", () => {
     expect(
       computeOrderStatus({
         orderType: OrderType.OPEN,
         quantity: new Decimal(80),
         dispatchedOrder: new Decimal(50),
       }),
-    ).toBe(OrderStatus.PARTIALLY_DISPATCHED);
+    ).toBe(OrderStatus.RUNNING);
   });
 });
 

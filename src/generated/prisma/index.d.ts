@@ -111,9 +111,7 @@ export type OrderType = (typeof OrderType)[keyof typeof OrderType]
 
 
 export const OrderStatus: {
-  OPEN: 'OPEN',
-  PENDING: 'PENDING',
-  PARTIALLY_DISPATCHED: 'PARTIALLY_DISPATCHED',
+  RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
 };
 

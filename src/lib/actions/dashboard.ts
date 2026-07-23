@@ -79,9 +79,7 @@ export async function getDispatchTotalsLast5Days() {
 export async function getTopPendingOrdersByBalance(limit = 5) {
   const rows = await prisma.order.findMany({
     where: {
-      orderStatus: {
-        in: [OrderStatus.PENDING, OrderStatus.PARTIALLY_DISPATCHED],
-      },
+      orderStatus: OrderStatus.RUNNING,
       quantity: { not: null },
     },
     include: {

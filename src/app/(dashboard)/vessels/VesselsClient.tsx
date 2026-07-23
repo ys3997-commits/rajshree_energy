@@ -10,7 +10,7 @@ import {
   QualityClassSelect,
   type QualityClassOpt,
 } from "@/components/QualityClassSelect";
-import { formatQualityClass } from "@/lib/domain/format";
+import { formatQualityClass, capitalizeName } from "@/lib/domain/format";
 import { VesselStatusToggle } from "@/components/VesselStatusToggle";
 
 type Opt = { id: string; name: string };
@@ -89,6 +89,14 @@ export function VesselsClient({
           required
           value={form.vesselName}
           onChange={(e) => setForm({ ...form, vesselName: e.target.value })}
+          onBlur={() => {
+            if (form.vesselName.trim()) {
+              setForm({
+                ...form,
+                vesselName: capitalizeName(form.vesselName) ?? form.vesselName,
+              });
+            }
+          }}
         />
         <label>Quality class</label>
         <QualityClassSelect

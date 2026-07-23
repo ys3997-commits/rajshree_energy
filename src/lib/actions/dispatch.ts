@@ -439,7 +439,7 @@ export async function createOpenOrderDispatch(
         creditDays: null,
         portId: null,
         qualityClassId: null,
-        orderStatus: OrderStatus.OPEN,
+        orderStatus: OrderStatus.RUNNING,
         dispatchedOrder: new Decimal(0),
       },
     });
@@ -678,11 +678,7 @@ export async function completeOpenOrder(
         ? undefined
         : computeSaleFinalRate(rate, order.customer.category);
 
-    const nextStatus = computeOrderStatus({
-      orderType: order.orderType,
-      quantity,
-      dispatchedOrder: order.dispatchedOrder,
-    });
+    const nextStatus = OrderStatus.COMPLETED;
 
     await tx.order.update({
       where: { id: orderId },

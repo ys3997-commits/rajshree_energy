@@ -93,7 +93,7 @@ export function NewOrderForm({
         rate: rate || null,
         quantity: String(fd.get("quantity") || ""),
       });
-      router.push(`/orders/${order.id}`);
+      router.push(`/orders`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Create failed");
       setSaving(false);
@@ -156,11 +156,7 @@ export function NewOrderForm({
         </div>
 
         {rateBreakdown != null && (
-          <RateBreakdownFields
-            gst={rateBreakdown.gst}
-            tcs={rateBreakdown.tcs}
-            final={rateBreakdown.final}
-          />
+          <RateBreakdownFields breakdown={rateBreakdown} />
         )}
 
         <label>Credit period</label>

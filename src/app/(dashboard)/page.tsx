@@ -108,11 +108,13 @@ export default async function HomePage() {
           orders={balanceOrders.map((o) => ({
             poNumber: o.poNumber,
             balanceOrder: o.balanceOrder?.toString() ?? null,
+            rate: o.rate?.toString() ?? null,
             customer: o.customer,
           }))}
           purchaseOrders={balancePurchases.map((p) => ({
             poNumber: p.poNumber,
             balanceOrder: p.balanceOrder?.toString() ?? null,
+            rate: p.rate?.toString() ?? null,
             importer: p.importer,
             vessel: p.vessel,
             qualityClass: p.qualityClass,
@@ -176,7 +178,7 @@ export default async function HomePage() {
               <p className="home-eyebrow">Largest balance first</p>
               <h2 className="home-panel-title">Pending orders</h2>
             </div>
-            <Link href="/orders?status=PENDING" className="home-panel-link">
+            <Link href="/orders?status=RUNNING" className="home-panel-link">
               View all
             </Link>
           </div>
@@ -194,9 +196,7 @@ export default async function HomePage() {
                       <span className="home-rank-meta">
                         {order.customerName}
                         <span className="home-dot" />
-                        {order.orderStatus === "PARTIALLY_DISPATCHED"
-                          ? "Partial"
-                          : "Pending"}
+                        Running
                       </span>
                     </span>
                     <span className="home-rank-metric">

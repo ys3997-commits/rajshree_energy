@@ -323,9 +323,7 @@ exports.OrderType = exports.$Enums.OrderType = {
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {
-  OPEN: 'OPEN',
-  PENDING: 'PENDING',
-  PARTIALLY_DISPATCHED: 'PARTIALLY_DISPATCHED',
+  RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
 };
 

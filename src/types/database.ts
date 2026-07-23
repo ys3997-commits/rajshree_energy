@@ -1,10 +1,6 @@
 export type CustomerCategory = "supplier" | "industry" | "trader";
 export type OrderType = "regular" | "open";
-export type OrderStatus =
-  | "open"
-  | "pending"
-  | "partially_dispatched"
-  | "completed";
+export type OrderStatus = "running" | "completed";
 export type ReceiptStatus = "pending" | "received";
 
 export type Database = {

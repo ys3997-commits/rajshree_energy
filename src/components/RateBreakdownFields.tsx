@@ -1,25 +1,22 @@
-import { formatRs } from "@/lib/domain/format";
+import { formatRateBreakdownLine } from "@/lib/domain/format";
 
-/** Form-grid rows: GST, TCS (optional), final rate. */
+/** Form-grid row: basic + GST + TCS = final. */
 export function RateBreakdownFields({
-  gst,
-  tcs,
-  final,
+  breakdown,
 }: {
-  gst: string;
-  tcs: string | null;
-  final: string;
+  breakdown: {
+    base: string;
+    gst: string;
+    tcs: string | null;
+    final: string;
+  };
 }) {
   return (
     <>
-      <label>GST (18%)</label>
-      <div className="text-sm">{formatRs(gst)}</div>
-      <label>TCS (2%)</label>
-      <div className="text-sm">
-        {tcs != null ? formatRs(tcs) : "—"}
+      <label>Rate breakdown</label>
+      <div className="text-sm font-medium">
+        {formatRateBreakdownLine(breakdown)}
       </div>
-      <label>Final rate</label>
-      <div className="text-sm font-medium">{formatRs(final)}</div>
     </>
   );
 }

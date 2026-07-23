@@ -62,7 +62,7 @@ export function NewPurchaseOrderForm({
         quantity: String(fd.get("quantity") || ""),
       });
 
-      router.push(`/purchase-orders/${order.id}`);
+      router.push(`/purchase-orders`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Create failed");
       setSaving(false);
@@ -163,11 +163,7 @@ export function NewPurchaseOrderForm({
         </div>
 
         {rateBreakdown != null && (
-          <RateBreakdownFields
-            gst={rateBreakdown.gst}
-            tcs={rateBreakdown.tcs}
-            final={rateBreakdown.final}
-          />
+          <RateBreakdownFields breakdown={rateBreakdown} />
         )}
 
         <div />
