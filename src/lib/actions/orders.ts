@@ -13,7 +13,7 @@ import {
 import { normalizeSaleOrderNumber } from "@/lib/domain/orderNumbers";
 
 export type OrderFilters = {
-  status?: OrderStatus | "";
+  status?: string;
   customerId?: string;
   portId?: string;
   orderById?: string;
