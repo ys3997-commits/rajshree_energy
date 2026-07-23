@@ -283,6 +283,10 @@ export default async function DispatchesPage({
                     dispatchId={row.id}
                     saleInvoiceNumber={row.saleInvoiceNumber}
                     purchaseInvoiceNumber={row.purchaseInvoiceNumber}
+                    dispatchedQuantity={row.dispatchedQuantity.toString()}
+                    receivingQuantity={
+                      row.receivingQuantity?.toString() ?? null
+                    }
                   />
                 </td>
               </tr>

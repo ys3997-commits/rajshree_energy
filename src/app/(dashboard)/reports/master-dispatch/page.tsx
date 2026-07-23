@@ -1,0 +1,284 @@
+import Link from "next/link";
+import { listMasterDispatchReport } from "@/lib/actions/reports";
+import { listCustomers } from "@/lib/actions/customers";
+import { listQualityClasses } from "@/lib/actions/qualities";
+import { listTransporters } from "@/lib/actions/transporters";
+import { listVessels } from "@/lib/actions/vessels";
+import {
+  formatLorryNumber,
+  formatMt,
+  formatQualityClass,
+} from "@/lib/domain/format";
+import {
+  parsePurchaseOrderSequence,
+  parseSaleOrderSequence,
+} from "@/lib/domain/orderNumbers";
+
+function displayOrderDigits(
+  poNumber: string,
+  kind: "sale" | "purchase",
+): string {
+  const seq =
+    kind === "sale"
+      ? parseSaleOrderSequence(poNumber)
+      : parsePurchaseOrderSequence(poNumber);
+  if (seq != null) return String(seq).padStart(4, "0");
+  return poNumber.replace(/^(SO|PO)\s+/i, "").trim() || poNumber;
+}
+
+type SearchParams = Promise<{
+  customerId?: string;
+  transporterId?: string;
+  vesselId?: string;
+  vendorId?: string;
+  qualityClassId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}>;
+
+export default async function MasterDispatchReportPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const sp = await searchParams;
+  const filters = {
+    customerId: sp.customerId || "",
+    transporterId: sp.transporterId || "",
+    vesselId: sp.vesselId || "",
+    vendorId: sp.vendorId || "",
+    qualityClassId: sp.qualityClassId || "",
+    dateFrom: sp.dateFrom || "",
+    dateTo: sp.dateTo || "",
+  };
+
+  const [rows, customers, transporters, vessels, qualityClasses] =
+    await Promise.all([
+      listMasterDispatchReport(filters),
+      listCustomers({ activeOnly: true }),
+      listTransporters(),
+      listVessels(),
+      listQualityClasses(),
+    ]);
+
+  return (
+    <div>
+      <div className="page-header">
+        <div>
+          <p className="page-eyebrow">
+            <Link href="/">Home</Link>
+            <span aria-hidden="true"> · </span>
+            Reports
+          </p>
+          <h1 className="page-title">Master dispatch report</h1>
+          <p className="page-subtitle">
+            One row per dispatch — purchase, sale, freight, and profit on basic
+            rates.
+          </p>
+        </div>
+      </div>
+
+      <form className="filters" method="get">
+        <label>
+          Customer
+          <select name="customerId" defaultValue={filters.customerId}>
+            <option value="">All</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Vendor
+          <select name="vendorId" defaultValue={filters.vendorId}>
+            <option value="">All</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Transporter
+          <select name="transporterId" defaultValue={filters.transporterId}>
+            <option value="">All</option>
+            {transporters.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Vessel
+          <select name="vesselId" defaultValue={filters.vesselId}>
+            <option value="">All</option>
+            {vessels.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.vesselName}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Quality
+          <select name="qualityClassId" defaultValue={filters.qualityClassId}>
+            <option value="">All</option>
+            {qualityClasses.map((qc) => (
+              <option key={qc.id} value={qc.id}>
+                {formatQualityClass(qc)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          From date
+          <input
+            type="date"
+            name="dateFrom"
+            defaultValue={filters.dateFrom}
+          />
+        </label>
+        <label>
+          To date
+          <input type="date" name="dateTo" defaultValue={filters.dateTo} />
+        </label>
+        <button type="submit" className="btn btn-secondary">
+          Filter
+        </button>
+      </form>
+
+      <div className="table-wrap table-wrap-scroll">
+        <table className="data report-table">
+          <thead>
+            <tr className="report-group-row">
+              <th colSpan={8}>Dispatch</th>
+              <th colSpan={5}>Purchase</th>
+              <th colSpan={5}>Sale</th>
+              <th colSpan={3}>Transport</th>
+              <th colSpan={1}>Margin</th>
+            </tr>
+            <tr>
+              <th>Date</th>
+              <th>Lorry no</th>
+              <th>Weight (MT)</th>
+              <th>Vessel name</th>
+              <th>Quality</th>
+              <th>GST state</th>
+              <th>Received (MT)</th>
+              <th>Diff (MT)</th>
+              <th>PO no</th>
+              <th>Vendor</th>
+              <th>Basic price (Rs)</th>
+              <th>Total price (Rs)</th>
+              <th>Purchase invoice</th>
+              <th>SO no</th>
+              <th>Customer name</th>
+              <th>Basic price (Rs)</th>
+              <th>Total price (Rs)</th>
+              <th>Sale invoice</th>
+              <th>Transporter name</th>
+              <th>Freight PMT (Rs)</th>
+              <th>Freight amount (Rs)</th>
+              <th>Profit (Rs)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <td>
+                  {new Date(row.dispatchDate).toISOString().slice(0, 10)}
+                </td>
+                <td className={row.lorryNumber ? undefined : "cell-center"}>
+                  {formatLorryNumber(row.lorryNumber) ?? "—"}
+                </td>
+                <td>{formatMt(row.dispatchedQuantity)}</td>
+                <td>{row.vesselName}</td>
+                <td>{formatQualityClass(row.qualityClass)}</td>
+                <td className={row.gstState ? undefined : "cell-center"}>
+                  {row.gstState ?? "—"}
+                </td>
+                <td
+                  className={
+                    row.receivingQuantity != null ? undefined : "cell-center"
+                  }
+                >
+                  {formatMt(row.receivingQuantity)}
+                </td>
+                <td
+                  className={
+                    row.diffInQuantity != null ? undefined : "cell-center"
+                  }
+                >
+                  {formatMt(row.diffInQuantity)}
+                </td>
+                <td>
+                  {row.purchaseOrderId ? (
+                    <Link
+                      href={`/purchase-orders/${row.purchaseOrderId}`}
+                      className="font-medium"
+                    >
+                      {displayOrderDigits(row.purchasePoNumber, "purchase")}
+                    </Link>
+                  ) : (
+                    displayOrderDigits(row.purchasePoNumber, "purchase")
+                  )}
+                </td>
+                <td className={row.vendorName ? undefined : "cell-center"}>
+                  {row.vendorName ?? "—"}
+                </td>
+                <td>{formatMt(row.purchaseBasicRate)}</td>
+                <td>{formatMt(row.purchaseTotalRate)}</td>
+                <td
+                  className={
+                    row.purchaseInvoiceNumber ? undefined : "cell-center"
+                  }
+                >
+                  {row.purchaseInvoiceNumber ?? "—"}
+                </td>
+                <td>
+                  {row.orderId ? (
+                    <Link
+                      href={`/orders/${row.orderId}`}
+                      className="font-medium"
+                    >
+                      {displayOrderDigits(row.salePoNumber, "sale")}
+                    </Link>
+                  ) : (
+                    displayOrderDigits(row.salePoNumber, "sale")
+                  )}
+                </td>
+                <td className={row.customerName ? undefined : "cell-center"}>
+                  {row.customerName ?? "—"}
+                </td>
+                <td>{formatMt(row.saleBasicRate)}</td>
+                <td>{formatMt(row.saleTotalRate)}</td>
+                <td
+                  className={row.saleInvoiceNumber ? undefined : "cell-center"}
+                >
+                  {row.saleInvoiceNumber ?? "—"}
+                </td>
+                <td
+                  className={row.transporterName ? undefined : "cell-center"}
+                >
+                  {row.transporterName ?? "—"}
+                </td>
+                <td>{formatMt(row.freight)}</td>
+                <td>{formatMt(row.freightAmount)}</td>
+                <td>{formatMt(row.lineProfit)}</td>
+              </tr>
+            ))}
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={22}>No dispatches match filters.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

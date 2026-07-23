@@ -6365,6 +6365,7 @@ export namespace Prisma {
   export type PortOptionMinAggregateOutputType = {
     id: string | null
     name: string | null
+    state: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6372,6 +6373,7 @@ export namespace Prisma {
   export type PortOptionMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    state: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6379,6 +6381,7 @@ export namespace Prisma {
   export type PortOptionCountAggregateOutputType = {
     id: number
     name: number
+    state: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -6388,6 +6391,7 @@ export namespace Prisma {
   export type PortOptionMinAggregateInputType = {
     id?: true
     name?: true
+    state?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6395,6 +6399,7 @@ export namespace Prisma {
   export type PortOptionMaxAggregateInputType = {
     id?: true
     name?: true
+    state?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6402,6 +6407,7 @@ export namespace Prisma {
   export type PortOptionCountAggregateInputType = {
     id?: true
     name?: true
+    state?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6482,6 +6488,7 @@ export namespace Prisma {
   export type PortOptionGroupByOutputType = {
     id: string
     name: string
+    state: string
     createdAt: Date
     updatedAt: Date
     _count: PortOptionCountAggregateOutputType | null
@@ -6506,6 +6513,7 @@ export namespace Prisma {
   export type PortOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    state?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     vessels?: boolean | PortOption$vesselsArgs<ExtArgs>
@@ -6516,6 +6524,7 @@ export namespace Prisma {
   export type PortOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    state?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["portOption"]>
@@ -6523,6 +6532,7 @@ export namespace Prisma {
   export type PortOptionSelectScalar = {
     id?: boolean
     name?: boolean
+    state?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -6543,6 +6553,10 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      /**
+       * GST state for dispatches via vessels at this port.
+       */
+      state: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["portOption"]>
@@ -6942,6 +6956,7 @@ export namespace Prisma {
   interface PortOptionFieldRefs {
     readonly id: FieldRef<"PortOption", 'String'>
     readonly name: FieldRef<"PortOption", 'String'>
+    readonly state: FieldRef<"PortOption", 'String'>
     readonly createdAt: FieldRef<"PortOption", 'DateTime'>
     readonly updatedAt: FieldRef<"PortOption", 'DateTime'>
   }
@@ -17778,6 +17793,7 @@ export namespace Prisma {
   export const PortOptionScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    state: 'state',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -18385,6 +18401,7 @@ export namespace Prisma {
     NOT?: PortOptionWhereInput | PortOptionWhereInput[]
     id?: StringFilter<"PortOption"> | string
     name?: StringFilter<"PortOption"> | string
+    state?: StringFilter<"PortOption"> | string
     createdAt?: DateTimeFilter<"PortOption"> | Date | string
     updatedAt?: DateTimeFilter<"PortOption"> | Date | string
     vessels?: VesselListRelationFilter
@@ -18394,6 +18411,7 @@ export namespace Prisma {
   export type PortOptionOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     vessels?: VesselOrderByRelationAggregateInput
@@ -18406,6 +18424,7 @@ export namespace Prisma {
     AND?: PortOptionWhereInput | PortOptionWhereInput[]
     OR?: PortOptionWhereInput[]
     NOT?: PortOptionWhereInput | PortOptionWhereInput[]
+    state?: StringFilter<"PortOption"> | string
     createdAt?: DateTimeFilter<"PortOption"> | Date | string
     updatedAt?: DateTimeFilter<"PortOption"> | Date | string
     vessels?: VesselListRelationFilter
@@ -18415,6 +18434,7 @@ export namespace Prisma {
   export type PortOptionOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PortOptionCountOrderByAggregateInput
@@ -18428,6 +18448,7 @@ export namespace Prisma {
     NOT?: PortOptionScalarWhereWithAggregatesInput | PortOptionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"PortOption"> | string
     name?: StringWithAggregatesFilter<"PortOption"> | string
+    state?: StringWithAggregatesFilter<"PortOption"> | string
     createdAt?: DateTimeWithAggregatesFilter<"PortOption"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PortOption"> | Date | string
   }
@@ -19575,6 +19596,7 @@ export namespace Prisma {
   export type PortOptionCreateInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
     vessels?: VesselCreateNestedManyWithoutPortInput
@@ -19584,6 +19606,7 @@ export namespace Prisma {
   export type PortOptionUncheckedCreateInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
     vessels?: VesselUncheckedCreateNestedManyWithoutPortInput
@@ -19593,6 +19616,7 @@ export namespace Prisma {
   export type PortOptionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     vessels?: VesselUpdateManyWithoutPortNestedInput
@@ -19602,6 +19626,7 @@ export namespace Prisma {
   export type PortOptionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     vessels?: VesselUncheckedUpdateManyWithoutPortNestedInput
@@ -19611,6 +19636,7 @@ export namespace Prisma {
   export type PortOptionCreateManyInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -19618,6 +19644,7 @@ export namespace Prisma {
   export type PortOptionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -19625,6 +19652,7 @@ export namespace Prisma {
   export type PortOptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -20837,6 +20865,7 @@ export namespace Prisma {
   export type PortOptionCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20844,6 +20873,7 @@ export namespace Prisma {
   export type PortOptionMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -20851,6 +20881,7 @@ export namespace Prisma {
   export type PortOptionMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24049,6 +24080,7 @@ export namespace Prisma {
   export type PortOptionCreateWithoutVesselsInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutPortInput
@@ -24057,6 +24089,7 @@ export namespace Prisma {
   export type PortOptionUncheckedCreateWithoutVesselsInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutPortInput
@@ -24212,6 +24245,7 @@ export namespace Prisma {
   export type PortOptionUpdateWithoutVesselsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutPortNestedInput
@@ -24220,6 +24254,7 @@ export namespace Prisma {
   export type PortOptionUncheckedUpdateWithoutVesselsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutPortNestedInput
@@ -24346,6 +24381,7 @@ export namespace Prisma {
   export type PortOptionCreateWithoutOrdersInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
     vessels?: VesselCreateNestedManyWithoutPortInput
@@ -24354,6 +24390,7 @@ export namespace Prisma {
   export type PortOptionUncheckedCreateWithoutOrdersInput = {
     id?: string
     name: string
+    state: string
     createdAt?: Date | string
     updatedAt?: Date | string
     vessels?: VesselUncheckedCreateNestedManyWithoutPortInput
@@ -24557,6 +24594,7 @@ export namespace Prisma {
   export type PortOptionUpdateWithoutOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     vessels?: VesselUpdateManyWithoutPortNestedInput
@@ -24565,6 +24603,7 @@ export namespace Prisma {
   export type PortOptionUncheckedUpdateWithoutOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     vessels?: VesselUncheckedUpdateManyWithoutPortNestedInput

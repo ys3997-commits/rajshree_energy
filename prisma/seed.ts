@@ -22,13 +22,15 @@ async function main() {
 
   const ports = await Promise.all(
     [
-      "Haldia Port",
-      "Jharkhand",
-      "West Bengal",
-      "Assam",
-      "Odisha",
-      "Vishakapatnam",
-    ].map((name) => prisma.portOption.create({ data: { name } })),
+      { name: "Haldia Port", state: "West Bengal" },
+      { name: "Jharkhand", state: "Jharkhand" },
+      { name: "West Bengal", state: "West Bengal" },
+      { name: "Assam", state: "Assam" },
+      { name: "Odisha", state: "Odisha" },
+      { name: "Vishakapatnam", state: "Andhra Pradesh" },
+    ].map(({ name, state }) =>
+      prisma.portOption.create({ data: { name, state } }),
+    ),
   );
 
   const origins = await Promise.all(

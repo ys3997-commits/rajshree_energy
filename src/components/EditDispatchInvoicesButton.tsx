@@ -1,21 +1,23 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
+import { formatMt } from "@/lib/domain/format";
 
 export function EditDispatchInvoicesButton({
   dispatchId,
   saleInvoiceNumber,
   purchaseInvoiceNumber,
-  label,
+  dispatchedQuantity,
+  receivingQuantity,
 }: {
   dispatchId: string;
   saleInvoiceNumber: string | null;
   purchaseInvoiceNumber: string | null;
-  /** Shown on the button — defaults to “Edit invoices”. */
-  label?: string;
+  dispatchedQuantity: string;
+  receivingQuantity: string | null;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -23,12 +25,23 @@ export function EditDispatchInvoicesButton({
   const [purchaseInvoice, setPurchaseInvoice] = useState(
     purchaseInvoiceNumber ?? "",
   );
+  const [receivedQty, setReceivedQty] = useState(receivingQuantity ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const diffQty = useMemo(() => {
+    const trimmed = receivedQty.trim();
+    if (!trimmed) return null;
+    const received = Number(trimmed);
+    const dispatched = Number(dispatchedQuantity);
+    if (!Number.isFinite(received) || !Number.isFinite(dispatched)) return null;
+    return dispatched - received;
+  }, [dispatchedQuantity, receivedQty]);
 
   function openModal() {
     setSaleInvoice(saleInvoiceNumber ?? "");
     setPurchaseInvoice(purchaseInvoiceNumber ?? "");
+    setReceivedQty(receivingQuantity ?? "");
     setError(null);
     setOpen(true);
   }
@@ -38,9 +51,11 @@ export function EditDispatchInvoicesButton({
     setError(null);
     setSaving(true);
     try {
+      const trimmedReceived = receivedQty.trim();
       await updateDispatch(dispatchId, {
         saleInvoiceNumber: saleInvoice,
         purchaseInvoiceNumber: purchaseInvoice,
+        receivingQuantity: trimmedReceived === "" ? null : trimmedReceived,
       });
       setOpen(false);
       router.refresh();
@@ -58,11 +73,11 @@ export function EditDispatchInvoicesButton({
         className="btn btn-secondary"
         onClick={openModal}
       >
-        {label ?? "Edit invoices"}
+        Edit
       </button>
       <Modal
         open={open}
-        title="Edit invoices"
+        title="Edit dispatch"
         onClose={() => {
           if (!saving) setOpen(false);
         }}
@@ -83,6 +98,30 @@ export function EditDispatchInvoicesButton({
             onChange={(e) => setPurchaseInvoice(e.target.value)}
             placeholder="Purchase invoice number"
           />
+
+          <label>Received quantity</label>
+          <div className="field-with-unit">
+            <input
+              type="number"
+              step="any"
+              min="0"
+              value={receivedQty}
+              onChange={(e) => setReceivedQty(e.target.value)}
+              placeholder={dispatchedQuantity}
+            />
+            <span className="field-unit">MT</span>
+          </div>
+
+          <label>Diff quantity</label>
+          <div className="field-with-unit">
+            <input
+              type="text"
+              readOnly
+              value={diffQty == null ? "—" : formatMt(diffQty)}
+              tabIndex={-1}
+            />
+            <span className="field-unit">MT</span>
+          </div>
 
           <div />
           <div className="modal-actions">

@@ -171,6 +171,23 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="home-section">
+        <div className="home-section-head">
+          <h2 className="home-section-title">Reports</h2>
+        </div>
+        <div className="home-report-grid">
+          <Link href="/reports/master-dispatch" className="home-report-card">
+            <p className="home-eyebrow">Dispatches</p>
+            <h3 className="home-report-card-title">Master dispatch report</h3>
+            <p className="home-report-card-desc">
+              Purchase, sale, freight, and basic-rate profit for every
+              dispatch.
+            </p>
+            <span className="home-report-card-cta">Open report</span>
+          </Link>
+        </div>
+      </section>
+
       <div className="home-grid">
         <section className="home-panel">
           <div className="home-panel-head">

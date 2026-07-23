@@ -69,6 +69,8 @@ export type UpdateDispatchInput = {
   entryInTally?: boolean;
   saleInvoiceNumber?: string | null;
   purchaseInvoiceNumber?: string | null;
+  /** When set, updates received qty and marks receipt RECEIVED. Null clears receipt. */
+  receivingQuantity?: DecimalLike | null;
 };
 
 export type CreateOpenOrderDispatchInput = {
@@ -608,6 +610,24 @@ export async function updateDispatch(
       data.purchaseInvoiceNumber = normalizeInvoiceNumber(
         changes.purchaseInvoiceNumber,
       );
+    }
+
+    if (changes.receivingQuantity !== undefined) {
+      if (changes.receivingQuantity === null || changes.receivingQuantity === "") {
+        data.receivingQuantity = null;
+        data.receiptDate = null;
+        data.receiptStatus = ReceiptStatus.PENDING;
+      } else {
+        const qty = toDecimal(changes.receivingQuantity);
+        if (qty.lt(0)) {
+          throw new Error("Receiving quantity must be non-negative");
+        }
+        data.receivingQuantity = qty;
+        data.receiptStatus = ReceiptStatus.RECEIVED;
+        if (existing.receiptDate == null) {
+          data.receiptDate = new Date();
+        }
+      }
     }
 
     return tx.dispatch.update({

@@ -37,6 +37,7 @@ import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
 
 type Opt = { id: string; name: string };
+type PortOpt = Opt & { state: string };
 type PeopleOpt = { id: string; name: string; role: string | null };
 
 type CategoryId =
@@ -70,7 +71,7 @@ const CATEGORIES: {
   {
     id: "ports",
     label: "Ports",
-    description: "Ports and locations on vessels and orders.",
+    description: "Port name and GST state for vessels and orders.",
     placeholder: "New port, e.g. Haldia Port",
   },
   {
@@ -106,7 +107,15 @@ const CATEGORIES: {
 ];
 
 type SimpleCategoryId = Exclude<CategoryId, "people">;
-type ItemMap = Record<SimpleCategoryId, Opt[]>;
+type ItemMap = {
+  origins: Opt[];
+  qualities: Opt[];
+  ports: PortOpt[];
+  saleExecutives: Opt[];
+  cities: Opt[];
+  states: Opt[];
+  sectors: Opt[];
+};
 
 export function OptionsClient({
   origins,
@@ -120,7 +129,7 @@ export function OptionsClient({
 }: {
   origins: Opt[];
   qualities: Opt[];
-  ports: Opt[];
+  ports: PortOpt[];
   saleExecutives: Opt[];
   cities: Opt[];
   states: Opt[];
@@ -141,7 +150,8 @@ export function OptionsClient({
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [roleDraft, setRoleDraft] = useState("");
-  const [editing, setEditing] = useState<Opt | PeopleOpt | null>(null);
+  const [stateDraft, setStateDraft] = useState("");
+  const [editing, setEditing] = useState<Opt | PortOpt | PeopleOpt | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -163,6 +173,13 @@ export function OptionsClient({
     const q = query.trim().toLowerCase();
     const sorted = [...items[activeId]].sort((a, b) => a.name.localeCompare(b.name));
     if (!q) return sorted;
+    if (activeId === "ports") {
+      return (sorted as PortOpt[]).filter(
+        (item) =>
+          item.name.toLowerCase().includes(q) ||
+          item.state.toLowerCase().includes(q),
+      );
+    }
     return sorted.filter((item) => item.name.toLowerCase().includes(q));
   }, [activeId, items, query]);
 
@@ -171,22 +188,27 @@ export function OptionsClient({
     setQuery("");
     setDraft("");
     setRoleDraft("");
+    setStateDraft("");
     setEditing(null);
     setError(null);
   }
 
-  function setCategoryItems(id: SimpleCategoryId, next: Opt[]) {
+  function setCategoryItems<K extends SimpleCategoryId>(
+    id: K,
+    next: ItemMap[K],
+  ) {
     setItems((prev) => ({ ...prev, [id]: next }));
   }
 
-  async function createItem(name: string, role?: string) {
+  async function createItem(name: string, role?: string, state?: string) {
     switch (activeId) {
       case "origins":
         return createOriginOption(name);
       case "qualities":
         return createQualityOption(name);
       case "ports":
-        return createPortOption(name);
+        if (!state) throw new Error("Port state is required");
+        return createPortOption(name, state);
       case "saleExecutives":
         return createSaleExecutiveOption(name);
       case "cities":
@@ -202,14 +224,15 @@ export function OptionsClient({
     }
   }
 
-  async function updateItem(id: string, name: string, role?: string) {
+  async function updateItem(id: string, name: string, role?: string, state?: string) {
     switch (activeId) {
       case "origins":
         return updateOriginOption(id, name);
       case "qualities":
         return updateQualityOption(id, name);
       case "ports":
-        return updatePortOption(id, name);
+        if (!state) throw new Error("Port state is required");
+        return updatePortOption(id, name, state);
       case "saleExecutives":
         return updateSaleExecutiveOption(id, name);
       case "cities":
@@ -251,11 +274,16 @@ export function OptionsClient({
     const name = capitalizeName(draft);
     if (!name) return;
     const role = capitalizeName(roleDraft);
+    const state = capitalizeName(stateDraft);
+    if (activeId === "ports" && !state) {
+      setError("Port state is required");
+      return;
+    }
 
     startTransition(async () => {
       try {
         if (editing) {
-          await updateItem(editing.id, name, role ?? undefined);
+          await updateItem(editing.id, name, role ?? undefined, state ?? undefined);
           if (activeId === "people") {
             setPeopleItems(
               peopleItems
@@ -266,34 +294,51 @@ export function OptionsClient({
                 )
                 .sort((a, b) => a.name.localeCompare(b.name)),
             );
+          } else if (activeId === "ports") {
+            setCategoryItems(
+              "ports",
+              items.ports
+                .map((item) =>
+                  item.id === editing.id ? { ...item, name, state: state! } : item,
+                )
+                .sort((a, b) => a.name.localeCompare(b.name)),
+            );
           } else {
             setCategoryItems(
-              activeId as SimpleCategoryId,
-              items[activeId as SimpleCategoryId]
+              activeId as Exclude<SimpleCategoryId, "ports">,
+              items[activeId as Exclude<SimpleCategoryId, "ports">]
                 .map((item) => (item.id === editing.id ? { ...item, name } : item))
                 .sort((a, b) => a.name.localeCompare(b.name)),
             );
           }
           setEditing(null);
         } else {
-          const { id } = await createItem(name, role ?? undefined);
+          const { id } = await createItem(name, role ?? undefined, state ?? undefined);
           if (activeId === "people") {
             setPeopleItems(
               [...peopleItems, { id, name, role }].sort((a, b) =>
                 a.name.localeCompare(b.name),
               ),
             );
+          } else if (activeId === "ports") {
+            setCategoryItems(
+              "ports",
+              [...items.ports, { id, name, state: state! }].sort((a, b) =>
+                a.name.localeCompare(b.name),
+              ),
+            );
           } else {
             setCategoryItems(
-              activeId as SimpleCategoryId,
-              [...items[activeId as SimpleCategoryId], { id, name }].sort((a, b) =>
-                a.name.localeCompare(b.name),
+              activeId as Exclude<SimpleCategoryId, "ports">,
+              [...items[activeId as Exclude<SimpleCategoryId, "ports">], { id, name }].sort(
+                (a, b) => a.name.localeCompare(b.name),
               ),
             );
           }
         }
         setDraft("");
         setRoleDraft("");
+        setStateDraft("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
       }
@@ -318,6 +363,7 @@ export function OptionsClient({
           setEditing(null);
           setDraft("");
           setRoleDraft("");
+          setStateDraft("");
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Delete failed");
@@ -405,6 +451,21 @@ export function OptionsClient({
               }}
             />
           )}
+          {activeId === "ports" && (
+            <select
+              required
+              className="field-input"
+              value={stateDraft}
+              onChange={(e) => setStateDraft(e.target.value)}
+            >
+              <option value="">Select GST state</option>
+              {states.map((s) => (
+                <option key={s.id} value={s.name}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          )}
           <button type="submit" className="btn" disabled={pending}>
             {editing ? "Update" : "Add"}
           </button>
@@ -416,6 +477,7 @@ export function OptionsClient({
                 setEditing(null);
                 setDraft("");
                 setRoleDraft("");
+                setStateDraft("");
               }}
             >
               Cancel
@@ -429,6 +491,7 @@ export function OptionsClient({
               <tr>
                 <th>Name</th>
                 {activeId === "people" && <th>Role</th>}
+                {activeId === "ports" && <th>GST state</th>}
                 <th className="options-actions-col" />
               </tr>
             </thead>
@@ -446,6 +509,7 @@ export function OptionsClient({
                             setEditing(item);
                             setDraft(item.name);
                             setRoleDraft(item.role ?? "");
+                            setStateDraft("");
                           }}
                         >
                           Edit
@@ -461,7 +525,36 @@ export function OptionsClient({
                       </td>
                     </tr>
                   ))
-                : filteredOptions.map((item) => (
+                : activeId === "ports"
+                  ? (filteredOptions as PortOpt[]).map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.name}</td>
+                        <td>{item.state}</td>
+                        <td className="space-x-2 whitespace-nowrap">
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => {
+                              setEditing(item);
+                              setDraft(item.name);
+                              setStateDraft(item.state);
+                              setRoleDraft("");
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={() => onDelete(item)}
+                            disabled={pending}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  : filteredOptions.map((item) => (
                     <tr key={item.id}>
                       <td>{item.name}</td>
                       <td className="space-x-2 whitespace-nowrap">
@@ -472,6 +565,7 @@ export function OptionsClient({
                             setEditing(item);
                             setDraft(item.name);
                             setRoleDraft("");
+                            setStateDraft("");
                           }}
                         >
                           Edit

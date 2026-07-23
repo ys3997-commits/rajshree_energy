@@ -5,6 +5,7 @@ import { FormEvent, useState, useTransition } from "react";
 import {
   createVessel,
   deleteVessel,
+  updateVessel,
 } from "@/lib/actions/vessels";
 import {
   QualityClassSelect,
@@ -41,6 +42,7 @@ export function VesselsClient({
 }) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState(empty);
+  const [editing, setEditing] = useState<Row | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -48,16 +50,41 @@ export function VesselsClient({
     startTransition(() => window.location.reload());
   }
 
+  function startEdit(row: Row) {
+    setEditing(row);
+    setForm({
+      vesselName: row.vesselName,
+      qualityClassId: row.qualityClassId ?? "",
+      portId: row.portId ?? "",
+    });
+    setError(null);
+  }
+
+  function cancelEdit() {
+    setEditing(null);
+    setForm(empty);
+  }
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     try {
-      await createVessel({
-        vesselName: form.vesselName,
-        qualityClassId: form.qualityClassId,
-        portId: form.portId,
-      });
+      if (editing) {
+        await updateVessel(editing.id, {
+          vesselName: form.vesselName,
+          qualityClassId: form.qualityClassId,
+          portId: form.portId,
+          active: editing.active,
+        });
+      } else {
+        await createVessel({
+          vesselName: form.vesselName,
+          qualityClassId: form.qualityClassId,
+          portId: form.portId,
+        });
+      }
       setForm(empty);
+      setEditing(null);
       reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
@@ -69,6 +96,7 @@ export function VesselsClient({
     try {
       await deleteVessel(id);
       setRows((prev) => prev.filter((r) => r.id !== id));
+      if (editing?.id === id) cancelEdit();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed");
     }
@@ -122,8 +150,17 @@ export function VesselsClient({
         <div />
         <div className="flex gap-2">
           <button type="submit" className="btn" disabled={pending}>
-            Add vessel
+            {editing ? "Update" : "Add vessel"}
           </button>
+          {editing && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={cancelEdit}
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </form>
 
@@ -140,7 +177,10 @@ export function VesselsClient({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id} className={row.active ? undefined : "vessel-row-inactive"}>
+              <tr
+                key={row.id}
+                className={row.active ? undefined : "vessel-row-inactive"}
+              >
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td>{row.port?.name ?? "—"}</td>
@@ -159,6 +199,13 @@ export function VesselsClient({
                   />
                 </td>
                 <td className="space-x-2 whitespace-nowrap">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => startEdit(row)}
+                  >
+                    Edit
+                  </button>
                   <button
                     type="button"
                     className="btn btn-danger"

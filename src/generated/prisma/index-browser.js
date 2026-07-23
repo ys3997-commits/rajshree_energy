@@ -160,6 +160,7 @@ exports.Prisma.QualityOptionScalarFieldEnum = {
 exports.Prisma.PortOptionScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  state: 'state',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
