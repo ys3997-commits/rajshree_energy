@@ -10,6 +10,10 @@ import {
   withOrderComputed,
   type DecimalLike,
 } from "@/lib/domain/computations";
+import {
+  adjustCustomerDue,
+  billedAmount,
+} from "@/lib/domain/customerDue";
 import { normalizeSaleOrderNumber } from "@/lib/domain/orderNumbers";
 
 export type OrderFilters = {
@@ -147,24 +151,35 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
     dispatchedOrder: toDecimal(0),
   });
 
-  const order = await prisma.order.create({
-    data: {
-      poNumber: normalizeSaleOrderNumber(input.poNumber),
-      orderType: OrderType.REGULAR,
-      customerId: input.customerId,
-      orderDate: input.orderDate ? new Date(input.orderDate) : null,
-      portId: input.portId || null,
-      creditDays: input.creditDays ?? null,
-      qualityClassId: input.qualityClassId || null,
-      rate,
-      finalRate,
-      quantity,
-      orderById: input.orderById || null,
-      orderStatus,
-    },
+  const order = await prisma.$transaction(async (tx) => {
+    const created = await tx.order.create({
+      data: {
+        poNumber: normalizeSaleOrderNumber(input.poNumber),
+        orderType: OrderType.REGULAR,
+        customerId: input.customerId,
+        orderDate: input.orderDate ? new Date(input.orderDate) : null,
+        portId: input.portId || null,
+        creditDays: input.creditDays ?? null,
+        qualityClassId: input.qualityClassId || null,
+        rate,
+        finalRate,
+        quantity,
+        orderById: input.orderById || null,
+        orderStatus,
+      },
+    });
+
+    await adjustCustomerDue(
+      tx,
+      input.customerId,
+      billedAmount(finalRate, quantity),
+    );
+
+    return created;
   });
 
   revalidatePath("/orders");
+  revalidatePath("/customers");
   return { id: order.id };
 }
 
@@ -212,7 +227,7 @@ export async function updateOrderFields(
   const finalRate =
     data.rate !== undefined
       ? computeSaleFinalRate(rate, existing.customer.category)
-      : undefined;
+      : existing.finalRate;
 
   const orderStatus = computeOrderStatus({
     orderType: existing.orderType,
@@ -220,22 +235,36 @@ export async function updateOrderFields(
     dispatchedOrder: existing.dispatchedOrder,
   });
 
-  const order = await prisma.order.update({
-    where: { id },
-    data: {
-      poNumber,
-      quantity,
-      rate,
-      ...(finalRate !== undefined ? { finalRate } : {}),
-      creditDays: data.creditDays === undefined ? undefined : data.creditDays,
-      qualityClassId:
-        data.qualityClassId === undefined ? undefined : data.qualityClassId,
-      portId: data.portId === undefined ? undefined : data.portId || null,
-      orderStatus,
-    },
+  const oldAmount = billedAmount(
+    existing.finalRate,
+    existing.quantity,
+    existing.dispatchedOrder,
+  );
+  const newAmount = billedAmount(finalRate, quantity, existing.dispatchedOrder);
+  const dueDelta = newAmount.minus(oldAmount);
+
+  const order = await prisma.$transaction(async (tx) => {
+    const updated = await tx.order.update({
+      where: { id },
+      data: {
+        poNumber,
+        quantity,
+        rate,
+        ...(data.rate !== undefined ? { finalRate } : {}),
+        creditDays: data.creditDays === undefined ? undefined : data.creditDays,
+        qualityClassId:
+          data.qualityClassId === undefined ? undefined : data.qualityClassId,
+        portId: data.portId === undefined ? undefined : data.portId || null,
+        orderStatus,
+      },
+    });
+
+    await adjustCustomerDue(tx, existing.customerId, dueDelta);
+    return updated;
   });
 
   revalidatePath("/orders");
   revalidatePath(`/orders/${id}`);
+  revalidatePath("/customers");
   return { id: order.id };
 }

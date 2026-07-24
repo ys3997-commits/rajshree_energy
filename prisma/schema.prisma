@@ -42,6 +42,11 @@ enum DispatchTerms {
   EX_PORT
 }
 
+enum PaymentDirection {
+  RECEIVED
+  SENT
+}
+
 model Staff {
   id        String   @id @default(cuid())
   name      String
@@ -175,6 +180,10 @@ model Customer {
   saleExecutive            String?
   dealById                 String?
   approachForFunds         String?
+  /// Net amount owed by the customer to Rajshree (sales − purchases − received + sent).
+  due                      Decimal          @default(0) @db.Decimal(18, 2)
+  /// Next planned collection phone call date (calendar day).
+  plannedCollectionCallDate DateTime?
   createdAt                DateTime         @default(now())
   updatedAt                DateTime         @updatedAt
 
@@ -182,6 +191,7 @@ model Customer {
   orders           Order[]
   purchaseOrders   PurchaseOrder[]
   dispatches       Dispatch[]      @relation("DispatchImporter")
+  payments         Payment[]
 }
 
 model Vessel {
@@ -290,4 +300,20 @@ model Dispatch {
   @@index([receiptStatus])
   @@index([vesselId])
   @@index([purchasePoNumber])
+}
+
+/// Money received from or sent to a customer.
+model Payment {
+  id         String           @id @default(cuid())
+  date       DateTime
+  customerId String
+  direction  PaymentDirection
+  amount     Decimal          @db.Decimal(18, 2)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([date])
 }

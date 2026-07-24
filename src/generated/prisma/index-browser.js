@@ -225,6 +225,8 @@ exports.Prisma.CustomerScalarFieldEnum = {
   saleExecutive: 'saleExecutive',
   dealById: 'dealById',
   approachForFunds: 'approachForFunds',
+  due: 'due',
+  plannedCollectionCallDate: 'plannedCollectionCallDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -298,6 +300,16 @@ exports.Prisma.DispatchScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  customerId: 'customerId',
+  direction: 'direction',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -343,6 +355,11 @@ exports.ReceiptStatus = exports.$Enums.ReceiptStatus = {
   RECEIVED: 'RECEIVED'
 };
 
+exports.PaymentDirection = exports.$Enums.PaymentDirection = {
+  RECEIVED: 'RECEIVED',
+  SENT: 'SENT'
+};
+
 exports.Prisma.ModelName = {
   Staff: 'Staff',
   Transporter: 'Transporter',
@@ -358,7 +375,8 @@ exports.Prisma.ModelName = {
   Vessel: 'Vessel',
   Order: 'Order',
   PurchaseOrder: 'PurchaseOrder',
-  Dispatch: 'Dispatch'
+  Dispatch: 'Dispatch',
+  Payment: 'Payment'
 };
 
 /**

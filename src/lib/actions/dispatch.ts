@@ -20,6 +20,10 @@ import {
   toDecimal,
   type DecimalLike,
 } from "@/lib/domain/computations";
+import {
+  adjustCustomerDue,
+  billedAmount,
+} from "@/lib/domain/customerDue";
 import { normalizeLorryNumber } from "@/lib/domain/format";
 import {
   nextSaleOrderNumber,
@@ -232,6 +236,8 @@ function revalidateDispatchPaths() {
   revalidatePath("/vessels");
   revalidatePath("/receipts/pending");
   revalidatePath("/reconciliation");
+  revalidatePath("/customers");
+  revalidatePath("/payments");
 }
 
 async function applyDispatchDelta(
@@ -317,6 +323,15 @@ async function applyDispatchDelta(
     },
   });
 
+  // Open sale orders bill by dispatched qty until quantity is set.
+  if (order.quantity == null && order.finalRate != null && !args.qty.isZero()) {
+    await adjustCustomerDue(
+      tx,
+      order.customerId,
+      toDecimal(order.finalRate).mul(args.qty),
+    );
+  }
+
   const nextPurchaseDispatched = purchase.dispatchedOrder.plus(args.qty);
   const nextPurchaseStatus = computePurchaseOrderStatus({
     quantity: purchase.quantity,
@@ -330,6 +345,19 @@ async function applyDispatchDelta(
       orderStatus: nextPurchaseStatus,
     },
   });
+
+  // Open purchase orders reduce due by dispatched qty until quantity is set.
+  if (
+    purchase.quantity == null &&
+    purchase.finalRate != null &&
+    !args.qty.isZero()
+  ) {
+    await adjustCustomerDue(
+      tx,
+      purchase.importerId,
+      toDecimal(purchase.finalRate).mul(args.qty).neg(),
+    );
+  }
 
   return { vesselId: purchase.vesselId, importerId: purchase.importerId };
 }
@@ -693,19 +721,30 @@ export async function completeOpenOrder(
       details.rate === undefined || details.rate === null
         ? null
         : toDecimal(details.rate);
-    const finalRate =
+    const nextFinalRate =
       details.rate === undefined
-        ? undefined
+        ? order.finalRate
         : computeSaleFinalRate(rate, order.customer.category);
 
     const nextStatus = OrderStatus.COMPLETED;
+
+    const oldAmount = billedAmount(
+      order.finalRate,
+      order.quantity,
+      order.dispatchedOrder,
+    );
+    const newAmount = billedAmount(
+      nextFinalRate,
+      quantity,
+      order.dispatchedOrder,
+    );
 
     await tx.order.update({
       where: { id: orderId },
       data: {
         quantity,
         rate,
-        ...(finalRate !== undefined ? { finalRate } : {}),
+        ...(details.rate !== undefined ? { finalRate: nextFinalRate } : {}),
         creditDays:
           details.creditDays === undefined ? undefined : details.creditDays,
         qualityClassId:
@@ -717,10 +756,17 @@ export async function completeOpenOrder(
         orderStatus: nextStatus,
       },
     });
+
+    await adjustCustomerDue(
+      tx,
+      order.customerId,
+      newAmount.minus(oldAmount),
+    );
   });
 
   revalidatePath("/orders");
   revalidatePath(`/orders/${orderId}`);
+  revalidatePath("/customers");
 }
 
 export async function confirmReceipt(

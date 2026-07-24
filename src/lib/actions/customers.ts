@@ -1,6 +1,7 @@
 "use server";
 
 import { CustomerCategory } from "@/generated/prisma";
+import { computeOverdue } from "@/lib/domain/customerDue";
 import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +10,110 @@ export async function listCustomers(options?: { activeOnly?: boolean }) {
   return prisma.customer.findMany({
     where: options?.activeOnly ? { active: true } : undefined,
     orderBy: { name: "asc" },
+  });
+}
+
+export type CustomerDueRow = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+  saleExecutive: string | null;
+  creditDays: number | null;
+  plannedCollectionCallDate: string | null;
+  due: string;
+  overdue: string;
+  lastPaymentDate: string | null;
+  lastPaymentAmount: string | null;
+};
+
+/** Customers with non-zero due, highest due first (for collection). */
+export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
+  const customers = await prisma.customer.findMany({
+    where: {
+      OR: [{ due: { gt: 0 } }, { due: { lt: 0 } }],
+    },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      due: true,
+      creditDays: true,
+      saleExecutive: true,
+      plannedCollectionCallDate: true,
+    },
+    orderBy: { due: "desc" },
+  });
+
+  if (customers.length === 0) return [];
+
+  const ids = customers.map((c) => c.id);
+  const [orders, payments] = await Promise.all([
+    prisma.order.findMany({
+      where: { customerId: { in: ids } },
+      select: {
+        customerId: true,
+        finalRate: true,
+        quantity: true,
+        dispatchedOrder: true,
+        orderDate: true,
+        createdAt: true,
+        creditDays: true,
+      },
+    }),
+    prisma.payment.findMany({
+      where: { customerId: { in: ids } },
+      select: {
+        customerId: true,
+        date: true,
+        amount: true,
+        direction: true,
+        createdAt: true,
+      },
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+    }),
+  ]);
+
+  const ordersByCustomer = new Map<string, typeof orders>();
+  for (const order of orders) {
+    const list = ordersByCustomer.get(order.customerId) ?? [];
+    list.push(order);
+    ordersByCustomer.set(order.customerId, list);
+  }
+
+  const paymentsByCustomer = new Map<string, typeof payments>();
+  for (const payment of payments) {
+    const list = paymentsByCustomer.get(payment.customerId) ?? [];
+    list.push(payment);
+    paymentsByCustomer.set(payment.customerId, list);
+  }
+
+  return customers.map((customer) => {
+    const customerOrders = ordersByCustomer.get(customer.id) ?? [];
+    const customerPayments = paymentsByCustomer.get(customer.id) ?? [];
+    const received = customerPayments
+      .filter((p) => p.direction === "RECEIVED")
+      .map((p) => p.amount);
+    const overdue = computeOverdue(
+      customerOrders,
+      customer.creditDays,
+      received,
+    );
+    const last = customerPayments[0] ?? null;
+
+    return {
+      id: customer.id,
+      name: customer.name,
+      category: customer.category,
+      saleExecutive: customer.saleExecutive,
+      creditDays: customer.creditDays,
+      plannedCollectionCallDate: customer.plannedCollectionCallDate
+        ? customer.plannedCollectionCallDate.toISOString().slice(0, 10)
+        : null,
+      due: customer.due.toString(),
+      overdue: overdue.toString(),
+      lastPaymentDate: last ? last.date.toISOString().slice(0, 10) : null,
+      lastPaymentAmount: last ? last.amount.toString() : null,
+    };
   });
 }
 

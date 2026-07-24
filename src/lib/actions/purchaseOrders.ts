@@ -15,6 +15,10 @@ import {
   type DecimalLike,
 } from "@/lib/domain/computations";
 import {
+  adjustCustomerDue,
+  billedAmount,
+} from "@/lib/domain/customerDue";
+import {
   nextPurchaseOrderNumber,
   normalizePurchaseOrderNumber,
 } from "@/lib/domain/orderNumbers";
@@ -140,23 +144,35 @@ export async function createRegularPurchaseOrder(
   const qualityClassId =
     input.qualityClassId || vessel.qualityClassId || null;
 
-  const order = await prisma.purchaseOrder.create({
-    data: {
-      poNumber: normalizePurchaseOrderNumber(input.poNumber),
-      orderType: OrderType.REGULAR,
-      importerId: input.importerId,
-      vesselId: input.vesselId,
-      orderDate: input.orderDate ? new Date(input.orderDate) : null,
-      qualityClassId,
-      rate,
-      finalRate,
-      quantity,
-      orderStatus,
-    },
+  const order = await prisma.$transaction(async (tx) => {
+    const created = await tx.purchaseOrder.create({
+      data: {
+        poNumber: normalizePurchaseOrderNumber(input.poNumber),
+        orderType: OrderType.REGULAR,
+        importerId: input.importerId,
+        vesselId: input.vesselId,
+        orderDate: input.orderDate ? new Date(input.orderDate) : null,
+        qualityClassId,
+        rate,
+        finalRate,
+        quantity,
+        orderStatus,
+      },
+    });
+
+    // Purchase decreases due (we owe the supplier).
+    await adjustCustomerDue(
+      tx,
+      input.importerId,
+      billedAmount(finalRate, quantity).neg(),
+    );
+
+    return created;
   });
 
   revalidatePath("/purchase-orders");
   revalidatePath("/dispatches");
+  revalidatePath("/customers");
   return { id: order.id };
 }
 
@@ -244,28 +260,43 @@ export async function updatePurchaseOrderFields(
     rate = data.rate === null ? null : toDecimal(data.rate);
   }
   const finalRate =
-    data.rate !== undefined ? computePurchaseFinalRate(rate) : undefined;
+    data.rate !== undefined ? computePurchaseFinalRate(rate) : existing.finalRate;
 
   const orderStatus = computePurchaseOrderStatus({
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
   });
 
-  const order = await prisma.purchaseOrder.update({
-    where: { id },
-    data: {
-      poNumber,
-      quantity,
-      rate,
-      ...(finalRate !== undefined ? { finalRate } : {}),
-      qualityClassId:
-        data.qualityClassId === undefined ? undefined : data.qualityClassId,
-      orderStatus,
-    },
+  const oldAmount = billedAmount(
+    existing.finalRate,
+    existing.quantity,
+    existing.dispatchedOrder,
+  );
+  const newAmount = billedAmount(finalRate, quantity, existing.dispatchedOrder);
+  // Purchase decreases due, so delta is inverted.
+  const dueDelta = oldAmount.minus(newAmount);
+
+  const order = await prisma.$transaction(async (tx) => {
+    const updated = await tx.purchaseOrder.update({
+      where: { id },
+      data: {
+        poNumber,
+        quantity,
+        rate,
+        ...(data.rate !== undefined ? { finalRate } : {}),
+        qualityClassId:
+          data.qualityClassId === undefined ? undefined : data.qualityClassId,
+        orderStatus,
+      },
+    });
+
+    await adjustCustomerDue(tx, existing.importerId, dueDelta);
+    return updated;
   });
 
   revalidatePath("/purchase-orders");
   revalidatePath(`/purchase-orders/${id}`);
+  revalidatePath("/customers");
   return { id: order.id };
 }
 
@@ -300,20 +331,29 @@ export async function completeOpenPurchaseOrder(
       details.rate === undefined || details.rate === null
         ? null
         : toDecimal(details.rate);
-    const finalRate =
-      details.rate === undefined ? undefined : computePurchaseFinalRate(rate);
+    const nextFinalRate =
+      details.rate === undefined
+        ? order.finalRate
+        : computePurchaseFinalRate(rate);
 
     const nextStatus = computePurchaseOrderStatus({
       quantity,
       dispatchedOrder: order.dispatchedOrder,
     });
 
+    const oldAmount = billedAmount(
+      order.finalRate,
+      order.quantity,
+      order.dispatchedOrder,
+    );
+    const newAmount = billedAmount(nextFinalRate, quantity, order.dispatchedOrder);
+
     await tx.purchaseOrder.update({
       where: { id: orderId },
       data: {
         quantity,
         rate,
-        ...(finalRate !== undefined ? { finalRate } : {}),
+        ...(details.rate !== undefined ? { finalRate: nextFinalRate } : {}),
         qualityClassId:
           details.qualityClassId === undefined
             ? undefined
@@ -321,8 +361,15 @@ export async function completeOpenPurchaseOrder(
         orderStatus: nextStatus,
       },
     });
+
+    await adjustCustomerDue(
+      tx,
+      order.importerId,
+      oldAmount.minus(newAmount),
+    );
   });
 
   revalidatePath("/purchase-orders");
   revalidatePath(`/purchase-orders/${orderId}`);
+  revalidatePath("/customers");
 }

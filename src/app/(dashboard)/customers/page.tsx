@@ -19,7 +19,9 @@ export default async function CustomersPage() {
 
   return (
     <CustomersClient
-      initial={customers}
+      initial={customers.map(
+        ({ due: _due, plannedCollectionCallDate: _planned, ...c }) => c,
+      )}
       cities={cities.map((o) => o.name)}
       states={states.map((o) => o.name)}
       sectors={sectors.map((o) => o.name)}

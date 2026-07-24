@@ -14,8 +14,27 @@ import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { DispatchBoolToggle } from "@/components/DispatchBoolToggle";
 import { EditDispatchInvoicesButton } from "@/components/EditDispatchInvoicesButton";
-import { formatDispatchTerms, formatRs } from "@/lib/domain/computations";
-import { formatLorryNumber } from "@/lib/domain/format";
+import {
+  formatLorryNumber,
+  formatMt,
+  formatQualityClass,
+} from "@/lib/domain/format";
+import {
+  parsePurchaseOrderSequence,
+  parseSaleOrderSequence,
+} from "@/lib/domain/orderNumbers";
+
+function displayOrderDigits(
+  poNumber: string,
+  kind: "sale" | "purchase",
+): string {
+  const seq =
+    kind === "sale"
+      ? parseSaleOrderSequence(poNumber)
+      : parsePurchaseOrderSequence(poNumber);
+  if (seq != null) return String(seq).padStart(4, "0");
+  return poNumber.replace(/^(SO|PO)\s+/i, "").trim() || poNumber;
+}
 
 type SearchParams = Promise<{
   receiptStatus?: string;
@@ -167,22 +186,39 @@ export default async function DispatchesPage({
         </button>
       </form>
 
-      <div className="table-wrap">
-        <table className="data">
+      <div className="table-wrap table-wrap-scroll">
+        <table className="data report-table report-table-dispatches">
           <thead>
+            <tr className="report-group-row">
+              <th colSpan={6}>Dispatch</th>
+              <th colSpan={5}>Purchase</th>
+              <th colSpan={5}>Sale</th>
+              <th colSpan={3}>Transport</th>
+              <th colSpan={1}>Margin</th>
+              <th colSpan={4}>Status</th>
+              <th colSpan={1}></th>
+            </tr>
             <tr>
-              <th>Dispatch date</th>
-              <th>Sale PO</th>
-              <th>Purchase PO</th>
-              <th>Qty (MT)</th>
-              <th>Terms</th>
-              <th>Freight (Rs/MT)</th>
-              <th>Transporter</th>
-              <th>Profit (Rs)</th>
-              <th>Lorry</th>
-              <th>Sale invoice</th>
+              <th>Date</th>
+              <th>Lorry no</th>
+              <th>Weight (MT)</th>
+              <th>Vessel name</th>
+              <th>Quality</th>
+              <th>GST state</th>
+              <th>PO no</th>
+              <th>Vendor</th>
+              <th>Basic price (Rs)</th>
+              <th>Total price (Rs)</th>
               <th>Purchase invoice</th>
-              <th>Receipt</th>
+              <th>SO no</th>
+              <th>Customer name</th>
+              <th>Basic price (Rs)</th>
+              <th>Total price (Rs)</th>
+              <th>Sale invoice</th>
+              <th>Transporter name</th>
+              <th>Freight PMT (Rs)</th>
+              <th>Freight amount (Rs)</th>
+              <th>Profit (Rs)</th>
               <th>Received (MT)</th>
               <th>Diff (MT)</th>
               <th className="cell-center">Soft copy</th>
@@ -196,48 +232,32 @@ export default async function DispatchesPage({
                 <td>
                   {new Date(row.dispatchDate).toISOString().slice(0, 10)}
                 </td>
-                <td>
-                  {row.order ? (
-                    <Link
-                      href={`/orders/${row.order.id}`}
-                      className="font-medium"
-                    >
-                      {row.poNumber}
-                    </Link>
-                  ) : (
-                    row.poNumber
-                  )}
-                </td>
-                <td>
-                  {row.purchaseOrder ? (
-                    <Link
-                      href={`/purchase-orders/${row.purchaseOrder.id}`}
-                      className="font-medium"
-                      title={`${row.purchaseOrder.importer?.name ?? ""} — ${row.purchaseOrder.vessel?.vesselName ?? ""}`}
-                    >
-                      {row.purchasePoNumber}
-                    </Link>
-                  ) : (
-                    row.purchasePoNumber
-                  )}
-                </td>
-                <td>{row.dispatchedQuantity.toString()}</td>
-                <td>{formatDispatchTerms(row.dispatchTerms)}</td>
-                <td>{formatRs(row.freight)}</td>
-                <td className={row.transporter ? undefined : "cell-center"}>
-                  {row.transporter?.name ?? "—"}
-                </td>
-                <td>{formatRs(row.lineProfit)}</td>
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td
-                  className={
-                    row.saleInvoiceNumber ? undefined : "cell-center"
-                  }
-                >
-                  {row.saleInvoiceNumber ?? "—"}
+                <td>{formatMt(row.dispatchedQuantity)}</td>
+                <td>{row.vesselName}</td>
+                <td>{formatQualityClass(row.qualityClass)}</td>
+                <td className={row.gstState ? undefined : "cell-center"}>
+                  {row.gstState ?? "—"}
                 </td>
+                <td>
+                  {row.purchaseOrderId ? (
+                    <Link
+                      href={`/purchase-orders/${row.purchaseOrderId}`}
+                      className="font-medium"
+                    >
+                      {displayOrderDigits(row.purchasePoNumber, "purchase")}
+                    </Link>
+                  ) : (
+                    displayOrderDigits(row.purchasePoNumber, "purchase")
+                  )}
+                </td>
+                <td className={row.vendorName ? undefined : "cell-center"}>
+                  {row.vendorName ?? "—"}
+                </td>
+                <td>{formatMt(row.purchaseBasicRate)}</td>
+                <td>{formatMt(row.purchaseTotalRate)}</td>
                 <td
                   className={
                     row.purchaseInvoiceNumber ? undefined : "cell-center"
@@ -245,24 +265,49 @@ export default async function DispatchesPage({
                 >
                   {row.purchaseInvoiceNumber ?? "—"}
                 </td>
-                <td>{row.receiptStatus}</td>
+                <td>
+                  {row.orderId ? (
+                    <Link
+                      href={`/orders/${row.orderId}`}
+                      className="font-medium"
+                    >
+                      {displayOrderDigits(row.salePoNumber, "sale")}
+                    </Link>
+                  ) : (
+                    displayOrderDigits(row.salePoNumber, "sale")
+                  )}
+                </td>
+                <td className={row.customerName ? undefined : "cell-center"}>
+                  {row.customerName ?? "—"}
+                </td>
+                <td>{formatMt(row.saleBasicRate)}</td>
+                <td>{formatMt(row.saleTotalRate)}</td>
+                <td
+                  className={row.saleInvoiceNumber ? undefined : "cell-center"}
+                >
+                  {row.saleInvoiceNumber ?? "—"}
+                </td>
+                <td
+                  className={row.transporterName ? undefined : "cell-center"}
+                >
+                  {row.transporterName ?? "—"}
+                </td>
+                <td>{formatMt(row.freight)}</td>
+                <td>{formatMt(row.freightAmount)}</td>
+                <td>{formatMt(row.lineProfit)}</td>
                 <td
                   className={
                     row.receivingQuantity != null ? undefined : "cell-center"
                   }
                 >
-                  {row.receivingQuantity != null
-                    ? row.receivingQuantity.toString()
-                    : "—"}
+                  {formatMt(row.receivingQuantity)}
                 </td>
                 <td
                   className={
                     row.diffInQuantity != null ? undefined : "cell-center"
                   }
                 >
-                  {row.diffInQuantity != null
-                    ? row.diffInQuantity.toString()
-                    : "—"}
+                  {formatMt(row.diffInQuantity)}
                 </td>
                 <td className="cell-center">
                   <DispatchBoolToggle
@@ -293,7 +338,7 @@ export default async function DispatchesPage({
             ))}
             {dispatches.length === 0 && (
               <tr>
-                <td colSpan={17}>No dispatches match filters.</td>
+                <td colSpan={25}>No dispatches match filters.</td>
               </tr>
             )}
           </tbody>

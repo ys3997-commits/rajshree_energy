@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CustomerCategory } from "@/generated/prisma";
 import { FormEvent, useState, useTransition } from "react";
 import {
@@ -463,6 +464,12 @@ export function CustomersClient({
                 <td>{row.sector ?? "—"}</td>
                 <td>{row.saleExecutive ?? "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">
+                  <Link
+                    href={`/reports/customer-analysis/${row.id}`}
+                    className="btn btn-secondary"
+                  >
+                    Analysis
+                  </Link>
                   <button
                     type="button"
                     className="btn btn-secondary"

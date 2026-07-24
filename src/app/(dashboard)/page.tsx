@@ -185,6 +185,15 @@ export default async function HomePage() {
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
+          <Link href="/reports/customer-analysis" className="home-report-card">
+            <p className="home-eyebrow">Customers</p>
+            <h3 className="home-report-card-title">Customer analysis</h3>
+            <p className="home-report-card-desc">
+              Buy and sell metrics, balance, margin, and dispatch profit per
+              customer.
+            </p>
+            <span className="home-report-card-cta">Open report</span>
+          </Link>
         </div>
       </section>
 
