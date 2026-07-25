@@ -90,6 +90,14 @@ function collectionRowHighlightClass(
   return undefined;
 }
 
+function distinctTrimmed(values: Array<string | null | undefined>): string[] {
+  const names = new Set<string>();
+  for (const value of values) {
+    if (value?.trim()) names.add(value.trim());
+  }
+  return [...names].sort((a, b) => a.localeCompare(b));
+}
+
 export function PaymentsClient({
   initial,
   customers,
@@ -126,18 +134,52 @@ export function PaymentsClient({
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
   const [saleExecutiveFilter, setSaleExecutiveFilter] = useState("");
+  const [approachForFundsFilter, setApproachForFundsFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("");
+  const [stateFilter, setStateFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [sectorFilter, setSectorFilter] = useState("");
   const [savingCallId, setSavingCallId] = useState<string | null>(null);
 
   const today = todayLocal();
   const tomorrow = addLocalDays(today, 1);
 
-  const saleExecutiveOptions = useMemo(() => {
-    const names = new Set<string>();
-    for (const row of collection) {
-      if (row.saleExecutive?.trim()) names.add(row.saleExecutive.trim());
-    }
-    return [...names].sort((a, b) => a.localeCompare(b));
+  const saleExecutiveOptions = useMemo(
+    () => distinctTrimmed(collection.map((row) => row.saleExecutive)),
+    [collection],
+  );
+  const approachForFundsOptions = useMemo(
+    () => distinctTrimmed(collection.map((row) => row.approachForFunds)),
+    [collection],
+  );
+  const cityOptions = useMemo(
+    () => distinctTrimmed(collection.map((row) => row.city)),
+    [collection],
+  );
+  const stateOptions = useMemo(
+    () => distinctTrimmed(collection.map((row) => row.state)),
+    [collection],
+  );
+  const sectorOptions = useMemo(
+    () => distinctTrimmed(collection.map((row) => row.sector)),
+    [collection],
+  );
+  const categoryOptions = useMemo(() => {
+    const cats = new Set(collection.map((row) => row.category));
+    return [...cats].sort((a, b) =>
+      formatCustomerCategory(a).localeCompare(formatCustomerCategory(b)),
+    );
   }, [collection]);
+
+  const hasActiveFilters = Boolean(
+    plannedCallFilter ||
+      saleExecutiveFilter ||
+      approachForFundsFilter ||
+      cityFilter ||
+      stateFilter ||
+      categoryFilter ||
+      sectorFilter,
+  );
 
   const filteredCollection = useMemo(() => {
     return collection.filter((row) => {
@@ -157,9 +199,38 @@ export function PaymentsClient({
       ) {
         return false;
       }
+      if (
+        approachForFundsFilter &&
+        (row.approachForFunds?.trim() ?? "") !== approachForFundsFilter
+      ) {
+        return false;
+      }
+      if (cityFilter && (row.city?.trim() ?? "") !== cityFilter) {
+        return false;
+      }
+      if (stateFilter && (row.state?.trim() ?? "") !== stateFilter) {
+        return false;
+      }
+      if (categoryFilter && row.category !== categoryFilter) {
+        return false;
+      }
+      if (sectorFilter && (row.sector?.trim() ?? "") !== sectorFilter) {
+        return false;
+      }
       return true;
     });
-  }, [collection, plannedCallFilter, saleExecutiveFilter, today, tomorrow]);
+  }, [
+    collection,
+    plannedCallFilter,
+    saleExecutiveFilter,
+    approachForFundsFilter,
+    cityFilter,
+    stateFilter,
+    categoryFilter,
+    sectorFilter,
+    today,
+    tomorrow,
+  ]);
 
   function resetForm(customerId = "") {
     setEditing(null);
@@ -527,13 +598,88 @@ export function PaymentsClient({
                 ))}
               </select>
             </label>
-            {(plannedCallFilter || saleExecutiveFilter) && (
+            <label>
+              Approach for funds
+              <select
+                value={approachForFundsFilter}
+                onChange={(e) => setApproachForFundsFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {approachForFundsOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {capitalizeName(name) ?? name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              City
+              <select
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {cityOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              State
+              <select
+                value={stateFilter}
+                onChange={(e) => setStateFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {stateOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Category
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {categoryOptions.map((category) => (
+                  <option key={category} value={category}>
+                    {formatCustomerCategory(category)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Sector
+              <select
+                value={sectorFilter}
+                onChange={(e) => setSectorFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {sectorOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {hasActiveFilters && (
               <button
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => {
                   setPlannedCallFilter("");
                   setSaleExecutiveFilter("");
+                  setApproachForFundsFilter("");
+                  setCityFilter("");
+                  setStateFilter("");
+                  setCategoryFilter("");
+                  setSectorFilter("");
                 }}
               >
                 Clear
@@ -542,18 +688,19 @@ export function PaymentsClient({
           </form>
 
           <div className="table-wrap">
-            <table className="data payments-table">
+            <table className="data payments-table collection-table">
               <thead>
                 <tr>
                   <th>Customer</th>
-                  <th>Category</th>
+                  <th>Payment in charge</th>
+                  <th>Contact number</th>
                   <th>Sales executive</th>
-                  <th>Credit period</th>
-                  <th>Planned call</th>
                   <th className="cell-num">Due</th>
                   <th className="cell-num">Overdue</th>
-                  <th>Last payment</th>
-                  <th className="cell-num">Last amount</th>
+                  <th>Last payment date</th>
+                  <th className="cell-num">Last payment amount</th>
+                  <th>Credit period</th>
+                  <th>Planned call date</th>
                 </tr>
               </thead>
               <tbody>
@@ -572,11 +719,25 @@ export function PaymentsClient({
                           {capitalizeName(row.name) ?? row.name}
                         </Link>
                       </td>
-                      <td>{formatCustomerCategory(row.category)}</td>
+                      <td>
+                        {row.paymentInChargeName
+                          ? (capitalizeName(row.paymentInChargeName) ??
+                            row.paymentInChargeName)
+                          : "—"}
+                      </td>
+                      <td>{row.paymentInChargeContact ?? "—"}</td>
                       <td>
                         {row.saleExecutive
                           ? (capitalizeName(row.saleExecutive) ??
                             row.saleExecutive)
+                          : "—"}
+                      </td>
+                      <td className="cell-num">{formatRs(row.due)}</td>
+                      <td className="cell-num">{formatRs(row.overdue)}</td>
+                      <td>{row.lastPaymentDate ?? "—"}</td>
+                      <td className="cell-num">
+                        {row.lastPaymentAmount
+                          ? formatRs(row.lastPaymentAmount)
                           : "—"}
                       </td>
                       <td>{formatCreditPeriod(row.creditDays)}</td>
@@ -592,20 +753,12 @@ export function PaymentsClient({
                           }
                         />
                       </td>
-                      <td className="cell-num">{formatRs(row.due)}</td>
-                      <td className="cell-num">{formatRs(row.overdue)}</td>
-                      <td>{row.lastPaymentDate ?? "—"}</td>
-                      <td className="cell-num">
-                        {row.lastPaymentAmount
-                          ? formatRs(row.lastPaymentAmount)
-                          : "—"}
-                      </td>
                     </tr>
                   );
                 })}
                 {filteredCollection.length === 0 && (
                   <tr>
-                    <td colSpan={9}>
+                    <td colSpan={10}>
                       {collection.length === 0
                         ? "No outstanding dues."
                         : "No customers match these filters."}

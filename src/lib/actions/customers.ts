@@ -17,7 +17,13 @@ export type CustomerDueRow = {
   id: string;
   name: string;
   category: CustomerCategory;
+  paymentInChargeName: string | null;
+  paymentInChargeContact: string | null;
   saleExecutive: string | null;
+  approachForFunds: string | null;
+  city: string | null;
+  state: string | null;
+  sector: string | null;
   creditDays: number | null;
   plannedCollectionCallDate: string | null;
   due: string;
@@ -36,9 +42,15 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       id: true,
       name: true,
       category: true,
+      paymentInChargeName: true,
+      paymentInChargeContact: true,
       due: true,
       creditDays: true,
       saleExecutive: true,
+      approachForFunds: true,
+      city: true,
+      state: true,
+      sector: true,
       plannedCollectionCallDate: true,
     },
     orderBy: { due: "desc" },
@@ -104,7 +116,13 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       id: customer.id,
       name: customer.name,
       category: customer.category,
+      paymentInChargeName: customer.paymentInChargeName,
+      paymentInChargeContact: customer.paymentInChargeContact,
       saleExecutive: customer.saleExecutive,
+      approachForFunds: customer.approachForFunds,
+      city: customer.city,
+      state: customer.state,
+      sector: customer.sector,
       creditDays: customer.creditDays,
       plannedCollectionCallDate: customer.plannedCollectionCallDate
         ? customer.plannedCollectionCallDate.toISOString().slice(0, 10)
@@ -142,6 +160,9 @@ export type CustomerInput = {
   paymentInChargeRole?: string | null;
   accountantName?: string | null;
   accountantContact?: string | null;
+  factoryContactName?: string | null;
+  factoryContactContact?: string | null;
+  factoryContactRole?: string | null;
   email?: string | null;
   city?: string | null;
   state?: string | null;
@@ -158,6 +179,7 @@ function normalizePhone(value: string | null | undefined): string | null {
 }
 
 function toCustomerData(input: CustomerInput) {
+  const isIndustry = input.category === CustomerCategory.INDUSTRY;
   return {
     name: capitalizeName(input.name) ?? input.name.trim(),
     category: input.category,
@@ -172,6 +194,13 @@ function toCustomerData(input: CustomerInput) {
     paymentInChargeRole: input.paymentInChargeRole || null,
     accountantName: capitalizeName(input.accountantName),
     accountantContact: normalizePhone(input.accountantContact),
+    factoryContactName: isIndustry
+      ? capitalizeName(input.factoryContactName)
+      : null,
+    factoryContactContact: isIndustry
+      ? normalizePhone(input.factoryContactContact)
+      : null,
+    factoryContactRole: isIndustry ? input.factoryContactRole || null : null,
     email: input.email || null,
     city: input.city || null,
     state: input.state || null,

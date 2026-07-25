@@ -318,6 +318,31 @@ a {
   padding: 0.45rem 0.75rem;
 }
 
+.collection-table {
+  font-size: 0.75rem;
+}
+
+.collection-table th,
+.collection-table td {
+  padding: 0.12rem 0.4rem;
+  line-height: 1.15;
+}
+
+.collection-table th {
+  font-size: 0.6rem;
+  padding-top: 0.22rem;
+  padding-bottom: 0.22rem;
+  letter-spacing: 0.03em;
+}
+
+.collection-table .collection-date-input {
+  width: 11rem;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  height: 2.1rem;
+}
+
 td.cell-num,
 th.cell-num {
   text-align: right;
@@ -658,6 +683,15 @@ table.data tr.month-divider:hover td {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.role-fields-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.field-label-muted {
+  opacity: 0.45;
+}
+
 @media (max-width: 720px) {
   .role-fields,
   .role-fields-3 {
@@ -948,6 +982,14 @@ table.data tr.month-divider:hover td {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
+.form-grid input:disabled,
+.form-grid select:disabled,
+.form-grid textarea:disabled {
+  background: #f3f4f6;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
 .field-with-unit {
   display: flex;
   align-items: stretch;
@@ -1067,6 +1109,77 @@ table.data tr.month-divider:hover td {
 .btn-sm {
   padding: 0.4rem 0.75rem;
   font-size: 0.8125rem;
+}
+
+.btn-checklist-pending {
+  background: rgba(180, 140, 20, 0.14);
+  color: #7a5f12;
+  border-color: rgba(180, 140, 20, 0.28);
+}
+
+.btn-checklist-pending:hover {
+  background: rgba(180, 140, 20, 0.22);
+}
+
+.btn-checklist-complete {
+  background: rgba(31, 92, 85, 0.12);
+  color: #1f5c55;
+  border-color: rgba(31, 92, 85, 0.22);
+}
+
+.btn-checklist-complete:hover {
+  background: rgba(31, 92, 85, 0.2);
+}
+
+/* Transport engine: keep each data row on one line */
+.transport-engine-table th,
+.transport-engine-table td {
+  white-space: nowrap;
+}
+
+.transport-engine-table th:nth-child(2),
+.transport-engine-table td:nth-child(2) {
+  min-width: 9rem; /* Sale invoice */
+}
+
+.transport-engine-table th:nth-child(3),
+.transport-engine-table td:nth-child(3) {
+  min-width: 8.5rem; /* Lorry number */
+}
+
+.transport-engine-table th:nth-child(4),
+.transport-engine-table td:nth-child(4) {
+  min-width: 8rem; /* Loading weight */
+}
+
+.transport-engine-table th:nth-child(5),
+.transport-engine-table td:nth-child(5) {
+  min-width: 9rem; /* Receiving weight */
+}
+
+.transport-engine-table th:nth-child(6),
+.transport-engine-table td:nth-child(6) {
+  min-width: 8rem; /* Diff in weight */
+}
+
+.transport-engine-table th:nth-child(7),
+.transport-engine-table td:nth-child(7) {
+  min-width: 12rem; /* Customer name */
+}
+
+.transport-engine-table th:nth-child(8),
+.transport-engine-table td:nth-child(8) {
+  min-width: 11rem; /* Transporter name */
+}
+
+.transport-engine-table th:nth-child(9),
+.transport-engine-table td:nth-child(9) {
+  min-width: 8rem; /* Freight per ton */
+}
+
+.transport-engine-table th:nth-child(10),
+.transport-engine-table td:nth-child(10) {
+  min-width: 8rem; /* Freight amount */
 }
 
 /* —— Options page —— */
@@ -1312,6 +1425,22 @@ table.data tbody tr.customer-row-inactive:hover td {
   cursor: pointer;
 }
 
+.form-grid input.dispatch-bool-toggle {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  justify-self: start;
+}
+
+.form-grid input.dispatch-bool-toggle:focus {
+  box-shadow: none;
+  outline: 2px solid var(--accent-soft);
+  outline-offset: 2px;
+}
+
 .dispatch-bool-toggle:disabled {
   cursor: wait;
   opacity: 0.6;
@@ -1406,7 +1535,7 @@ table.data tbody tr.customer-row-inactive:hover td {
 
 .home-report-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 

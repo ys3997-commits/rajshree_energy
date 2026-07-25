@@ -33,6 +33,9 @@ type Row = {
   paymentInChargeRole: string | null;
   accountantName: string | null;
   accountantContact: string | null;
+  factoryContactName: string | null;
+  factoryContactContact: string | null;
+  factoryContactRole: string | null;
   email: string | null;
   city: string | null;
   state: string | null;
@@ -56,6 +59,9 @@ const empty = {
   paymentInChargeRole: "",
   accountantName: "",
   accountantContact: "",
+  factoryContactName: "",
+  factoryContactContact: "",
+  factoryContactRole: "",
   email: "",
   city: "",
   state: "",
@@ -127,6 +133,9 @@ export function CustomersClient({
       paymentInChargeRole: form.paymentInChargeRole || null,
       accountantName: form.accountantName || null,
       accountantContact: form.accountantContact || null,
+      factoryContactName: form.factoryContactName || null,
+      factoryContactContact: form.factoryContactContact || null,
+      factoryContactRole: form.factoryContactRole || null,
       email: form.email || null,
       city: form.city || null,
       state: form.state || null,
@@ -172,6 +181,9 @@ export function CustomersClient({
       paymentInChargeRole: row.paymentInChargeRole ?? "",
       accountantName: row.accountantName ?? "",
       accountantContact: row.accountantContact ?? "",
+      factoryContactName: row.factoryContactName ?? "",
+      factoryContactContact: row.factoryContactContact ?? "",
+      factoryContactRole: row.factoryContactRole ?? "",
       email: row.email ?? "",
       city: row.city ?? "",
       state: row.state ?? "",
@@ -200,6 +212,9 @@ export function CustomersClient({
     setForm({ ...form, [key]: digitsOnly(value) });
   }
 
+  const factoryContactEditable =
+    form.category === CustomerCategory.INDUSTRY;
+
   return (
     <div>
       <h1 className="page-title">Customers</h1>
@@ -221,12 +236,21 @@ export function CustomersClient({
         <select
           required
           value={form.category}
-          onChange={(e) =>
+          onChange={(e) => {
+            const category = e.target.value as CustomerCategory | "";
+            const clearFactory = category !== CustomerCategory.INDUSTRY;
             setForm({
               ...form,
-              category: e.target.value as CustomerCategory | "",
-            })
-          }
+              category,
+              ...(clearFactory
+                ? {
+                    factoryContactName: "",
+                    factoryContactContact: "",
+                    factoryContactRole: "",
+                  }
+                : {}),
+            });
+          }}
         >
           <option value="" disabled>
             Select
@@ -334,6 +358,43 @@ export function CustomersClient({
             value={form.accountantContact}
             onChange={(e) =>
               setPhoneField("accountantContact", e.target.value)
+            }
+          />
+        </div>
+
+        <label className={factoryContactEditable ? undefined : "field-label-muted"}>
+          Factory contact
+        </label>
+        <div
+          className={`role-fields role-fields-3${
+            factoryContactEditable ? "" : " role-fields-disabled"
+          }`}
+        >
+          <input
+            placeholder="Name"
+            disabled={!factoryContactEditable}
+            value={form.factoryContactName}
+            onChange={(e) =>
+              setNameField("factoryContactName", e.target.value)
+            }
+            onBlur={() => blurNameField("factoryContactName")}
+          />
+          <input
+            placeholder="Phone"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            disabled={!factoryContactEditable}
+            value={form.factoryContactContact}
+            onChange={(e) =>
+              setPhoneField("factoryContactContact", e.target.value)
+            }
+          />
+          <input
+            placeholder="Role"
+            disabled={!factoryContactEditable}
+            value={form.factoryContactRole}
+            onChange={(e) =>
+              setForm({ ...form, factoryContactRole: e.target.value })
             }
           />
         </div>

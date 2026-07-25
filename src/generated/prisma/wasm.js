@@ -217,6 +217,9 @@ exports.Prisma.CustomerScalarFieldEnum = {
   paymentInChargeRole: 'paymentInChargeRole',
   accountantName: 'accountantName',
   accountantContact: 'accountantContact',
+  factoryContactName: 'factoryContactName',
+  factoryContactContact: 'factoryContactContact',
+  factoryContactRole: 'factoryContactRole',
   email: 'email',
   city: 'city',
   state: 'state',
@@ -227,6 +230,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   approachForFunds: 'approachForFunds',
   due: 'due',
   plannedCollectionCallDate: 'plannedCollectionCallDate',
+  plannedSaleCallDate: 'plannedSaleCallDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -294,6 +298,9 @@ exports.Prisma.DispatchScalarFieldEnum = {
   receiptStatus: 'receiptStatus',
   softCopyStatus: 'softCopyStatus',
   entryInTally: 'entryInTally',
+  biltyHardCopy: 'biltyHardCopy',
+  transportInvoiceNo: 'transportInvoiceNo',
+  invoiceHardCopy: 'invoiceHardCopy',
   saleInvoiceNumber: 'saleInvoiceNumber',
   purchaseInvoiceNumber: 'purchaseInvoiceNumber',
   createdAt: 'createdAt',

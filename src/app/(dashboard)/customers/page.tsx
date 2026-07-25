@@ -20,7 +20,12 @@ export default async function CustomersPage() {
   return (
     <CustomersClient
       initial={customers.map(
-        ({ due: _due, plannedCollectionCallDate: _planned, ...c }) => c,
+        ({
+          due: _due,
+          plannedCollectionCallDate: _plannedCollection,
+          plannedSaleCallDate: _plannedSale,
+          ...c
+        }) => c,
       )}
       cities={cities.map((o) => o.name)}
       states={states.map((o) => o.name)}

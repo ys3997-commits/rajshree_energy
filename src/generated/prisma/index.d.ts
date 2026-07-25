@@ -11960,6 +11960,9 @@ export namespace Prisma {
     paymentInChargeRole: string | null
     accountantName: string | null
     accountantContact: string | null
+    factoryContactName: string | null
+    factoryContactContact: string | null
+    factoryContactRole: string | null
     email: string | null
     city: string | null
     state: string | null
@@ -11970,6 +11973,7 @@ export namespace Prisma {
     approachForFunds: string | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
+    plannedSaleCallDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11989,6 +11993,9 @@ export namespace Prisma {
     paymentInChargeRole: string | null
     accountantName: string | null
     accountantContact: string | null
+    factoryContactName: string | null
+    factoryContactContact: string | null
+    factoryContactRole: string | null
     email: string | null
     city: string | null
     state: string | null
@@ -11999,6 +12006,7 @@ export namespace Prisma {
     approachForFunds: string | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
+    plannedSaleCallDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -12018,6 +12026,9 @@ export namespace Prisma {
     paymentInChargeRole: number
     accountantName: number
     accountantContact: number
+    factoryContactName: number
+    factoryContactContact: number
+    factoryContactRole: number
     email: number
     city: number
     state: number
@@ -12028,6 +12039,7 @@ export namespace Prisma {
     approachForFunds: number
     due: number
     plannedCollectionCallDate: number
+    plannedSaleCallDate: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -12059,6 +12071,9 @@ export namespace Prisma {
     paymentInChargeRole?: true
     accountantName?: true
     accountantContact?: true
+    factoryContactName?: true
+    factoryContactContact?: true
+    factoryContactRole?: true
     email?: true
     city?: true
     state?: true
@@ -12069,6 +12084,7 @@ export namespace Prisma {
     approachForFunds?: true
     due?: true
     plannedCollectionCallDate?: true
+    plannedSaleCallDate?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12088,6 +12104,9 @@ export namespace Prisma {
     paymentInChargeRole?: true
     accountantName?: true
     accountantContact?: true
+    factoryContactName?: true
+    factoryContactContact?: true
+    factoryContactRole?: true
     email?: true
     city?: true
     state?: true
@@ -12098,6 +12117,7 @@ export namespace Prisma {
     approachForFunds?: true
     due?: true
     plannedCollectionCallDate?: true
+    plannedSaleCallDate?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -12117,6 +12137,9 @@ export namespace Prisma {
     paymentInChargeRole?: true
     accountantName?: true
     accountantContact?: true
+    factoryContactName?: true
+    factoryContactContact?: true
+    factoryContactRole?: true
     email?: true
     city?: true
     state?: true
@@ -12127,6 +12150,7 @@ export namespace Prisma {
     approachForFunds?: true
     due?: true
     plannedCollectionCallDate?: true
+    plannedSaleCallDate?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -12233,6 +12257,9 @@ export namespace Prisma {
     paymentInChargeRole: string | null
     accountantName: string | null
     accountantContact: string | null
+    factoryContactName: string | null
+    factoryContactContact: string | null
+    factoryContactRole: string | null
     email: string | null
     city: string | null
     state: string | null
@@ -12243,6 +12270,7 @@ export namespace Prisma {
     approachForFunds: string | null
     due: Decimal
     plannedCollectionCallDate: Date | null
+    plannedSaleCallDate: Date | null
     createdAt: Date
     updatedAt: Date
     _count: CustomerCountAggregateOutputType | null
@@ -12281,6 +12309,9 @@ export namespace Prisma {
     paymentInChargeRole?: boolean
     accountantName?: boolean
     accountantContact?: boolean
+    factoryContactName?: boolean
+    factoryContactContact?: boolean
+    factoryContactRole?: boolean
     email?: boolean
     city?: boolean
     state?: boolean
@@ -12291,6 +12322,7 @@ export namespace Prisma {
     approachForFunds?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    plannedSaleCallDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealBy?: boolean | Customer$dealByArgs<ExtArgs>
@@ -12316,6 +12348,9 @@ export namespace Prisma {
     paymentInChargeRole?: boolean
     accountantName?: boolean
     accountantContact?: boolean
+    factoryContactName?: boolean
+    factoryContactContact?: boolean
+    factoryContactRole?: boolean
     email?: boolean
     city?: boolean
     state?: boolean
@@ -12326,6 +12361,7 @@ export namespace Prisma {
     approachForFunds?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    plannedSaleCallDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealBy?: boolean | Customer$dealByArgs<ExtArgs>
@@ -12346,6 +12382,9 @@ export namespace Prisma {
     paymentInChargeRole?: boolean
     accountantName?: boolean
     accountantContact?: boolean
+    factoryContactName?: boolean
+    factoryContactContact?: boolean
+    factoryContactRole?: boolean
     email?: boolean
     city?: boolean
     state?: boolean
@@ -12356,6 +12395,7 @@ export namespace Prisma {
     approachForFunds?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    plannedSaleCallDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -12396,6 +12436,9 @@ export namespace Prisma {
       paymentInChargeRole: string | null
       accountantName: string | null
       accountantContact: string | null
+      factoryContactName: string | null
+      factoryContactContact: string | null
+      factoryContactRole: string | null
       email: string | null
       city: string | null
       state: string | null
@@ -12412,6 +12455,10 @@ export namespace Prisma {
        * Next planned collection phone call date (calendar day).
        */
       plannedCollectionCallDate: Date | null
+      /**
+       * Next planned sales call date (calendar day) — separate from collection.
+       */
+      plannedSaleCallDate: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["customer"]>
@@ -12826,6 +12873,9 @@ export namespace Prisma {
     readonly paymentInChargeRole: FieldRef<"Customer", 'String'>
     readonly accountantName: FieldRef<"Customer", 'String'>
     readonly accountantContact: FieldRef<"Customer", 'String'>
+    readonly factoryContactName: FieldRef<"Customer", 'String'>
+    readonly factoryContactContact: FieldRef<"Customer", 'String'>
+    readonly factoryContactRole: FieldRef<"Customer", 'String'>
     readonly email: FieldRef<"Customer", 'String'>
     readonly city: FieldRef<"Customer", 'String'>
     readonly state: FieldRef<"Customer", 'String'>
@@ -12836,6 +12886,7 @@ export namespace Prisma {
     readonly approachForFunds: FieldRef<"Customer", 'String'>
     readonly due: FieldRef<"Customer", 'Decimal'>
     readonly plannedCollectionCallDate: FieldRef<"Customer", 'DateTime'>
+    readonly plannedSaleCallDate: FieldRef<"Customer", 'DateTime'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
     readonly updatedAt: FieldRef<"Customer", 'DateTime'>
   }
@@ -16717,6 +16768,9 @@ export namespace Prisma {
     receiptStatus: $Enums.ReceiptStatus | null
     softCopyStatus: boolean | null
     entryInTally: boolean | null
+    biltyHardCopy: boolean | null
+    transportInvoiceNo: string | null
+    invoiceHardCopy: boolean | null
     saleInvoiceNumber: string | null
     purchaseInvoiceNumber: string | null
     createdAt: Date | null
@@ -16740,6 +16794,9 @@ export namespace Prisma {
     receiptStatus: $Enums.ReceiptStatus | null
     softCopyStatus: boolean | null
     entryInTally: boolean | null
+    biltyHardCopy: boolean | null
+    transportInvoiceNo: string | null
+    invoiceHardCopy: boolean | null
     saleInvoiceNumber: string | null
     purchaseInvoiceNumber: string | null
     createdAt: Date | null
@@ -16763,6 +16820,9 @@ export namespace Prisma {
     receiptStatus: number
     softCopyStatus: number
     entryInTally: number
+    biltyHardCopy: number
+    transportInvoiceNo: number
+    invoiceHardCopy: number
     saleInvoiceNumber: number
     purchaseInvoiceNumber: number
     createdAt: number
@@ -16800,6 +16860,9 @@ export namespace Prisma {
     receiptStatus?: true
     softCopyStatus?: true
     entryInTally?: true
+    biltyHardCopy?: true
+    transportInvoiceNo?: true
+    invoiceHardCopy?: true
     saleInvoiceNumber?: true
     purchaseInvoiceNumber?: true
     createdAt?: true
@@ -16823,6 +16886,9 @@ export namespace Prisma {
     receiptStatus?: true
     softCopyStatus?: true
     entryInTally?: true
+    biltyHardCopy?: true
+    transportInvoiceNo?: true
+    invoiceHardCopy?: true
     saleInvoiceNumber?: true
     purchaseInvoiceNumber?: true
     createdAt?: true
@@ -16846,6 +16912,9 @@ export namespace Prisma {
     receiptStatus?: true
     softCopyStatus?: true
     entryInTally?: true
+    biltyHardCopy?: true
+    transportInvoiceNo?: true
+    invoiceHardCopy?: true
     saleInvoiceNumber?: true
     purchaseInvoiceNumber?: true
     createdAt?: true
@@ -16956,6 +17025,9 @@ export namespace Prisma {
     receiptStatus: $Enums.ReceiptStatus
     softCopyStatus: boolean
     entryInTally: boolean
+    biltyHardCopy: boolean
+    transportInvoiceNo: string | null
+    invoiceHardCopy: boolean
     saleInvoiceNumber: string | null
     purchaseInvoiceNumber: string | null
     createdAt: Date
@@ -16998,6 +17070,9 @@ export namespace Prisma {
     receiptStatus?: boolean
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: boolean
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: boolean
     purchaseInvoiceNumber?: boolean
     createdAt?: boolean
@@ -17026,6 +17101,9 @@ export namespace Prisma {
     receiptStatus?: boolean
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: boolean
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: boolean
     purchaseInvoiceNumber?: boolean
     createdAt?: boolean
@@ -17054,6 +17132,9 @@ export namespace Prisma {
     receiptStatus?: boolean
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: boolean
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: boolean
     purchaseInvoiceNumber?: boolean
     createdAt?: boolean
@@ -17104,6 +17185,18 @@ export namespace Prisma {
       receiptStatus: $Enums.ReceiptStatus
       softCopyStatus: boolean
       entryInTally: boolean
+      /**
+       * Transport checklist — bilty (goods receipt) hard copy received.
+       */
+      biltyHardCopy: boolean
+      /**
+       * Transport checklist — transporter invoice number.
+       */
+      transportInvoiceNo: string | null
+      /**
+       * Transport checklist — sale/transport invoice hard copy received.
+       */
+      invoiceHardCopy: boolean
       /**
        * Sale (customer) invoice number — often filled after dispatch.
        */
@@ -17528,6 +17621,9 @@ export namespace Prisma {
     readonly receiptStatus: FieldRef<"Dispatch", 'ReceiptStatus'>
     readonly softCopyStatus: FieldRef<"Dispatch", 'Boolean'>
     readonly entryInTally: FieldRef<"Dispatch", 'Boolean'>
+    readonly biltyHardCopy: FieldRef<"Dispatch", 'Boolean'>
+    readonly transportInvoiceNo: FieldRef<"Dispatch", 'String'>
+    readonly invoiceHardCopy: FieldRef<"Dispatch", 'Boolean'>
     readonly saleInvoiceNumber: FieldRef<"Dispatch", 'String'>
     readonly purchaseInvoiceNumber: FieldRef<"Dispatch", 'String'>
     readonly createdAt: FieldRef<"Dispatch", 'DateTime'>
@@ -19024,6 +19120,9 @@ export namespace Prisma {
     paymentInChargeRole: 'paymentInChargeRole',
     accountantName: 'accountantName',
     accountantContact: 'accountantContact',
+    factoryContactName: 'factoryContactName',
+    factoryContactContact: 'factoryContactContact',
+    factoryContactRole: 'factoryContactRole',
     email: 'email',
     city: 'city',
     state: 'state',
@@ -19034,6 +19133,7 @@ export namespace Prisma {
     approachForFunds: 'approachForFunds',
     due: 'due',
     plannedCollectionCallDate: 'plannedCollectionCallDate',
+    plannedSaleCallDate: 'plannedSaleCallDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -19113,6 +19213,9 @@ export namespace Prisma {
     receiptStatus: 'receiptStatus',
     softCopyStatus: 'softCopyStatus',
     entryInTally: 'entryInTally',
+    biltyHardCopy: 'biltyHardCopy',
+    transportInvoiceNo: 'transportInvoiceNo',
+    invoiceHardCopy: 'invoiceHardCopy',
     saleInvoiceNumber: 'saleInvoiceNumber',
     purchaseInvoiceNumber: 'purchaseInvoiceNumber',
     createdAt: 'createdAt',
@@ -19917,6 +20020,9 @@ export namespace Prisma {
     paymentInChargeRole?: StringNullableFilter<"Customer"> | string | null
     accountantName?: StringNullableFilter<"Customer"> | string | null
     accountantContact?: StringNullableFilter<"Customer"> | string | null
+    factoryContactName?: StringNullableFilter<"Customer"> | string | null
+    factoryContactContact?: StringNullableFilter<"Customer"> | string | null
+    factoryContactRole?: StringNullableFilter<"Customer"> | string | null
     email?: StringNullableFilter<"Customer"> | string | null
     city?: StringNullableFilter<"Customer"> | string | null
     state?: StringNullableFilter<"Customer"> | string | null
@@ -19927,6 +20033,7 @@ export namespace Prisma {
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
     dealBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
@@ -19951,6 +20058,9 @@ export namespace Prisma {
     paymentInChargeRole?: SortOrderInput | SortOrder
     accountantName?: SortOrderInput | SortOrder
     accountantContact?: SortOrderInput | SortOrder
+    factoryContactName?: SortOrderInput | SortOrder
+    factoryContactContact?: SortOrderInput | SortOrder
+    factoryContactRole?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     state?: SortOrderInput | SortOrder
@@ -19961,6 +20071,7 @@ export namespace Prisma {
     approachForFunds?: SortOrderInput | SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
+    plannedSaleCallDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealBy?: StaffOrderByWithRelationInput
@@ -19988,6 +20099,9 @@ export namespace Prisma {
     paymentInChargeRole?: StringNullableFilter<"Customer"> | string | null
     accountantName?: StringNullableFilter<"Customer"> | string | null
     accountantContact?: StringNullableFilter<"Customer"> | string | null
+    factoryContactName?: StringNullableFilter<"Customer"> | string | null
+    factoryContactContact?: StringNullableFilter<"Customer"> | string | null
+    factoryContactRole?: StringNullableFilter<"Customer"> | string | null
     email?: StringNullableFilter<"Customer"> | string | null
     city?: StringNullableFilter<"Customer"> | string | null
     state?: StringNullableFilter<"Customer"> | string | null
@@ -19998,6 +20112,7 @@ export namespace Prisma {
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
     dealBy?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
@@ -20022,6 +20137,9 @@ export namespace Prisma {
     paymentInChargeRole?: SortOrderInput | SortOrder
     accountantName?: SortOrderInput | SortOrder
     accountantContact?: SortOrderInput | SortOrder
+    factoryContactName?: SortOrderInput | SortOrder
+    factoryContactContact?: SortOrderInput | SortOrder
+    factoryContactRole?: SortOrderInput | SortOrder
     email?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     state?: SortOrderInput | SortOrder
@@ -20032,6 +20150,7 @@ export namespace Prisma {
     approachForFunds?: SortOrderInput | SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
+    plannedSaleCallDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CustomerCountOrderByAggregateInput
@@ -20059,6 +20178,9 @@ export namespace Prisma {
     paymentInChargeRole?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     accountantName?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     accountantContact?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    factoryContactName?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    factoryContactContact?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    factoryContactRole?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     email?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     city?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     state?: StringNullableWithAggregatesFilter<"Customer"> | string | null
@@ -20069,6 +20191,7 @@ export namespace Prisma {
     approachForFunds?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     due?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    plannedSaleCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
   }
@@ -20402,6 +20525,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolFilter<"Dispatch"> | boolean
     entryInTally?: BoolFilter<"Dispatch"> | boolean
+    biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
+    invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
@@ -20430,6 +20556,9 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    biltyHardCopy?: SortOrder
+    transportInvoiceNo?: SortOrderInput | SortOrder
+    invoiceHardCopy?: SortOrder
     saleInvoiceNumber?: SortOrderInput | SortOrder
     purchaseInvoiceNumber?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -20461,6 +20590,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolFilter<"Dispatch"> | boolean
     entryInTally?: BoolFilter<"Dispatch"> | boolean
+    biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
+    invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
@@ -20489,6 +20621,9 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    biltyHardCopy?: SortOrder
+    transportInvoiceNo?: SortOrderInput | SortOrder
+    invoiceHardCopy?: SortOrder
     saleInvoiceNumber?: SortOrderInput | SortOrder
     purchaseInvoiceNumber?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -20520,6 +20655,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusWithAggregatesFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     entryInTally?: BoolWithAggregatesFilter<"Dispatch"> | boolean
+    biltyHardCopy?: BoolWithAggregatesFilter<"Dispatch"> | boolean
+    transportInvoiceNo?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
+    invoiceHardCopy?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Dispatch"> | Date | string
@@ -21206,6 +21344,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -21215,6 +21356,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -21239,6 +21381,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -21249,6 +21394,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -21272,6 +21418,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21281,6 +21430,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -21305,6 +21455,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21315,6 +21468,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -21338,6 +21492,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -21348,6 +21505,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21367,6 +21525,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21376,6 +21537,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21395,6 +21557,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -21405,6 +21570,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -21750,6 +21916,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -21778,6 +21947,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -21796,6 +21968,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21824,6 +21999,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21847,6 +22025,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -21865,6 +22046,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21888,6 +22072,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22458,6 +22645,9 @@ export namespace Prisma {
     paymentInChargeRole?: SortOrder
     accountantName?: SortOrder
     accountantContact?: SortOrder
+    factoryContactName?: SortOrder
+    factoryContactContact?: SortOrder
+    factoryContactRole?: SortOrder
     email?: SortOrder
     city?: SortOrder
     state?: SortOrder
@@ -22468,6 +22658,7 @@ export namespace Prisma {
     approachForFunds?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    plannedSaleCallDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -22492,6 +22683,9 @@ export namespace Prisma {
     paymentInChargeRole?: SortOrder
     accountantName?: SortOrder
     accountantContact?: SortOrder
+    factoryContactName?: SortOrder
+    factoryContactContact?: SortOrder
+    factoryContactRole?: SortOrder
     email?: SortOrder
     city?: SortOrder
     state?: SortOrder
@@ -22502,6 +22696,7 @@ export namespace Prisma {
     approachForFunds?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    plannedSaleCallDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -22521,6 +22716,9 @@ export namespace Prisma {
     paymentInChargeRole?: SortOrder
     accountantName?: SortOrder
     accountantContact?: SortOrder
+    factoryContactName?: SortOrder
+    factoryContactContact?: SortOrder
+    factoryContactRole?: SortOrder
     email?: SortOrder
     city?: SortOrder
     state?: SortOrder
@@ -22531,6 +22729,7 @@ export namespace Prisma {
     approachForFunds?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    plannedSaleCallDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -22913,6 +23112,9 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    biltyHardCopy?: SortOrder
+    transportInvoiceNo?: SortOrder
+    invoiceHardCopy?: SortOrder
     saleInvoiceNumber?: SortOrder
     purchaseInvoiceNumber?: SortOrder
     createdAt?: SortOrder
@@ -22942,6 +23144,9 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    biltyHardCopy?: SortOrder
+    transportInvoiceNo?: SortOrder
+    invoiceHardCopy?: SortOrder
     saleInvoiceNumber?: SortOrder
     purchaseInvoiceNumber?: SortOrder
     createdAt?: SortOrder
@@ -22965,6 +23170,9 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    biltyHardCopy?: SortOrder
+    transportInvoiceNo?: SortOrder
+    invoiceHardCopy?: SortOrder
     saleInvoiceNumber?: SortOrder
     purchaseInvoiceNumber?: SortOrder
     createdAt?: SortOrder
@@ -24512,6 +24720,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -24521,6 +24732,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutCustomerInput
@@ -24544,6 +24756,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -24553,6 +24768,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -24653,6 +24869,9 @@ export namespace Prisma {
     paymentInChargeRole?: StringNullableFilter<"Customer"> | string | null
     accountantName?: StringNullableFilter<"Customer"> | string | null
     accountantContact?: StringNullableFilter<"Customer"> | string | null
+    factoryContactName?: StringNullableFilter<"Customer"> | string | null
+    factoryContactContact?: StringNullableFilter<"Customer"> | string | null
+    factoryContactRole?: StringNullableFilter<"Customer"> | string | null
     email?: StringNullableFilter<"Customer"> | string | null
     city?: StringNullableFilter<"Customer"> | string | null
     state?: StringNullableFilter<"Customer"> | string | null
@@ -24663,6 +24882,7 @@ export namespace Prisma {
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
   }
@@ -24717,6 +24937,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -24743,6 +24966,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -24795,6 +25021,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolFilter<"Dispatch"> | boolean
     entryInTally?: BoolFilter<"Dispatch"> | boolean
+    biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
+    invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
@@ -25441,6 +25670,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -25467,6 +25699,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -25723,6 +25958,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -25749,6 +25987,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -25874,6 +26115,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -25883,6 +26127,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -25906,6 +26151,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -25916,6 +26164,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
@@ -26013,6 +26262,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -26039,6 +26291,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -26081,6 +26336,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26090,6 +26348,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -26113,6 +26372,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26123,6 +26385,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
@@ -26252,6 +26515,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -26261,6 +26527,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -26284,6 +26551,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -26294,6 +26564,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -26372,6 +26643,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -26398,6 +26672,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -26440,6 +26717,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26449,6 +26729,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -26472,6 +26753,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26482,6 +26766,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -26726,6 +27011,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -26735,6 +27023,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -26758,6 +27047,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -26768,6 +27060,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -26970,6 +27263,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26979,6 +27275,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -27002,6 +27299,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27012,6 +27312,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -27034,6 +27335,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -27043,6 +27347,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
@@ -27066,6 +27371,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -27076,6 +27384,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
@@ -27114,6 +27423,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27123,6 +27435,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
@@ -27146,6 +27459,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27156,6 +27472,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -27178,6 +27495,9 @@ export namespace Prisma {
     paymentInChargeRole?: string | null
     accountantName?: string | null
     accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
     email?: string | null
     city?: string | null
     state?: string | null
@@ -27187,6 +27507,7 @@ export namespace Prisma {
     approachForFunds?: string | null
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27224,6 +27545,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27233,6 +27557,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutCustomerNestedInput
@@ -27256,6 +27581,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27265,6 +27593,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
@@ -27288,6 +27617,9 @@ export namespace Prisma {
     paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
     accountantName?: NullableStringFieldUpdateOperationsInput | string | null
     accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
@@ -27297,6 +27629,7 @@ export namespace Prisma {
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27373,6 +27706,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -27391,6 +27727,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27417,6 +27756,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27439,6 +27781,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27865,6 +28210,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -27998,6 +28346,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28024,6 +28375,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28046,6 +28400,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28111,6 +28468,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -28179,6 +28539,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28205,6 +28568,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28227,6 +28593,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28249,6 +28618,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -28267,6 +28639,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28293,6 +28668,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28315,6 +28693,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28337,6 +28718,9 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
     createdAt?: Date | string
@@ -28355,6 +28739,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28381,6 +28768,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28403,6 +28793,9 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

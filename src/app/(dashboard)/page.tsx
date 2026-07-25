@@ -194,6 +194,23 @@ export default async function HomePage() {
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
+          <Link href="/reports/sales-engine" className="home-report-card">
+            <p className="home-eyebrow">Sales</p>
+            <h3 className="home-report-card-title">Sales engine</h3>
+            <p className="home-report-card-desc">
+              Purchaser contacts, order in hand, sold volume, and planned sales
+              calls.
+            </p>
+            <span className="home-report-card-cta">Open report</span>
+          </Link>
+          <Link href="/reports/transport-engine" className="home-report-card">
+            <p className="home-eyebrow">Transport</p>
+            <h3 className="home-report-card-title">Transport engine</h3>
+            <p className="home-report-card-desc">
+              Dispatch freight, weight diffs, and transport document checklist.
+            </p>
+            <span className="home-report-card-cta">Open report</span>
+          </Link>
         </div>
       </section>
 
