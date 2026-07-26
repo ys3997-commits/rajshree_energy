@@ -230,9 +230,13 @@ model Order {
   finalRate      Decimal?    @db.Decimal(18, 3)
   /// Null for open orders until completeOpenOrder fills it in.
   quantity       Decimal?    @db.Decimal(18, 3)
+  /// Optional planned lorry count entered at order creation.
+  numberOfLorries Int?
   orderById      String?
   /// Accumulated by dispatch transactions only — never write from forms.
   dispatchedOrder Decimal    @default(0) @db.Decimal(18, 3)
+  /// Undispatchable remainder written off via "close quantity"; zeros balance.
+  closingQuantity Decimal?   @db.Decimal(18, 3)
   orderStatus    OrderStatus @default(RUNNING)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
@@ -261,6 +265,8 @@ model PurchaseOrder {
   quantity       Decimal?    @db.Decimal(18, 3)
   /// Accumulated by dispatch transactions only — never write from forms.
   dispatchedOrder Decimal     @default(0) @db.Decimal(18, 3)
+  /// Undispatchable remainder written off via "close quantity"; zeros balance.
+  closingQuantity Decimal?    @db.Decimal(18, 3)
   orderStatus     PurchaseOrderStatus @default(RUNNING)
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt

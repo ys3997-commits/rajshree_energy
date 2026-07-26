@@ -92,6 +92,10 @@ export function NewOrderForm({
         qualityClassId: qualityClassId || null,
         rate: rate || null,
         quantity: String(fd.get("quantity") || ""),
+        numberOfLorries: (() => {
+          const raw = String(fd.get("numberOfLorries") || "").trim();
+          return raw === "" ? null : Number(raw);
+        })(),
       });
       router.push(`/orders`);
     } catch (err) {
@@ -141,6 +145,15 @@ export function NewOrderForm({
           <input name="quantity" required type="number" step="any" min="0" />
           <span className="field-unit">MT</span>
         </div>
+
+        <label>Number of lorries</label>
+        <input
+          name="numberOfLorries"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="Optional"
+        />
 
         <label>Basic rate</label>
         <div className="field-with-unit field-with-prefix">

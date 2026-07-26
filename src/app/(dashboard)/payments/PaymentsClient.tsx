@@ -22,7 +22,15 @@ import {
 type Opt = { id: string; name: string };
 type Direction = "RECEIVED" | "SENT" | "";
 type Tab = "transactions" | "collection";
-type PlannedCallFilter = "" | "today" | "tomorrow" | "older" | "future";
+type PlannedCallFilter =
+  | ""
+  | "today"
+  | "tomorrow"
+  | "older"
+  | "future"
+  | "none";
+type CollectionSortKey = "due" | "overdue";
+type SortDir = "asc" | "desc";
 
 function todayLocal(): string {
   const d = new Date();
@@ -72,6 +80,7 @@ function matchesPlannedCallFilter(
 ): boolean {
   if (!filter) return true;
   const p = normalizePlannedDate(plannedDate);
+  if (filter === "none") return !p;
   if (!p) return false;
   if (filter === "today") return p === today;
   if (filter === "tomorrow") return p === tomorrow;
@@ -96,6 +105,16 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
     if (value?.trim()) names.add(value.trim());
   }
   return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+function numericValue(value: string): number {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function sortIndicator(active: boolean, dir: SortDir): string {
+  if (!active) return "";
+  return dir === "asc" ? " ↑" : " ↓";
 }
 
 export function PaymentsClient({
@@ -140,9 +159,20 @@ export function PaymentsClient({
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sectorFilter, setSectorFilter] = useState("");
   const [savingCallId, setSavingCallId] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<CollectionSortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const today = todayLocal();
   const tomorrow = addLocalDays(today, 1);
+
+  function toggleSort(key: CollectionSortKey) {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortKey(key);
+    setSortDir("desc");
+  }
 
   const saleExecutiveOptions = useMemo(
     () => distinctTrimmed(collection.map((row) => row.saleExecutive)),
@@ -182,7 +212,7 @@ export function PaymentsClient({
   );
 
   const filteredCollection = useMemo(() => {
-    return collection.filter((row) => {
+    const next = collection.filter((row) => {
       if (
         !matchesPlannedCallFilter(
           row.plannedCollectionCallDate,
@@ -219,6 +249,12 @@ export function PaymentsClient({
       }
       return true;
     });
+    if (!sortKey) return next;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...next].sort(
+      (a, b) =>
+        (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
+    );
   }, [
     collection,
     plannedCallFilter,
@@ -228,6 +264,8 @@ export function PaymentsClient({
     stateFilter,
     categoryFilter,
     sectorFilter,
+    sortKey,
+    sortDir,
     today,
     tomorrow,
   ]);
@@ -400,7 +438,7 @@ export function PaymentsClient({
                   <th>Date</th>
                   <th>Customer</th>
                   <th>Received / Sent</th>
-                  <th>Amount</th>
+                  <th className="cell-num">Amount</th>
                   <th />
                 </tr>
               </thead>
@@ -457,7 +495,7 @@ export function PaymentsClient({
                       <option value="SENT">Sent</option>
                     </select>
                   </td>
-                  <td>
+                  <td className="cell-num">
                     <input
                       form="payment-entry-form"
                       type="number"
@@ -500,7 +538,7 @@ export function PaymentsClient({
                     <td>{row.date}</td>
                     <td>{row.customerName}</td>
                     <td>{directionLabel(row.direction)}</td>
-                    <td>{formatRs(row.amount)}</td>
+                    <td className="cell-num">{formatRs(row.amount)}</td>
                     <td className="space-x-2 whitespace-nowrap">
                       <button
                         type="button"
@@ -578,6 +616,7 @@ export function PaymentsClient({
                 }
               >
                 <option value="">All</option>
+                <option value="none">Not planned</option>
                 <option value="today">Today</option>
                 <option value="tomorrow">Tomorrow</option>
                 <option value="older">Older</option>
@@ -695,11 +734,29 @@ export function PaymentsClient({
                   <th>Payment in charge</th>
                   <th>Contact number</th>
                   <th>Sales executive</th>
-                  <th className="cell-num">Due</th>
-                  <th className="cell-num">Overdue</th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("due")}
+                    >
+                      Due
+                      {sortIndicator(sortKey === "due", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("overdue")}
+                    >
+                      Overdue
+                      {sortIndicator(sortKey === "overdue", sortDir)}
+                    </button>
+                  </th>
                   <th>Last payment date</th>
                   <th className="cell-num">Last payment amount</th>
-                  <th>Credit period</th>
+                  <th className="cell-num">Credit period</th>
                   <th>Planned call date</th>
                 </tr>
               </thead>
@@ -740,7 +797,9 @@ export function PaymentsClient({
                           ? formatRs(row.lastPaymentAmount)
                           : "—"}
                       </td>
-                      <td>{formatCreditPeriod(row.creditDays)}</td>
+                      <td className="cell-num">
+                        {formatCreditPeriod(row.creditDays)}
+                      </td>
                       <td>
                         <input
                           type="date"

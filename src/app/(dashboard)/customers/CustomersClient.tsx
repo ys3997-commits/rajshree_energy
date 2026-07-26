@@ -489,7 +489,7 @@ export function CustomersClient({
               <th>Owner</th>
               <th>Purchaser</th>
               <th>Payment</th>
-              <th>Credit period</th>
+              <th className="num">Credit period</th>
               <th>Sector</th>
               <th>Sales Executive</th>
               <th />
@@ -521,7 +521,7 @@ export function CustomersClient({
                     row.paymentInChargeContact,
                   )}
                 </td>
-                <td>{formatCreditPeriod(row.creditDays)}</td>
+                <td className="num">{formatCreditPeriod(row.creditDays)}</td>
                 <td>{row.sector ?? "—"}</td>
                 <td>{row.saleExecutive ?? "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">

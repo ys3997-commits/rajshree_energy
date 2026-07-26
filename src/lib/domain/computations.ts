@@ -17,13 +17,15 @@ export function toDecimal(value: DecimalLike): Decimal {
   return value instanceof Decimal ? value : new Decimal(value);
 }
 
-/** quantity - dispatchedOrder; null when quantity is null (open order). */
+/** quantity - dispatchedOrder - closingQuantity; null when quantity is null (open order). */
 export function balanceOrder(order: {
   quantity: Decimal | null;
   dispatchedOrder: Decimal;
+  closingQuantity?: Decimal | null;
 }): Decimal | null {
   if (order.quantity == null) return null;
-  return order.quantity.minus(order.dispatchedOrder);
+  const closing = order.closingQuantity ?? new Decimal(0);
+  return order.quantity.minus(order.dispatchedOrder).minus(closing);
 }
 
 /** rate * quantity * 0.18 when both present */
@@ -94,27 +96,34 @@ export function computeOrderStatus(order: {
   orderType?: OrderType;
   quantity: Decimal | null;
   dispatchedOrder: Decimal;
+  closingQuantity?: Decimal | null;
 }): OrderStatus {
-  if (
-    order.quantity != null &&
-    !order.dispatchedOrder.lt(order.quantity)
-  ) {
+  const bal = balanceOrder({
+    quantity: order.quantity,
+    dispatchedOrder: order.dispatchedOrder,
+    closingQuantity: order.closingQuantity,
+  });
+  if (bal != null && !bal.gt(0)) {
     return OrderStatus.COMPLETED;
   }
   return OrderStatus.RUNNING;
 }
 
 /**
- * Purchase orders are Running until quantity is set and fully dispatched.
+ * Purchase orders are Running until quantity is set and balance is zero
+ * (fully dispatched and/or closed).
  */
 export function computePurchaseOrderStatus(order: {
   quantity: Decimal | null;
   dispatchedOrder: Decimal;
+  closingQuantity?: Decimal | null;
 }): PurchaseOrderStatus {
-  if (
-    order.quantity != null &&
-    !order.dispatchedOrder.lt(order.quantity)
-  ) {
+  const bal = balanceOrder({
+    quantity: order.quantity,
+    dispatchedOrder: order.dispatchedOrder,
+    closingQuantity: order.closingQuantity,
+  });
+  if (bal != null && !bal.gt(0)) {
     return PurchaseOrderStatus.COMPLETED;
   }
   return PurchaseOrderStatus.RUNNING;

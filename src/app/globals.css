@@ -344,10 +344,30 @@ a {
 }
 
 td.cell-num,
-th.cell-num {
+th.cell-num,
+table.data .num,
+table.data th.num {
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+button.th-sort {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+button.th-sort:hover {
+  color: var(--accent);
 }
 
 .payment-entry-row td {
@@ -463,14 +483,15 @@ table.data .cell-center {
   text-align: center;
 }
 
-table.data .num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+/* Sale orders list — keep each row on a single line */
+.orders-table {
+  width: max-content;
+  min-width: 100%;
 }
 
-table.data th.num {
-  text-align: right;
+.orders-table th,
+.orders-table td {
+  white-space: nowrap;
 }
 
 .back-link {
@@ -1129,6 +1150,19 @@ table.data tr.month-divider:hover td {
 
 .btn-checklist-complete:hover {
   background: rgba(31, 92, 85, 0.2);
+}
+
+.dispatch-edit-actions {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:last-child,
+.report-table-dispatches tbody td:last-child {
+  min-width: 16rem;
 }
 
 /* Transport engine: keep each data row on one line */

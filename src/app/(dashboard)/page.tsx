@@ -13,12 +13,11 @@ import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
+import { formatMt } from "@/lib/domain/format";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
 
 function formatQty(value: string): string {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return value;
-  return n.toLocaleString("en-IN", { maximumFractionDigits: 3 });
+  return formatMt(value);
 }
 
 function formatQtyMt(value: string): string {

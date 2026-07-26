@@ -12,9 +12,17 @@ import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { formatMt, formatRs } from "@/lib/domain/computations";
-import { formatCreditPeriod, formatSaleOrderStatus } from "@/lib/domain/format";
+import {
+  daysSinceOrder,
+  displayOrderBalance,
+  displayOrderQuantity,
+  formatIndianNumber,
+  formatOrderStatusForDisplay,
+  formatOrderType,
+} from "@/lib/domain/format";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
+import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -157,25 +165,33 @@ export default async function OrdersPage({
         </button>
       </form>
 
-      <div className="table-wrap">
-        <table className="data">
+      <div className="table-wrap table-wrap-scroll">
+        <table className="data orders-table">
           <thead>
             <tr>
-              <th>PO</th>
+              <th>PO number</th>
               <th>Customer</th>
               <th>Type</th>
-              <th>Quantity (MT)</th>
-              <th>Dispatched (MT)</th>
-              <th>Balance (MT)</th>
+              <th className="num">Number of lorries</th>
+              <th className="num">Order quantity</th>
+              <th className="num">Dispatched quantity</th>
+              <th className="num">Closing quantity</th>
+              <th className="num">Balance</th>
+              <th className="num">Trucks dispatch</th>
+              <th className="num">Days since order</th>
+              <th className="num">Basic rate</th>
               <th>Status</th>
-              <th>Credit period</th>
-              <th>Port</th>
-              <th>Basic rate</th>
-              <th>Final rate</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((row) => (
+            {orders.map((row) => {
+              const canClose =
+                row.quantity != null &&
+                row.closingQuantity == null &&
+                row.balanceOrder != null &&
+                row.balanceOrder.gt(0);
+              return (
               <tr key={row.id}>
                 <td>
                   <Link
@@ -186,20 +202,41 @@ export default async function OrdersPage({
                   </Link>
                 </td>
                 <td>{row.customer.name}</td>
-                <td>{row.orderType}</td>
-                <td>{formatMt(row.quantity)}</td>
-                <td>{formatMt(row.dispatchedOrder)}</td>
-                <td>{formatMt(row.balanceOrder)}</td>
-                <td>{formatSaleOrderStatus(row.orderStatus)}</td>
-                <td>{formatCreditPeriod(row.creditDays)}</td>
-                <td>{row.port?.name ?? "—"}</td>
-                <td>{formatRs(row.rate)}</td>
-                <td>{formatRs(row.finalRate)}</td>
+                <td>{formatOrderType(row.orderType)}</td>
+                <td className="num">
+                  {formatIndianNumber(row.numberOfLorries)}
+                </td>
+                <td className="num">{formatMt(displayOrderQuantity(row))}</td>
+                <td className="num">{formatMt(row.dispatchedOrder)}</td>
+                <td className="num">{formatMt(row.closingQuantity)}</td>
+                <td className="num">{formatMt(displayOrderBalance(row))}</td>
+                <td className="num">
+                  {formatIndianNumber(row._count.dispatches)}
+                </td>
+                <td className="num">
+                  {formatIndianNumber(
+                    daysSinceOrder(row.orderDate, row.createdAt),
+                  )}
+                </td>
+                <td className="num">{formatRs(row.rate)}</td>
+                <td>{formatOrderStatusForDisplay(row)}</td>
+                <td>
+                  {canClose ? (
+                    <CloseQuantityButton
+                      orderId={row.id}
+                      kind="sale"
+                      balanceMt={row.balanceOrder!.toString()}
+                    />
+                  ) : (
+                    "—"
+                  )}
+                </td>
               </tr>
-            ))}
+              );
+            })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={11}>No orders match filters.</td>
+                <td colSpan={13}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

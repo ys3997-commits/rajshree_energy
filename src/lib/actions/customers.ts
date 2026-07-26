@@ -67,6 +67,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
         finalRate: true,
         quantity: true,
         dispatchedOrder: true,
+        closingQuantity: true,
         orderDate: true,
         createdAt: true,
         creditDays: true,

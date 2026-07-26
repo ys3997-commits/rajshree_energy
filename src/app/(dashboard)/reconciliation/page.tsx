@@ -1,5 +1,5 @@
 import { listReconciliation } from "@/lib/actions/receipts";
-import { formatLorryNumber } from "@/lib/domain/format";
+import { formatLorryNumber, formatMt } from "@/lib/domain/format";
 
 export default async function ReconciliationPage() {
   const rows = await listReconciliation();
@@ -20,9 +20,9 @@ export default async function ReconciliationPage() {
               <th>Importer</th>
               <th>Dispatch date</th>
               <th>Receipt date</th>
-              <th>Dispatched (MT)</th>
-              <th>Received (MT)</th>
-              <th>Diff (MT)</th>
+              <th className="num">Dispatched (MT)</th>
+              <th className="num">Received (MT)</th>
+              <th className="num">Diff (MT)</th>
               <th>Lorry</th>
             </tr>
           </thead>
@@ -38,16 +38,10 @@ export default async function ReconciliationPage() {
                     ? new Date(row.receiptDate).toISOString().slice(0, 10)
                     : "—"}
                 </td>
-                <td>{row.dispatchedQuantity.toString()}</td>
-                <td>
-                  {row.receivingQuantity != null
-                    ? row.receivingQuantity.toString()
-                    : "—"}
-                </td>
-                <td className="font-semibold text-red-700">
-                  {row.diffInQuantity != null
-                    ? row.diffInQuantity.toString()
-                    : "—"}
+                <td className="num">{formatMt(row.dispatchedQuantity)}</td>
+                <td className="num">{formatMt(row.receivingQuantity)}</td>
+                <td className="num font-semibold text-red-700">
+                  {formatMt(row.diffInQuantity)}
                 </td>
                 <td>{formatLorryNumber(row.lorryNumber) ?? "—"}</td>
               </tr>

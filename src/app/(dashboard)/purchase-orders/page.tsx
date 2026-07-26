@@ -5,12 +5,17 @@ import {
 } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
 import { listVessels } from "@/lib/actions/vessels";
+import { formatMt, formatRs } from "@/lib/domain/computations";
 import {
-  formatMt,
-  formatPurchaseOrderStatus,
-  formatRs,
-} from "@/lib/domain/computations";
+  daysSinceOrder,
+  displayOrderBalance,
+  displayOrderQuantity,
+  formatIndianNumber,
+  formatOrderStatusForDisplay,
+  formatOrderType,
+} from "@/lib/domain/format";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
+import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -111,39 +116,66 @@ export default async function PurchaseOrdersPage({
               <th>Vendor</th>
               <th>Vessel</th>
               <th>Type</th>
-              <th>Quantity (MT)</th>
-              <th>Dispatched (MT)</th>
-              <th>Balance (MT)</th>
-              <th>Basic rate</th>
-              <th>Final rate</th>
+              <th className="num">Days since order</th>
+              <th className="num">Quantity (MT)</th>
+              <th className="num">Dispatched (MT)</th>
+              <th className="num">Closing (MT)</th>
+              <th className="num">Balance (MT)</th>
+              <th className="num">Basic rate</th>
+              <th className="num">Final rate</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((row) => (
-              <tr key={row.id}>
-                <td>
-                  <Link
-                    href={`/purchase-orders/${row.id}`}
-                    className="font-medium"
-                  >
-                    {row.poNumber}
-                  </Link>
-                </td>
-                <td>{row.importer.name}</td>
-                <td>{row.vessel.vesselName}</td>
-                <td>{row.orderType}</td>
-                <td>{formatMt(row.quantity)}</td>
-                <td>{formatMt(row.dispatchedOrder)}</td>
-                <td>{formatMt(row.balanceOrder)}</td>
-                <td>{formatRs(row.rate)}</td>
-                <td>{formatRs(row.finalRate)}</td>
-                <td>{formatPurchaseOrderStatus(row.orderStatus)}</td>
-              </tr>
-            ))}
+            {orders.map((row) => {
+              const canClose =
+                row.quantity != null &&
+                row.closingQuantity == null &&
+                row.balanceOrder != null &&
+                row.balanceOrder.gt(0);
+              return (
+                <tr key={row.id}>
+                  <td>
+                    <Link
+                      href={`/purchase-orders/${row.id}`}
+                      className="font-medium"
+                    >
+                      {row.poNumber}
+                    </Link>
+                  </td>
+                  <td>{row.importer.name}</td>
+                  <td>{row.vessel.vesselName}</td>
+                  <td>{formatOrderType(row.orderType)}</td>
+                  <td className="num">
+                    {formatIndianNumber(
+                      daysSinceOrder(row.orderDate, row.createdAt),
+                    )}
+                  </td>
+                  <td className="num">{formatMt(displayOrderQuantity(row))}</td>
+                  <td className="num">{formatMt(row.dispatchedOrder)}</td>
+                  <td className="num">{formatMt(row.closingQuantity)}</td>
+                  <td className="num">{formatMt(displayOrderBalance(row))}</td>
+                  <td className="num">{formatRs(row.rate)}</td>
+                  <td className="num">{formatRs(row.finalRate)}</td>
+                  <td>{formatOrderStatusForDisplay(row)}</td>
+                  <td>
+                    {canClose ? (
+                      <CloseQuantityButton
+                        orderId={row.id}
+                        kind="purchase"
+                        balanceMt={row.balanceOrder!.toString()}
+                      />
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={10}>No purchase orders match filters.</td>
+                <td colSpan={13}>No purchase orders match filters.</td>
               </tr>
             )}
           </tbody>

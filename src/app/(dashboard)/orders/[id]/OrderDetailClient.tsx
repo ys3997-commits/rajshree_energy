@@ -5,8 +5,9 @@ import { FormEvent, useMemo, useState } from "react";
 import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
+import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
-import { formatDispatchTerms, formatCreditPeriod, formatLorryNumber, formatMt, formatRs, formatSaleOrderStatus } from "@/lib/domain/format";
+import { formatDispatchTerms, formatCreditPeriod, formatLorryNumber, formatMt, formatOrderStatusForDisplay, formatOrderType, formatRs, displayOrderBalance } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -38,6 +39,7 @@ type OrderData = {
   orderDate: string | null;
   quantity: string | null;
   dispatchedOrder: string;
+  closingQuantity: string | null;
   balanceOrder: string | null;
   gst: string | null;
   rate: string | null;
@@ -133,6 +135,12 @@ export function OrderDetailClient({
     }
   }
 
+  const canCloseQuantity =
+    order.quantity != null &&
+    order.closingQuantity == null &&
+    order.balanceOrder != null &&
+    Number(order.balanceOrder) > 0;
+
   return (
     <div>
       <div className="mb-8 items-center gap-4">
@@ -148,19 +156,33 @@ export function OrderDetailClient({
           {order.customer.name}
         </div>
         <div>
-          <span className="text-neutral-500">Type:</span> {order.orderType}
+          <span className="text-neutral-500">Type:</span>{" "}
+          {formatOrderType(order.orderType)}
         </div>
         <div>
           <span className="text-neutral-500">Status:</span>{" "}
-          {formatSaleOrderStatus(order.orderStatus)}
+          {formatOrderStatusForDisplay(order)}
         </div>
         <div>
           <span className="text-neutral-500">Dispatched (MT):</span>{" "}
           {formatMt(order.dispatchedOrder)}
         </div>
         <div>
-          <span className="text-neutral-500">Balance (MT):</span>{" "}
-          {formatMt(order.balanceOrder)}
+          <span className="text-neutral-500">Closing (MT):</span>{" "}
+          {formatMt(order.closingQuantity)}
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <span>
+            <span className="text-neutral-500">Balance (MT):</span>{" "}
+            {formatMt(displayOrderBalance(order))}
+          </span>
+          {canCloseQuantity && (
+            <CloseQuantityButton
+              orderId={order.id}
+              kind="sale"
+              balanceMt={order.balanceOrder!}
+            />
+          )}
         </div>
         <div>
           <span className="text-neutral-500">GST:</span>{" "}
@@ -255,12 +277,12 @@ export function OrderDetailClient({
             <tr>
               <th>Date</th>
               <th>Purchase PO</th>
-              <th>Qty (MT)</th>
+              <th className="num">Qty (MT)</th>
               <th>Terms</th>
-              <th>Freight</th>
+              <th className="num">Freight</th>
               <th>Lorry</th>
               <th>Transporter</th>
-              <th>Profit</th>
+              <th className="num">Profit</th>
               <th>Receipt</th>
               <th>Soft copy</th>
               <th>Tally</th>
@@ -276,12 +298,12 @@ export function OrderDetailClient({
                     ? `${d.purchaseOrder.poNumber} — ${d.purchaseOrder.importer?.name ?? "?"} — ${d.purchaseOrder.vessel?.vesselName ?? "?"}`
                     : d.purchasePoNumber}
                 </td>
-                <td>{formatMt(d.dispatchedQuantity)}</td>
+                <td className="num">{formatMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
-                <td>{formatRs(d.freight)}</td>
+                <td className="num">{formatRs(d.freight)}</td>
                 <td>{formatLorryNumber(d.lorryNumber) ?? "—"}</td>
                 <td>{d.transporter?.name ?? "—"}</td>
-                <td>{formatRs(d.lineProfit)}</td>
+                <td className="num">{formatRs(d.lineProfit)}</td>
                 <td>{d.receiptStatus}</td>
                 <td>{d.softCopyStatus ? "yes" : "no"}</td>
                 <td>{d.entryInTally ? "yes" : "no"}</td>

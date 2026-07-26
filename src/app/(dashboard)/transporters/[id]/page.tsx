@@ -176,7 +176,7 @@ export default async function TransporterDetailPage({
                         {formatMt(row.dispatchedQuantity.toString())}
                       </td>
                       <td className="num">
-                        {row.freight != null ? row.freight.toString() : "—"}
+                        {formatMt(row.freight)}
                       </td>
                       <td>
                         {row.order ? (

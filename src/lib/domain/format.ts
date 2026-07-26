@@ -1,7 +1,36 @@
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 
-function roundTo2(value: number): string {
-  return (Math.round(value * 100) / 100).toFixed(2);
+function parseFiniteNumber(
+  value: { toString(): string } | number | string | null | undefined,
+): number | null {
+  if (value == null || value === "") return null;
+  const s = typeof value === "string" ? value : value.toString();
+  if (s === "—") return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Indian grouping: 1,00,000 instead of 100,000.
+ * Pass fractionDigits for fixed decimals (quantities/rates); omit for integers.
+ */
+export function formatIndianNumber(
+  value: { toString(): string } | number | string | null | undefined,
+  fractionDigits?: number,
+): string {
+  const n = parseFiniteNumber(value);
+  if (n == null) {
+    if (value == null || value === "") return "—";
+    const s = typeof value === "string" ? value : value.toString();
+    return s === "—" ? "—" : s;
+  }
+  if (fractionDigits != null) {
+    return n.toLocaleString("en-IN", {
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits,
+    });
+  }
+  return n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
 /** Human-readable label for dispatch terms. */
@@ -10,8 +39,8 @@ export function formatDispatchTerms(terms: DispatchTerms): string {
 }
 
 /**
- * Format a quantity for display. Unit (MT) belongs in the column header / label,
- * not on every cell value.
+ * Format a quantity for display (integer, Indian grouping).
+ * Unit (MT) belongs in the column header / label, not on every cell value.
  */
 export function formatMt(
   value: { toString(): string } | number | string | null | undefined,
@@ -21,11 +50,11 @@ export function formatMt(
   if (s === "—") return "—";
   const n = Number(s);
   if (!Number.isFinite(n)) return s;
-  return roundTo2(n);
+  return formatIndianNumber(Math.round(n));
 }
 
 /**
- * Format a rate/amount for display with Rs prefix and 2 decimal places.
+ * Format a rate/amount for display with Rs prefix (integer, Indian grouping).
  */
 export function formatRs(
   value: { toString(): string } | number | string | null | undefined,
@@ -35,7 +64,7 @@ export function formatRs(
   if (s === "—") return "—";
   const n = Number(s);
   if (!Number.isFinite(n)) return s;
-  return `Rs ${roundTo2(n)}`;
+  return `Rs ${formatIndianNumber(Math.round(n))}`;
 }
 
 export function formatCustomerCategory(
@@ -92,6 +121,15 @@ export function formatRateBreakdownLine(breakdown: {
   return `${parts.join(" + ")} = ${formatRs(breakdown.final)}`;
 }
 
+/** Order type display: Open | Regular */
+export function formatOrderType(
+  orderType: string | null | undefined,
+): string {
+  if (orderType === "OPEN") return "Open";
+  if (orderType === "REGULAR") return "Regular";
+  return orderType ? String(orderType) : "—";
+}
+
 /** Purchase / sale order status display: Running | Completed */
 export function formatPurchaseOrderStatus(
   status: string | null | undefined,
@@ -105,6 +143,62 @@ export function formatSaleOrderStatus(
   status: string | null | undefined,
 ): string {
   return formatPurchaseOrderStatus(status);
+}
+
+/**
+ * List/detail display status. Open orders always show as Completed.
+ */
+export function formatOrderStatusForDisplay(order: {
+  orderType: string | null | undefined;
+  orderStatus: string | null | undefined;
+}): string {
+  if (order.orderType === "OPEN") return "Completed";
+  return formatSaleOrderStatus(order.orderStatus);
+}
+
+/**
+ * List/detail quantity. Open orders use dispatched quantity as the order quantity.
+ */
+export function displayOrderQuantity(order: {
+  orderType: string | null | undefined;
+  quantity: { toString(): string } | number | string | null | undefined;
+  dispatchedOrder: { toString(): string } | number | string | null | undefined;
+}): { toString(): string } | number | string | null | undefined {
+  if (order.orderType === "OPEN") return order.dispatchedOrder;
+  return order.quantity;
+}
+
+/**
+ * List/detail balance. Open orders with no quantity yet show balance 0.
+ */
+export function displayOrderBalance(order: {
+  orderType: string | null | undefined;
+  quantity?: { toString(): string } | number | string | null | undefined;
+  balanceOrder: { toString(): string } | number | string | null | undefined;
+}): { toString(): string } | number | string | null | undefined {
+  if (order.orderType === "OPEN" && (order.quantity == null || order.quantity === "")) {
+    return 0;
+  }
+  return order.balanceOrder;
+}
+
+/** Whole calendar days from order date (UTC) to today. Falls back to createdAt. */
+export function daysSinceOrder(
+  orderDate: Date | string | null | undefined,
+  createdAt?: Date | string | null | undefined,
+  asOf: Date = new Date(),
+): number | null {
+  const basis = orderDate ?? createdAt ?? null;
+  if (basis == null || basis === "") return null;
+  const d = typeof basis === "string" ? new Date(basis) : basis;
+  if (Number.isNaN(d.getTime())) return null;
+  const start = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  const end = Date.UTC(
+    asOf.getUTCFullYear(),
+    asOf.getUTCMonth(),
+    asOf.getUTCDate(),
+  );
+  return Math.floor((end - start) / 86_400_000);
 }
 
 /** Capitalize the first letter of each word in a name. */
@@ -169,5 +263,5 @@ export function formatCreditPeriod(
   days: number | null | undefined,
 ): string {
   if (days == null) return "—";
-  return `${days} days`;
+  return `${formatIndianNumber(days)} days`;
 }

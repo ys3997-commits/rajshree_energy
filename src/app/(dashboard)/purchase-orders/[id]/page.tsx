@@ -38,6 +38,7 @@ export default async function PurchaseOrderDetailPage({
         orderDate: order.orderDate?.toISOString() ?? null,
         quantity: order.quantity?.toString() ?? null,
         dispatchedOrder: order.dispatchedOrder.toString(),
+        closingQuantity: order.closingQuantity?.toString() ?? null,
         balanceOrder: order.balanceOrder?.toString() ?? null,
         rate: order.rate?.toString() ?? null,
         finalRate: order.finalRate?.toString() ?? null,

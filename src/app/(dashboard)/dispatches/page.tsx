@@ -12,8 +12,8 @@ import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
-import { DispatchBoolToggle } from "@/components/DispatchBoolToggle";
-import { EditDispatchInvoicesButton } from "@/components/EditDispatchInvoicesButton";
+import { EditDispatchPurchaseButton } from "@/components/EditDispatchPurchaseButton";
+import { EditDispatchSaleButton } from "@/components/EditDispatchSaleButton";
 import {
   formatLorryNumber,
   formatMt,
@@ -201,28 +201,26 @@ export default async function DispatchesPage({
             <tr>
               <th>Date</th>
               <th>Lorry no</th>
-              <th>Weight (MT)</th>
+              <th className="cell-num">Weight (MT)</th>
               <th>Vessel name</th>
               <th>Quality</th>
               <th>GST state</th>
               <th>PO no</th>
               <th>Vendor</th>
-              <th>Basic price (Rs)</th>
-              <th>Total price (Rs)</th>
+              <th className="cell-num">Basic price (Rs)</th>
+              <th className="cell-num">Total price (Rs)</th>
               <th>Purchase invoice</th>
               <th>SO no</th>
               <th>Customer name</th>
-              <th>Basic price (Rs)</th>
-              <th>Total price (Rs)</th>
+              <th className="cell-num">Basic price (Rs)</th>
+              <th className="cell-num">Total price (Rs)</th>
               <th>Sale invoice</th>
               <th>Transporter name</th>
-              <th>Freight PMT (Rs)</th>
-              <th>Freight amount (Rs)</th>
-              <th>Profit (Rs)</th>
-              <th>Received (MT)</th>
-              <th>Diff (MT)</th>
-              <th className="cell-center">Soft copy</th>
-              <th className="cell-center">Tally</th>
+              <th className="cell-num">Freight PMT (Rs)</th>
+              <th className="cell-num">Freight amount (Rs)</th>
+              <th className="cell-num">Profit (Rs)</th>
+              <th className="cell-num">Received (MT)</th>
+              <th className="cell-num">Diff (MT)</th>
               <th></th>
             </tr>
           </thead>
@@ -235,7 +233,7 @@ export default async function DispatchesPage({
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td>{formatMt(row.dispatchedQuantity)}</td>
+                <td className="cell-num">{formatMt(row.dispatchedQuantity)}</td>
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className={row.gstState ? undefined : "cell-center"}>
@@ -256,8 +254,8 @@ export default async function DispatchesPage({
                 <td className={row.vendorName ? undefined : "cell-center"}>
                   {row.vendorName ?? "—"}
                 </td>
-                <td>{formatMt(row.purchaseBasicRate)}</td>
-                <td>{formatMt(row.purchaseTotalRate)}</td>
+                <td className="cell-num">{formatMt(row.purchaseBasicRate)}</td>
+                <td className="cell-num">{formatMt(row.purchaseTotalRate)}</td>
                 <td
                   className={
                     row.purchaseInvoiceNumber ? undefined : "cell-center"
@@ -280,8 +278,8 @@ export default async function DispatchesPage({
                 <td className={row.customerName ? undefined : "cell-center"}>
                   {row.customerName ?? "—"}
                 </td>
-                <td>{formatMt(row.saleBasicRate)}</td>
-                <td>{formatMt(row.saleTotalRate)}</td>
+                <td className="cell-num">{formatMt(row.saleBasicRate)}</td>
+                <td className="cell-num">{formatMt(row.saleTotalRate)}</td>
                 <td
                   className={row.saleInvoiceNumber ? undefined : "cell-center"}
                 >
@@ -292,53 +290,46 @@ export default async function DispatchesPage({
                 >
                   {row.transporterName ?? "—"}
                 </td>
-                <td>{formatMt(row.freight)}</td>
-                <td>{formatMt(row.freightAmount)}</td>
-                <td>{formatMt(row.lineProfit)}</td>
+                <td className="cell-num">{formatMt(row.freight)}</td>
+                <td className="cell-num">{formatMt(row.freightAmount)}</td>
+                <td className="cell-num">{formatMt(row.lineProfit)}</td>
                 <td
                   className={
-                    row.receivingQuantity != null ? undefined : "cell-center"
+                    row.receivingQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
                   {formatMt(row.receivingQuantity)}
                 </td>
                 <td
                   className={
-                    row.diffInQuantity != null ? undefined : "cell-center"
+                    row.diffInQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
                   {formatMt(row.diffInQuantity)}
                 </td>
-                <td className="cell-center">
-                  <DispatchBoolToggle
-                    dispatchId={row.id}
-                    field="softCopyStatus"
-                    value={row.softCopyStatus}
-                  />
-                </td>
-                <td className="cell-center">
-                  <DispatchBoolToggle
-                    dispatchId={row.id}
-                    field="entryInTally"
-                    value={row.entryInTally}
-                  />
-                </td>
                 <td>
-                  <EditDispatchInvoicesButton
-                    dispatchId={row.id}
-                    saleInvoiceNumber={row.saleInvoiceNumber}
-                    purchaseInvoiceNumber={row.purchaseInvoiceNumber}
-                    dispatchedQuantity={row.dispatchedQuantity.toString()}
-                    receivingQuantity={
-                      row.receivingQuantity?.toString() ?? null
-                    }
-                  />
+                  <div className="dispatch-edit-actions">
+                    <EditDispatchPurchaseButton
+                      dispatchId={row.id}
+                      purchaseInvoiceNumber={row.purchaseInvoiceNumber}
+                      softCopyStatus={row.softCopyStatus}
+                      entryInTally={row.entryInTally}
+                    />
+                    <EditDispatchSaleButton
+                      dispatchId={row.id}
+                      saleInvoiceNumber={row.saleInvoiceNumber}
+                      dispatchedQuantity={row.dispatchedQuantity.toString()}
+                      receivingQuantity={
+                        row.receivingQuantity?.toString() ?? null
+                      }
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
             {dispatches.length === 0 && (
               <tr>
-                <td colSpan={25}>No dispatches match filters.</td>
+                <td colSpan={23}>No dispatches match filters.</td>
               </tr>
             )}
           </tbody>

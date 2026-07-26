@@ -14376,7 +14376,9 @@ export namespace Prisma {
     rate: Decimal | null
     finalRate: Decimal | null
     quantity: Decimal | null
+    numberOfLorries: number | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
   }
 
   export type OrderSumAggregateOutputType = {
@@ -14384,7 +14386,9 @@ export namespace Prisma {
     rate: Decimal | null
     finalRate: Decimal | null
     quantity: Decimal | null
+    numberOfLorries: number | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
   }
 
   export type OrderMinAggregateOutputType = {
@@ -14399,8 +14403,10 @@ export namespace Prisma {
     rate: Decimal | null
     finalRate: Decimal | null
     quantity: Decimal | null
+    numberOfLorries: number | null
     orderById: string | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
     orderStatus: $Enums.OrderStatus | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14418,8 +14424,10 @@ export namespace Prisma {
     rate: Decimal | null
     finalRate: Decimal | null
     quantity: Decimal | null
+    numberOfLorries: number | null
     orderById: string | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
     orderStatus: $Enums.OrderStatus | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14437,8 +14445,10 @@ export namespace Prisma {
     rate: number
     finalRate: number
     quantity: number
+    numberOfLorries: number
     orderById: number
     dispatchedOrder: number
+    closingQuantity: number
     orderStatus: number
     createdAt: number
     updatedAt: number
@@ -14451,7 +14461,9 @@ export namespace Prisma {
     rate?: true
     finalRate?: true
     quantity?: true
+    numberOfLorries?: true
     dispatchedOrder?: true
+    closingQuantity?: true
   }
 
   export type OrderSumAggregateInputType = {
@@ -14459,7 +14471,9 @@ export namespace Prisma {
     rate?: true
     finalRate?: true
     quantity?: true
+    numberOfLorries?: true
     dispatchedOrder?: true
+    closingQuantity?: true
   }
 
   export type OrderMinAggregateInputType = {
@@ -14474,8 +14488,10 @@ export namespace Prisma {
     rate?: true
     finalRate?: true
     quantity?: true
+    numberOfLorries?: true
     orderById?: true
     dispatchedOrder?: true
+    closingQuantity?: true
     orderStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -14493,8 +14509,10 @@ export namespace Prisma {
     rate?: true
     finalRate?: true
     quantity?: true
+    numberOfLorries?: true
     orderById?: true
     dispatchedOrder?: true
+    closingQuantity?: true
     orderStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -14512,8 +14530,10 @@ export namespace Prisma {
     rate?: true
     finalRate?: true
     quantity?: true
+    numberOfLorries?: true
     orderById?: true
     dispatchedOrder?: true
+    closingQuantity?: true
     orderStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -14618,8 +14638,10 @@ export namespace Prisma {
     rate: Decimal | null
     finalRate: Decimal | null
     quantity: Decimal | null
+    numberOfLorries: number | null
     orderById: string | null
     dispatchedOrder: Decimal
+    closingQuantity: Decimal | null
     orderStatus: $Enums.OrderStatus
     createdAt: Date
     updatedAt: Date
@@ -14656,8 +14678,10 @@ export namespace Prisma {
     rate?: boolean
     finalRate?: boolean
     quantity?: boolean
+    numberOfLorries?: boolean
     orderById?: boolean
     dispatchedOrder?: boolean
+    closingQuantity?: boolean
     orderStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14681,8 +14705,10 @@ export namespace Prisma {
     rate?: boolean
     finalRate?: boolean
     quantity?: boolean
+    numberOfLorries?: boolean
     orderById?: boolean
     dispatchedOrder?: boolean
+    closingQuantity?: boolean
     orderStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14704,8 +14730,10 @@ export namespace Prisma {
     rate?: boolean
     finalRate?: boolean
     quantity?: boolean
+    numberOfLorries?: boolean
     orderById?: boolean
     dispatchedOrder?: boolean
+    closingQuantity?: boolean
     orderStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14756,11 +14784,19 @@ export namespace Prisma {
        * Null for open orders until completeOpenOrder fills it in.
        */
       quantity: Prisma.Decimal | null
+      /**
+       * Optional planned lorry count entered at order creation.
+       */
+      numberOfLorries: number | null
       orderById: string | null
       /**
        * Accumulated by dispatch transactions only — never write from forms.
        */
       dispatchedOrder: Prisma.Decimal
+      /**
+       * Undispatchable remainder written off via "close quantity"; zeros balance.
+       */
+      closingQuantity: Prisma.Decimal | null
       orderStatus: $Enums.OrderStatus
       createdAt: Date
       updatedAt: Date
@@ -15173,8 +15209,10 @@ export namespace Prisma {
     readonly rate: FieldRef<"Order", 'Decimal'>
     readonly finalRate: FieldRef<"Order", 'Decimal'>
     readonly quantity: FieldRef<"Order", 'Decimal'>
+    readonly numberOfLorries: FieldRef<"Order", 'Int'>
     readonly orderById: FieldRef<"Order", 'String'>
     readonly dispatchedOrder: FieldRef<"Order", 'Decimal'>
+    readonly closingQuantity: FieldRef<"Order", 'Decimal'>
     readonly orderStatus: FieldRef<"Order", 'OrderStatus'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
     readonly updatedAt: FieldRef<"Order", 'DateTime'>
@@ -15592,6 +15630,7 @@ export namespace Prisma {
     finalRate: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
   }
 
   export type PurchaseOrderSumAggregateOutputType = {
@@ -15599,6 +15638,7 @@ export namespace Prisma {
     finalRate: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
   }
 
   export type PurchaseOrderMinAggregateOutputType = {
@@ -15613,6 +15653,7 @@ export namespace Prisma {
     finalRate: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
     orderStatus: $Enums.PurchaseOrderStatus | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -15630,6 +15671,7 @@ export namespace Prisma {
     finalRate: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
+    closingQuantity: Decimal | null
     orderStatus: $Enums.PurchaseOrderStatus | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -15647,6 +15689,7 @@ export namespace Prisma {
     finalRate: number
     quantity: number
     dispatchedOrder: number
+    closingQuantity: number
     orderStatus: number
     createdAt: number
     updatedAt: number
@@ -15659,6 +15702,7 @@ export namespace Prisma {
     finalRate?: true
     quantity?: true
     dispatchedOrder?: true
+    closingQuantity?: true
   }
 
   export type PurchaseOrderSumAggregateInputType = {
@@ -15666,6 +15710,7 @@ export namespace Prisma {
     finalRate?: true
     quantity?: true
     dispatchedOrder?: true
+    closingQuantity?: true
   }
 
   export type PurchaseOrderMinAggregateInputType = {
@@ -15680,6 +15725,7 @@ export namespace Prisma {
     finalRate?: true
     quantity?: true
     dispatchedOrder?: true
+    closingQuantity?: true
     orderStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -15697,6 +15743,7 @@ export namespace Prisma {
     finalRate?: true
     quantity?: true
     dispatchedOrder?: true
+    closingQuantity?: true
     orderStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -15714,6 +15761,7 @@ export namespace Prisma {
     finalRate?: true
     quantity?: true
     dispatchedOrder?: true
+    closingQuantity?: true
     orderStatus?: true
     createdAt?: true
     updatedAt?: true
@@ -15818,6 +15866,7 @@ export namespace Prisma {
     finalRate: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal
+    closingQuantity: Decimal | null
     orderStatus: $Enums.PurchaseOrderStatus
     createdAt: Date
     updatedAt: Date
@@ -15854,6 +15903,7 @@ export namespace Prisma {
     finalRate?: boolean
     quantity?: boolean
     dispatchedOrder?: boolean
+    closingQuantity?: boolean
     orderStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -15876,6 +15926,7 @@ export namespace Prisma {
     finalRate?: boolean
     quantity?: boolean
     dispatchedOrder?: boolean
+    closingQuantity?: boolean
     orderStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -15896,6 +15947,7 @@ export namespace Prisma {
     finalRate?: boolean
     quantity?: boolean
     dispatchedOrder?: boolean
+    closingQuantity?: boolean
     orderStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -15946,6 +15998,10 @@ export namespace Prisma {
        * Accumulated by dispatch transactions only — never write from forms.
        */
       dispatchedOrder: Prisma.Decimal
+      /**
+       * Undispatchable remainder written off via "close quantity"; zeros balance.
+       */
+      closingQuantity: Prisma.Decimal | null
       orderStatus: $Enums.PurchaseOrderStatus
       createdAt: Date
       updatedAt: Date
@@ -16357,6 +16413,7 @@ export namespace Prisma {
     readonly finalRate: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly quantity: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly dispatchedOrder: FieldRef<"PurchaseOrder", 'Decimal'>
+    readonly closingQuantity: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly orderStatus: FieldRef<"PurchaseOrder", 'PurchaseOrderStatus'>
     readonly createdAt: FieldRef<"PurchaseOrder", 'DateTime'>
     readonly updatedAt: FieldRef<"PurchaseOrder", 'DateTime'>
@@ -19166,8 +19223,10 @@ export namespace Prisma {
     rate: 'rate',
     finalRate: 'finalRate',
     quantity: 'quantity',
+    numberOfLorries: 'numberOfLorries',
     orderById: 'orderById',
     dispatchedOrder: 'dispatchedOrder',
+    closingQuantity: 'closingQuantity',
     orderStatus: 'orderStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -19188,6 +19247,7 @@ export namespace Prisma {
     finalRate: 'finalRate',
     quantity: 'quantity',
     dispatchedOrder: 'dispatchedOrder',
+    closingQuantity: 'closingQuantity',
     orderStatus: 'orderStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -20285,8 +20345,10 @@ export namespace Prisma {
     rate?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: IntNullableFilter<"Order"> | number | null
     orderById?: StringNullableFilter<"Order"> | string | null
     dispatchedOrder?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -20309,8 +20371,10 @@ export namespace Prisma {
     rate?: SortOrderInput | SortOrder
     finalRate?: SortOrderInput | SortOrder
     quantity?: SortOrderInput | SortOrder
+    numberOfLorries?: SortOrderInput | SortOrder
     orderById?: SortOrderInput | SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrderInput | SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20336,8 +20400,10 @@ export namespace Prisma {
     rate?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: IntNullableFilter<"Order"> | number | null
     orderById?: StringNullableFilter<"Order"> | string | null
     dispatchedOrder?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -20360,8 +20426,10 @@ export namespace Prisma {
     rate?: SortOrderInput | SortOrder
     finalRate?: SortOrderInput | SortOrder
     quantity?: SortOrderInput | SortOrder
+    numberOfLorries?: SortOrderInput | SortOrder
     orderById?: SortOrderInput | SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrderInput | SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20387,8 +20455,10 @@ export namespace Prisma {
     rate?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: IntNullableWithAggregatesFilter<"Order"> | number | null
     orderById?: StringNullableWithAggregatesFilter<"Order"> | string | null
     dispatchedOrder?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -20409,6 +20479,7 @@ export namespace Prisma {
     finalRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFilter<"PurchaseOrder"> | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
@@ -20430,6 +20501,7 @@ export namespace Prisma {
     finalRate?: SortOrderInput | SortOrder
     quantity?: SortOrderInput | SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrderInput | SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20454,6 +20526,7 @@ export namespace Prisma {
     finalRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFilter<"PurchaseOrder"> | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
@@ -20475,6 +20548,7 @@ export namespace Prisma {
     finalRate?: SortOrderInput | SortOrder
     quantity?: SortOrderInput | SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrderInput | SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20500,6 +20574,7 @@ export namespace Prisma {
     finalRate?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusWithAggregatesFilter<"PurchaseOrder"> | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeWithAggregatesFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PurchaseOrder"> | Date | string
@@ -21660,7 +21735,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21683,8 +21760,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21700,7 +21779,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21723,8 +21804,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21743,8 +21826,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21759,7 +21844,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21777,8 +21864,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21793,6 +21882,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21814,6 +21904,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21829,6 +21920,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21850,6 +21942,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21868,6 +21961,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21882,6 +21976,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21899,6 +21994,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22877,8 +22973,10 @@ export namespace Prisma {
     rate?: SortOrder
     finalRate?: SortOrder
     quantity?: SortOrder
+    numberOfLorries?: SortOrder
     orderById?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -22889,7 +22987,9 @@ export namespace Prisma {
     rate?: SortOrder
     finalRate?: SortOrder
     quantity?: SortOrder
+    numberOfLorries?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
@@ -22904,8 +23004,10 @@ export namespace Prisma {
     rate?: SortOrder
     finalRate?: SortOrder
     quantity?: SortOrder
+    numberOfLorries?: SortOrder
     orderById?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -22923,8 +23025,10 @@ export namespace Prisma {
     rate?: SortOrder
     finalRate?: SortOrder
     quantity?: SortOrder
+    numberOfLorries?: SortOrder
     orderById?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -22935,7 +23039,9 @@ export namespace Prisma {
     rate?: SortOrder
     finalRate?: SortOrder
     quantity?: SortOrder
+    numberOfLorries?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
   }
 
   export type EnumOrderTypeWithAggregatesFilter<$PrismaModel = never> = {
@@ -22998,6 +23104,7 @@ export namespace Prisma {
     finalRate?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23008,6 +23115,7 @@ export namespace Prisma {
     finalRate?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
   }
 
   export type PurchaseOrderMaxOrderByAggregateInput = {
@@ -23022,6 +23130,7 @@ export namespace Prisma {
     finalRate?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23039,6 +23148,7 @@ export namespace Prisma {
     finalRate?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
     orderStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23049,6 +23159,7 @@ export namespace Prisma {
     finalRate?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
+    closingQuantity?: SortOrder
   }
 
   export type EnumPurchaseOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -24796,7 +24907,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24818,7 +24931,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24918,8 +25033,10 @@ export namespace Prisma {
     rate?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: IntNullableFilter<"Order"> | number | null
     orderById?: StringNullableFilter<"Order"> | string | null
     dispatchedOrder?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
@@ -25179,7 +25296,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25200,8 +25319,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25342,7 +25463,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25363,8 +25486,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25390,6 +25515,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25409,6 +25535,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25538,6 +25665,7 @@ export namespace Prisma {
     finalRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
+    closingQuantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFilter<"PurchaseOrder"> | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
     updatedAt?: DateTimeFilter<"PurchaseOrder"> | Date | string
@@ -25575,7 +25703,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25596,8 +25726,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25623,6 +25755,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25642,6 +25775,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25911,6 +26045,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -25930,6 +26065,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26865,7 +27001,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26887,8 +27025,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26908,6 +27048,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26928,6 +27069,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27093,7 +27235,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27115,8 +27259,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27142,6 +27288,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27162,6 +27309,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27524,7 +27672,9 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27643,7 +27793,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27665,7 +27817,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27684,7 +27838,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27886,8 +28042,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27933,7 +28091,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27954,8 +28114,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27973,8 +28135,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28000,8 +28164,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28018,6 +28184,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28063,7 +28230,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28084,8 +28253,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28103,8 +28274,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28119,6 +28292,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28138,6 +28312,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28155,6 +28330,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28171,8 +28347,10 @@ export namespace Prisma {
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: number | null
     orderById?: string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28189,6 +28367,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28237,7 +28416,9 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28258,8 +28439,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28277,8 +28460,10 @@ export namespace Prisma {
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    numberOfLorries?: NullableIntFieldUpdateOperationsInput | number | null
     orderById?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28293,6 +28478,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28312,6 +28498,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28329,6 +28516,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28447,6 +28635,7 @@ export namespace Prisma {
     finalRate?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
+    closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.PurchaseOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28486,6 +28675,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28505,6 +28695,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28522,6 +28713,7 @@ export namespace Prisma {
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumPurchaseOrderStatusFieldUpdateOperationsInput | $Enums.PurchaseOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

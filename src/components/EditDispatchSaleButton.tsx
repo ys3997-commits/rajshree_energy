@@ -6,28 +6,38 @@ import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
 import { formatMt } from "@/lib/domain/format";
 
-export function EditDispatchInvoicesButton({
+function isSaleComplete(input: {
+  saleInvoiceNumber: string | null;
+  receivingQuantity: string | null;
+}): boolean {
+  return (
+    Boolean(input.saleInvoiceNumber?.trim()) &&
+    Boolean(input.receivingQuantity?.trim())
+  );
+}
+
+export function EditDispatchSaleButton({
   dispatchId,
   saleInvoiceNumber,
-  purchaseInvoiceNumber,
   dispatchedQuantity,
   receivingQuantity,
 }: {
   dispatchId: string;
   saleInvoiceNumber: string | null;
-  purchaseInvoiceNumber: string | null;
   dispatchedQuantity: string;
   receivingQuantity: string | null;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [saleInvoice, setSaleInvoice] = useState(saleInvoiceNumber ?? "");
-  const [purchaseInvoice, setPurchaseInvoice] = useState(
-    purchaseInvoiceNumber ?? "",
-  );
   const [receivedQty, setReceivedQty] = useState(receivingQuantity ?? "");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const complete = isSaleComplete({
+    saleInvoiceNumber,
+    receivingQuantity,
+  });
 
   const diffQty = useMemo(() => {
     const trimmed = receivedQty.trim();
@@ -40,7 +50,6 @@ export function EditDispatchInvoicesButton({
 
   function openModal() {
     setSaleInvoice(saleInvoiceNumber ?? "");
-    setPurchaseInvoice(purchaseInvoiceNumber ?? "");
     setReceivedQty(receivingQuantity ?? "");
     setError(null);
     setOpen(true);
@@ -54,7 +63,6 @@ export function EditDispatchInvoicesButton({
       const trimmedReceived = receivedQty.trim();
       await updateDispatch(dispatchId, {
         saleInvoiceNumber: saleInvoice,
-        purchaseInvoiceNumber: purchaseInvoice,
         receivingQuantity: trimmedReceived === "" ? null : trimmedReceived,
       });
       setOpen(false);
@@ -67,41 +75,42 @@ export function EditDispatchInvoicesButton({
   }
 
   return (
-    <>
+    <span className="dispatch-edit-action">
       <button
         type="button"
-        className="btn btn-secondary"
+        className={`btn btn-sm ${
+          complete ? "btn-checklist-complete" : "btn-checklist-pending"
+        }`}
         onClick={openModal}
       >
-        Edit
+        Sale edit
       </button>
       <Modal
         open={open}
-        title="Edit dispatch"
+        title="Sale edit"
         onClose={() => {
           if (!saving) setOpen(false);
         }}
       >
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-          <label>Sale invoice</label>
+          <label htmlFor={`sale-invoice-${dispatchId}`}>
+            Sale invoice number
+          </label>
           <input
+            id={`sale-invoice-${dispatchId}`}
             value={saleInvoice}
             onChange={(e) => setSaleInvoice(e.target.value)}
             placeholder="Sale invoice number"
             autoFocus
           />
 
-          <label>Purchase invoice</label>
-          <input
-            value={purchaseInvoice}
-            onChange={(e) => setPurchaseInvoice(e.target.value)}
-            placeholder="Purchase invoice number"
-          />
-
-          <label>Received quantity</label>
+          <label htmlFor={`factory-qty-${dispatchId}`}>
+            Factory receiving quantity
+          </label>
           <div className="field-with-unit">
             <input
+              id={`factory-qty-${dispatchId}`}
               type="number"
               step="any"
               min="0"
@@ -112,9 +121,10 @@ export function EditDispatchInvoicesButton({
             <span className="field-unit">MT</span>
           </div>
 
-          <label>Diff quantity</label>
+          <label htmlFor={`diff-qty-${dispatchId}`}>Diff quantity</label>
           <div className="field-with-unit">
             <input
+              id={`diff-qty-${dispatchId}`}
               type="text"
               readOnly
               value={diffQty == null ? "—" : formatMt(diffQty)}
@@ -139,6 +149,6 @@ export function EditDispatchInvoicesButton({
           </div>
         </form>
       </Modal>
-    </>
+    </span>
   );
 }

@@ -8,6 +8,7 @@ import {
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
+  balanceOrder,
   computePurchaseFinalRate,
   computePurchaseOrderStatus,
   toDecimal,
@@ -265,14 +266,21 @@ export async function updatePurchaseOrderFields(
   const orderStatus = computePurchaseOrderStatus({
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
+    closingQuantity: existing.closingQuantity,
   });
 
   const oldAmount = billedAmount(
     existing.finalRate,
     existing.quantity,
     existing.dispatchedOrder,
+    existing.closingQuantity,
   );
-  const newAmount = billedAmount(finalRate, quantity, existing.dispatchedOrder);
+  const newAmount = billedAmount(
+    finalRate,
+    quantity,
+    existing.dispatchedOrder,
+    existing.closingQuantity,
+  );
   // Purchase decreases due, so delta is inverted.
   const dueDelta = oldAmount.minus(newAmount);
 
@@ -339,14 +347,21 @@ export async function completeOpenPurchaseOrder(
     const nextStatus = computePurchaseOrderStatus({
       quantity,
       dispatchedOrder: order.dispatchedOrder,
+      closingQuantity: order.closingQuantity,
     });
 
     const oldAmount = billedAmount(
       order.finalRate,
       order.quantity,
       order.dispatchedOrder,
+      order.closingQuantity,
     );
-    const newAmount = billedAmount(nextFinalRate, quantity, order.dispatchedOrder);
+    const newAmount = billedAmount(
+      nextFinalRate,
+      quantity,
+      order.dispatchedOrder,
+      order.closingQuantity,
+    );
 
     await tx.purchaseOrder.update({
       where: { id: orderId },
@@ -372,4 +387,54 @@ export async function completeOpenPurchaseOrder(
   revalidatePath("/purchase-orders");
   revalidatePath(`/purchase-orders/${orderId}`);
   revalidatePath("/customers");
+}
+
+/**
+ * Write off the remaining balance as closingQuantity and mark the PO completed.
+ */
+export async function closePurchaseOrderQuantity(id: string) {
+  const existing = await prisma.purchaseOrder.findUnique({ where: { id } });
+  if (!existing) throw new Error("Purchase order not found");
+  if (existing.quantity == null) {
+    throw new Error("Set purchase order quantity before closing");
+  }
+  if (existing.closingQuantity != null) {
+    throw new Error("Quantity already closed for this purchase order");
+  }
+
+  const bal = balanceOrder(existing);
+  if (bal == null || !bal.gt(0)) {
+    throw new Error("No remaining balance to close");
+  }
+
+  const oldAmount = billedAmount(
+    existing.finalRate,
+    existing.quantity,
+    existing.dispatchedOrder,
+    existing.closingQuantity,
+  );
+  const newAmount = billedAmount(
+    existing.finalRate,
+    existing.quantity,
+    existing.dispatchedOrder,
+    bal,
+  );
+
+  await prisma.$transaction(async (tx) => {
+    await tx.purchaseOrder.update({
+      where: { id },
+      data: {
+        closingQuantity: bal,
+        orderStatus: PurchaseOrderStatus.COMPLETED,
+      },
+    });
+    // Purchase decreases due, so closing remaining qty increases due (less owed to vendor).
+    await adjustCustomerDue(tx, existing.importerId, oldAmount.minus(newAmount));
+  });
+
+  revalidatePath("/purchase-orders");
+  revalidatePath(`/purchase-orders/${id}`);
+  revalidatePath("/customers");
+  revalidatePath("/");
+  return { id, closingQuantity: bal.toString() };
 }

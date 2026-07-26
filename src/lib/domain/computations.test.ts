@@ -61,6 +61,17 @@ describe("computeOrderStatus", () => {
     ).toBe(OrderStatus.COMPLETED);
   });
 
+  it("is COMPLETED when remaining balance is closed", () => {
+    expect(
+      computeOrderStatus({
+        orderType: OrderType.REGULAR,
+        quantity: new Decimal(100),
+        dispatchedOrder: new Decimal(97),
+        closingQuantity: new Decimal(3),
+      }),
+    ).toBe(OrderStatus.COMPLETED);
+  });
+
   it("stays RUNNING until an open order is fully dispatched", () => {
     expect(
       computeOrderStatus({
@@ -99,6 +110,16 @@ describe("computePurchaseOrderStatus", () => {
       }),
     ).toBe(PurchaseOrderStatus.COMPLETED);
   });
+
+  it("is COMPLETED when remaining balance is closed", () => {
+    expect(
+      computePurchaseOrderStatus({
+        quantity: new Decimal(100),
+        dispatchedOrder: new Decimal(97),
+        closingQuantity: new Decimal(3),
+      }),
+    ).toBe(PurchaseOrderStatus.COMPLETED);
+  });
 });
 
 describe("computed balances", () => {
@@ -118,6 +139,16 @@ describe("computed balances", () => {
         dispatchedOrder: new Decimal(25),
       })?.toString(),
     ).toBe("75");
+  });
+
+  it("balanceOrder subtracts closing quantity", () => {
+    expect(
+      balanceOrder({
+        quantity: new Decimal(100),
+        dispatchedOrder: new Decimal(97),
+        closingQuantity: new Decimal(3),
+      })?.toString(),
+    ).toBe("0");
   });
 
   it("gst is rate * qty * 0.18", () => {

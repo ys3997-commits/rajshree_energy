@@ -257,8 +257,10 @@ exports.Prisma.OrderScalarFieldEnum = {
   rate: 'rate',
   finalRate: 'finalRate',
   quantity: 'quantity',
+  numberOfLorries: 'numberOfLorries',
   orderById: 'orderById',
   dispatchedOrder: 'dispatchedOrder',
+  closingQuantity: 'closingQuantity',
   orderStatus: 'orderStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -276,6 +278,7 @@ exports.Prisma.PurchaseOrderScalarFieldEnum = {
   finalRate: 'finalRate',
   quantity: 'quantity',
   dispatchedOrder: 'dispatchedOrder',
+  closingQuantity: 'closingQuantity',
   orderStatus: 'orderStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

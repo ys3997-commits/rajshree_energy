@@ -6,16 +6,21 @@ import { prisma } from "@/lib/prisma";
 type DbClient = Prisma.TransactionClient | typeof prisma;
 
 /**
- * Billed MT for an order: contracted quantity when set, otherwise dispatched
- * quantity (open orders).
+ * Billed MT for an order: contracted quantity minus closing quantity when set,
+ * otherwise dispatched quantity (open orders).
  */
 export function billQuantity(
   quantity: DecimalLike | null | undefined,
   dispatchedOrder: DecimalLike | null | undefined = null,
+  closingQuantity: DecimalLike | null | undefined = null,
 ): Decimal | null {
   if (quantity != null) {
     const qty = toDecimal(quantity);
-    return qty.isFinite() ? qty : null;
+    if (!qty.isFinite()) return null;
+    const closing =
+      closingQuantity == null ? new Decimal(0) : toDecimal(closingQuantity);
+    const billable = qty.minus(closing.isFinite() ? closing : 0);
+    return billable.isFinite() && billable.gte(0) ? billable : null;
   }
   if (dispatchedOrder == null) return null;
   const dispatched = toDecimal(dispatchedOrder);
@@ -28,9 +33,10 @@ export function billedAmount(
   finalRate: DecimalLike | null | undefined,
   quantity: DecimalLike | null | undefined,
   dispatchedOrder: DecimalLike | null | undefined = null,
+  closingQuantity: DecimalLike | null | undefined = null,
 ): Decimal {
   if (finalRate == null) return new Decimal(0);
-  const qty = billQuantity(quantity, dispatchedOrder);
+  const qty = billQuantity(quantity, dispatchedOrder, closingQuantity);
   if (qty == null) return new Decimal(0);
   const rate = toDecimal(finalRate);
   if (!rate.isFinite()) return new Decimal(0);
@@ -79,6 +85,7 @@ type SaleForOverdue = {
   finalRate: DecimalLike | null;
   quantity: DecimalLike | null;
   dispatchedOrder: DecimalLike;
+  closingQuantity?: DecimalLike | null;
   orderDate: Date | null;
   createdAt: Date;
   creditDays: number | null;
@@ -103,6 +110,7 @@ export function computeOverdue(
         sale.finalRate,
         sale.quantity,
         sale.dispatchedOrder,
+        sale.closingQuantity,
       );
       if (amount.lte(0)) return null;
 
@@ -151,6 +159,7 @@ export async function recalculateAllCustomerDues(): Promise<void> {
           finalRate: true,
           quantity: true,
           dispatchedOrder: true,
+          closingQuantity: true,
         },
       }),
       prisma.purchaseOrder.findMany({
@@ -159,6 +168,7 @@ export async function recalculateAllCustomerDues(): Promise<void> {
           finalRate: true,
           quantity: true,
           dispatchedOrder: true,
+          closingQuantity: true,
         },
       }),
       prisma.payment.findMany({
@@ -170,12 +180,22 @@ export async function recalculateAllCustomerDues(): Promise<void> {
     let due = new Decimal(0);
     for (const order of orders) {
       due = due.plus(
-        billedAmount(order.finalRate, order.quantity, order.dispatchedOrder),
+        billedAmount(
+          order.finalRate,
+          order.quantity,
+          order.dispatchedOrder,
+          order.closingQuantity,
+        ),
       );
     }
     for (const po of purchaseOrders) {
       due = due.minus(
-        billedAmount(po.finalRate, po.quantity, po.dispatchedOrder),
+        billedAmount(
+          po.finalRate,
+          po.quantity,
+          po.dispatchedOrder,
+          po.closingQuantity,
+        ),
       );
     }
     for (const payment of payments) {

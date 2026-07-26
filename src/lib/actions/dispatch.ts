@@ -313,6 +313,7 @@ async function applyDispatchDelta(
     orderType: order.orderType,
     quantity: order.quantity,
     dispatchedOrder: nextDispatchedOrder,
+    closingQuantity: order.closingQuantity,
   });
 
   await tx.order.update({
@@ -336,6 +337,7 @@ async function applyDispatchDelta(
   const nextPurchaseStatus = computePurchaseOrderStatus({
     quantity: purchase.quantity,
     dispatchedOrder: nextPurchaseDispatched,
+    closingQuantity: purchase.closingQuantity,
   });
 
   await tx.purchaseOrder.update({
@@ -732,11 +734,13 @@ export async function completeOpenOrder(
       order.finalRate,
       order.quantity,
       order.dispatchedOrder,
+      order.closingQuantity,
     );
     const newAmount = billedAmount(
       nextFinalRate,
       quantity,
       order.dispatchedOrder,
+      order.closingQuantity,
     );
 
     await tx.order.update({

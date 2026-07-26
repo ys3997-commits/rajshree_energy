@@ -14,7 +14,15 @@ import {
   formatRs,
 } from "@/lib/domain/format";
 
-type PlannedCallFilter = "" | "today" | "tomorrow" | "older" | "future";
+type PlannedCallFilter =
+  | ""
+  | "today"
+  | "tomorrow"
+  | "older"
+  | "future"
+  | "none";
+type SortKey = "soldQuantity" | "due" | "overdue";
+type SortDir = "asc" | "desc";
 
 function todayLocal(): string {
   const d = new Date();
@@ -47,6 +55,7 @@ function matchesPlannedCallFilter(
 ): boolean {
   if (!filter) return true;
   const p = normalizePlannedDate(plannedDate);
+  if (filter === "none") return !p;
   if (!p) return false;
   if (filter === "today") return p === today;
   if (filter === "tomorrow") return p === tomorrow;
@@ -73,6 +82,16 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
   return [...names].sort((a, b) => a.localeCompare(b));
 }
 
+function numericValue(value: string): number {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function sortIndicator(active: boolean, dir: SortDir): string {
+  if (!active) return "";
+  return dir === "asc" ? " ↑" : " ↓";
+}
+
 export function SalesEngineClient({
   initialRows,
 }: {
@@ -96,9 +115,20 @@ export function SalesEngineClient({
   const [stateFilter, setStateFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sectorFilter, setSectorFilter] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const today = todayLocal();
   const tomorrow = addLocalDays(today, 1);
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortKey(key);
+    setSortDir("desc");
+  }
 
   const cityOptions = useMemo(
     () => distinctTrimmed(rows.map((row) => row.city)),
@@ -128,7 +158,7 @@ export function SalesEngineClient({
   );
 
   const filtered = useMemo(() => {
-    return rows.filter((row) => {
+    const next = rows.filter((row) => {
       if (
         !matchesPlannedCallFilter(
           row.plannedSaleCallDate,
@@ -147,6 +177,12 @@ export function SalesEngineClient({
       }
       return true;
     });
+    if (!sortKey) return next;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...next].sort(
+      (a, b) =>
+        (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
+    );
   }, [
     rows,
     plannedCallFilter,
@@ -154,6 +190,8 @@ export function SalesEngineClient({
     stateFilter,
     categoryFilter,
     sectorFilter,
+    sortKey,
+    sortDir,
     today,
     tomorrow,
   ]);
@@ -205,6 +243,7 @@ export function SalesEngineClient({
             }
           >
             <option value="">All</option>
+            <option value="none">Not planned</option>
             <option value="today">Today</option>
             <option value="tomorrow">Tomorrow</option>
             <option value="older">Older</option>
@@ -294,10 +333,37 @@ export function SalesEngineClient({
               <th>Role of purchaser</th>
               <th>Sale executive</th>
               <th className="cell-num">Order in hand (MT)</th>
-              <th className="cell-num">Sold quantity (MT)</th>
+              <th className="cell-num">
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("soldQuantity")}
+                >
+                  Sold quantity (MT)
+                  {sortIndicator(sortKey === "soldQuantity", sortDir)}
+                </button>
+              </th>
               <th>Last dispatch date</th>
-              <th className="cell-num">Due</th>
-              <th className="cell-num">Overdue</th>
+              <th className="cell-num">
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("due")}
+                >
+                  Due
+                  {sortIndicator(sortKey === "due", sortDir)}
+                </button>
+              </th>
+              <th className="cell-num">
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("overdue")}
+                >
+                  Overdue
+                  {sortIndicator(sortKey === "overdue", sortDir)}
+                </button>
+              </th>
               <th>Planned call</th>
             </tr>
           </thead>

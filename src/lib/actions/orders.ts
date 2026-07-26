@@ -4,6 +4,7 @@ import { OrderStatus, OrderType, type Prisma } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
+  balanceOrder,
   computeOrderStatus,
   computeSaleFinalRate,
   toDecimal,
@@ -63,6 +64,7 @@ export async function listOrders(filters: OrderFilters = {}) {
           qualityOption: { select: { id: true, name: true } },
         },
       },
+      _count: { select: { dispatches: true } },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -124,6 +126,7 @@ export type CreateRegularOrderInput = {
   qualityClassId?: string | null;
   rate?: DecimalLike | null;
   quantity: DecimalLike;
+  numberOfLorries?: number | null;
   orderById?: string | null;
 };
 
@@ -142,6 +145,16 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
     input.rate === undefined || input.rate === null
       ? null
       : toDecimal(input.rate);
+  const numberOfLorries =
+    input.numberOfLorries === undefined || input.numberOfLorries === null
+      ? null
+      : Number(input.numberOfLorries);
+  if (
+    numberOfLorries != null &&
+    (!Number.isInteger(numberOfLorries) || numberOfLorries < 0)
+  ) {
+    throw new Error("Number of lorries must be a whole number ≥ 0");
+  }
   const category = await resolveCustomerCategory(input.customerId);
   const finalRate = computeSaleFinalRate(rate, category);
 
@@ -164,6 +177,7 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
         rate,
         finalRate,
         quantity,
+        numberOfLorries,
         orderById: input.orderById || null,
         orderStatus,
       },
@@ -233,14 +247,21 @@ export async function updateOrderFields(
     orderType: existing.orderType,
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
+    closingQuantity: existing.closingQuantity,
   });
 
   const oldAmount = billedAmount(
     existing.finalRate,
     existing.quantity,
     existing.dispatchedOrder,
+    existing.closingQuantity,
   );
-  const newAmount = billedAmount(finalRate, quantity, existing.dispatchedOrder);
+  const newAmount = billedAmount(
+    finalRate,
+    quantity,
+    existing.dispatchedOrder,
+    existing.closingQuantity,
+  );
   const dueDelta = newAmount.minus(oldAmount);
 
   const order = await prisma.$transaction(async (tx) => {
@@ -267,4 +288,54 @@ export async function updateOrderFields(
   revalidatePath(`/orders/${id}`);
   revalidatePath("/customers");
   return { id: order.id };
+}
+
+/**
+ * Write off the remaining balance as closingQuantity and mark the order completed.
+ * Balance becomes 0; further dispatches are blocked by the zero balance check.
+ */
+export async function closeOrderQuantity(id: string) {
+  const existing = await prisma.order.findUnique({ where: { id } });
+  if (!existing) throw new Error("Order not found");
+  if (existing.quantity == null) {
+    throw new Error("Set order quantity before closing");
+  }
+  if (existing.closingQuantity != null) {
+    throw new Error("Quantity already closed for this order");
+  }
+
+  const bal = balanceOrder(existing);
+  if (bal == null || !bal.gt(0)) {
+    throw new Error("No remaining balance to close");
+  }
+
+  const oldAmount = billedAmount(
+    existing.finalRate,
+    existing.quantity,
+    existing.dispatchedOrder,
+    existing.closingQuantity,
+  );
+  const newAmount = billedAmount(
+    existing.finalRate,
+    existing.quantity,
+    existing.dispatchedOrder,
+    bal,
+  );
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id },
+      data: {
+        closingQuantity: bal,
+        orderStatus: OrderStatus.COMPLETED,
+      },
+    });
+    await adjustCustomerDue(tx, existing.customerId, newAmount.minus(oldAmount));
+  });
+
+  revalidatePath("/orders");
+  revalidatePath(`/orders/${id}`);
+  revalidatePath("/customers");
+  revalidatePath("/");
+  return { id, closingQuantity: bal.toString() };
 }
