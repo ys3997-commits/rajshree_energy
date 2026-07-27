@@ -26,7 +26,7 @@ export default async function VesselsPage() {
         origin: qc.origin,
         qualityOption: qc.qualityOption,
       }))}
-      ports={ports.map((p) => ({ id: p.id, name: p.name }))}
+      ports={ports.map((p) => ({ id: p.id, name: p.name, state: p.state }))}
     />
   );
 }

@@ -15,6 +15,7 @@ import {
   daysSinceOrder,
   displayOrderBalance,
   displayOrderQuantity,
+  formatCreditPeriod,
   formatIndianNumber,
   formatOrderStatusForDisplay,
   formatOrderType,
@@ -169,13 +170,21 @@ export default async function OrdersPage({
               <th>PO number</th>
               <th>Customer</th>
               <th>Type</th>
-              <th className="num">Number of lorries</th>
+              <th className="num col-lorries">
+                Number of
+                <br />
+                lorries
+              </th>
               <th className="num">Order quantity</th>
               <th className="num">Dispatched quantity</th>
               <th className="num">Closing quantity</th>
               <th className="num">Balance</th>
               <th className="num">Trucks dispatch</th>
-              <th className="num">Days since order</th>
+              <th className="num col-days-since-order">
+                Days since
+                <br />
+                order
+              </th>
               <th className="num">Basic rate</th>
               <th>Status</th>
               <th className="col-actions">Actions</th>
@@ -200,7 +209,7 @@ export default async function OrdersPage({
                 </td>
                 <td>{row.customer.name}</td>
                 <td>{formatOrderType(row.orderType)}</td>
-                <td className="num">
+                <td className="num col-lorries">
                   {formatIndianNumber(row.numberOfLorries)}
                 </td>
                 <td className="num">{formatSaleOrderMt(displayOrderQuantity(row))}</td>
@@ -210,8 +219,8 @@ export default async function OrdersPage({
                 <td className="num">
                   {formatIndianNumber(row._count.dispatches)}
                 </td>
-                <td className="num">
-                  {formatIndianNumber(
+                <td className="num col-days-since-order">
+                  {formatCreditPeriod(
                     daysSinceOrder(row.orderDate, row.createdAt),
                   )}
                 </td>

@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { closeOrderQuantity } from "@/lib/actions/orders";
 import { closePurchaseOrderQuantity } from "@/lib/actions/purchaseOrders";
-import { formatSaleOrderMt } from "@/lib/domain/format";
 
 export function CloseQuantityButton({
   orderId,
@@ -47,7 +46,7 @@ export function CloseQuantityButton({
       disabled={pending}
       onClick={onClick}
     >
-      {pending ? "Closing…" : `Close ${formatSaleOrderMt(balanceMt)}`}
+      {pending ? "Closing…" : "Close"}
     </button>
   );
 }

@@ -10,7 +10,7 @@ import {
   daysSinceOrder,
   displayOrderBalance,
   displayOrderQuantity,
-  formatIndianNumber,
+  formatCreditPeriod,
   formatOrderStatusForDisplay,
   formatOrderType,
   formatSaleOrderMt,
@@ -153,7 +153,7 @@ export default async function PurchaseOrdersPage({
                   <td className="col-vessel">{row.vessel.vesselName}</td>
                   <td>{formatOrderType(row.orderType)}</td>
                   <td className="num col-days-since-order">
-                    {formatIndianNumber(
+                    {formatCreditPeriod(
                       daysSinceOrder(row.orderDate, row.createdAt),
                     )}
                   </td>

@@ -60,7 +60,7 @@ function emptyForm(customerId = "") {
 }
 
 function directionLabel(direction: string): string {
-  return direction === "RECEIVED" ? "Received" : "Sent";
+  return direction === "RECEIVED" ? "Fund Received" : "Fund Paid";
 }
 
 function pageHref(page: number): string {
@@ -355,7 +355,7 @@ export function PaymentsClient({
       return;
     }
     if (!form.direction) {
-      setError("Select Received or Sent");
+      setError("Select Fund Received or Fund Paid");
       return;
     }
     if (!form.amount || Number(form.amount) <= 0) {
@@ -446,7 +446,7 @@ export function PaymentsClient({
                 <tr>
                   <th>Date</th>
                   <th>Customer</th>
-                  <th>Received / Sent</th>
+                  <th>Fund Received / Fund Paid</th>
                   <th className="cell-num">Amount</th>
                   <th />
                 </tr>
@@ -490,7 +490,7 @@ export function PaymentsClient({
                       form="payment-entry-form"
                       required
                       className="field-input"
-                      aria-label="Received or Sent"
+                      aria-label="Fund Received or Fund Paid"
                       value={form.direction}
                       onChange={(e) =>
                         setForm({
@@ -500,8 +500,8 @@ export function PaymentsClient({
                       }
                     >
                       <option value="">Select</option>
-                      <option value="RECEIVED">Received</option>
-                      <option value="SENT">Sent</option>
+                      <option value="RECEIVED">Fund Received</option>
+                      <option value="SENT">Fund Paid</option>
                     </select>
                   </td>
                   <td className="cell-num">
@@ -542,32 +542,40 @@ export function PaymentsClient({
                   </td>
                 </tr>
 
-                {rows.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.date}</td>
-                    <td>{row.customerName}</td>
-                    <td>{directionLabel(row.direction)}</td>
-                    <td className="cell-num">{formatRs(row.amount)}</td>
-                    <td className="space-x-2 whitespace-nowrap">
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => startEdit(row)}
-                        disabled={pending}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm"
-                        onClick={() => onDelete(row)}
-                        disabled={pending}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {rows.map((row, index) => {
+                  const prevDate = index > 0 ? rows[index - 1].date : null;
+                  const dateBreak =
+                    prevDate != null && prevDate !== row.date;
+                  return (
+                    <tr
+                      key={row.id}
+                      className={dateBreak ? "payment-date-break" : undefined}
+                    >
+                      <td>{formatDateDdMmYyyy(row.date)}</td>
+                      <td>{row.customerName}</td>
+                      <td>{directionLabel(row.direction)}</td>
+                      <td className="cell-num">{formatRs(row.amount)}</td>
+                      <td className="space-x-2 whitespace-nowrap">
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => startEdit(row)}
+                          disabled={pending}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={() => onDelete(row)}
+                          disabled={pending}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
 
                 {rows.length === 0 && (
                   <tr>

@@ -39,7 +39,7 @@ function parseDirection(value: string): PaymentDirection {
   if (value === PaymentDirection.RECEIVED || value === PaymentDirection.SENT) {
     return value;
   }
-  throw new Error("Select Received or Sent");
+  throw new Error("Select Fund Received or Fund Paid");
 }
 
 function parseDate(value: string): Date {

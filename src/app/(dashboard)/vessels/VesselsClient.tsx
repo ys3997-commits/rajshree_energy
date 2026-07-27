@@ -15,6 +15,7 @@ import { formatQualityClass, capitalizeName } from "@/lib/domain/format";
 import { VesselStatusToggle } from "@/components/VesselStatusToggle";
 
 type Opt = { id: string; name: string };
+type PortOpt = Opt & { state: string };
 type Row = {
   id: string;
   vesselName: string;
@@ -38,7 +39,7 @@ export function VesselsClient({
 }: {
   initial: Row[];
   qualityClasses: QualityClassOpt[];
-  ports: Opt[];
+  ports: PortOpt[];
 }) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState(empty);
@@ -143,7 +144,7 @@ export function VesselsClient({
           <option value="">Select</option>
           {ports.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.name}
+              {p.name}, {p.state}
             </option>
           ))}
         </select>
