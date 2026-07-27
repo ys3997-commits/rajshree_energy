@@ -52,7 +52,7 @@ export function NewPurchaseOrderForm({
     setError(null);
     const fd = new FormData(e.currentTarget);
     try {
-      const order = await createRegularPurchaseOrder({
+      await createRegularPurchaseOrder({
         poNumber: String(fd.get("poNumber") || ""),
         importerId: String(fd.get("importerId") || ""),
         vesselId: String(fd.get("vesselId") || ""),

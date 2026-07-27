@@ -1,4 +1,3 @@
-import { CustomerCategory } from "@/generated/prisma";
 import { listOrders, listOrdersWithBalance } from "@/lib/actions/orders";
 import {
   listPurchaseOrdersWithBalance,
@@ -11,7 +10,7 @@ import { listStaff } from "@/lib/actions/staff";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
-import { formatMt, formatRs } from "@/lib/domain/computations";
+import { formatRs } from "@/lib/domain/computations";
 import {
   daysSinceOrder,
   displayOrderBalance,
@@ -19,6 +18,7 @@ import {
   formatIndianNumber,
   formatOrderStatusForDisplay,
   formatOrderType,
+  formatSaleOrderMt,
 } from "@/lib/domain/format";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
@@ -75,9 +75,6 @@ export default async function OrdersPage({
     category: c.category,
     creditDays: c.creditDays,
   }));
-  const importerOpts = customers
-    .filter((c) => c.category === CustomerCategory.SUPPLIER)
-    .map((c) => ({ id: c.id, name: c.name }));
   const staffOpts = staff.map((s) => ({ id: s.id, name: s.name }));
   const portOpts = ports.map((p) => ({ id: p.id, name: p.name }));
   const qualityClassOpts = qualityClasses.map((qc) => ({
@@ -181,7 +178,7 @@ export default async function OrdersPage({
               <th className="num">Days since order</th>
               <th className="num">Basic rate</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th className="col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -206,10 +203,10 @@ export default async function OrdersPage({
                 <td className="num">
                   {formatIndianNumber(row.numberOfLorries)}
                 </td>
-                <td className="num">{formatMt(displayOrderQuantity(row))}</td>
-                <td className="num">{formatMt(row.dispatchedOrder)}</td>
-                <td className="num">{formatMt(row.closingQuantity)}</td>
-                <td className="num">{formatMt(displayOrderBalance(row))}</td>
+                <td className="num">{formatSaleOrderMt(displayOrderQuantity(row))}</td>
+                <td className="num">{formatSaleOrderMt(row.dispatchedOrder)}</td>
+                <td className="num">{formatSaleOrderMt(row.closingQuantity)}</td>
+                <td className="num">{formatSaleOrderMt(displayOrderBalance(row))}</td>
                 <td className="num">
                   {formatIndianNumber(row._count.dispatches)}
                 </td>
@@ -220,7 +217,7 @@ export default async function OrdersPage({
                 </td>
                 <td className="num">{formatRs(row.rate)}</td>
                 <td>{formatOrderStatusForDisplay(row)}</td>
-                <td>
+                <td className="col-actions">
                   {canClose ? (
                     <CloseQuantityButton
                       orderId={row.id}

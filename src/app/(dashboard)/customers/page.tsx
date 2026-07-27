@@ -19,14 +19,18 @@ export default async function CustomersPage() {
 
   return (
     <CustomersClient
-      initial={customers.map(
-        ({
-          due: _due,
-          plannedCollectionCallDate: _plannedCollection,
-          plannedSaleCallDate: _plannedSale,
-          ...c
-        }) => c,
-      )}
+      initial={customers.map((customer) => {
+        const {
+          due,
+          plannedCollectionCallDate,
+          plannedSaleCallDate,
+          ...row
+        } = customer;
+        void due;
+        void plannedCollectionCallDate;
+        void plannedSaleCallDate;
+        return row;
+      })}
       cities={cities.map((o) => o.name)}
       states={states.map((o) => o.name)}
       sectors={sectors.map((o) => o.name)}

@@ -117,6 +117,15 @@ function sortIndicator(active: boolean, dir: SortDir): string {
   return dir === "asc" ? " ↑" : " ↓";
 }
 
+function formatDateDdMmYyyy(value: string | null | undefined): string {
+  if (!value) return "—";
+  const datePart = value.trim().slice(0, 10);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
+}
+
 export function PaymentsClient({
   initial,
   customers,
@@ -730,7 +739,7 @@ export function PaymentsClient({
             <table className="data payments-table collection-table">
               <thead>
                 <tr>
-                  <th>Customer</th>
+                  <th className="collection-customer-col">Customer</th>
                   <th>Payment in charge</th>
                   <th>Contact number</th>
                   <th>Sales executive</th>
@@ -740,7 +749,7 @@ export function PaymentsClient({
                       className="th-sort"
                       onClick={() => toggleSort("due")}
                     >
-                      Due
+                      Total Due
                       {sortIndicator(sortKey === "due", sortDir)}
                     </button>
                   </th>
@@ -768,7 +777,7 @@ export function PaymentsClient({
                   );
                   return (
                     <tr key={row.id} className={rowClass}>
-                      <td>
+                      <td className="collection-customer-col">
                         <Link
                           href={`/reports/customer-analysis/${row.id}`}
                           className="btn-link"
@@ -791,7 +800,9 @@ export function PaymentsClient({
                       </td>
                       <td className="cell-num">{formatRs(row.due)}</td>
                       <td className="cell-num">{formatRs(row.overdue)}</td>
-                      <td>{row.lastPaymentDate ?? "—"}</td>
+                      <td>
+                        {formatDateDdMmYyyy(row.lastPaymentDate)}
+                      </td>
                       <td className="cell-num">
                         {row.lastPaymentAmount
                           ? formatRs(row.lastPaymentAmount)
@@ -803,6 +814,7 @@ export function PaymentsClient({
                       <td>
                         <input
                           type="date"
+                          lang="en-GB"
                           className="field-input collection-date-input"
                           aria-label={`Planned call for ${row.name}`}
                           value={row.plannedCollectionCallDate ?? ""}

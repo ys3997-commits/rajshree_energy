@@ -46,12 +46,10 @@ export default async function TransporterDetailPage({
     }
   >();
 
-  let grandTotalQty = 0;
   for (const row of transporter.dispatches) {
     const key = monthKey(row.dispatchDate);
     const existing = byMonth.get(key);
     const qty = Number(row.dispatchedQuantity.toString());
-    grandTotalQty += qty;
     if (existing) {
       existing.rows.push(row);
       existing.totalQty += qty;

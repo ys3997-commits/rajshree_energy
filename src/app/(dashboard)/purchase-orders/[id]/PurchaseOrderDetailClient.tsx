@@ -10,7 +10,7 @@ import {
 } from "@/lib/actions/purchaseOrders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
-import { formatDispatchTerms, formatMt, formatOrderStatusForDisplay, formatOrderType, formatRs, formatLorryNumber, displayOrderBalance } from "@/lib/domain/format";
+import { formatDispatchTerms, formatOrderStatusForDisplay, formatOrderType, formatRs, formatLorryNumber, displayOrderBalance, formatSaleOrderMt } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -150,17 +150,17 @@ export function PurchaseOrderDetailClient({
           {formatOrderStatusForDisplay(order)}
         </div>
         <div>
-          <span className="text-neutral-500">Dispatched (MT):</span>{" "}
-          {formatMt(order.dispatchedOrder)}
+          <span className="text-neutral-500">Dispatched:</span>{" "}
+          {formatSaleOrderMt(order.dispatchedOrder)}
         </div>
         <div>
-          <span className="text-neutral-500">Closing (MT):</span>{" "}
-          {formatMt(order.closingQuantity)}
+          <span className="text-neutral-500">Closing:</span>{" "}
+          {formatSaleOrderMt(order.closingQuantity)}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span>
-            <span className="text-neutral-500">Balance (MT):</span>{" "}
-            {formatMt(displayOrderBalance(order))}
+            <span className="text-neutral-500">Balance:</span>{" "}
+            {formatSaleOrderMt(displayOrderBalance(order))}
           </span>
           {canCloseQuantity && (
             <CloseQuantityButton
@@ -241,7 +241,7 @@ export function PurchaseOrderDetailClient({
             <tr>
               <th>Date</th>
               <th>Sale PO</th>
-              <th className="num">Qty (MT)</th>
+              <th className="num">Quantity</th>
               <th>Terms</th>
               <th className="num">Freight</th>
               <th>Lorry</th>
@@ -266,7 +266,7 @@ export function PurchaseOrderDetailClient({
                     "—"
                   )}
                 </td>
-                <td className="num">{formatMt(d.dispatchedQuantity)}</td>
+                <td className="num">{formatSaleOrderMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
                 <td className="num">{formatRs(d.freight)}</td>
                 <td>{formatLorryNumber(d.lorryNumber) ?? "—"}</td>

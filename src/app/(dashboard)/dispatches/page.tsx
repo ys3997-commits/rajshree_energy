@@ -15,9 +15,10 @@ import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { EditDispatchPurchaseButton } from "@/components/EditDispatchPurchaseButton";
 import { EditDispatchSaleButton } from "@/components/EditDispatchSaleButton";
 import {
+  formatDispatchMt,
   formatLorryNumber,
-  formatMt,
   formatQualityClass,
+  formatRs,
 } from "@/lib/domain/format";
 import {
   parsePurchaseOrderSequence,
@@ -195,7 +196,7 @@ export default async function DispatchesPage({
               <th colSpan={5}>Sale</th>
               <th colSpan={3}>Transport</th>
               <th colSpan={1}>Margin</th>
-              <th colSpan={4}>Status</th>
+              <th colSpan={5}>Status</th>
               <th colSpan={1}></th>
             </tr>
             <tr>
@@ -221,6 +222,7 @@ export default async function DispatchesPage({
               <th className="cell-num">Profit (Rs)</th>
               <th className="cell-num">Received (MT)</th>
               <th className="cell-num">Diff (MT)</th>
+              <th className="cell-center">Purchase in tally</th>
               <th></th>
             </tr>
           </thead>
@@ -233,7 +235,9 @@ export default async function DispatchesPage({
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td className="cell-num">{formatMt(row.dispatchedQuantity)}</td>
+                <td className="cell-num">
+                  {formatDispatchMt(row.dispatchedQuantity)}
+                </td>
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className={row.gstState ? undefined : "cell-center"}>
@@ -254,8 +258,8 @@ export default async function DispatchesPage({
                 <td className={row.vendorName ? undefined : "cell-center"}>
                   {row.vendorName ?? "—"}
                 </td>
-                <td className="cell-num">{formatMt(row.purchaseBasicRate)}</td>
-                <td className="cell-num">{formatMt(row.purchaseTotalRate)}</td>
+                <td className="cell-num">{formatRs(row.purchaseBasicRate)}</td>
+                <td className="cell-num">{formatRs(row.purchaseTotalRate)}</td>
                 <td
                   className={
                     row.purchaseInvoiceNumber ? undefined : "cell-center"
@@ -278,8 +282,8 @@ export default async function DispatchesPage({
                 <td className={row.customerName ? undefined : "cell-center"}>
                   {row.customerName ?? "—"}
                 </td>
-                <td className="cell-num">{formatMt(row.saleBasicRate)}</td>
-                <td className="cell-num">{formatMt(row.saleTotalRate)}</td>
+                <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
+                <td className="cell-num">{formatRs(row.saleTotalRate)}</td>
                 <td
                   className={row.saleInvoiceNumber ? undefined : "cell-center"}
                 >
@@ -290,29 +294,31 @@ export default async function DispatchesPage({
                 >
                   {row.transporterName ?? "—"}
                 </td>
-                <td className="cell-num">{formatMt(row.freight)}</td>
-                <td className="cell-num">{formatMt(row.freightAmount)}</td>
-                <td className="cell-num">{formatMt(row.lineProfit)}</td>
+                <td className="cell-num">{formatRs(row.freight)}</td>
+                <td className="cell-num">{formatRs(row.freightAmount)}</td>
+                <td className="cell-num">{formatRs(row.lineProfit)}</td>
                 <td
                   className={
                     row.receivingQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
-                  {formatMt(row.receivingQuantity)}
+                  {formatDispatchMt(row.receivingQuantity)}
                 </td>
                 <td
                   className={
                     row.diffInQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
-                  {formatMt(row.diffInQuantity)}
+                  {formatDispatchMt(row.diffInQuantity)}
+                </td>
+                <td className="cell-center">
+                  {row.entryInTally ? "Yes" : "—"}
                 </td>
                 <td>
                   <div className="dispatch-edit-actions">
                     <EditDispatchPurchaseButton
                       dispatchId={row.id}
                       purchaseInvoiceNumber={row.purchaseInvoiceNumber}
-                      softCopyStatus={row.softCopyStatus}
                       entryInTally={row.entryInTally}
                     />
                     <EditDispatchSaleButton
@@ -329,7 +335,7 @@ export default async function DispatchesPage({
             ))}
             {dispatches.length === 0 && (
               <tr>
-                <td colSpan={23}>No dispatches match filters.</td>
+                <td colSpan={24}>No dispatches match filters.</td>
               </tr>
             )}
           </tbody>

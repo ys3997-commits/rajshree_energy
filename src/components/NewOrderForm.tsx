@@ -83,7 +83,7 @@ export function NewOrderForm({
     setError(null);
     const fd = new FormData(e.currentTarget);
     try {
-      const order = await createRegularOrder({
+      await createRegularOrder({
         poNumber: String(fd.get("poNumber") || ""),
         customerId,
         orderDate: String(fd.get("orderDate") || "") || null,

@@ -7,25 +7,20 @@ import { updateDispatch } from "@/lib/actions/dispatch";
 
 function isPurchaseComplete(input: {
   purchaseInvoiceNumber: string | null;
-  softCopyStatus: boolean;
   entryInTally: boolean;
 }): boolean {
   return (
-    Boolean(input.purchaseInvoiceNumber?.trim()) &&
-    input.softCopyStatus &&
-    input.entryInTally
+    Boolean(input.purchaseInvoiceNumber?.trim()) && input.entryInTally
   );
 }
 
 export function EditDispatchPurchaseButton({
   dispatchId,
   purchaseInvoiceNumber,
-  softCopyStatus,
   entryInTally,
 }: {
   dispatchId: string;
   purchaseInvoiceNumber: string | null;
-  softCopyStatus: boolean;
   entryInTally: boolean;
 }) {
   const router = useRouter();
@@ -33,20 +28,17 @@ export function EditDispatchPurchaseButton({
   const [purchaseInvoice, setPurchaseInvoice] = useState(
     purchaseInvoiceNumber ?? "",
   );
-  const [softCopy, setSoftCopy] = useState(softCopyStatus);
   const [tally, setTally] = useState(entryInTally);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const complete = isPurchaseComplete({
     purchaseInvoiceNumber,
-    softCopyStatus,
     entryInTally,
   });
 
   function openModal() {
     setPurchaseInvoice(purchaseInvoiceNumber ?? "");
-    setSoftCopy(softCopyStatus);
     setTally(entryInTally);
     setError(null);
     setOpen(true);
@@ -59,7 +51,6 @@ export function EditDispatchPurchaseButton({
     try {
       await updateDispatch(dispatchId, {
         purchaseInvoiceNumber: purchaseInvoice,
-        softCopyStatus: softCopy,
         entryInTally: tally,
       });
       setOpen(false);
@@ -101,18 +92,6 @@ export function EditDispatchPurchaseButton({
             placeholder="Purchase invoice number"
             autoFocus
           />
-
-          <label htmlFor={`soft-copy-${dispatchId}`}>
-            Purchase invoice softcopy
-          </label>
-          <select
-            id={`soft-copy-${dispatchId}`}
-            value={softCopy ? "received" : "pending"}
-            onChange={(e) => setSoftCopy(e.target.value === "received")}
-          >
-            <option value="pending">Pending</option>
-            <option value="received">Received</option>
-          </select>
 
           <label htmlFor={`tally-${dispatchId}`}>Recorded in Tally</label>
           <input

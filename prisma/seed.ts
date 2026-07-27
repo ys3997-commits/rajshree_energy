@@ -87,7 +87,7 @@ async function main() {
   const amit = await prisma.staff.create({
     data: { name: "Amit Sharma", role: "Trader" },
   });
-  const priya = await prisma.staff.create({
+  await prisma.staff.create({
     data: { name: "Priya Patel", role: "Operations" },
   });
   await prisma.staff.create({

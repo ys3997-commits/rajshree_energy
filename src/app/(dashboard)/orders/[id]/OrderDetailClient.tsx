@@ -1,13 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
-import { formatDispatchTerms, formatCreditPeriod, formatLorryNumber, formatMt, formatOrderStatusForDisplay, formatOrderType, formatRs, displayOrderBalance } from "@/lib/domain/format";
+import { formatDispatchTerms, formatLorryNumber, formatOrderStatusForDisplay, formatOrderType, formatRs, displayOrderBalance, formatSaleOrderMt } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
@@ -164,17 +163,17 @@ export function OrderDetailClient({
           {formatOrderStatusForDisplay(order)}
         </div>
         <div>
-          <span className="text-neutral-500">Dispatched (MT):</span>{" "}
-          {formatMt(order.dispatchedOrder)}
+          <span className="text-neutral-500">Dispatched:</span>{" "}
+          {formatSaleOrderMt(order.dispatchedOrder)}
         </div>
         <div>
-          <span className="text-neutral-500">Closing (MT):</span>{" "}
-          {formatMt(order.closingQuantity)}
+          <span className="text-neutral-500">Closing:</span>{" "}
+          {formatSaleOrderMt(order.closingQuantity)}
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span>
-            <span className="text-neutral-500">Balance (MT):</span>{" "}
-            {formatMt(displayOrderBalance(order))}
+            <span className="text-neutral-500">Balance:</span>{" "}
+            {formatSaleOrderMt(displayOrderBalance(order))}
           </span>
           {canCloseQuantity && (
             <CloseQuantityButton
@@ -277,7 +276,7 @@ export function OrderDetailClient({
             <tr>
               <th>Date</th>
               <th>Purchase PO</th>
-              <th className="num">Qty (MT)</th>
+              <th className="num">Quantity</th>
               <th>Terms</th>
               <th className="num">Freight</th>
               <th>Lorry</th>
@@ -298,7 +297,7 @@ export function OrderDetailClient({
                     ? `${d.purchaseOrder.poNumber} — ${d.purchaseOrder.importer?.name ?? "?"} — ${d.purchaseOrder.vessel?.vesselName ?? "?"}`
                     : d.purchasePoNumber}
                 </td>
-                <td className="num">{formatMt(d.dispatchedQuantity)}</td>
+                <td className="num">{formatSaleOrderMt(d.dispatchedQuantity)}</td>
                 <td>{formatDispatchTerms(d.dispatchTerms)}</td>
                 <td className="num">{formatRs(d.freight)}</td>
                 <td>{formatLorryNumber(d.lorryNumber) ?? "—"}</td>

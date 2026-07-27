@@ -335,6 +335,52 @@ a {
   letter-spacing: 0.03em;
 }
 
+.collection-table th.collection-customer-col,
+.collection-table td.collection-customer-col {
+  white-space: normal;
+  min-width: 14rem; /* narrower so long names wrap (max 2 lines) */
+}
+
+.collection-table td.collection-customer-col {
+  overflow: hidden;
+  text-overflow: clip;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.collection-table td.collection-customer-col .btn-link {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.sales-engine-table th.sales-engine-customer-col,
+.sales-engine-table td.sales-engine-customer-col {
+  min-width: 14rem;
+}
+
+.sales-engine-table th.sales-engine-purchaser-col,
+.sales-engine-table td.sales-engine-purchaser-col {
+  min-width: 10rem;
+}
+
+.sales-engine-table th.sales-engine-days-col,
+.sales-engine-table td.sales-engine-days-col {
+  min-width: 7rem;
+  width: 7rem;
+}
+
+.sales-engine-table th.sales-engine-role-col,
+.sales-engine-table td.sales-engine-role-col {
+  min-width: 8rem;
+  width: 8rem;
+}
+
 .collection-table .collection-date-input {
   width: 11rem;
   padding: 0.28rem 0.5rem;
@@ -350,6 +396,13 @@ table.data th.num {
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+/* Collection table: force-right-align amount headers + cells */
+.collection-table th.cell-num,
+.collection-table td.cell-num,
+.collection-table th.cell-num button.th-sort {
+  text-align: right;
 }
 
 button.th-sort {
@@ -423,6 +476,16 @@ table.data td {
   vertical-align: middle;
 }
 
+table.data td.cell-num,
+table.data th.cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+table.data.report-table-dispatches thead tr:not(.report-group-row) th {
+  text-align: center;
+}
+
 table.data th {
   background: #f8fafb;
   font-size: 0.72rem;
@@ -483,6 +546,11 @@ table.data .cell-center {
   text-align: center;
 }
 
+table.data th.col-actions,
+table.data td.col-actions {
+  text-align: center;
+}
+
 /* Sale orders list — keep each row on a single line */
 .orders-table {
   width: max-content;
@@ -492,6 +560,52 @@ table.data .cell-center {
 .orders-table th,
 .orders-table td {
   white-space: nowrap;
+}
+
+/* Purchase orders list — wider vendor/vessel, compact days column */
+.purchase-orders-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.purchase-orders-table th.col-vendor,
+.purchase-orders-table td.col-vendor {
+  min-width: 11rem;
+  max-width: 16rem;
+}
+
+.purchase-orders-table td.col-vendor,
+.purchase-orders-table td.col-vessel {
+  white-space: normal;
+}
+
+.purchase-orders-table th.col-vessel,
+.purchase-orders-table td.col-vessel {
+  min-width: 11rem;
+  max-width: 16rem;
+}
+
+.purchase-orders-table th.col-days-since-order,
+.purchase-orders-table td.col-days-since-order {
+  width: 4.5rem;
+  min-width: 4.5rem;
+  max-width: 4.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  white-space: nowrap;
+}
+
+.purchase-orders-table th.col-days-since-order {
+  white-space: normal;
+  line-height: 1.25;
+  vertical-align: bottom;
+}
+
+.purchase-orders-table th.col-actions,
+.purchase-orders-table td.col-actions {
+  min-width: 12rem;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .back-link {
@@ -1214,6 +1328,15 @@ table.data tr.month-divider:hover td {
 .transport-engine-table th:nth-child(10),
 .transport-engine-table td:nth-child(10) {
   min-width: 8rem; /* Freight amount */
+}
+
+.transport-engine-table th:nth-child(11),
+.transport-engine-table td:nth-child(11),
+.transport-engine-table th:nth-child(12),
+.transport-engine-table td:nth-child(12),
+.transport-engine-table th:nth-child(13),
+.transport-engine-table td:nth-child(13) {
+  min-width: 6.5rem; /* Checklist columns */
 }
 
 /* —— Options page —— */

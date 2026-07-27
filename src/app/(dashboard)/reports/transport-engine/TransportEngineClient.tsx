@@ -9,10 +9,15 @@ import {
 } from "@/lib/actions/transportEngine";
 import {
   capitalizeName,
+  formatDateDdMmYyyy,
+  formatDispatchMt,
   formatLorryNumber,
-  formatMt,
   formatRs,
 } from "@/lib/domain/format";
+
+function formatChecklistYes(value: boolean): string {
+  return value ? "Yes" : "—";
+}
 
 function isChecklistComplete(row: {
   biltyHardCopy: boolean;
@@ -64,7 +69,6 @@ export function TransportEngineClient({
   const [biltyHardCopy, setBiltyHardCopy] = useState(false);
   const [transportInvoiceNo, setTransportInvoiceNo] = useState("");
   const [invoiceHardCopy, setInvoiceHardCopy] = useState(false);
-  const [softCopyStatus, setSoftCopyStatus] = useState(false);
   const [entryInTally, setEntryInTally] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -109,7 +113,6 @@ export function TransportEngineClient({
     setBiltyHardCopy(row.biltyHardCopy);
     setTransportInvoiceNo(row.transportInvoiceNo ?? "");
     setInvoiceHardCopy(row.invoiceHardCopy);
-    setSoftCopyStatus(row.softCopyStatus);
     setEntryInTally(row.entryInTally);
     setError(null);
   }
@@ -131,7 +134,7 @@ export function TransportEngineClient({
         transportInvoiceNo:
           transportInvoiceNo.trim() === "" ? null : transportInvoiceNo,
         invoiceHardCopy,
-        softCopyStatus,
+        softCopyStatus: editRow.softCopyStatus,
         entryInTally,
       });
       setRows((prev) =>
@@ -234,6 +237,9 @@ export function TransportEngineClient({
               <th>Transporter name</th>
               <th className="cell-num">Freight per ton</th>
               <th className="cell-num">Freight amount</th>
+              <th className="cell-center">Bilty hard copy</th>
+              <th className="cell-center">Invoice hard copy</th>
+              <th className="cell-center">Entry in Tally</th>
               <th>Edit</th>
             </tr>
           </thead>
@@ -243,7 +249,7 @@ export function TransportEngineClient({
               const lorry = formatLorryNumber(row.lorryNumber);
               return (
                 <tr key={row.id}>
-                  <td>{row.dispatchDate}</td>
+                  <td>{formatDateDdMmYyyy(row.dispatchDate)}</td>
                   <td
                     className={
                       row.saleInvoiceNumber ? undefined : "cell-center"
@@ -254,20 +260,22 @@ export function TransportEngineClient({
                   <td className={lorry ? undefined : "cell-center"}>
                     {lorry ?? "—"}
                   </td>
-                  <td className="cell-num">{formatMt(row.loadingWeight)}</td>
+                  <td className="cell-num">
+                    {formatDispatchMt(row.loadingWeight)}
+                  </td>
                   <td
                     className={
                       row.receivingWeight != null ? "cell-num" : "cell-center"
                     }
                   >
-                    {formatMt(row.receivingWeight)}
+                    {formatDispatchMt(row.receivingWeight)}
                   </td>
                   <td
                     className={
                       row.diffInWeight != null ? "cell-num" : "cell-center"
                     }
                   >
-                    {formatMt(row.diffInWeight)}
+                    {formatDispatchMt(row.diffInWeight)}
                   </td>
                   <td className={row.customerName ? undefined : "cell-center"}>
                     {row.customerName
@@ -294,6 +302,15 @@ export function TransportEngineClient({
                       ? formatRs(row.freightAmount)
                       : "—"}
                   </td>
+                  <td className="cell-center">
+                    {formatChecklistYes(row.biltyHardCopy)}
+                  </td>
+                  <td className="cell-center">
+                    {formatChecklistYes(row.invoiceHardCopy)}
+                  </td>
+                  <td className="cell-center">
+                    {formatChecklistYes(row.entryInTally)}
+                  </td>
                   <td>
                     <button
                       type="button"
@@ -313,7 +330,7 @@ export function TransportEngineClient({
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={11}>
+                <td colSpan={14}>
                   {rows.length === 0
                     ? "No dispatches yet."
                     : "No dispatches match these filters."}
@@ -356,15 +373,6 @@ export function TransportEngineClient({
             className="dispatch-bool-toggle"
             checked={invoiceHardCopy}
             onChange={(e) => setInvoiceHardCopy(e.target.checked)}
-          />
-
-          <label htmlFor="te-soft">Invoice soft copy</label>
-          <input
-            id="te-soft"
-            type="checkbox"
-            className="dispatch-bool-toggle"
-            checked={softCopyStatus}
-            onChange={(e) => setSoftCopyStatus(e.target.checked)}
           />
 
           <label htmlFor="te-tally">Entry in Tally</label>

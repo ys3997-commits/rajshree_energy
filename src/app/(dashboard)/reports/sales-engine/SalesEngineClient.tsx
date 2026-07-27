@@ -10,7 +10,6 @@ import {
 import {
   capitalizeName,
   formatCustomerCategory,
-  formatMt,
   formatRs,
 } from "@/lib/domain/format";
 
@@ -21,7 +20,7 @@ type PlannedCallFilter =
   | "older"
   | "future"
   | "none";
-type SortKey = "soldQuantity" | "due" | "overdue";
+type SortKey = "orderInHand" | "soldQuantity" | "due" | "overdue";
 type SortDir = "asc" | "desc";
 
 function todayLocal(): string {
@@ -82,9 +81,41 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
   return [...names].sort((a, b) => a.localeCompare(b));
 }
 
-function numericValue(value: string): number {
+function numericValue(value: string | null | undefined): number {
+  if (value == null || value === "") return 0;
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
+}
+
+function formatQtyMt(value: string | null | undefined): string {
+  if (value == null || value === "") return "—";
+  const n = Number(value);
+  if (!Number.isFinite(n)) return value;
+  return `${n.toLocaleString("en-US", {
+    useGrouping: false,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} MT`;
+}
+
+function daysSinceLastDispatch(
+  value: string | null | undefined,
+  todayYmd: string,
+): string {
+  if (!value) return "—";
+  const lastYmd = value.trim().slice(0, 10);
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(lastYmd);
+  if (!m) return "—";
+  const [, y, mo, d] = m;
+  const lastUtc = Date.UTC(Number(y), Number(mo) - 1, Number(d));
+
+  const tm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(todayYmd);
+  if (!tm) return "—";
+  const [, ty, tmo, td] = tm;
+  const todayUtc = Date.UTC(Number(ty), Number(tmo) - 1, Number(td));
+
+  const diffDays = Math.floor((todayUtc - lastUtc) / 86_400_000);
+  return `${diffDays < 0 ? 0 : diffDays} days`;
 }
 
 function sortIndicator(active: boolean, dir: SortDir): string {
@@ -324,33 +355,50 @@ export function SalesEngineClient({
       </form>
 
       <div className="table-wrap">
-        <table className="data payments-table collection-table">
+        <table className="data payments-table collection-table sales-engine-table">
           <thead>
             <tr>
-              <th>Customer name</th>
-              <th>Purchaser name</th>
+              <th className="sales-engine-customer-col">Customer name</th>
+              <th className="sales-engine-purchaser-col">Purchaser name</th>
               <th>Phone number</th>
-              <th>Role of purchaser</th>
+              <th className="sales-engine-role-col">
+                Role of
+                <br />
+                purchaser
+              </th>
               <th>Sale executive</th>
-              <th className="cell-num">Order in hand (MT)</th>
+              <th className="cell-num">
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("orderInHand")}
+                >
+                  Order in hand
+                  {sortIndicator(sortKey === "orderInHand", sortDir)}
+                </button>
+              </th>
               <th className="cell-num">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("soldQuantity")}
                 >
-                  Sold quantity (MT)
+                  Sold quantity
                   {sortIndicator(sortKey === "soldQuantity", sortDir)}
                 </button>
               </th>
-              <th>Last dispatch date</th>
+              <th className="sales-engine-days-col">
+                Days since
+                <br />
+                last dispatch
+              </th>
               <th className="cell-num">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("due")}
                 >
-                  Due
+                  Total Due
                   {sortIndicator(sortKey === "due", sortDir)}
                 </button>
               </th>
@@ -372,7 +420,7 @@ export function SalesEngineClient({
               const rowClass = rowHighlightClass(row.plannedSaleCallDate, today);
               return (
                 <tr key={row.id} className={rowClass}>
-                  <td>
+                  <td className="sales-engine-customer-col">
                     <Link
                       href={`/reports/customer-analysis/${row.id}`}
                       className="btn-link"
@@ -380,26 +428,31 @@ export function SalesEngineClient({
                       {capitalizeName(row.name) ?? row.name}
                     </Link>
                   </td>
-                  <td>
+                  <td className="sales-engine-purchaser-col">
                     {row.purchaserName
                       ? (capitalizeName(row.purchaserName) ?? row.purchaserName)
                       : "—"}
                   </td>
                   <td>{row.purchaserContact ?? "—"}</td>
-                  <td>{row.purchaserRole ?? "—"}</td>
+                  <td className="sales-engine-role-col">
+                    {row.purchaserRole ?? "—"}
+                  </td>
                   <td>
                     {row.saleExecutive
                       ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
                       : "—"}
                   </td>
-                  <td className="cell-num">{formatMt(row.orderInHand)}</td>
-                  <td className="cell-num">{formatMt(row.soldQuantity)}</td>
-                  <td>{row.lastDispatchDate ?? "—"}</td>
+                  <td className="cell-num">{formatQtyMt(row.orderInHand)}</td>
+                  <td className="cell-num">{formatQtyMt(row.soldQuantity)}</td>
+                  <td className="cell-num sales-engine-days-col">
+                    {daysSinceLastDispatch(row.lastDispatchDate, today)}
+                  </td>
                   <td className="cell-num">{formatRs(row.due)}</td>
                   <td className="cell-num">{formatRs(row.overdue)}</td>
                   <td>
                     <input
                       type="date"
+                      lang="en-GB"
                       className="field-input collection-date-input"
                       aria-label={`Planned sales call for ${row.name}`}
                       value={row.plannedSaleCallDate ?? ""}

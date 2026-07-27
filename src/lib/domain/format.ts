@@ -53,6 +53,31 @@ export function formatMt(
   return formatIndianNumber(Math.round(n));
 }
 
+function formatWeightMtValue(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  if (value == null || value === "") return "—";
+  const s = typeof value === "string" ? value : value.toString();
+  if (s === "—") return "—";
+  const n = Number(s);
+  if (!Number.isFinite(n)) return s;
+  return `${n.toFixed(2)} MT`;
+}
+
+/** Sale order quantity cells: 2 decimals, no grouping, trailing " MT". */
+export function formatSaleOrderMt(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  return formatWeightMtValue(value);
+}
+
+/** Dispatch sheet MT cells: 2 decimals, no grouping, trailing " MT". */
+export function formatDispatchMt(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  return formatWeightMtValue(value);
+}
+
 /**
  * Format a rate/amount for display with Rs prefix (integer, Indian grouping).
  */
@@ -256,6 +281,18 @@ export function formatLorryNumber(
   } catch {
     return trimmed.toUpperCase();
   }
+}
+
+/** ISO date (YYYY-MM-DD) or datetime prefix → DD/MM/YYYY for display. */
+export function formatDateDdMmYyyy(
+  value: string | null | undefined,
+): string {
+  if (!value) return "—";
+  const datePart = value.trim().slice(0, 10);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
 }
 
 /** e.g. "30 days" */

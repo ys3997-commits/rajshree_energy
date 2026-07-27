@@ -5,7 +5,7 @@ import {
 } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
 import { listVessels } from "@/lib/actions/vessels";
-import { formatMt, formatRs } from "@/lib/domain/computations";
+import { formatRs } from "@/lib/domain/computations";
 import {
   daysSinceOrder,
   displayOrderBalance,
@@ -13,6 +13,7 @@ import {
   formatIndianNumber,
   formatOrderStatusForDisplay,
   formatOrderType,
+  formatSaleOrderMt,
 } from "@/lib/domain/format";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
@@ -108,23 +109,27 @@ export default async function PurchaseOrdersPage({
         </button>
       </form>
 
-      <div className="table-wrap">
-        <table className="data">
+      <div className="table-wrap table-wrap-scroll">
+        <table className="data purchase-orders-table">
           <thead>
             <tr>
               <th>Purchase PO</th>
-              <th>Vendor</th>
-              <th>Vessel</th>
+              <th className="col-vendor">Vendor</th>
+              <th className="col-vessel">Vessel</th>
               <th>Type</th>
-              <th className="num">Days since order</th>
-              <th className="num">Quantity (MT)</th>
-              <th className="num">Dispatched (MT)</th>
-              <th className="num">Closing (MT)</th>
-              <th className="num">Balance (MT)</th>
+              <th className="num col-days-since-order">
+                Days since
+                <br />
+                order
+              </th>
+              <th className="num">Quantity</th>
+              <th className="num">Dispatched</th>
+              <th className="num">Closing</th>
+              <th className="num">Balance</th>
               <th className="num">Basic rate</th>
               <th className="num">Final rate</th>
               <th>Status</th>
-              <th>Actions</th>
+              <th className="col-actions">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -144,22 +149,22 @@ export default async function PurchaseOrdersPage({
                       {row.poNumber}
                     </Link>
                   </td>
-                  <td>{row.importer.name}</td>
-                  <td>{row.vessel.vesselName}</td>
+                  <td className="col-vendor">{row.importer.name}</td>
+                  <td className="col-vessel">{row.vessel.vesselName}</td>
                   <td>{formatOrderType(row.orderType)}</td>
-                  <td className="num">
+                  <td className="num col-days-since-order">
                     {formatIndianNumber(
                       daysSinceOrder(row.orderDate, row.createdAt),
                     )}
                   </td>
-                  <td className="num">{formatMt(displayOrderQuantity(row))}</td>
-                  <td className="num">{formatMt(row.dispatchedOrder)}</td>
-                  <td className="num">{formatMt(row.closingQuantity)}</td>
-                  <td className="num">{formatMt(displayOrderBalance(row))}</td>
+                  <td className="num">{formatSaleOrderMt(displayOrderQuantity(row))}</td>
+                  <td className="num">{formatSaleOrderMt(row.dispatchedOrder)}</td>
+                  <td className="num">{formatSaleOrderMt(row.closingQuantity)}</td>
+                  <td className="num">{formatSaleOrderMt(displayOrderBalance(row))}</td>
                   <td className="num">{formatRs(row.rate)}</td>
                   <td className="num">{formatRs(row.finalRate)}</td>
                   <td>{formatOrderStatusForDisplay(row)}</td>
-                  <td>
+                  <td className="col-actions">
                     {canClose ? (
                       <CloseQuantityButton
                         orderId={row.id}
