@@ -1,8 +1,13 @@
 "use server";
 
 import { CustomerCategory } from "@/generated/prisma";
-import { computeOverdue } from "@/lib/domain/customerDue";
+import { toDecimal } from "@/lib/domain/computations";
+import {
+  adjustCustomerDue,
+  computeOverdue,
+} from "@/lib/domain/customerDue";
 import { capitalizeName } from "@/lib/domain/format";
+import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -171,12 +176,25 @@ export type CustomerInput = {
   sector?: string | null;
   saleExecutive?: string | null;
   approachForFunds?: string | null;
+  /** Carry-forward balance before this system; included in total due. */
+  openingDue?: string | number | null;
 };
 
 function normalizePhone(value: string | null | undefined): string | null {
   if (!value) return null;
   const digits = value.replace(/\D/g, "");
   return digits || null;
+}
+
+function parseOpeningDue(value: string | number | null | undefined): Decimal {
+  if (value === undefined || value === null || value === "") {
+    return new Decimal(0);
+  }
+  const d = toDecimal(value);
+  if (!d.isFinite()) {
+    throw new Error("Opening due must be a valid amount");
+  }
+  return d.toDecimalPlaces(2);
 }
 
 function toCustomerData(input: CustomerInput) {
@@ -216,19 +234,39 @@ function toCustomerData(input: CustomerInput) {
 }
 
 export async function createCustomer(input: CustomerInput) {
+  const openingDue = parseOpeningDue(input.openingDue);
   const row = await prisma.customer.create({
-    data: toCustomerData(input),
+    data: {
+      ...toCustomerData(input),
+      openingDue,
+      due: openingDue,
+    },
   });
   revalidatePath("/customers");
+  revalidatePath("/payments");
   return row;
 }
 
 export async function updateCustomer(id: string, input: CustomerInput) {
-  const row = await prisma.customer.update({
-    where: { id },
-    data: toCustomerData(input),
+  const openingDue = parseOpeningDue(input.openingDue);
+  const row = await prisma.$transaction(async (tx) => {
+    const existing = await tx.customer.findUniqueOrThrow({
+      where: { id },
+      select: { openingDue: true },
+    });
+    const updated = await tx.customer.update({
+      where: { id },
+      data: {
+        ...toCustomerData(input),
+        openingDue,
+      },
+    });
+    const delta = openingDue.minus(toDecimal(existing.openingDue));
+    await adjustCustomerDue(tx, id, delta);
+    return updated;
   });
   revalidatePath("/customers");
+  revalidatePath("/payments");
   return row;
 }
 

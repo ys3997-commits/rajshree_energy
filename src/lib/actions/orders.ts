@@ -109,12 +109,13 @@ export async function getOrder(id: string) {
 
 export async function listOrdersWithBalance() {
   const rows = await prisma.order.findMany({
+    where: { orderType: OrderType.REGULAR },
     include: { customer: { select: { name: true, category: true } } },
     orderBy: { poNumber: "asc" },
   });
   return rows
     .map(withOrderComputed)
-    .filter((o) => o.balanceOrder == null || o.balanceOrder.gt(0));
+    .filter((o) => o.balanceOrder != null && o.balanceOrder.gt(0));
 }
 
 export type CreateRegularOrderInput = {

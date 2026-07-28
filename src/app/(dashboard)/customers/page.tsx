@@ -22,6 +22,7 @@ export default async function CustomersPage() {
       initial={customers.map((customer) => {
         const {
           due,
+          openingDue,
           plannedCollectionCallDate,
           plannedSaleCallDate,
           ...row
@@ -29,7 +30,10 @@ export default async function CustomersPage() {
         void due;
         void plannedCollectionCallDate;
         void plannedSaleCallDate;
-        return row;
+        return {
+          ...row,
+          openingDue: openingDue.toString(),
+        };
       })}
       cities={cities.map((o) => o.name)}
       states={states.map((o) => o.name)}

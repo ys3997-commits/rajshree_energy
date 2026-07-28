@@ -76,6 +76,14 @@ export async function updateTransporter(id: string, input: TransporterInput) {
 }
 
 export async function deleteTransporter(id: string) {
+  const dispatchCount = await prisma.dispatch.count({
+    where: { transporterId: id },
+  });
+  if (dispatchCount > 0) {
+    throw new Error(
+      "Cannot delete: this transporter is used by one or more dispatches",
+    );
+  }
   await prisma.transporter.delete({ where: { id } });
   revalidatePath("/transporters");
 }

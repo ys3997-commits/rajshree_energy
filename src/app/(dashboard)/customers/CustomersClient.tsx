@@ -12,6 +12,7 @@ import {
   capitalizeName,
   formatCreditPeriod,
   formatCustomerCategory,
+  formatRs,
 } from "@/lib/domain/format";
 import { FormStatusToggle } from "@/components/FormStatusToggle";
 import { OptionSelect } from "@/components/OptionSelect";
@@ -43,6 +44,7 @@ type Row = {
   sector: string | null;
   saleExecutive: string | null;
   approachForFunds: string | null;
+  openingDue: string;
 };
 
 const empty = {
@@ -69,6 +71,7 @@ const empty = {
   sector: "",
   saleExecutive: "",
   approachForFunds: "",
+  openingDue: "0",
 };
 
 function parseCreditDays(value: string): number | null {
@@ -77,6 +80,16 @@ function parseCreditDays(value: string): number | null {
   const n = Number(trimmed);
   if (!Number.isFinite(n) || n < 0) return null;
   return Math.round(n);
+}
+
+function parseOpeningDueInput(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "0";
+  const n = Number(trimmed);
+  if (!Number.isFinite(n)) {
+    throw new Error("Opening due must be a valid amount");
+  }
+  return trimmed;
 }
 
 function digitsOnly(value: string): string {
@@ -143,6 +156,7 @@ export function CustomersClient({
       sector: form.sector || null,
       saleExecutive: form.saleExecutive || null,
       approachForFunds: form.approachForFunds || null,
+      openingDue: parseOpeningDueInput(form.openingDue),
     };
     try {
       if (editing) await updateCustomer(editing.id, payload);
@@ -191,6 +205,7 @@ export function CustomersClient({
       sector: row.sector ?? "",
       saleExecutive: row.saleExecutive ?? "",
       approachForFunds: row.approachForFunds ?? "",
+      openingDue: row.openingDue,
     });
   }
 
@@ -433,6 +448,18 @@ export function CustomersClient({
           <span className="field-unit">days</span>
         </div>
 
+        <label>Opening due</label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            step="0.01"
+            placeholder="0"
+            value={form.openingDue}
+            onChange={(e) => setForm({ ...form, openingDue: e.target.value })}
+          />
+          <span className="field-unit">Rs</span>
+        </div>
+
         <label>Sales executive</label>
         <OptionSelect
           value={form.saleExecutive}
@@ -490,6 +517,7 @@ export function CustomersClient({
               <th>Purchaser</th>
               <th>Payment</th>
               <th className="num">Credit period</th>
+              <th className="num">Opening due</th>
               <th>Sector</th>
               <th>Sales Executive</th>
               <th />
@@ -522,6 +550,7 @@ export function CustomersClient({
                   )}
                 </td>
                 <td className="num">{formatCreditPeriod(row.creditDays)}</td>
+                <td className="num">{formatRs(row.openingDue)}</td>
                 <td>{row.sector ?? "—"}</td>
                 <td>{row.saleExecutive ?? "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">
@@ -550,7 +579,7 @@ export function CustomersClient({
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={10}>No customers yet.</td>
+                <td colSpan={11}>No customers yet.</td>
               </tr>
             )}
           </tbody>

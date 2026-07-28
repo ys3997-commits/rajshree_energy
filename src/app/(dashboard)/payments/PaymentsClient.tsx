@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState, useTransition } from "react";
+import { CustomerCategory } from "@/generated/prisma";
 import { updatePlannedCollectionCall } from "@/lib/actions/collection";
 import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
@@ -21,7 +22,7 @@ import {
 
 type Opt = { id: string; name: string };
 type Direction = "RECEIVED" | "SENT" | "";
-type Tab = "transactions" | "collection";
+type Tab = "transactions" | "collection" | "vendor-collection";
 type PlannedCallFilter =
   | ""
   | "today"
@@ -31,6 +32,11 @@ type PlannedCallFilter =
   | "none";
 type CollectionSortKey = "due" | "overdue";
 type SortDir = "asc" | "desc";
+
+const BUYER_COLLECTION_CATEGORIES = new Set<CustomerCategory>([
+  CustomerCategory.INDUSTRY,
+  CustomerCategory.TRADER,
+]);
 
 function todayLocal(): string {
   const d = new Date();
@@ -86,17 +92,6 @@ function matchesPlannedCallFilter(
   if (filter === "tomorrow") return p === tomorrow;
   if (filter === "older") return p < today;
   return p > tomorrow;
-}
-
-function collectionRowHighlightClass(
-  planned: string | null,
-  today: string,
-): string | undefined {
-  const p = normalizePlannedDate(planned);
-  if (!p) return undefined;
-  if (p === today) return "collection-row-call-today";
-  if (p < today) return "collection-row-due-call";
-  return undefined;
 }
 
 function distinctTrimmed(values: Array<string | null | undefined>): string[] {
@@ -172,6 +167,7 @@ export function PaymentsClient({
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const today = todayLocal();
+  const yesterday = addLocalDays(today, -1);
   const tomorrow = addLocalDays(today, 1);
 
   function toggleSort(key: CollectionSortKey) {
@@ -183,34 +179,70 @@ export function PaymentsClient({
     setSortDir("desc");
   }
 
-  const saleExecutiveOptions = useMemo(
-    () => distinctTrimmed(collection.map((row) => row.saleExecutive)),
+  const buyerCollection = useMemo(
+    () => collection.filter((row) => BUYER_COLLECTION_CATEGORIES.has(row.category)),
     [collection],
+  );
+  const vendorCollection = useMemo(
+    () =>
+      collection.filter((row) => row.category === CustomerCategory.SUPPLIER),
+    [collection],
+  );
+
+  const saleExecutiveOptions = useMemo(
+    () =>
+      distinctTrimmed(
+        (tab === "vendor-collection" ? vendorCollection : buyerCollection).map(
+          (row) => row.saleExecutive,
+        ),
+      ),
+    [tab, buyerCollection, vendorCollection],
   );
   const approachForFundsOptions = useMemo(
-    () => distinctTrimmed(collection.map((row) => row.approachForFunds)),
-    [collection],
+    () =>
+      distinctTrimmed(
+        (tab === "vendor-collection" ? vendorCollection : buyerCollection).map(
+          (row) => row.approachForFunds,
+        ),
+      ),
+    [tab, buyerCollection, vendorCollection],
   );
   const cityOptions = useMemo(
-    () => distinctTrimmed(collection.map((row) => row.city)),
-    [collection],
+    () =>
+      distinctTrimmed(
+        (tab === "vendor-collection" ? vendorCollection : buyerCollection).map(
+          (row) => row.city,
+        ),
+      ),
+    [tab, buyerCollection, vendorCollection],
   );
   const stateOptions = useMemo(
-    () => distinctTrimmed(collection.map((row) => row.state)),
-    [collection],
+    () =>
+      distinctTrimmed(
+        (tab === "vendor-collection" ? vendorCollection : buyerCollection).map(
+          (row) => row.state,
+        ),
+      ),
+    [tab, buyerCollection, vendorCollection],
   );
   const sectorOptions = useMemo(
-    () => distinctTrimmed(collection.map((row) => row.sector)),
-    [collection],
+    () =>
+      distinctTrimmed(
+        (tab === "vendor-collection" ? vendorCollection : buyerCollection).map(
+          (row) => row.sector,
+        ),
+      ),
+    [tab, buyerCollection, vendorCollection],
   );
-  const categoryOptions = useMemo(() => {
-    const cats = new Set(collection.map((row) => row.category));
-    return [...cats].sort((a, b) =>
-      formatCustomerCategory(a).localeCompare(formatCustomerCategory(b)),
-    );
-  }, [collection]);
+  const categoryOptions = useMemo(
+    () =>
+      [CustomerCategory.INDUSTRY, CustomerCategory.TRADER].sort((a, b) =>
+        formatCustomerCategory(a).localeCompare(formatCustomerCategory(b)),
+      ),
+    [],
+  );
 
-  const hasActiveFilters = Boolean(
+  const hasActiveBuyerFilters = Boolean(
     plannedCallFilter ||
       saleExecutiveFilter ||
       approachForFundsFilter ||
@@ -220,8 +252,50 @@ export function PaymentsClient({
       sectorFilter,
   );
 
+  const hasActiveVendorFilters = Boolean(
+    saleExecutiveFilter ||
+      approachForFundsFilter ||
+      cityFilter ||
+      stateFilter ||
+      sectorFilter,
+  );
+
+  function matchesSharedFilters(row: CustomerDueRow): boolean {
+    if (
+      saleExecutiveFilter &&
+      (row.saleExecutive?.trim() ?? "") !== saleExecutiveFilter
+    ) {
+      return false;
+    }
+    if (
+      approachForFundsFilter &&
+      (row.approachForFunds?.trim() ?? "") !== approachForFundsFilter
+    ) {
+      return false;
+    }
+    if (cityFilter && (row.city?.trim() ?? "") !== cityFilter) {
+      return false;
+    }
+    if (stateFilter && (row.state?.trim() ?? "") !== stateFilter) {
+      return false;
+    }
+    if (sectorFilter && (row.sector?.trim() ?? "") !== sectorFilter) {
+      return false;
+    }
+    return true;
+  }
+
+  function sortCollectionRows(rows: CustomerDueRow[]): CustomerDueRow[] {
+    if (!sortKey) return rows;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...rows].sort(
+      (a, b) =>
+        (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
+    );
+  }
+
   const filteredCollection = useMemo(() => {
-    const next = collection.filter((row) => {
+    const next = buyerCollection.filter((row) => {
       if (
         !matchesPlannedCallFilter(
           row.plannedCollectionCallDate,
@@ -232,40 +306,14 @@ export function PaymentsClient({
       ) {
         return false;
       }
-      if (
-        saleExecutiveFilter &&
-        (row.saleExecutive?.trim() ?? "") !== saleExecutiveFilter
-      ) {
-        return false;
-      }
-      if (
-        approachForFundsFilter &&
-        (row.approachForFunds?.trim() ?? "") !== approachForFundsFilter
-      ) {
-        return false;
-      }
-      if (cityFilter && (row.city?.trim() ?? "") !== cityFilter) {
-        return false;
-      }
-      if (stateFilter && (row.state?.trim() ?? "") !== stateFilter) {
-        return false;
-      }
       if (categoryFilter && row.category !== categoryFilter) {
         return false;
       }
-      if (sectorFilter && (row.sector?.trim() ?? "") !== sectorFilter) {
-        return false;
-      }
-      return true;
+      return matchesSharedFilters(row);
     });
-    if (!sortKey) return next;
-    const dir = sortDir === "asc" ? 1 : -1;
-    return [...next].sort(
-      (a, b) =>
-        (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
-    );
+    return sortCollectionRows(next);
   }, [
-    collection,
+    buyerCollection,
     plannedCallFilter,
     saleExecutiveFilter,
     approachForFundsFilter,
@@ -279,6 +327,20 @@ export function PaymentsClient({
     tomorrow,
   ]);
 
+  const filteredVendorCollection = useMemo(() => {
+    const next = vendorCollection.filter((row) => matchesSharedFilters(row));
+    return sortCollectionRows(next);
+  }, [
+    vendorCollection,
+    saleExecutiveFilter,
+    approachForFundsFilter,
+    cityFilter,
+    stateFilter,
+    sectorFilter,
+    sortKey,
+    sortDir,
+  ]);
+
   function resetForm(customerId = "") {
     setEditing(null);
     setForm(emptyForm(customerId));
@@ -287,8 +349,19 @@ export function PaymentsClient({
   function switchTab(next: Tab) {
     setTab(next);
     setError(null);
+    setPlannedCallFilter("");
+    setSaleExecutiveFilter("");
+    setApproachForFundsFilter("");
+    setCityFilter("");
+    setStateFilter("");
+    setCategoryFilter("");
+    setSectorFilter("");
+    setSortKey(null);
+    setSortDir("desc");
     if (next === "collection") {
       router.replace("/payments?tab=collection");
+    } else if (next === "vendor-collection") {
+      router.replace("/payments?tab=vendor-collection");
     } else {
       router.replace(pageHref(page));
     }
@@ -432,7 +505,19 @@ export function PaymentsClient({
           onClick={() => switchTab("collection")}
         >
           Collection
-          <span className="ca-tab-count">{collection.length}</span>
+          <span className="ca-tab-count">{buyerCollection.length}</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "vendor-collection"}
+          className={
+            tab === "vendor-collection" ? "ca-tab ca-tab-active" : "ca-tab"
+          }
+          onClick={() => switchTab("vendor-collection")}
+        >
+          Vendor Collection
+          <span className="ca-tab-count">{vendorCollection.length}</span>
         </button>
       </nav>
 
@@ -724,7 +809,7 @@ export function PaymentsClient({
                 ))}
               </select>
             </label>
-            {hasActiveFilters && (
+            {hasActiveBuyerFilters && (
               <button
                 type="button"
                 className="btn btn-secondary"
@@ -779,12 +864,17 @@ export function PaymentsClient({
               </thead>
               <tbody>
                 {filteredCollection.map((row) => {
-                  const rowClass = collectionRowHighlightClass(
-                    row.plannedCollectionCallDate,
-                    today,
-                  );
+                  const lastPaidYesterday =
+                    normalizePlannedDate(row.lastPaymentDate) === yesterday;
                   return (
-                    <tr key={row.id} className={rowClass}>
+                    <tr
+                      key={row.id}
+                      className={
+                        lastPaidYesterday
+                          ? "payment-row-yesterday"
+                          : undefined
+                      }
+                    >
                       <td className="collection-customer-col">
                         <Link
                           href={`/reports/customer-analysis/${row.id}`}
@@ -838,9 +928,176 @@ export function PaymentsClient({
                 {filteredCollection.length === 0 && (
                   <tr>
                     <td colSpan={10}>
-                      {collection.length === 0
+                      {buyerCollection.length === 0
                         ? "No outstanding dues."
                         : "No customers match these filters."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {tab === "vendor-collection" && (
+        <>
+          <form className="filters" onSubmit={(e) => e.preventDefault()}>
+            <label>
+              Sales executive
+              <select
+                value={saleExecutiveFilter}
+                onChange={(e) => setSaleExecutiveFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {saleExecutiveOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {capitalizeName(name) ?? name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Approach for funds
+              <select
+                value={approachForFundsFilter}
+                onChange={(e) => setApproachForFundsFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {approachForFundsOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {capitalizeName(name) ?? name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              City
+              <select
+                value={cityFilter}
+                onChange={(e) => setCityFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {cityOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              State
+              <select
+                value={stateFilter}
+                onChange={(e) => setStateFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {stateOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Sector
+              <select
+                value={sectorFilter}
+                onChange={(e) => setSectorFilter(e.target.value)}
+              >
+                <option value="">All</option>
+                {sectorOptions.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {hasActiveVendorFilters && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setSaleExecutiveFilter("");
+                  setApproachForFundsFilter("");
+                  setCityFilter("");
+                  setStateFilter("");
+                  setSectorFilter("");
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </form>
+
+          <div className="table-wrap">
+            <table className="data payments-table collection-table vendor-collection-table">
+              <thead>
+                <tr>
+                  <th className="collection-customer-col">Customer</th>
+                  <th>Payment in charge</th>
+                  <th>Contact number</th>
+                  <th>Sales executive</th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("due")}
+                    >
+                      Total Due
+                      {sortIndicator(sortKey === "due", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("overdue")}
+                    >
+                      Overdue
+                      {sortIndicator(sortKey === "overdue", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">Credit period</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredVendorCollection.map((row) => (
+                  <tr key={row.id}>
+                    <td className="collection-customer-col">
+                      <Link
+                        href={`/reports/customer-analysis/${row.id}`}
+                        className="btn-link"
+                      >
+                        {capitalizeName(row.name) ?? row.name}
+                      </Link>
+                    </td>
+                    <td>
+                      {row.paymentInChargeName
+                        ? (capitalizeName(row.paymentInChargeName) ??
+                          row.paymentInChargeName)
+                        : "—"}
+                    </td>
+                    <td>{row.paymentInChargeContact ?? "—"}</td>
+                    <td>
+                      {row.saleExecutive
+                        ? (capitalizeName(row.saleExecutive) ??
+                          row.saleExecutive)
+                        : "—"}
+                    </td>
+                    <td className="cell-num">{formatRs(row.due)}</td>
+                    <td className="cell-num">{formatRs(row.overdue)}</td>
+                    <td className="cell-num">
+                      {formatCreditPeriod(row.creditDays)}
+                    </td>
+                  </tr>
+                ))}
+                {filteredVendorCollection.length === 0 && (
+                  <tr>
+                    <td colSpan={7}>
+                      {vendorCollection.length === 0
+                        ? "No outstanding dues."
+                        : "No vendors match these filters."}
                     </td>
                   </tr>
                 )}

@@ -228,6 +228,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   saleExecutive: 'saleExecutive',
   dealById: 'dealById',
   approachForFunds: 'approachForFunds',
+  openingDue: 'openingDue',
   due: 'due',
   plannedCollectionCallDate: 'plannedCollectionCallDate',
   plannedSaleCallDate: 'plannedSaleCallDate',

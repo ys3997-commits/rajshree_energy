@@ -83,6 +83,7 @@ export async function getPurchaseOrder(id: string) {
 
 export async function listPurchaseOrdersWithBalance() {
   const rows = await prisma.purchaseOrder.findMany({
+    where: { orderType: OrderType.REGULAR },
     include: {
       importer: { select: { name: true } },
       vessel: { select: { vesselName: true } },
@@ -97,7 +98,7 @@ export async function listPurchaseOrdersWithBalance() {
   });
   return rows
     .map(withPurchaseOrderComputed)
-    .filter((o) => o.balanceOrder == null || o.balanceOrder.gt(0));
+    .filter((o) => o.balanceOrder != null && o.balanceOrder.gt(0));
 }
 
 /** Suggest next sequential purchase order number (PO 0001, PO 0002, …). */

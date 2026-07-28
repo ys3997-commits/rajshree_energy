@@ -11,7 +11,12 @@ export default async function PaymentsPage({
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
-  const tab = sp.tab === "collection" ? "collection" : "transactions";
+  const tab =
+    sp.tab === "collection"
+      ? "collection"
+      : sp.tab === "vendor-collection"
+        ? "vendor-collection"
+        : "transactions";
 
   const [payments, customers, collection] = await Promise.all([
     listPayments({ page }),

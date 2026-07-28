@@ -183,7 +183,9 @@ model Customer {
   saleExecutive            String?
   dealById                 String?
   approachForFunds         String?
-  /// Net amount owed by the customer to Rajshree (sales − purchases − received + sent).
+  /// Carry-forward balance from before this system (manual). Included in `due`.
+  openingDue               Decimal          @default(0) @db.Decimal(18, 2)
+  /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent).
   due                      Decimal          @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?

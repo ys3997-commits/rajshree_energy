@@ -145,11 +145,13 @@ export function computeOverdue(
 }
 
 /**
- * Recompute every customer's due from orders, purchase orders, and payments.
+ * Recompute every customer's due from opening due, orders, purchase orders, and payments.
  * Open orders contribute finalRate × dispatchedOrder until quantity is set.
  */
 export async function recalculateAllCustomerDues(): Promise<void> {
-  const customers = await prisma.customer.findMany({ select: { id: true } });
+  const customers = await prisma.customer.findMany({
+    select: { id: true, openingDue: true },
+  });
 
   for (const customer of customers) {
     const [orders, purchaseOrders, payments] = await Promise.all([
@@ -177,7 +179,7 @@ export async function recalculateAllCustomerDues(): Promise<void> {
       }),
     ]);
 
-    let due = new Decimal(0);
+    let due = toDecimal(customer.openingDue);
     for (const order of orders) {
       due = due.plus(
         billedAmount(

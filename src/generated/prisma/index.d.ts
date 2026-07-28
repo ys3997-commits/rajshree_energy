@@ -11937,11 +11937,13 @@ export namespace Prisma {
 
   export type CustomerAvgAggregateOutputType = {
     creditDays: number | null
+    openingDue: Decimal | null
     due: Decimal | null
   }
 
   export type CustomerSumAggregateOutputType = {
     creditDays: number | null
+    openingDue: Decimal | null
     due: Decimal | null
   }
 
@@ -11971,6 +11973,7 @@ export namespace Prisma {
     saleExecutive: string | null
     dealById: string | null
     approachForFunds: string | null
+    openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
     plannedSaleCallDate: Date | null
@@ -12004,6 +12007,7 @@ export namespace Prisma {
     saleExecutive: string | null
     dealById: string | null
     approachForFunds: string | null
+    openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
     plannedSaleCallDate: Date | null
@@ -12037,6 +12041,7 @@ export namespace Prisma {
     saleExecutive: number
     dealById: number
     approachForFunds: number
+    openingDue: number
     due: number
     plannedCollectionCallDate: number
     plannedSaleCallDate: number
@@ -12048,11 +12053,13 @@ export namespace Prisma {
 
   export type CustomerAvgAggregateInputType = {
     creditDays?: true
+    openingDue?: true
     due?: true
   }
 
   export type CustomerSumAggregateInputType = {
     creditDays?: true
+    openingDue?: true
     due?: true
   }
 
@@ -12082,6 +12089,7 @@ export namespace Prisma {
     saleExecutive?: true
     dealById?: true
     approachForFunds?: true
+    openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
     plannedSaleCallDate?: true
@@ -12115,6 +12123,7 @@ export namespace Prisma {
     saleExecutive?: true
     dealById?: true
     approachForFunds?: true
+    openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
     plannedSaleCallDate?: true
@@ -12148,6 +12157,7 @@ export namespace Prisma {
     saleExecutive?: true
     dealById?: true
     approachForFunds?: true
+    openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
     plannedSaleCallDate?: true
@@ -12268,6 +12278,7 @@ export namespace Prisma {
     saleExecutive: string | null
     dealById: string | null
     approachForFunds: string | null
+    openingDue: Decimal
     due: Decimal
     plannedCollectionCallDate: Date | null
     plannedSaleCallDate: Date | null
@@ -12320,6 +12331,7 @@ export namespace Prisma {
     saleExecutive?: boolean
     dealById?: boolean
     approachForFunds?: boolean
+    openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
     plannedSaleCallDate?: boolean
@@ -12359,6 +12371,7 @@ export namespace Prisma {
     saleExecutive?: boolean
     dealById?: boolean
     approachForFunds?: boolean
+    openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
     plannedSaleCallDate?: boolean
@@ -12393,6 +12406,7 @@ export namespace Prisma {
     saleExecutive?: boolean
     dealById?: boolean
     approachForFunds?: boolean
+    openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
     plannedSaleCallDate?: boolean
@@ -12448,7 +12462,11 @@ export namespace Prisma {
       dealById: string | null
       approachForFunds: string | null
       /**
-       * Net amount owed by the customer to Rajshree (sales − purchases − received + sent).
+       * Carry-forward balance from before this system (manual). Included in `due`.
+       */
+      openingDue: Prisma.Decimal
+      /**
+       * Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent).
        */
       due: Prisma.Decimal
       /**
@@ -12884,6 +12902,7 @@ export namespace Prisma {
     readonly saleExecutive: FieldRef<"Customer", 'String'>
     readonly dealById: FieldRef<"Customer", 'String'>
     readonly approachForFunds: FieldRef<"Customer", 'String'>
+    readonly openingDue: FieldRef<"Customer", 'Decimal'>
     readonly due: FieldRef<"Customer", 'Decimal'>
     readonly plannedCollectionCallDate: FieldRef<"Customer", 'DateTime'>
     readonly plannedSaleCallDate: FieldRef<"Customer", 'DateTime'>
@@ -19188,6 +19207,7 @@ export namespace Prisma {
     saleExecutive: 'saleExecutive',
     dealById: 'dealById',
     approachForFunds: 'approachForFunds',
+    openingDue: 'openingDue',
     due: 'due',
     plannedCollectionCallDate: 'plannedCollectionCallDate',
     plannedSaleCallDate: 'plannedSaleCallDate',
@@ -20091,6 +20111,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
+    openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
@@ -20129,6 +20150,7 @@ export namespace Prisma {
     saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
     approachForFunds?: SortOrderInput | SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
     plannedSaleCallDate?: SortOrderInput | SortOrder
@@ -20170,6 +20192,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
+    openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
@@ -20208,6 +20231,7 @@ export namespace Prisma {
     saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
     approachForFunds?: SortOrderInput | SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
     plannedSaleCallDate?: SortOrderInput | SortOrder
@@ -20249,6 +20273,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     dealById?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     approachForFunds?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    openingDue?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     plannedSaleCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
@@ -21429,6 +21454,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -21467,6 +21493,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -21503,6 +21530,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21541,6 +21569,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21578,6 +21607,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -21610,6 +21640,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21643,6 +21674,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22752,6 +22784,7 @@ export namespace Prisma {
     saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFunds?: SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
     plannedSaleCallDate?: SortOrder
@@ -22761,6 +22794,7 @@ export namespace Prisma {
 
   export type CustomerAvgOrderByAggregateInput = {
     creditDays?: SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
   }
 
@@ -22790,6 +22824,7 @@ export namespace Prisma {
     saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFunds?: SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
     plannedSaleCallDate?: SortOrder
@@ -22823,6 +22858,7 @@ export namespace Prisma {
     saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFunds?: SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
     plannedSaleCallDate?: SortOrder
@@ -22832,6 +22868,7 @@ export namespace Prisma {
 
   export type CustomerSumOrderByAggregateInput = {
     creditDays?: SortOrder
+    openingDue?: SortOrder
     due?: SortOrder
   }
 
@@ -24841,6 +24878,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -24877,6 +24915,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -24995,6 +25034,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
+    openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
@@ -26261,6 +26301,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -26298,6 +26339,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -26482,6 +26524,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26519,6 +26562,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26661,6 +26705,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -26698,6 +26743,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -26863,6 +26909,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26900,6 +26947,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27163,6 +27211,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -27200,6 +27249,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -27421,6 +27471,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27458,6 +27509,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27493,6 +27545,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -27530,6 +27583,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -27581,6 +27635,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27618,6 +27673,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27653,6 +27709,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
     plannedSaleCallDate?: Date | string | null
@@ -27705,6 +27762,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27741,6 +27799,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27777,6 +27836,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
