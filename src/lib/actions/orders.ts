@@ -311,3 +311,22 @@ export async function closeOrderQuantity(id: string) {
   revalidatePath("/");
   return { id, closingQuantity: bal.toString() };
 }
+
+export async function deleteOrder(id: string): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.order.findUnique({
+      where: { id },
+      select: { id: true, dispatches: { select: { id: true }, take: 1 } },
+    });
+    if (!existing) throw new Error("Order not found");
+    if (existing.dispatches.length > 0) {
+      throw new Error("Cannot delete an order with dispatches. Delete dispatches first.");
+    }
+
+    await tx.order.delete({ where: { id } });
+  });
+
+  revalidatePath("/orders");
+  revalidatePath(`/orders/${id}`);
+  revalidatePath("/customers");
+}

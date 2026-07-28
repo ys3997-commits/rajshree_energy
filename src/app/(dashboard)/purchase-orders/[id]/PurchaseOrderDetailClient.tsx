@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
 import { DispatchTerms, OrderType } from "@/generated/prisma";
 import { deleteDispatch } from "@/lib/actions/dispatch";
 import {
   completeOpenPurchaseOrder,
   updatePurchaseOrderFields,
+  deletePurchaseOrder,
 } from "@/lib/actions/purchaseOrders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
@@ -61,8 +63,10 @@ export function PurchaseOrderDetailClient({
   order: PurchaseOrderData;
   qualityClasses: QualityClassOpt[];
 }) {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [poNumber, setPoNumber] = useState(order.poNumber);
   const [quantity, setQuantity] = useState(order.quantity ?? "");
   const [rate, setRate] = useState(order.rate ?? "");
@@ -117,6 +121,20 @@ export function PurchaseOrderDetailClient({
     }
   }
 
+  async function onDeletePurchaseOrder() {
+    if (!confirm("Delete this purchase order?")) return;
+    setError(null);
+    setMessage(null);
+    setDeleting(true);
+    try {
+      await deletePurchaseOrder(order.id);
+      router.push("/purchase-orders");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed");
+      setDeleting(false);
+    }
+  }
+
   const canCloseQuantity =
     order.quantity != null &&
     order.closingQuantity == null &&
@@ -127,6 +145,14 @@ export function PurchaseOrderDetailClient({
     <div>
       <div className="mb-8 items-center gap-4">
         <h1 className="page-title mb-0">Purchase order {order.poNumber}</h1>
+        <button
+          type="button"
+          className="btn btn-danger mt-3"
+          onClick={onDeletePurchaseOrder}
+          disabled={deleting}
+        >
+          {deleting ? "Deleting..." : "Delete order"}
+        </button>
       </div>
 
       {error && <div className="error-box">{error}</div>}
