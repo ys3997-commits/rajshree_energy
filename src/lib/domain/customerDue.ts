@@ -43,6 +43,32 @@ export function billedAmount(
   return rate.mul(qty);
 }
 
+/** finalRate × dispatched quantity when both are present; otherwise 0. */
+export function dispatchedAmount(
+  finalRate: DecimalLike | null | undefined,
+  dispatchedQuantity: DecimalLike | null | undefined,
+): Decimal {
+  if (finalRate == null || dispatchedQuantity == null) return new Decimal(0);
+  const rate = toDecimal(finalRate);
+  const qty = toDecimal(dispatchedQuantity);
+  if (!rate.isFinite() || !qty.isFinite()) return new Decimal(0);
+  return rate.mul(qty);
+}
+
+export function saleDispatchDueDelta(
+  finalRate: DecimalLike | null | undefined,
+  dispatchedQuantity: DecimalLike | null | undefined,
+): Decimal {
+  return dispatchedAmount(finalRate, dispatchedQuantity);
+}
+
+export function purchaseDispatchDueDelta(
+  finalRate: DecimalLike | null | undefined,
+  dispatchedQuantity: DecimalLike | null | undefined,
+): Decimal {
+  return dispatchedAmount(finalRate, dispatchedQuantity).neg();
+}
+
 /** RECEIVED decreases due; SENT increases due. */
 export function paymentDueDelta(
   direction: PaymentDirection | "RECEIVED" | "SENT",
@@ -145,8 +171,7 @@ export function computeOverdue(
 }
 
 /**
- * Recompute every customer's due from opening due, orders, purchase orders, and payments.
- * Open orders contribute finalRate × dispatchedOrder until quantity is set.
+ * Recompute every customer's due from opening due, dispatch-backed sales/purchases, and payments.
  */
 export async function recalculateAllCustomerDues(): Promise<void> {
   const customers = await prisma.customer.findMany({
@@ -182,22 +207,12 @@ export async function recalculateAllCustomerDues(): Promise<void> {
     let due = toDecimal(customer.openingDue);
     for (const order of orders) {
       due = due.plus(
-        billedAmount(
-          order.finalRate,
-          order.quantity,
-          order.dispatchedOrder,
-          order.closingQuantity,
-        ),
+        saleDispatchDueDelta(order.finalRate, order.dispatchedOrder),
       );
     }
     for (const po of purchaseOrders) {
-      due = due.minus(
-        billedAmount(
-          po.finalRate,
-          po.quantity,
-          po.dispatchedOrder,
-          po.closingQuantity,
-        ),
+      due = due.plus(
+        purchaseDispatchDueDelta(po.finalRate, po.dispatchedOrder),
       );
     }
     for (const payment of payments) {

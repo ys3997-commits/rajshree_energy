@@ -22,7 +22,9 @@ import {
 } from "@/lib/domain/computations";
 import {
   adjustCustomerDue,
-  billedAmount,
+  dispatchedAmount,
+  purchaseDispatchDueDelta,
+  saleDispatchDueDelta,
 } from "@/lib/domain/customerDue";
 import { normalizeLorryNumber } from "@/lib/domain/format";
 import {
@@ -324,12 +326,11 @@ async function applyDispatchDelta(
     },
   });
 
-  // Open sale orders bill by dispatched qty until quantity is set.
-  if (order.quantity == null && order.finalRate != null && !args.qty.isZero()) {
+  if (order.finalRate != null && !args.qty.isZero()) {
     await adjustCustomerDue(
       tx,
       order.customerId,
-      toDecimal(order.finalRate).mul(args.qty),
+      saleDispatchDueDelta(order.finalRate, args.qty),
     );
   }
 
@@ -348,16 +349,11 @@ async function applyDispatchDelta(
     },
   });
 
-  // Open purchase orders reduce due by dispatched qty until quantity is set.
-  if (
-    purchase.quantity == null &&
-    purchase.finalRate != null &&
-    !args.qty.isZero()
-  ) {
+  if (purchase.finalRate != null && !args.qty.isZero()) {
     await adjustCustomerDue(
       tx,
       purchase.importerId,
-      toDecimal(purchase.finalRate).mul(args.qty).neg(),
+      purchaseDispatchDueDelta(purchase.finalRate, args.qty),
     );
   }
 
@@ -730,18 +726,8 @@ export async function completeOpenOrder(
 
     const nextStatus = OrderStatus.COMPLETED;
 
-    const oldAmount = billedAmount(
-      order.finalRate,
-      order.quantity,
-      order.dispatchedOrder,
-      order.closingQuantity,
-    );
-    const newAmount = billedAmount(
-      nextFinalRate,
-      quantity,
-      order.dispatchedOrder,
-      order.closingQuantity,
-    );
+    const oldAmount = dispatchedAmount(order.finalRate, order.dispatchedOrder);
+    const newAmount = dispatchedAmount(nextFinalRate, order.dispatchedOrder);
 
     await tx.order.update({
       where: { id: orderId },

@@ -13,7 +13,7 @@ import {
 } from "@/lib/domain/computations";
 import {
   adjustCustomerDue,
-  billedAmount,
+  dispatchedAmount,
 } from "@/lib/domain/customerDue";
 import { normalizeSaleOrderNumber } from "@/lib/domain/orderNumbers";
 
@@ -166,7 +166,7 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
   });
 
   const order = await prisma.$transaction(async (tx) => {
-    const created = await tx.order.create({
+    return tx.order.create({
       data: {
         poNumber: normalizeSaleOrderNumber(input.poNumber),
         orderType: OrderType.REGULAR,
@@ -183,14 +183,6 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
         orderStatus,
       },
     });
-
-    await adjustCustomerDue(
-      tx,
-      input.customerId,
-      billedAmount(finalRate, quantity),
-    );
-
-    return created;
   });
 
   revalidatePath("/orders");
@@ -251,18 +243,11 @@ export async function updateOrderFields(
     closingQuantity: existing.closingQuantity,
   });
 
-  const oldAmount = billedAmount(
+  const oldAmount = dispatchedAmount(
     existing.finalRate,
-    existing.quantity,
     existing.dispatchedOrder,
-    existing.closingQuantity,
   );
-  const newAmount = billedAmount(
-    finalRate,
-    quantity,
-    existing.dispatchedOrder,
-    existing.closingQuantity,
-  );
+  const newAmount = dispatchedAmount(finalRate, existing.dispatchedOrder);
   const dueDelta = newAmount.minus(oldAmount);
 
   const order = await prisma.$transaction(async (tx) => {
@@ -310,19 +295,6 @@ export async function closeOrderQuantity(id: string) {
     throw new Error("No remaining balance to close");
   }
 
-  const oldAmount = billedAmount(
-    existing.finalRate,
-    existing.quantity,
-    existing.dispatchedOrder,
-    existing.closingQuantity,
-  );
-  const newAmount = billedAmount(
-    existing.finalRate,
-    existing.quantity,
-    existing.dispatchedOrder,
-    bal,
-  );
-
   await prisma.$transaction(async (tx) => {
     await tx.order.update({
       where: { id },
@@ -331,7 +303,6 @@ export async function closeOrderQuantity(id: string) {
         orderStatus: OrderStatus.COMPLETED,
       },
     });
-    await adjustCustomerDue(tx, existing.customerId, newAmount.minus(oldAmount));
   });
 
   revalidatePath("/orders");

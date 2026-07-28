@@ -17,7 +17,7 @@ import {
 } from "@/lib/domain/computations";
 import {
   adjustCustomerDue,
-  billedAmount,
+  dispatchedAmount,
 } from "@/lib/domain/customerDue";
 import {
   nextPurchaseOrderNumber,
@@ -147,7 +147,7 @@ export async function createRegularPurchaseOrder(
     input.qualityClassId || vessel.qualityClassId || null;
 
   const order = await prisma.$transaction(async (tx) => {
-    const created = await tx.purchaseOrder.create({
+    return tx.purchaseOrder.create({
       data: {
         poNumber: normalizePurchaseOrderNumber(input.poNumber),
         orderType: OrderType.REGULAR,
@@ -161,15 +161,6 @@ export async function createRegularPurchaseOrder(
         orderStatus,
       },
     });
-
-    // Purchase decreases due (we owe the supplier).
-    await adjustCustomerDue(
-      tx,
-      input.importerId,
-      billedAmount(finalRate, quantity).neg(),
-    );
-
-    return created;
   });
 
   revalidatePath("/purchase-orders");
@@ -270,18 +261,11 @@ export async function updatePurchaseOrderFields(
     closingQuantity: existing.closingQuantity,
   });
 
-  const oldAmount = billedAmount(
+  const oldAmount = dispatchedAmount(
     existing.finalRate,
-    existing.quantity,
     existing.dispatchedOrder,
-    existing.closingQuantity,
   );
-  const newAmount = billedAmount(
-    finalRate,
-    quantity,
-    existing.dispatchedOrder,
-    existing.closingQuantity,
-  );
+  const newAmount = dispatchedAmount(finalRate, existing.dispatchedOrder);
   // Purchase decreases due, so delta is inverted.
   const dueDelta = oldAmount.minus(newAmount);
 
@@ -351,18 +335,8 @@ export async function completeOpenPurchaseOrder(
       closingQuantity: order.closingQuantity,
     });
 
-    const oldAmount = billedAmount(
-      order.finalRate,
-      order.quantity,
-      order.dispatchedOrder,
-      order.closingQuantity,
-    );
-    const newAmount = billedAmount(
-      nextFinalRate,
-      quantity,
-      order.dispatchedOrder,
-      order.closingQuantity,
-    );
+    const oldAmount = dispatchedAmount(order.finalRate, order.dispatchedOrder);
+    const newAmount = dispatchedAmount(nextFinalRate, order.dispatchedOrder);
 
     await tx.purchaseOrder.update({
       where: { id: orderId },
@@ -408,19 +382,6 @@ export async function closePurchaseOrderQuantity(id: string) {
     throw new Error("No remaining balance to close");
   }
 
-  const oldAmount = billedAmount(
-    existing.finalRate,
-    existing.quantity,
-    existing.dispatchedOrder,
-    existing.closingQuantity,
-  );
-  const newAmount = billedAmount(
-    existing.finalRate,
-    existing.quantity,
-    existing.dispatchedOrder,
-    bal,
-  );
-
   await prisma.$transaction(async (tx) => {
     await tx.purchaseOrder.update({
       where: { id },
@@ -429,8 +390,6 @@ export async function closePurchaseOrderQuantity(id: string) {
         orderStatus: PurchaseOrderStatus.COMPLETED,
       },
     });
-    // Purchase decreases due, so closing remaining qty increases due (less owed to vendor).
-    await adjustCustomerDue(tx, existing.importerId, oldAmount.minus(newAmount));
   });
 
   revalidatePath("/purchase-orders");
