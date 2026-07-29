@@ -15,6 +15,7 @@ import {
   formatRs,
 } from "@/lib/domain/format";
 import { FormStatusToggle } from "@/components/FormStatusToggle";
+import { Modal } from "@/components/Modal";
 import { OptionSelect } from "@/components/OptionSelect";
 
 const COLLECTION_OFFICER = "Collection Officer";
@@ -236,7 +237,14 @@ export function CustomersClient({
       <p className="page-subtitle">
         Vendors, traders, and industry buyers.
       </p>
-      {error && <div className="error-box">{error}</div>}
+      <Modal open={error !== null} title="Message" onClose={() => setError(null)}>
+        <p className="mb-4">{error}</p>
+        <div className="modal-actions">
+          <button type="button" className="btn" onClick={() => setError(null)}>
+            OK
+          </button>
+        </div>
+      </Modal>
 
       <form onSubmit={onSubmit} className="mb-6 form-grid form-grid-wide">
         <label>Company name</label>

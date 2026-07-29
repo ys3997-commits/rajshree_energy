@@ -14,7 +14,7 @@ export async function listVessels(options?: { activeOnly?: boolean }) {
     where: options?.activeOnly ? { active: true } : undefined,
     include: {
       qualityClass: { include: qualityClassInclude },
-      port: { select: { id: true, name: true } },
+      port: { select: { id: true, name: true, state: true } },
     },
     orderBy: { vesselName: "asc" },
   });

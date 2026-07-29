@@ -197,6 +197,26 @@ function parseOpeningDue(value: string | number | null | undefined): Decimal {
   return d.toDecimalPlaces(2);
 }
 
+async function assertUniqueCustomerName(
+  name: string,
+  options?: { excludeId?: string },
+) {
+  const normalizedName = capitalizeName(name) ?? name.trim();
+  const existing = await prisma.customer.findFirst({
+    where: {
+      ...(options?.excludeId ? { id: { not: options.excludeId } } : {}),
+      name: {
+        equals: normalizedName,
+        mode: "insensitive",
+      },
+    },
+    select: { id: true },
+  });
+  if (existing) {
+    throw new Error(`Customer "${normalizedName}" already exists`);
+  }
+}
+
 function toCustomerData(input: CustomerInput) {
   const isIndustry = input.category === CustomerCategory.INDUSTRY;
   return {
@@ -234,6 +254,7 @@ function toCustomerData(input: CustomerInput) {
 }
 
 export async function createCustomer(input: CustomerInput) {
+  await assertUniqueCustomerName(input.name);
   const openingDue = parseOpeningDue(input.openingDue);
   const row = await prisma.customer.create({
     data: {
@@ -248,6 +269,7 @@ export async function createCustomer(input: CustomerInput) {
 }
 
 export async function updateCustomer(id: string, input: CustomerInput) {
+  await assertUniqueCustomerName(input.name, { excludeId: id });
   const openingDue = parseOpeningDue(input.openingDue);
   const row = await prisma.$transaction(async (tx) => {
     const existing = await tx.customer.findUniqueOrThrow({

@@ -74,6 +74,11 @@ export function OrderDetailClient({
   const [message, setMessage] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [poNumber, setPoNumber] = useState(order.poNumber);
+  const [orderDate, setOrderDate] = useState(
+    order.orderDate
+      ? new Date(order.orderDate).toISOString().slice(0, 10)
+      : "",
+  );
   const [quantity, setQuantity] = useState(
     order.quantity ??
       (order.orderType === OrderType.OPEN ? order.dispatchedOrder : ""),
@@ -104,12 +109,14 @@ export function OrderDetailClient({
           qualityClassId: qualityClassId || null,
           portId: portId || null,
         });
-        if (poNumber !== order.poNumber) {
-          await updateOrderFields(order.id, { poNumber });
-        }
+        await updateOrderFields(order.id, {
+          poNumber,
+          orderDate: orderDate || null,
+        });
       } else {
         await updateOrderFields(order.id, {
           poNumber,
+          orderDate: orderDate || null,
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
           creditDays: creditDays === "" ? null : Number(creditDays),
@@ -216,12 +223,6 @@ export function OrderDetailClient({
           <span className="text-neutral-500">Final rate:</span>{" "}
           {order.finalRate != null ? formatRs(order.finalRate) : "—"}
         </div>
-        <div>
-          <span className="text-neutral-500">Order date:</span>{" "}
-          {order.orderDate
-            ? new Date(order.orderDate).toISOString().slice(0, 10)
-            : "—"}
-        </div>
       </div>
 
       <h2 className="mb-3 text-base font-semibold">
@@ -236,6 +237,12 @@ export function OrderDetailClient({
           value={poNumber}
           onChange={(e) => setPoNumber(e.target.value)}
           placeholder="SO 0001"
+        />
+        <label>Order date</label>
+        <input
+          type="date"
+          value={orderDate}
+          onChange={(e) => setOrderDate(e.target.value)}
         />
         <label>Quantity</label>
         <div className="field-with-unit">

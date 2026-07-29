@@ -68,6 +68,11 @@ export function PurchaseOrderDetailClient({
   const [message, setMessage] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [poNumber, setPoNumber] = useState(order.poNumber);
+  const [orderDate, setOrderDate] = useState(
+    order.orderDate
+      ? new Date(order.orderDate).toISOString().slice(0, 10)
+      : "",
+  );
   const [quantity, setQuantity] = useState(order.quantity ?? "");
   const [rate, setRate] = useState(order.rate ?? "");
   const [qualityClassId, setQualityClassId] = useState(
@@ -90,12 +95,14 @@ export function PurchaseOrderDetailClient({
           rate: rate || null,
           qualityClassId: qualityClassId || null,
         });
-        if (poNumber !== order.poNumber) {
-          await updatePurchaseOrderFields(order.id, { poNumber });
-        }
+        await updatePurchaseOrderFields(order.id, {
+          poNumber,
+          orderDate: orderDate || null,
+        });
       } else {
         await updatePurchaseOrderFields(order.id, {
           poNumber,
+          orderDate: orderDate || null,
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
           qualityClassId: qualityClassId || null,
@@ -196,12 +203,6 @@ export function PurchaseOrderDetailClient({
             />
           )}
         </div>
-        <div>
-          <span className="text-neutral-500">Order date:</span>{" "}
-          {order.orderDate
-            ? new Date(order.orderDate).toISOString().slice(0, 10)
-            : "—"}
-        </div>
       </div>
 
       <h2 className="mb-3 text-base font-semibold">
@@ -216,6 +217,12 @@ export function PurchaseOrderDetailClient({
           value={poNumber}
           onChange={(e) => setPoNumber(e.target.value)}
           placeholder="PO 0001"
+        />
+        <label>Order date</label>
+        <input
+          type="date"
+          value={orderDate}
+          onChange={(e) => setOrderDate(e.target.value)}
         />
         <label>Quantity</label>
         <div className="field-with-unit">

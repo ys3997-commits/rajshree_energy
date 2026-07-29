@@ -22,7 +22,7 @@ type Row = {
   qualityClassId: string | null;
   qualityClass: QualityClassOpt | null;
   portId: string | null;
-  port: Opt | null;
+  port: PortOpt | null;
   active: boolean;
 };
 
@@ -184,7 +184,9 @@ export function VesselsClient({
               >
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
-                <td>{row.port?.name ?? "—"}</td>
+                <td>
+                  {row.port ? `${row.port.name}, ${row.port.state}` : "—"}
+                </td>
                 <td>
                   <VesselStatusToggle
                     vesselId={row.id}

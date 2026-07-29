@@ -27,12 +27,14 @@ export function NewOrderForm({
   qualityClasses,
   suggestedPo,
   onCancel,
+  onSuccess,
 }: {
   customers: CustomerOpt[];
   ports: Option[];
   qualityClasses: QualityClassOpt[];
   suggestedPo: string;
   onCancel?: () => void;
+  onSuccess?: () => void;
 }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +99,13 @@ export function NewOrderForm({
           return raw === "" ? null : Number(raw);
         })(),
       });
-      router.push(`/orders`);
+      if (onSuccess) {
+        onSuccess();
+        router.refresh();
+      } else {
+        router.push("/orders");
+        router.refresh();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Create failed");
       setSaving(false);

@@ -194,6 +194,7 @@ export async function updateOrderFields(
   id: string,
   data: {
     poNumber?: string;
+    orderDate?: string | null;
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     creditDays?: number | null;
@@ -262,6 +263,12 @@ export async function updateOrderFields(
         qualityClassId:
           data.qualityClassId === undefined ? undefined : data.qualityClassId,
         portId: data.portId === undefined ? undefined : data.portId || null,
+        orderDate:
+          data.orderDate === undefined
+            ? undefined
+            : data.orderDate
+              ? new Date(data.orderDate)
+              : null,
         orderStatus,
       },
     });

@@ -220,6 +220,7 @@ export async function updatePurchaseOrderFields(
   id: string,
   data: {
     poNumber?: string;
+    orderDate?: string | null;
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     qualityClassId?: string | null;
@@ -279,6 +280,12 @@ export async function updatePurchaseOrderFields(
         ...(data.rate !== undefined ? { finalRate } : {}),
         qualityClassId:
           data.qualityClassId === undefined ? undefined : data.qualityClassId,
+        orderDate:
+          data.orderDate === undefined
+            ? undefined
+            : data.orderDate
+              ? new Date(data.orderDate)
+              : null,
         orderStatus,
       },
     });

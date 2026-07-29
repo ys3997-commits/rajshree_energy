@@ -48,6 +48,7 @@ export function CreateOrderButton({
           qualityClasses={qualityClasses}
           suggestedPo={suggestedPo}
           onCancel={() => setOpen(false)}
+          onSuccess={() => setOpen(false)}
         />
       </Modal>
     </>
