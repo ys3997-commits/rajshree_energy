@@ -17,6 +17,7 @@ import {
 } from "@/lib/domain/format";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -50,6 +51,38 @@ export default async function PurchaseOrdersPage({
 
   const importers = customers.map((c) => ({ id: c.id, name: c.name }));
   const activeVessels = vessels.filter((v) => v.active);
+
+  const exportColumns = [
+    { key: "poNumber", header: "Purchase PO" },
+    { key: "vendor", header: "Vendor" },
+    { key: "vessel", header: "Vessel" },
+    { key: "type", header: "Type" },
+    { key: "daysSince", header: "Days since order", align: "right" as const },
+    { key: "quantity", header: "Quantity", align: "right" as const },
+    { key: "dispatched", header: "Dispatched", align: "right" as const },
+    { key: "closing", header: "Closing", align: "right" as const },
+    { key: "balance", header: "Balance", align: "right" as const },
+    { key: "rate", header: "Basic rate", align: "right" as const },
+    { key: "finalRate", header: "Final rate", align: "right" as const },
+    { key: "status", header: "Status" },
+  ];
+
+  const exportRows = orders.map((row) => ({
+    poNumber: row.poNumber,
+    vendor: row.importer.name,
+    vessel: row.vessel.vesselName,
+    type: formatOrderType(row.orderType),
+    daysSince: formatCreditPeriod(
+      daysSinceOrder(row.orderDate, row.createdAt),
+    ),
+    quantity: formatSaleOrderMt(displayOrderQuantity(row)),
+    dispatched: formatSaleOrderMt(row.dispatchedOrder),
+    closing: formatSaleOrderMt(row.closingQuantity),
+    balance: formatSaleOrderMt(displayOrderBalance(row)),
+    rate: formatRs(row.rate),
+    finalRate: formatRs(row.finalRate),
+    status: formatOrderStatusForDisplay(row),
+  }));
 
   return (
     <div>
@@ -107,6 +140,12 @@ export default async function PurchaseOrdersPage({
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>
+        <TableDownloadButtons
+          title="Purchase orders"
+          filenameBase="purchase-orders"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </form>
 
       <div className="table-wrap table-wrap-scroll">

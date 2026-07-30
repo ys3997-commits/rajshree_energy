@@ -24,6 +24,7 @@ import {
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -83,6 +84,42 @@ export default async function OrdersPage({
     domestic: qc.domestic,
     origin: qc.origin,
     qualityOption: qc.qualityOption,
+  }));
+
+  const exportColumns = [
+    { key: "poNumber", header: "PO number" },
+    { key: "customer", header: "Customer" },
+    { key: "type", header: "Type" },
+    { key: "lorries", header: "Number of lorries", align: "right" as const },
+    { key: "orderQty", header: "Order quantity", align: "right" as const },
+    {
+      key: "dispatchedQty",
+      header: "Dispatched quantity",
+      align: "right" as const,
+    },
+    { key: "closingQty", header: "Closing quantity", align: "right" as const },
+    { key: "balance", header: "Balance", align: "right" as const },
+    { key: "trucks", header: "Trucks dispatch", align: "right" as const },
+    { key: "daysSince", header: "Days since order", align: "right" as const },
+    { key: "rate", header: "Basic rate", align: "right" as const },
+    { key: "status", header: "Status" },
+  ];
+
+  const exportRows = orders.map((row) => ({
+    poNumber: row.poNumber,
+    customer: row.customer.name,
+    type: formatOrderType(row.orderType),
+    lorries: formatIndianNumber(row.numberOfLorries),
+    orderQty: formatSaleOrderMt(displayOrderQuantity(row)),
+    dispatchedQty: formatSaleOrderMt(row.dispatchedOrder),
+    closingQty: formatSaleOrderMt(row.closingQuantity),
+    balance: formatSaleOrderMt(displayOrderBalance(row)),
+    trucks: formatIndianNumber(row._count.dispatches),
+    daysSince: formatCreditPeriod(
+      daysSinceOrder(row.orderDate, row.createdAt),
+    ),
+    rate: formatRs(row.rate),
+    status: formatOrderStatusForDisplay(row),
   }));
 
   return (
@@ -161,6 +198,12 @@ export default async function OrdersPage({
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>
+        <TableDownloadButtons
+          title="Sale orders"
+          filenameBase="sale-orders"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </form>
 
       <div className="table-wrap table-wrap-scroll">
