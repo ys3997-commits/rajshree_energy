@@ -259,6 +259,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   finalRate: 'finalRate',
   quantity: 'quantity',
   numberOfLorries: 'numberOfLorries',
+  deliveryTerms: 'deliveryTerms',
   orderById: 'orderById',
   dispatchedOrder: 'dispatchedOrder',
   closingQuantity: 'closingQuantity',
@@ -346,6 +347,11 @@ exports.OrderType = exports.$Enums.OrderType = {
   OPEN: 'OPEN'
 };
 
+exports.DispatchTerms = exports.$Enums.DispatchTerms = {
+  FOR: 'FOR',
+  EX_PORT: 'EX_PORT'
+};
+
 exports.OrderStatus = exports.$Enums.OrderStatus = {
   RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
@@ -354,11 +360,6 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
 exports.PurchaseOrderStatus = exports.$Enums.PurchaseOrderStatus = {
   RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
-};
-
-exports.DispatchTerms = exports.$Enums.DispatchTerms = {
-  FOR: 'FOR',
-  EX_PORT: 'EX_PORT'
 };
 
 exports.ReceiptStatus = exports.$Enums.ReceiptStatus = {

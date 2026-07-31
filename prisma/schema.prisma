@@ -234,6 +234,8 @@ model Order {
   quantity       Decimal?    @db.Decimal(18, 3)
   /// Optional planned lorry count entered at order creation.
   numberOfLorries Int?
+  /// Sale delivery terms (FOR / Ex-Port). Independent of dispatch terms. Null until set.
+  deliveryTerms  DispatchTerms?
   orderById      String?
   /// Accumulated by dispatch transactions only — never write from forms.
   dispatchedOrder Decimal    @default(0) @db.Decimal(18, 3)

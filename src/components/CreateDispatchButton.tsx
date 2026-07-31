@@ -46,7 +46,6 @@ export function CreateDispatchButton({
   transporters,
   customers,
   vessels,
-  staff,
   suggestedPo,
   suggestedPurchasePo,
 }: {
@@ -55,7 +54,6 @@ export function CreateDispatchButton({
   transporters: Opt[];
   customers: CustomerOpt[];
   vessels: VesselOpt[];
-  staff: Opt[];
   suggestedPo: string;
   suggestedPurchasePo: string;
 }) {
@@ -78,7 +76,6 @@ export function CreateDispatchButton({
           transporters={transporters}
           customers={customers}
           vessels={vessels}
-          staff={staff}
           suggestedPo={suggestedPo}
           suggestedPurchasePo={suggestedPurchasePo}
           onCancel={() => setOpen(false)}

@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CustomerCategory } from "@/generated/prisma";
+import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import { getCustomerOrderDefaults } from "@/lib/actions/customers";
 import { createRegularOrder } from "@/lib/actions/orders";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
@@ -46,6 +46,9 @@ export function NewOrderForm({
   const [creditDays, setCreditDays] = useState("");
   const [rate, setRate] = useState("");
   const [qualityClassId, setQualityClassId] = useState("");
+  const [deliveryTerms, setDeliveryTerms] = useState<DispatchTerms>(
+    DispatchTerms.EX_PORT,
+  );
 
   const rateBreakdown = useMemo(() => {
     if (rate === "") return null;
@@ -98,6 +101,7 @@ export function NewOrderForm({
           const raw = String(fd.get("numberOfLorries") || "").trim();
           return raw === "" ? null : Number(raw);
         })(),
+        deliveryTerms,
       });
       if (onSuccess) {
         onSuccess();
@@ -208,6 +212,32 @@ export function NewOrderForm({
             </option>
           ))}
         </select>
+
+        <label>Delivery terms</label>
+        <div
+          className="segment-control"
+          role="radiogroup"
+          aria-label="Delivery terms"
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={deliveryTerms === DispatchTerms.FOR}
+            className={`segment-option${deliveryTerms === DispatchTerms.FOR ? " segment-option-selected" : ""}`}
+            onClick={() => setDeliveryTerms(DispatchTerms.FOR)}
+          >
+            FOR
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={deliveryTerms === DispatchTerms.EX_PORT}
+            className={`segment-option${deliveryTerms === DispatchTerms.EX_PORT ? " segment-option-selected" : ""}`}
+            onClick={() => setDeliveryTerms(DispatchTerms.EX_PORT)}
+          >
+            Ex-Port
+          </button>
+        </div>
 
         <div />
         <div className="modal-actions">

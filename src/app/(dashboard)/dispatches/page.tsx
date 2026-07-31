@@ -7,7 +7,6 @@ import {
   listPurchaseOrdersWithBalance,
   suggestNextPurchasePoNumber,
 } from "@/lib/actions/purchaseOrders";
-import { listStaff } from "@/lib/actions/staff";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
@@ -59,7 +58,6 @@ export default async function DispatchesPage({
     balanceOrders,
     balancePurchases,
     transporters,
-    staff,
     suggestedPo,
     suggestedPurchasePo,
   ] = await Promise.all([
@@ -76,7 +74,6 @@ export default async function DispatchesPage({
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listTransporters(),
-    listStaff(),
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
   ]);
@@ -118,7 +115,6 @@ export default async function DispatchesPage({
             id: v.id,
             vesselName: v.vesselName,
           }))}
-          staff={staff.map((s) => ({ id: s.id, name: s.name }))}
           suggestedPo={suggestedPo}
           suggestedPurchasePo={suggestedPurchasePo}
         />

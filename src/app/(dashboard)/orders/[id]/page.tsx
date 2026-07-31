@@ -47,6 +47,7 @@ export default async function OrderDetailPage({
         creditDays: order.creditDays,
         qualityClassId: order.qualityClassId,
         portId: order.portId,
+        deliveryTerms: order.deliveryTerms,
         customer: {
           name: order.customer.name,
           category: order.customer.category,

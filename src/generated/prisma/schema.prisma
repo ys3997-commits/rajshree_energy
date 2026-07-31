@@ -218,30 +218,32 @@ model Vessel {
 
 /// Sale order (customer PO / selling side).
 model Order {
-  id              String      @id @default(cuid())
-  poNumber        String      @unique
-  orderType       OrderType   @default(REGULAR)
+  id              String         @id @default(cuid())
+  poNumber        String         @unique
+  orderType       OrderType      @default(REGULAR)
   customerId      String
   orderDate       DateTime?
   portId          String?
   creditDays      Int?
   qualityClassId  String?
   /// Base sale rate entered by user (Rs/MT), before GST/TCS.
-  rate            Decimal?    @db.Decimal(18, 3)
+  rate            Decimal?       @db.Decimal(18, 3)
   /// All-in sale rate: rate + GST(18%); traders also add TCS(2% of rate+GST).
-  finalRate       Decimal?    @db.Decimal(18, 3)
+  finalRate       Decimal?       @db.Decimal(18, 3)
   /// Null for open orders until completeOpenOrder fills it in.
-  quantity        Decimal?    @db.Decimal(18, 3)
+  quantity        Decimal?       @db.Decimal(18, 3)
   /// Optional planned lorry count entered at order creation.
   numberOfLorries Int?
+  /// Sale delivery terms (FOR / Ex-Port). Independent of dispatch terms. Null until set.
+  deliveryTerms   DispatchTerms?
   orderById       String?
   /// Accumulated by dispatch transactions only — never write from forms.
-  dispatchedOrder Decimal     @default(0) @db.Decimal(18, 3)
+  dispatchedOrder Decimal        @default(0) @db.Decimal(18, 3)
   /// Undispatchable remainder written off via "close quantity"; zeros balance.
-  closingQuantity Decimal?    @db.Decimal(18, 3)
-  orderStatus     OrderStatus @default(RUNNING)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  closingQuantity Decimal?       @db.Decimal(18, 3)
+  orderStatus     OrderStatus    @default(RUNNING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   customer     Customer      @relation(fields: [customerId], references: [id])
   orderBy      Staff?        @relation(fields: [orderById], references: [id])

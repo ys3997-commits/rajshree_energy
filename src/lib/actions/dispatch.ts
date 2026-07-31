@@ -81,7 +81,8 @@ export type UpdateDispatchInput = {
 
 export type CreateOpenOrderDispatchInput = {
   poNumber: string;
-  orderById: string;
+  /** Optional — open sale orders no longer require a deal-by staff. */
+  orderById?: string | null;
   customerId: string;
   rate?: DecimalLike | null;
   /** Existing purchase PO — required unless openPurchase is set. */
@@ -460,7 +461,7 @@ export async function createOpenOrderDispatch(
         orderType: OrderType.OPEN,
         customerId: input.customerId,
         orderDate: asDate(input.dispatchDate),
-        orderById: input.orderById,
+        orderById: input.orderById || null,
         quantity: null,
         rate,
         finalRate,

@@ -1,6 +1,6 @@
 "use server";
 
-import { OrderStatus, OrderType, type Prisma } from "@/generated/prisma";
+import { DispatchTerms, OrderStatus, OrderType, type Prisma } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
@@ -128,6 +128,7 @@ export type CreateRegularOrderInput = {
   rate?: DecimalLike | null;
   quantity: DecimalLike;
   numberOfLorries?: number | null;
+  deliveryTerms?: DispatchTerms;
   orderById?: string | null;
 };
 
@@ -179,6 +180,7 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
         finalRate,
         quantity,
         numberOfLorries,
+        deliveryTerms: input.deliveryTerms ?? DispatchTerms.EX_PORT,
         orderById: input.orderById || null,
         orderStatus,
       },
@@ -200,6 +202,7 @@ export async function updateOrderFields(
     creditDays?: number | null;
     qualityClassId?: string | null;
     portId?: string | null;
+    deliveryTerms?: DispatchTerms | null;
   },
 ) {
   const existing = await prisma.order.findUnique({
@@ -263,6 +266,8 @@ export async function updateOrderFields(
         qualityClassId:
           data.qualityClassId === undefined ? undefined : data.qualityClassId,
         portId: data.portId === undefined ? undefined : data.portId || null,
+        deliveryTerms:
+          data.deliveryTerms === undefined ? undefined : data.deliveryTerms,
         orderDate:
           data.orderDate === undefined
             ? undefined

@@ -6,7 +6,6 @@ import {
 import { listCustomers } from "@/lib/actions/customers";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
-import { listStaff } from "@/lib/actions/staff";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
@@ -16,6 +15,8 @@ import {
   displayOrderBalance,
   displayOrderQuantity,
   formatCreditPeriod,
+  formatDateDdMmYyyy,
+  formatDispatchTerms,
   formatIndianNumber,
   formatOrderStatusForDisplay,
   formatOrderType,
@@ -44,7 +45,6 @@ export default async function OrdersPage({
   const [
     orders,
     customers,
-    staff,
     ports,
     balanceOrders,
     balancePurchases,
@@ -61,7 +61,6 @@ export default async function OrdersPage({
       orderById: sp.orderById || "",
     }),
     listCustomers({ activeOnly: true }),
-    listStaff(),
     listPortOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
@@ -78,7 +77,6 @@ export default async function OrdersPage({
     category: c.category,
     creditDays: c.creditDays,
   }));
-  const staffOpts = staff.map((s) => ({ id: s.id, name: s.name }));
   const portOpts = ports.map((p) => ({ id: p.id, name: p.name }));
   const qualityClassOpts = qualityClasses.map((qc) => ({
     id: qc.id,
@@ -89,6 +87,7 @@ export default async function OrdersPage({
 
   const exportColumns = [
     { key: "poNumber", header: "PO number" },
+    { key: "date", header: "Date" },
     { key: "customer", header: "Customer" },
     { key: "type", header: "Type" },
     { key: "quality", header: "Quality class" },
@@ -104,11 +103,13 @@ export default async function OrdersPage({
     { key: "trucks", header: "Trucks dispatch", align: "right" as const },
     { key: "daysSince", header: "Days since order", align: "right" as const },
     { key: "rate", header: "Basic rate", align: "right" as const },
+    { key: "deliveryTerms", header: "Delivery term" },
     { key: "status", header: "Status" },
   ];
 
   const exportRows = orders.map((row) => ({
     poNumber: row.poNumber,
+    date: formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null),
     customer: row.customer.name,
     type: formatOrderType(row.orderType),
     quality: formatQualityClass(row.qualityClass),
@@ -122,6 +123,7 @@ export default async function OrdersPage({
       daysSinceOrder(row.orderDate, row.createdAt),
     ),
     rate: formatRs(row.rate),
+    deliveryTerms: formatDispatchTerms(row.deliveryTerms),
     status: formatOrderStatusForDisplay(row),
   }));
 
@@ -160,7 +162,6 @@ export default async function OrdersPage({
               id: v.id,
               vesselName: v.vesselName,
             }))}
-            staff={staffOpts}
             suggestedPo={suggestedPo}
             suggestedPurchasePo={suggestedPurchasePo}
           />
@@ -214,6 +215,7 @@ export default async function OrdersPage({
           <thead>
             <tr>
               <th>PO number</th>
+              <th>Date</th>
               <th>Customer</th>
               <th>Type</th>
               <th>Quality class</th>
@@ -233,6 +235,7 @@ export default async function OrdersPage({
                 order
               </th>
               <th className="num">Basic rate</th>
+              <th>Delivery term</th>
               <th>Status</th>
               <th className="col-actions">Actions</th>
             </tr>
@@ -254,6 +257,9 @@ export default async function OrdersPage({
                     {row.poNumber}
                   </Link>
                 </td>
+                <td className="cell-date">
+                  {formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null)}
+                </td>
                 <td>{row.customer.name}</td>
                 <td>{formatOrderType(row.orderType)}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
@@ -273,6 +279,7 @@ export default async function OrdersPage({
                   )}
                 </td>
                 <td className="num">{formatRs(row.rate)}</td>
+                <td>{formatDispatchTerms(row.deliveryTerms)}</td>
                 <td>{formatOrderStatusForDisplay(row)}</td>
                 <td className="col-actions">
                   {canClose ? (
@@ -290,7 +297,7 @@ export default async function OrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={14}>No orders match filters.</td>
+                <td colSpan={16}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

@@ -7,7 +7,6 @@ import {
 import { listOrdersWithBalance } from "@/lib/actions/orders";
 import { listPurchaseOrdersWithBalance, suggestNextPurchasePoNumber } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
-import { listStaff } from "@/lib/actions/staff";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
@@ -30,7 +29,6 @@ export default async function HomePage() {
     pendingOrders,
     topCustomers,
     customers,
-    staff,
     ports,
     balanceOrders,
     balancePurchases,
@@ -44,7 +42,6 @@ export default async function HomePage() {
     getTopPendingOrdersByBalance(5),
     getTopCustomersByVolumeLastMonth(5),
     listCustomers({ activeOnly: true }),
-    listStaff(),
     listPortOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
@@ -75,7 +72,6 @@ export default async function HomePage() {
     creditDays: c.creditDays,
   }));
   const importerOpts = customers.map((c) => ({ id: c.id, name: c.name }));
-  const staffOpts = staff.map((s) => ({ id: s.id, name: s.name }));
   const portOpts = ports.map((p) => ({ id: p.id, name: p.name }));
   const qualityClassOpts = qualityClasses.map((qc) => ({
     id: qc.id,
@@ -102,7 +98,6 @@ export default async function HomePage() {
         <HomeQuickActions
           customers={customerOpts}
           importers={importerOpts}
-          staff={staffOpts}
           ports={portOpts}
           orders={balanceOrders.map((o) => ({
             poNumber: o.poNumber,

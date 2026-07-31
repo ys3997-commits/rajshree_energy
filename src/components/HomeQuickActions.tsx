@@ -44,7 +44,6 @@ type VesselOpt = {
 export function HomeQuickActions({
   customers,
   importers,
-  staff,
   ports,
   orders,
   purchaseOrders,
@@ -56,7 +55,6 @@ export function HomeQuickActions({
 }: {
   customers: CustomerOpt[];
   importers: Option[];
-  staff: Option[];
   ports: Option[];
   orders: OrderOpt[];
   purchaseOrders: PurchaseOpt[];
@@ -89,7 +87,6 @@ export function HomeQuickActions({
           category: c.category,
         }))}
         vessels={vessels}
-        staff={staff}
         suggestedPo={suggestedPo}
         suggestedPurchasePo={suggestedPurchasePo}
       />

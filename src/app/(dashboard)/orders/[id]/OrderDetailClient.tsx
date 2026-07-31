@@ -47,6 +47,7 @@ type OrderData = {
   creditDays: number | null;
   qualityClassId: string | null;
   portId: string | null;
+  deliveryTerms: DispatchTerms | null;
   customer: { name: string; category: CustomerCategory };
   dispatches: DispatchRow[];
 };
@@ -90,6 +91,9 @@ export function OrderDetailClient({
     order.qualityClassId ?? "",
   );
   const [portId, setPortId] = useState(order.portId ?? "");
+  const [deliveryTerms, setDeliveryTerms] = useState<DispatchTerms | null>(
+    order.deliveryTerms,
+  );
 
   const rateBreakdown = useMemo(() => {
     if (rate === "") return null;
@@ -112,6 +116,7 @@ export function OrderDetailClient({
         await updateOrderFields(order.id, {
           poNumber,
           orderDate: orderDate || null,
+          deliveryTerms,
         });
       } else {
         await updateOrderFields(order.id, {
@@ -122,6 +127,7 @@ export function OrderDetailClient({
           creditDays: creditDays === "" ? null : Number(creditDays),
           qualityClassId: qualityClassId || null,
           portId: portId || null,
+          deliveryTerms,
         });
       }
       setMessage("Order updated.");
@@ -189,6 +195,10 @@ export function OrderDetailClient({
         <div>
           <span className="text-neutral-500">Type:</span>{" "}
           {formatOrderType(order.orderType)}
+        </div>
+        <div>
+          <span className="text-neutral-500">Delivery terms:</span>{" "}
+          {formatDispatchTerms(deliveryTerms)}
         </div>
         <div>
           <span className="text-neutral-500">Status:</span>{" "}
@@ -295,6 +305,31 @@ export function OrderDetailClient({
             </option>
           ))}
         </select>
+        <label>Delivery terms</label>
+        <div
+          className="segment-control"
+          role="radiogroup"
+          aria-label="Delivery terms"
+        >
+          <button
+            type="button"
+            role="radio"
+            aria-checked={deliveryTerms === DispatchTerms.FOR}
+            className={`segment-option${deliveryTerms === DispatchTerms.FOR ? " segment-option-selected" : ""}`}
+            onClick={() => setDeliveryTerms(DispatchTerms.FOR)}
+          >
+            FOR
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={deliveryTerms === DispatchTerms.EX_PORT}
+            className={`segment-option${deliveryTerms === DispatchTerms.EX_PORT ? " segment-option-selected" : ""}`}
+            onClick={() => setDeliveryTerms(DispatchTerms.EX_PORT)}
+          >
+            Ex-Port
+          </button>
+        </div>
         <div />
         <button type="submit" className="btn w-fit">
           Save order

@@ -11,6 +11,7 @@ import {
   displayOrderBalance,
   displayOrderQuantity,
   formatCreditPeriod,
+  formatDateDdMmYyyy,
   formatOrderStatusForDisplay,
   formatOrderType,
   formatQualityClass,
@@ -55,6 +56,7 @@ export default async function PurchaseOrdersPage({
 
   const exportColumns = [
     { key: "poNumber", header: "Purchase PO" },
+    { key: "date", header: "Date" },
     { key: "vendor", header: "Vendor" },
     { key: "vessel", header: "Vessel" },
     { key: "type", header: "Type" },
@@ -71,6 +73,7 @@ export default async function PurchaseOrdersPage({
 
   const exportRows = orders.map((row) => ({
     poNumber: row.poNumber,
+    date: formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null),
     vendor: row.importer.name,
     vessel: row.vessel.vesselName,
     type: formatOrderType(row.orderType),
@@ -156,6 +159,7 @@ export default async function PurchaseOrdersPage({
           <thead>
             <tr>
               <th>Purchase PO</th>
+              <th>Date</th>
               <th className="col-vendor">Vendor</th>
               <th className="col-vessel">Vessel</th>
               <th>Type</th>
@@ -192,6 +196,9 @@ export default async function PurchaseOrdersPage({
                       {row.poNumber}
                     </Link>
                   </td>
+                  <td className="cell-date">
+                    {formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null)}
+                  </td>
                   <td className="col-vendor">{row.importer.name}</td>
                   <td className="col-vessel">{row.vessel.vesselName}</td>
                   <td>{formatOrderType(row.orderType)}</td>
@@ -224,7 +231,7 @@ export default async function PurchaseOrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={14}>No purchase orders match filters.</td>
+                <td colSpan={15}>No purchase orders match filters.</td>
               </tr>
             )}
           </tbody>

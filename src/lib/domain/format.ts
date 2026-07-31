@@ -33,8 +33,11 @@ export function formatIndianNumber(
   return n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
-/** Human-readable label for dispatch terms. */
-export function formatDispatchTerms(terms: DispatchTerms): string {
+/** Human-readable label for dispatch / sale delivery terms. */
+export function formatDispatchTerms(
+  terms: DispatchTerms | null | undefined,
+): string {
+  if (terms == null) return "—";
   return terms === DispatchTerms.FOR ? "FOR" : "Ex-Port";
 }
 

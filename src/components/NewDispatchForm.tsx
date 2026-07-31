@@ -56,7 +56,6 @@ export function NewDispatchForm({
   transporters,
   customers,
   vessels,
-  staff,
   suggestedPo,
   suggestedPurchasePo,
   onCancel,
@@ -67,7 +66,6 @@ export function NewDispatchForm({
   transporters: Opt[];
   customers: CustomerOpt[];
   vessels: VesselOpt[];
-  staff: Opt[];
   suggestedPo: string;
   suggestedPurchasePo: string;
   onCancel?: () => void;
@@ -80,7 +78,6 @@ export function NewDispatchForm({
   );
   const [poNumber, setPoNumber] = useState("");
   const [openPoNumber, setOpenPoNumber] = useState(suggestedPo);
-  const [orderById, setOrderById] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [saleRate, setSaleRate] = useState("");
   const [purchasePoNumber, setPurchasePoNumber] = useState("");
@@ -189,10 +186,8 @@ export function NewDispatchForm({
 
       if (mode === "open") {
         if (!customerId) throw new Error("Customer is required");
-        if (!orderById) throw new Error("Deal by (staff) is required");
         await createOpenOrderDispatch({
           poNumber: openPoNumber,
-          orderById,
           customerId,
           rate: saleRate.trim() || null,
           ...shared,
@@ -480,19 +475,6 @@ export function NewDispatchForm({
               {customers.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
-                </option>
-              ))}
-            </select>
-            <label>Deal by (staff)</label>
-            <select
-              required
-              value={orderById}
-              onChange={(e) => setOrderById(e.target.value)}
-            >
-              <option value="">Select</option>
-              {staff.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
                 </option>
               ))}
             </select>
