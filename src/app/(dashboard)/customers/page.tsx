@@ -1,4 +1,4 @@
-import { listCustomers } from "@/lib/actions/customers";
+import { listCustomersPage } from "@/lib/actions/customers";
 import {
   listCityOptions,
   listSaleExecutiveOptions,
@@ -7,10 +7,20 @@ import {
 } from "@/lib/actions/option-lists";
 import { CustomersClient } from "./CustomersClient";
 
-export default async function CustomersPage() {
+type SearchParams = Promise<{ page?: string; q?: string }>;
+
+export default async function CustomersPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const sp = await searchParams;
+  const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
+  const q = (sp.q ?? "").trim();
+
   const [customers, cities, states, sectors, saleExecutives] =
     await Promise.all([
-      listCustomers(),
+      listCustomersPage({ page, q }),
       listCityOptions(),
       listStateOptions(),
       listSectorOptions(),
@@ -19,22 +29,7 @@ export default async function CustomersPage() {
 
   return (
     <CustomersClient
-      initial={customers.map((customer) => {
-        const {
-          due,
-          openingDue,
-          plannedCollectionCallDate,
-          plannedSaleCallDate,
-          ...row
-        } = customer;
-        void due;
-        void plannedCollectionCallDate;
-        void plannedSaleCallDate;
-        return {
-          ...row,
-          openingDue: openingDue.toString(),
-        };
-      })}
+      initial={customers}
       cities={cities.map((o) => o.name)}
       states={states.map((o) => o.name)}
       sectors={sectors.map((o) => o.name)}

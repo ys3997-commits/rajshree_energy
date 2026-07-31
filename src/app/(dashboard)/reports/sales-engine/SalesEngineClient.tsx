@@ -387,7 +387,7 @@ export function SalesEngineClient({
                   {sortIndicator(sortKey === "soldQuantity", sortDir)}
                 </button>
               </th>
-              <th className="sales-engine-days-col">
+              <th className="cell-num sales-engine-days-col">
                 Days since
                 <br />
                 last dispatch

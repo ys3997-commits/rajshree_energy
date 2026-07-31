@@ -501,19 +501,20 @@ table.data td.num {
 
 th.cell-num,
 table.data th.num,
-table.data th.cell-num {
-  text-align: center;
+table.data th.cell-num,
+table.data th.cell-num button.th-sort {
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-/* Collection table: right-align amount cells; headers stay centered */
+/* Collection table: amount columns stay right-aligned (header + cells) */
 .collection-table td.cell-num {
   text-align: right;
 }
 
 .collection-table th.cell-num,
 .collection-table th.cell-num button.th-sort {
-  text-align: center;
+  text-align: right;
 }
 
 button.th-sort {
@@ -601,22 +602,9 @@ table.data td {
   vertical-align: middle;
 }
 
-table.data th {
-  text-align: center;
-}
-
 table.data td.cell-num {
   text-align: right;
   font-variant-numeric: tabular-nums;
-}
-
-table.data th.cell-num,
-table.data th.cell-num button.th-sort {
-  text-align: center;
-}
-
-table.data.report-table-dispatches thead tr:not(.report-group-row) th {
-  text-align: center;
 }
 
 table.data th {
@@ -1710,6 +1698,17 @@ table.data tr.month-divider:hover td {
 
 .vessel-row-inactive td:first-child {
   color: var(--ink-soft);
+}
+
+.customers-table-toolbar {
+  margin: 0 0 1.25rem;
+  text-align: left;
+}
+
+.customers-name-search {
+  display: block;
+  width: min(100%, 20rem);
+  margin: 0;
 }
 
 .customer-row-inactive td {

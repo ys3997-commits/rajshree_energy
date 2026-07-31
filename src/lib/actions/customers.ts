@@ -18,6 +18,112 @@ export async function listCustomers(options?: { activeOnly?: boolean }) {
   });
 }
 
+const CUSTOMERS_PAGE_SIZE = 20;
+
+export type CustomerListRow = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+  active: boolean;
+  ownerName: string | null;
+  ownerContact: string | null;
+  purchaserName: string | null;
+  purchaserContact: string | null;
+  purchaserRole: string | null;
+  paymentInChargeName: string | null;
+  paymentInChargeContact: string | null;
+  paymentInChargeRole: string | null;
+  accountantName: string | null;
+  accountantContact: string | null;
+  factoryContactName: string | null;
+  factoryContactContact: string | null;
+  factoryContactRole: string | null;
+  email: string | null;
+  city: string | null;
+  state: string | null;
+  creditDays: number | null;
+  sector: string | null;
+  saleExecutive: string | null;
+  approachForFunds: string | null;
+  openingDue: string;
+};
+
+export type CustomerListResult = {
+  rows: CustomerListRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  q: string;
+};
+
+export async function listCustomersPage(options?: {
+  page?: number;
+  pageSize?: number;
+  q?: string;
+}): Promise<CustomerListResult> {
+  const pageSize = Math.max(
+    1,
+    Math.min(100, options?.pageSize ?? CUSTOMERS_PAGE_SIZE),
+  );
+  const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
+  const q = (options?.q ?? "").trim();
+  const where = q
+    ? { name: { contains: q, mode: "insensitive" as const } }
+    : undefined;
+
+  const total = await prisma.customer.count({ where });
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const page = Math.min(requestedPage, totalPages);
+  const skip = (page - 1) * pageSize;
+
+  const rows = await prisma.customer.findMany({
+    where,
+    orderBy: { name: "asc" },
+    skip,
+    take: pageSize,
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      active: true,
+      ownerName: true,
+      ownerContact: true,
+      purchaserName: true,
+      purchaserContact: true,
+      purchaserRole: true,
+      paymentInChargeName: true,
+      paymentInChargeContact: true,
+      paymentInChargeRole: true,
+      accountantName: true,
+      accountantContact: true,
+      factoryContactName: true,
+      factoryContactContact: true,
+      factoryContactRole: true,
+      email: true,
+      city: true,
+      state: true,
+      creditDays: true,
+      sector: true,
+      saleExecutive: true,
+      approachForFunds: true,
+      openingDue: true,
+    },
+  });
+
+  return {
+    rows: rows.map((customer) => ({
+      ...customer,
+      openingDue: customer.openingDue.toString(),
+    })),
+    total,
+    page,
+    pageSize,
+    totalPages,
+    q,
+  };
+}
+
 export type CustomerDueRow = {
   id: string;
   name: string;

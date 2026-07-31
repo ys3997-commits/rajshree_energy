@@ -13,6 +13,7 @@ import {
   formatCreditPeriod,
   formatOrderStatusForDisplay,
   formatOrderType,
+  formatQualityClass,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
@@ -57,6 +58,7 @@ export default async function PurchaseOrdersPage({
     { key: "vendor", header: "Vendor" },
     { key: "vessel", header: "Vessel" },
     { key: "type", header: "Type" },
+    { key: "quality", header: "Quality class" },
     { key: "daysSince", header: "Days since order", align: "right" as const },
     { key: "quantity", header: "Quantity", align: "right" as const },
     { key: "dispatched", header: "Dispatched", align: "right" as const },
@@ -72,6 +74,7 @@ export default async function PurchaseOrdersPage({
     vendor: row.importer.name,
     vessel: row.vessel.vesselName,
     type: formatOrderType(row.orderType),
+    quality: formatQualityClass(row.qualityClass),
     daysSince: formatCreditPeriod(
       daysSinceOrder(row.orderDate, row.createdAt),
     ),
@@ -156,6 +159,7 @@ export default async function PurchaseOrdersPage({
               <th className="col-vendor">Vendor</th>
               <th className="col-vessel">Vessel</th>
               <th>Type</th>
+              <th>Quality class</th>
               <th className="num col-days-since-order">
                 Days since
                 <br />
@@ -191,6 +195,7 @@ export default async function PurchaseOrdersPage({
                   <td className="col-vendor">{row.importer.name}</td>
                   <td className="col-vessel">{row.vessel.vesselName}</td>
                   <td>{formatOrderType(row.orderType)}</td>
+                  <td>{formatQualityClass(row.qualityClass)}</td>
                   <td className="num col-days-since-order">
                     {formatCreditPeriod(
                       daysSinceOrder(row.orderDate, row.createdAt),
@@ -219,7 +224,7 @@ export default async function PurchaseOrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={13}>No purchase orders match filters.</td>
+                <td colSpan={14}>No purchase orders match filters.</td>
               </tr>
             )}
           </tbody>

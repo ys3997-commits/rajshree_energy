@@ -19,6 +19,7 @@ import {
   formatIndianNumber,
   formatOrderStatusForDisplay,
   formatOrderType,
+  formatQualityClass,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
@@ -90,6 +91,7 @@ export default async function OrdersPage({
     { key: "poNumber", header: "PO number" },
     { key: "customer", header: "Customer" },
     { key: "type", header: "Type" },
+    { key: "quality", header: "Quality class" },
     { key: "lorries", header: "Number of lorries", align: "right" as const },
     { key: "orderQty", header: "Order quantity", align: "right" as const },
     {
@@ -109,6 +111,7 @@ export default async function OrdersPage({
     poNumber: row.poNumber,
     customer: row.customer.name,
     type: formatOrderType(row.orderType),
+    quality: formatQualityClass(row.qualityClass),
     lorries: formatIndianNumber(row.numberOfLorries),
     orderQty: formatSaleOrderMt(displayOrderQuantity(row)),
     dispatchedQty: formatSaleOrderMt(row.dispatchedOrder),
@@ -213,6 +216,7 @@ export default async function OrdersPage({
               <th>PO number</th>
               <th>Customer</th>
               <th>Type</th>
+              <th>Quality class</th>
               <th className="num col-lorries">
                 Number of
                 <br />
@@ -252,6 +256,7 @@ export default async function OrdersPage({
                 </td>
                 <td>{row.customer.name}</td>
                 <td>{formatOrderType(row.orderType)}</td>
+                <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className="num col-lorries">
                   {formatIndianNumber(row.numberOfLorries)}
                 </td>
@@ -285,7 +290,7 @@ export default async function OrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={13}>No orders match filters.</td>
+                <td colSpan={14}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

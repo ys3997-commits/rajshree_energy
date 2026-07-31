@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CustomerCategory } from "@/generated/prisma";
-import { FormEvent, useState, useTransition } from "react";
+import { FormEvent, useEffect, useState, useTransition } from "react";
 import {
   createCustomer,
   deleteCustomer,
   updateCustomer,
+  type CustomerListResult,
+  type CustomerListRow,
 } from "@/lib/actions/customers";
 import {
   capitalizeName,
@@ -20,33 +23,16 @@ import { OptionSelect } from "@/components/OptionSelect";
 
 const COLLECTION_OFFICER = "Collection Officer";
 
-type Row = {
-  id: string;
-  name: string;
-  category: CustomerCategory;
-  active: boolean;
-  ownerName: string | null;
-  ownerContact: string | null;
-  purchaserName: string | null;
-  purchaserContact: string | null;
-  purchaserRole: string | null;
-  paymentInChargeName: string | null;
-  paymentInChargeContact: string | null;
-  paymentInChargeRole: string | null;
-  accountantName: string | null;
-  accountantContact: string | null;
-  factoryContactName: string | null;
-  factoryContactContact: string | null;
-  factoryContactRole: string | null;
-  email: string | null;
-  city: string | null;
-  state: string | null;
-  creditDays: number | null;
-  sector: string | null;
-  saleExecutive: string | null;
-  approachForFunds: string | null;
-  openingDue: string;
-};
+type Row = CustomerListRow;
+
+function customersHref(page: number, q: string): string {
+  const params = new URLSearchParams();
+  if (page > 1) params.set("page", String(page));
+  const trimmed = q.trim();
+  if (trimmed) params.set("q", trimmed);
+  const qs = params.toString();
+  return qs ? `/customers?${qs}` : "/customers";
+}
 
 const empty = {
   name: "",
@@ -114,17 +100,36 @@ export function CustomersClient({
   sectors,
   saleExecutives,
 }: {
-  initial: Row[];
+  initial: CustomerListResult;
   cities: string[];
   states: string[];
   sectors: string[];
   saleExecutives: string[];
 }) {
-  const [rows, setRows] = useState(initial);
+  const router = useRouter();
+  const { rows, total, page, pageSize, totalPages, q } = initial;
   const [form, setForm] = useState(empty);
   const [editing, setEditing] = useState<Row | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [nameSearch, setNameSearch] = useState(q);
+  const [prevQ, setPrevQ] = useState(q);
+  if (q !== prevQ) {
+    setPrevQ(q);
+    setNameSearch(q);
+  }
+
+  useEffect(() => {
+    const trimmed = nameSearch.trim();
+    if (trimmed === q) return;
+    const handle = window.setTimeout(() => {
+      router.push(customersHref(1, trimmed));
+    }, 300);
+    return () => window.clearTimeout(handle);
+  }, [nameSearch, q, router]);
+
+  const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, total);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -164,7 +169,7 @@ export function CustomersClient({
       else await createCustomer(payload);
       setForm(empty);
       setEditing(null);
-      startTransition(() => window.location.reload());
+      startTransition(() => router.refresh());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
     }
@@ -174,7 +179,7 @@ export function CustomersClient({
     if (!confirm("Delete this customer?")) return;
     try {
       await deleteCustomer(id);
-      setRows((prev) => prev.filter((r) => r.id !== id));
+      startTransition(() => router.refresh());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed");
     }
@@ -514,6 +519,17 @@ export function CustomersClient({
         </div>
       </form>
 
+      <div className="customers-table-toolbar">
+        <input
+          type="search"
+          className="field-input customers-name-search"
+          placeholder="Search by company name…"
+          aria-label="Search customers by name"
+          value={nameSearch}
+          onChange={(e) => setNameSearch(e.target.value)}
+        />
+      </div>
+
       <div className="table-wrap">
         <table className="data">
           <thead>
@@ -587,12 +603,47 @@ export function CustomersClient({
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={11}>No customers yet.</td>
+                <td colSpan={11}>
+                  {q
+                    ? "No customers match that name."
+                    : "No customers yet."}
+                </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="payments-pagination">
+          <span>
+            {from}–{to} of {total}
+          </span>
+          <div className="payments-pagination-actions">
+            {page > 1 && (
+              <Link
+                href={customersHref(page - 1, q)}
+                className="btn btn-secondary btn-sm"
+                prefetch={false}
+              >
+                Previous
+              </Link>
+            )}
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            {page < totalPages && (
+              <Link
+                href={customersHref(page + 1, q)}
+                className="btn btn-secondary btn-sm"
+                prefetch={false}
+              >
+                Next
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

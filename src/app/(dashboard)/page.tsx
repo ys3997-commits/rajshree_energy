@@ -210,6 +210,24 @@ export default async function HomePage() {
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
+          <Link href="/reports/vessel-report" className="home-report-card">
+            <p className="home-eyebrow">Vessels</p>
+            <h3 className="home-report-card-title">Vessel report</h3>
+            <p className="home-report-card-desc">
+              Order, dispatch, closing, and balance quantities by vessel, with
+              linked purchase orders.
+            </p>
+            <span className="home-report-card-cta">Open report</span>
+          </Link>
+          <Link href="/reports/quality-report" className="home-report-card">
+            <p className="home-eyebrow">Quality</p>
+            <h3 className="home-report-card-title">Quality report</h3>
+            <p className="home-report-card-desc">
+              PO and SO balances by quality class, with unsold stock and vessel
+              breakdown.
+            </p>
+            <span className="home-report-card-cta">Open report</span>
+          </Link>
         </div>
       </section>
 

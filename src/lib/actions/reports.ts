@@ -456,3 +456,287 @@ export async function getCustomerAnalysis(
     dispatches,
   };
 }
+
+export type VesselReportListRow = {
+  id: string;
+  vesselName: string;
+  active: boolean;
+  portName: string | null;
+  portState: string | null;
+  qualityClass: {
+    origin: { name: string };
+    domestic: boolean;
+    qualityOption: { name: string };
+  } | null;
+  orderQuantity: string;
+  dispatchedQuantity: string;
+  closingQuantity: string;
+  balanceQuantity: string;
+  purchaseOrderCount: number;
+};
+
+export type VesselReportPoRow = {
+  id: string;
+  poNumber: string;
+  orderDate: string | null;
+  orderType: string;
+  orderStatus: string;
+  quantity: string | null;
+  dispatchedOrder: string;
+  closingQuantity: string | null;
+  balanceOrder: string | null;
+  vendorName: string;
+  rate: string | null;
+  finalRate: string | null;
+};
+
+function sumDecimal(values: (Decimal | null | undefined)[]): Decimal {
+  let total = new Decimal(0);
+  for (const v of values) {
+    if (v != null) total = total.plus(v);
+  }
+  return total;
+}
+
+/** Aggregate order qty the same way the PO list displays it (open → dispatched). */
+function displayOrderQtyValue(order: {
+  orderType: string;
+  quantity: Decimal | null;
+  dispatchedOrder: Decimal;
+}): Decimal {
+  if (order.orderType === "OPEN") return order.dispatchedOrder;
+  return order.quantity ?? new Decimal(0);
+}
+
+function displayBalanceValue(order: {
+  orderType: string;
+  quantity: Decimal | null;
+  dispatchedOrder: Decimal;
+  closingQuantity: Decimal | null;
+}): Decimal {
+  if (order.orderType === "OPEN" && order.quantity == null) {
+    return new Decimal(0);
+  }
+  return balanceOrder(order) ?? new Decimal(0);
+}
+
+export async function listVesselReport(): Promise<VesselReportListRow[]> {
+  const vessels = await prisma.vessel.findMany({
+    include: {
+      qualityClass: { include: qualityClassInclude },
+      port: { select: { name: true, state: true } },
+      purchaseOrders: {
+        select: {
+          orderType: true,
+          quantity: true,
+          dispatchedOrder: true,
+          closingQuantity: true,
+        },
+      },
+    },
+    orderBy: { vesselName: "asc" },
+  });
+
+  return vessels.map((v) => {
+    const pos = v.purchaseOrders;
+    return {
+      id: v.id,
+      vesselName: v.vesselName,
+      active: v.active,
+      portName: v.port?.name ?? null,
+      portState: v.port?.state ?? null,
+      qualityClass: v.qualityClass,
+      orderQuantity: sumDecimal(pos.map(displayOrderQtyValue)).toString(),
+      dispatchedQuantity: sumDecimal(pos.map((o) => o.dispatchedOrder)).toString(),
+      closingQuantity: sumDecimal(pos.map((o) => o.closingQuantity)).toString(),
+      balanceQuantity: sumDecimal(pos.map(displayBalanceValue)).toString(),
+      purchaseOrderCount: pos.length,
+    };
+  });
+}
+
+export async function getVesselReport(vesselId: string) {
+  const vessel = await prisma.vessel.findUnique({
+    where: { id: vesselId },
+    include: {
+      qualityClass: { include: qualityClassInclude },
+      port: { select: { id: true, name: true, state: true } },
+      purchaseOrders: {
+        include: {
+          importer: { select: { id: true, name: true } },
+        },
+        orderBy: [{ orderDate: "desc" }, { createdAt: "desc" }],
+      },
+    },
+  });
+  if (!vessel) return null;
+
+  const pos = vessel.purchaseOrders;
+  const totals = {
+    orderQuantity: sumDecimal(pos.map(displayOrderQtyValue)).toString(),
+    dispatchedQuantity: sumDecimal(pos.map((o) => o.dispatchedOrder)).toString(),
+    closingQuantity: sumDecimal(pos.map((o) => o.closingQuantity)).toString(),
+    balanceQuantity: sumDecimal(pos.map(displayBalanceValue)).toString(),
+  };
+
+  return {
+    vessel: {
+      id: vessel.id,
+      vesselName: vessel.vesselName,
+      active: vessel.active,
+      portName: vessel.port?.name ?? null,
+      portState: vessel.port?.state ?? null,
+      qualityClass: vessel.qualityClass,
+    },
+    totals,
+    purchaseOrders: pos.map(
+      (o): VesselReportPoRow => ({
+        id: o.id,
+        poNumber: o.poNumber,
+        orderDate: o.orderDate?.toISOString() ?? null,
+        orderType: o.orderType,
+        orderStatus: computePurchaseOrderStatus(o),
+        quantity: o.quantity?.toString() ?? null,
+        dispatchedOrder: o.dispatchedOrder.toString(),
+        closingQuantity: o.closingQuantity?.toString() ?? null,
+        balanceOrder: balanceOrder(o)?.toString() ?? null,
+        vendorName: o.importer.name,
+        rate: o.rate?.toString() ?? null,
+        finalRate: o.finalRate?.toString() ?? null,
+      }),
+    ),
+  };
+}
+
+export type QualityReportListRow = {
+  id: string;
+  qualityClass: {
+    origin: { name: string };
+    domestic: boolean;
+    qualityOption: { name: string };
+  };
+  poBalance: string;
+  soBalance: string;
+  unsoldQuantity: string;
+};
+
+export type QualityReportVesselRow = {
+  id: string;
+  vesselName: string;
+  active: boolean;
+  portName: string | null;
+  portState: string | null;
+  balanceQuantity: string;
+};
+
+const orderBalanceSelect = {
+  orderType: true,
+  quantity: true,
+  dispatchedOrder: true,
+  closingQuantity: true,
+} as const;
+
+export async function listQualityReport(): Promise<QualityReportListRow[]> {
+  const classes = await prisma.qualityClass.findMany({
+    include: {
+      ...qualityClassInclude,
+      purchaseOrders: { select: orderBalanceSelect },
+      orders: { select: orderBalanceSelect },
+    },
+  });
+
+  const rows = classes.map((qc) => {
+    const poBalance = sumDecimal(qc.purchaseOrders.map(displayBalanceValue));
+    const soBalance = sumDecimal(qc.orders.map(displayBalanceValue));
+    const unsold = poBalance.minus(soBalance);
+    return {
+      id: qc.id,
+      qualityClass: {
+        origin: qc.origin,
+        domestic: qc.domestic,
+        qualityOption: qc.qualityOption,
+      },
+      poBalance: poBalance.toString(),
+      soBalance: soBalance.toString(),
+      unsoldQuantity: unsold.toString(),
+    };
+  });
+
+  rows.sort((a, b) =>
+    formatQualityClassLabel(a.qualityClass).localeCompare(
+      formatQualityClassLabel(b.qualityClass),
+    ),
+  );
+  return rows;
+}
+
+function formatQualityClassLabel(qc: {
+  origin: { name: string };
+  domestic: boolean;
+  qualityOption: { name: string };
+}): string {
+  const domestic = qc.domestic ? "Domestic" : "Imported";
+  return `${domestic} · ${qc.origin.name} · ${qc.qualityOption.name}`;
+}
+
+export async function getQualityReport(qualityClassId: string) {
+  const qualityClass = await prisma.qualityClass.findUnique({
+    where: { id: qualityClassId },
+    include: {
+      ...qualityClassInclude,
+      purchaseOrders: { select: orderBalanceSelect },
+      orders: { select: orderBalanceSelect },
+    },
+  });
+  if (!qualityClass) return null;
+
+  const poBalance = sumDecimal(
+    qualityClass.purchaseOrders.map(displayBalanceValue),
+  );
+  const soBalance = sumDecimal(qualityClass.orders.map(displayBalanceValue));
+  const unsold = poBalance.minus(soBalance);
+
+  // Vessels with POs of this quality, plus vessels tagged with this quality.
+  const vessels = await prisma.vessel.findMany({
+    where: {
+      OR: [
+        { qualityClassId },
+        { purchaseOrders: { some: { qualityClassId } } },
+      ],
+    },
+    include: {
+      port: { select: { name: true, state: true } },
+      purchaseOrders: {
+        where: { qualityClassId },
+        select: orderBalanceSelect,
+      },
+    },
+    orderBy: { vesselName: "asc" },
+  });
+
+  return {
+    qualityClass: {
+      id: qualityClass.id,
+      origin: qualityClass.origin,
+      domestic: qualityClass.domestic,
+      qualityOption: qualityClass.qualityOption,
+    },
+    totals: {
+      poBalance: poBalance.toString(),
+      soBalance: soBalance.toString(),
+      unsoldQuantity: unsold.toString(),
+    },
+    vessels: vessels.map(
+      (v): QualityReportVesselRow => ({
+        id: v.id,
+        vesselName: v.vesselName,
+        active: v.active,
+        portName: v.port?.name ?? null,
+        portState: v.port?.state ?? null,
+        balanceQuantity: sumDecimal(
+          v.purchaseOrders.map(displayBalanceValue),
+        ).toString(),
+      }),
+    ),
+  };
+}
