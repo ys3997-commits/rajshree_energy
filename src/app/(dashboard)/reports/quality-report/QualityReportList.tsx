@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { QualityReportListRow } from "@/lib/actions/reports";
 import {
   formatQualityClass,
@@ -23,6 +24,24 @@ export function QualityReportList({
     );
   }, [rows, query]);
 
+  const exportColumns = [
+    { key: "quality", header: "Quality class" },
+    { key: "poBalance", header: "PO balance", align: "right" as const },
+    { key: "soBalance", header: "SO balance", align: "right" as const },
+    { key: "unsold", header: "Unsold", align: "right" as const },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      filtered.map((r) => ({
+        quality: formatQualityClass(r.qualityClass),
+        poBalance: formatSaleOrderMt(r.poBalance),
+        soBalance: formatSaleOrderMt(r.soBalance),
+        unsold: formatSaleOrderMt(r.unsoldQuantity),
+      })),
+    [filtered],
+  );
+
   return (
     <div className="quality-report-list">
       <div className="filters">
@@ -36,6 +55,12 @@ export function QualityReportList({
             autoComplete="off"
           />
         </label>
+        <TableDownloadButtons
+          title="Quality report"
+          filenameBase="quality-report"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </div>
 
       {filtered.length === 0 ? (

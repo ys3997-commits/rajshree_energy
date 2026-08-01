@@ -58,8 +58,6 @@ export type CreateDispatchInput = {
   entryInTally?: boolean;
   saleInvoiceNumber?: string | null;
   purchaseInvoiceNumber?: string | null;
-  /** When true, skip sale-order balance check (open order with null quantity). */
-  skipOrderBalanceCheck?: boolean;
 };
 
 export type UpdateDispatchInput = {
@@ -249,7 +247,6 @@ async function applyDispatchDelta(
     poNumber: string;
     purchasePoNumber: string;
     qty: Decimal;
-    skipOrderBalanceCheck?: boolean;
     skipPurchaseBalanceCheck?: boolean;
   },
 ) {
@@ -273,20 +270,6 @@ async function applyDispatchDelta(
   }
 
   if (args.qty.gt(0)) {
-    if (!args.skipOrderBalanceCheck) {
-      const bal = balanceOrder(order);
-      if (bal == null) {
-        throw new Error(
-          `Sale order ${args.poNumber} has no quantity; cannot validate balance`,
-        );
-      }
-      if (args.qty.gt(bal)) {
-        throw new Error(
-          `Over-dispatch blocked: ${args.qty} exceeds sale order balance ${bal} for PO ${args.poNumber}`,
-        );
-      }
-    }
-
     if (!args.skipPurchaseBalanceCheck) {
       const pBal = balanceOrder(purchase);
       if (pBal == null) {
@@ -390,7 +373,6 @@ export async function createDispatch(
       poNumber: input.poNumber,
       purchasePoNumber: purchase.purchasePoNumber,
       qty,
-      skipOrderBalanceCheck: input.skipOrderBalanceCheck === true,
       skipPurchaseBalanceCheck: purchase.skipPurchaseBalanceCheck,
     });
 
@@ -477,7 +459,6 @@ export async function createOpenOrderDispatch(
       poNumber,
       purchasePoNumber: purchase.purchasePoNumber,
       qty,
-      skipOrderBalanceCheck: true,
       skipPurchaseBalanceCheck: purchase.skipPurchaseBalanceCheck,
     });
 
@@ -548,7 +529,6 @@ export async function updateDispatch(
         poNumber: existing.poNumber,
         purchasePoNumber: existing.purchasePoNumber,
         qty: existing.dispatchedQuantity.neg(),
-        skipOrderBalanceCheck: true,
         skipPurchaseBalanceCheck: true,
       });
 
@@ -558,9 +538,6 @@ export async function updateDispatch(
       if (!targetOrder) {
         throw new Error(`Sale order ${nextPo} not found`);
       }
-      const skipSale =
-        targetOrder.orderType === OrderType.OPEN &&
-        targetOrder.quantity == null;
 
       const targetPurchase = await tx.purchaseOrder.findUnique({
         where: { poNumber: nextPurchasePo },
@@ -576,7 +553,6 @@ export async function updateDispatch(
         poNumber: nextPo,
         purchasePoNumber: nextPurchasePo,
         qty: nextQty,
-        skipOrderBalanceCheck: skipSale,
         skipPurchaseBalanceCheck: skipPurchase,
       });
 
@@ -682,7 +658,6 @@ export async function deleteDispatch(id: string): Promise<void> {
       poNumber: existing.poNumber,
       purchasePoNumber: existing.purchasePoNumber,
       qty: existing.dispatchedQuantity.neg(),
-      skipOrderBalanceCheck: true,
       skipPurchaseBalanceCheck: true,
     });
 

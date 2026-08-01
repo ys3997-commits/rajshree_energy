@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { QualityReportVesselRow } from "@/lib/actions/reports";
 import {
   formatQualityClass,
@@ -38,6 +40,22 @@ export function QualityReportDetail({
   vessels,
 }: Props) {
   const label = formatQualityClass(qualityClass);
+
+  const exportColumns = [
+    { key: "vessel", header: "Vessel" },
+    { key: "port", header: "Port" },
+    { key: "balance", header: "Balance", align: "right" as const },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      vessels.map((v) => ({
+        vessel: v.active ? v.vesselName : `${v.vesselName} · Inactive`,
+        port: formatPort(v.portName, v.portState),
+        balance: formatSaleOrderMt(v.balanceQuantity),
+      })),
+    [vessels],
+  );
 
   return (
     <div className="quality-report-detail">
@@ -80,9 +98,17 @@ export function QualityReportDetail({
       </div>
 
       <section className="analysis-section">
-        <h2 className="analysis-section-title">
-          Vessels ({vessels.length})
-        </h2>
+        <div className="filters">
+          <h2 className="analysis-section-title">
+            Vessels ({vessels.length})
+          </h2>
+          <TableDownloadButtons
+            title={`${label} — vessels`}
+            filenameBase="quality-report-vessels"
+            columns={exportColumns}
+            rows={exportRows}
+          />
+        </div>
         {vessels.length === 0 ? (
           <div className="table-wrap">
             <p className="empty-state">

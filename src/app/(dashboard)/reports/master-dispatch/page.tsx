@@ -4,7 +4,10 @@ import { listCustomers } from "@/lib/actions/customers";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
+  formatDateDdMmYyyy,
+  formatIndianNumber,
   formatLorryNumber,
   formatMt,
   formatQualityClass,
@@ -13,6 +16,12 @@ import {
   parsePurchaseOrderSequence,
   parseSaleOrderSequence,
 } from "@/lib/domain/orderNumbers";
+
+function formatWeightMt(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  return formatIndianNumber(value, 2);
+}
 
 function displayOrderDigits(
   poNumber: string,
@@ -60,6 +69,78 @@ export default async function MasterDispatchReportPage({
       listVessels(),
       listQualityClasses(),
     ]);
+
+  const exportColumns = [
+    { key: "date", header: "Date" },
+    { key: "lorryNumber", header: "Lorry no" },
+    { key: "weight", header: "Weight (MT)", align: "right" as const },
+    { key: "vesselName", header: "Vessel name" },
+    { key: "quality", header: "Quality" },
+    { key: "gstState", header: "GST state" },
+    { key: "received", header: "Received (MT)", align: "right" as const },
+    { key: "diff", header: "Diff (MT)", align: "right" as const },
+    { key: "purchasePo", header: "PO no" },
+    { key: "vendor", header: "Vendor" },
+    {
+      key: "purchaseBasic",
+      header: "Purchase basic price (Rs)",
+      align: "right" as const,
+    },
+    {
+      key: "purchaseTotal",
+      header: "Purchase total price (Rs)",
+      align: "right" as const,
+    },
+    { key: "purchaseInvoice", header: "Purchase invoice" },
+    { key: "salePo", header: "SO no" },
+    { key: "customer", header: "Customer name" },
+    {
+      key: "saleBasic",
+      header: "Sale basic price (Rs)",
+      align: "right" as const,
+    },
+    {
+      key: "saleTotal",
+      header: "Sale total price (Rs)",
+      align: "right" as const,
+    },
+    { key: "saleInvoice", header: "Sale invoice" },
+    { key: "transporter", header: "Transporter name" },
+    { key: "freightPmt", header: "Freight PMT (Rs)", align: "right" as const },
+    {
+      key: "freightAmount",
+      header: "Freight amount (Rs)",
+      align: "right" as const,
+    },
+    { key: "profit", header: "Profit (Rs)", align: "right" as const },
+  ];
+
+  const exportRows = rows.map((row) => ({
+    date: formatDateDdMmYyyy(
+      new Date(row.dispatchDate).toISOString().slice(0, 10),
+    ),
+    lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
+    weight: formatWeightMt(row.dispatchedQuantity),
+    vesselName: row.vesselName,
+    quality: formatQualityClass(row.qualityClass),
+    gstState: row.gstState ?? "—",
+    received: formatWeightMt(row.receivingQuantity),
+    diff: formatWeightMt(row.diffInQuantity),
+    purchasePo: displayOrderDigits(row.purchasePoNumber, "purchase"),
+    vendor: row.vendorName ?? "—",
+    purchaseBasic: formatMt(row.purchaseBasicRate),
+    purchaseTotal: formatMt(row.purchaseTotalRate),
+    purchaseInvoice: row.purchaseInvoiceNumber ?? "—",
+    salePo: displayOrderDigits(row.salePoNumber, "sale"),
+    customer: row.customerName ?? "—",
+    saleBasic: formatMt(row.saleBasicRate),
+    saleTotal: formatMt(row.saleTotalRate),
+    saleInvoice: row.saleInvoiceNumber ?? "—",
+    transporter: row.transporterName ?? "—",
+    freightPmt: formatMt(row.freight),
+    freightAmount: formatMt(row.freightAmount),
+    profit: formatMt(row.lineProfit),
+  }));
 
   return (
     <div>
@@ -149,6 +230,12 @@ export default async function MasterDispatchReportPage({
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>
+        <TableDownloadButtons
+          title="Master dispatch report"
+          filenameBase="master-dispatch-report"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </form>
 
       <div className="table-wrap table-wrap-scroll">
@@ -195,7 +282,7 @@ export default async function MasterDispatchReportPage({
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td className="cell-num">{formatMt(row.dispatchedQuantity)}</td>
+                <td className="cell-num">{formatWeightMt(row.dispatchedQuantity)}</td>
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className={row.gstState ? undefined : "cell-center"}>
@@ -206,14 +293,14 @@ export default async function MasterDispatchReportPage({
                     row.receivingQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
-                  {formatMt(row.receivingQuantity)}
+                  {formatWeightMt(row.receivingQuantity)}
                 </td>
                 <td
                   className={
                     row.diffInQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
-                  {formatMt(row.diffInQuantity)}
+                  {formatWeightMt(row.diffInQuantity)}
                 </td>
                 <td>
                   {row.purchaseOrderId ? (

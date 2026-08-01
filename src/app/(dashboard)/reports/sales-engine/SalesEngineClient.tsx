@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
   updatePlannedSaleCall,
   type SalesEngineRow,
@@ -10,6 +11,7 @@ import {
 import {
   capitalizeName,
   formatCustomerCategory,
+  formatDateDdMmYyyy,
   formatRs,
 } from "@/lib/domain/format";
 
@@ -227,6 +229,46 @@ export function SalesEngineClient({
     tomorrow,
   ]);
 
+  const exportColumns = [
+    { key: "customer", header: "Customer name" },
+    { key: "purchaser", header: "Purchaser name" },
+    { key: "phone", header: "Phone number" },
+    { key: "role", header: "Role of purchaser" },
+    { key: "saleExecutive", header: "Sale executive" },
+    { key: "orderInHand", header: "Order in hand", align: "right" as const },
+    { key: "soldQuantity", header: "Sold quantity", align: "right" as const },
+    {
+      key: "daysSince",
+      header: "Days since last dispatch",
+      align: "right" as const,
+    },
+    { key: "due", header: "Total Due", align: "right" as const },
+    { key: "overdue", header: "Overdue", align: "right" as const },
+    { key: "plannedCall", header: "Planned call" },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      filtered.map((row) => ({
+        customer: capitalizeName(row.name) ?? row.name,
+        purchaser: row.purchaserName
+          ? (capitalizeName(row.purchaserName) ?? row.purchaserName)
+          : "—",
+        phone: row.purchaserContact ?? "—",
+        role: row.purchaserRole ?? "—",
+        saleExecutive: row.saleExecutive
+          ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
+          : "—",
+        orderInHand: formatQtyMt(row.orderInHand),
+        soldQuantity: formatQtyMt(row.soldQuantity),
+        daysSince: daysSinceLastDispatch(row.lastDispatchDate, today),
+        due: formatRs(row.due),
+        overdue: formatRs(row.overdue),
+        plannedCall: formatDateDdMmYyyy(row.plannedSaleCallDate),
+      })),
+    [filtered, today],
+  );
+
   function onPlannedCallChange(customerId: string, value: string) {
     const nextDate = value.trim() === "" ? null : value;
     setError(null);
@@ -352,6 +394,12 @@ export function SalesEngineClient({
             Clear
           </button>
         )}
+        <TableDownloadButtons
+          title="Sales engine"
+          filenameBase="sales-engine"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </form>
 
       <div className="table-wrap">

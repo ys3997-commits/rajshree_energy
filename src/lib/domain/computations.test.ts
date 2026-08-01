@@ -207,12 +207,13 @@ describe("computed balances", () => {
 });
 
 describe("over-dispatch rules (pure checks mirroring createDispatch)", () => {
-  it("detects order over-dispatch", () => {
+  it("no longer blocks sale-order over-dispatch (qty independent of SO)", () => {
     const bal = balanceOrder({
       quantity: new Decimal(100),
       dispatchedOrder: new Decimal(90),
     })!;
     const requested = new Decimal(20);
+    // Balance math still works; createDispatch does not enforce SO cap
     expect(requested.gt(bal)).toBe(true);
   });
 
@@ -225,13 +226,12 @@ describe("over-dispatch rules (pure checks mirroring createDispatch)", () => {
     expect(requested.gt(bal)).toBe(true);
   });
 
-  it("allows open-order dispatch when quantity is null (skip order balance)", () => {
+  it("open-order balance is null when quantity is null", () => {
     const bal = balanceOrder({
       quantity: null,
       dispatchedOrder: new Decimal(0),
     });
     expect(bal).toBeNull();
-    // createDispatch uses skipOrderBalanceCheck=true in this case
   });
 });
 

@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
   updateTransportChecklist,
   type TransportEngineRow,
@@ -107,6 +108,68 @@ export function TransportEngineClient({
       return true;
     });
   }, [rows, customerFilter, transporterFilter, completeFilter]);
+
+  const exportColumns = [
+    { key: "date", header: "Date" },
+    { key: "saleInvoice", header: "Sale invoice" },
+    { key: "lorryNumber", header: "Lorry number" },
+    {
+      key: "loadingWeight",
+      header: "Loading weight (MT)",
+      align: "right" as const,
+    },
+    {
+      key: "receivingWeight",
+      header: "Receiving weight (MT)",
+      align: "right" as const,
+    },
+    {
+      key: "diffInWeight",
+      header: "Diff in weight (MT)",
+      align: "right" as const,
+    },
+    { key: "customer", header: "Customer name" },
+    { key: "transporter", header: "Transporter name" },
+    {
+      key: "freightPerTon",
+      header: "Freight per ton",
+      align: "right" as const,
+    },
+    {
+      key: "freightAmount",
+      header: "Freight amount",
+      align: "right" as const,
+    },
+    { key: "biltyHardCopy", header: "Bilty hard copy" },
+    { key: "invoiceHardCopy", header: "Invoice hard copy" },
+    { key: "entryInTally", header: "Entry in Tally" },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      filtered.map((row) => ({
+        date: formatDateDdMmYyyy(row.dispatchDate),
+        saleInvoice: row.saleInvoiceNumber ?? "—",
+        lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
+        loadingWeight: formatDispatchMt(row.loadingWeight),
+        receivingWeight: formatDispatchMt(row.receivingWeight),
+        diffInWeight: formatDispatchMt(row.diffInWeight),
+        customer: row.customerName
+          ? (capitalizeName(row.customerName) ?? row.customerName)
+          : "—",
+        transporter: row.transporterName
+          ? (capitalizeName(row.transporterName) ?? row.transporterName)
+          : "—",
+        freightPerTon:
+          row.freightPerTon != null ? formatRs(row.freightPerTon) : "—",
+        freightAmount:
+          row.freightAmount != null ? formatRs(row.freightAmount) : "—",
+        biltyHardCopy: formatChecklistYes(row.biltyHardCopy),
+        invoiceHardCopy: formatChecklistYes(row.invoiceHardCopy),
+        entryInTally: formatChecklistYes(row.entryInTally),
+      })),
+    [filtered],
+  );
 
   function openEdit(row: TransportEngineRow) {
     setEditRow(row);
@@ -221,6 +284,12 @@ export function TransportEngineClient({
             Clear
           </button>
         )}
+        <TableDownloadButtons
+          title="Transport engine"
+          filenameBase="transport-engine"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </form>
 
       <div className="table-wrap table-wrap-scroll">

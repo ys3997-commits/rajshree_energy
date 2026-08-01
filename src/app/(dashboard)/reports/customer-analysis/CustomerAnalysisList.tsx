@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { CustomerCategory } from "@/generated/prisma";
 import { formatCustomerCategory } from "@/lib/domain/format";
 
@@ -38,6 +39,24 @@ export function CustomerAnalysisList({
     });
   }, [customers, query]);
 
+  const exportColumns = [
+    { key: "customer", header: "Customer" },
+    { key: "category", header: "Category" },
+    { key: "location", header: "Location" },
+    { key: "status", header: "Status" },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      filtered.map((c) => ({
+        customer: c.name,
+        category: formatCustomerCategory(c.category),
+        location: [c.city, c.state].filter(Boolean).join(", ") || "—",
+        status: c.active ? "Active" : "Inactive",
+      })),
+    [filtered],
+  );
+
   return (
     <div className="customer-analysis-list">
       <div className="filters">
@@ -51,6 +70,12 @@ export function CustomerAnalysisList({
             autoComplete="off"
           />
         </label>
+        <TableDownloadButtons
+          title="Customer analysis"
+          filenameBase="customer-analysis"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </div>
 
       {filtered.length === 0 ? (

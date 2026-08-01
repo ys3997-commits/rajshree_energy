@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { VesselReportListRow } from "@/lib/actions/reports";
 import {
   formatQualityClass,
@@ -38,6 +39,30 @@ export function VesselReportList({
     });
   }, [vessels, query]);
 
+  const exportColumns = [
+    { key: "vessel", header: "Vessel" },
+    { key: "port", header: "Port" },
+    { key: "quality", header: "Quality" },
+    { key: "orderQty", header: "Order qty", align: "right" as const },
+    { key: "dispatched", header: "Dispatched", align: "right" as const },
+    { key: "closing", header: "Closing", align: "right" as const },
+    { key: "balance", header: "Balance", align: "right" as const },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      filtered.map((v) => ({
+        vessel: v.active ? v.vesselName : `${v.vesselName} · Inactive`,
+        port: formatPort(v.portName, v.portState),
+        quality: formatQualityClass(v.qualityClass),
+        orderQty: formatSaleOrderMt(v.orderQuantity),
+        dispatched: formatSaleOrderMt(v.dispatchedQuantity),
+        closing: formatSaleOrderMt(v.closingQuantity),
+        balance: formatSaleOrderMt(v.balanceQuantity),
+      })),
+    [filtered],
+  );
+
   return (
     <div className="vessel-report-list">
       <div className="filters">
@@ -51,6 +76,12 @@ export function VesselReportList({
             autoComplete="off"
           />
         </label>
+        <TableDownloadButtons
+          title="Vessel report"
+          filenameBase="vessel-report"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </div>
 
       {filtered.length === 0 ? (

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { CustomerCategory } from "@/generated/prisma";
 import type {
   CustomerAnalysisDispatchRow,
@@ -195,6 +196,7 @@ export function CustomerAnalysisDetail({
 
   const displayName = capitalizeName(customer.name) ?? customer.name;
   const location = [customer.city, customer.state].filter(Boolean).join(", ");
+  const filenameBase = `customer-analysis-${displayName.replace(/\s+/g, "-").toLowerCase()}`;
 
   const masterDispatchHref = useMemo(() => {
     const params = new URLSearchParams();
@@ -203,6 +205,118 @@ export function CustomerAnalysisDetail({
     if (filters.dateTo) params.set("dateTo", filters.dateTo);
     return `/reports/master-dispatch?${params.toString()}`;
   }, [customer.id, filters.dateFrom, filters.dateTo]);
+
+  const overviewExport = useMemo(() => {
+    const columns = [
+      { key: "side", header: "Side" },
+      { key: "orders", header: "Orders", align: "right" as const },
+      { key: "balance", header: "Balance order" },
+      { key: "dispatched", header: "Dispatched" },
+      { key: "totalProfit", header: "Total profit" },
+      { key: "avgProfit", header: "Avg profit / MT" },
+      { key: "margin", header: "Margin" },
+      { key: "lastDispatch", header: "Last dispatch" },
+    ];
+    const rows = [
+      {
+        side: "Sale",
+        orders: String(saleSide.orderCount),
+        balance: formatBalance(saleSide.balanceOrder),
+        dispatched: formatVolume(saleSide.dispatchedVolume),
+        totalProfit: formatRs(saleSide.totalProfit),
+        avgProfit: formatRs(saleSide.avgProfitPerMt),
+        margin: formatMargin(saleSide.marginPercent),
+        lastDispatch: formatDate(saleSide.lastDispatchDate),
+      },
+      {
+        side: "Purchase",
+        orders: String(purchaseSide.orderCount),
+        balance: formatBalance(purchaseSide.balanceOrder),
+        dispatched: formatVolume(purchaseSide.dispatchedVolume),
+        totalProfit: formatRs(purchaseSide.totalProfit),
+        avgProfit: formatRs(purchaseSide.avgProfitPerMt),
+        margin: formatMargin(purchaseSide.marginPercent),
+        lastDispatch: formatDate(purchaseSide.lastDispatchDate),
+      },
+    ];
+    return { columns, rows, title: `${displayName} — overview` };
+  }, [displayName, saleSide, purchaseSide]);
+
+  const saleOrdersExport = useMemo(
+    () => ({
+      columns: [
+        { key: "poNumber", header: "Sale order" },
+        { key: "status", header: "Status" },
+        { key: "quantity", header: "Quantity", align: "right" as const },
+        { key: "dispatched", header: "Dispatched", align: "right" as const },
+        { key: "balance", header: "Balance", align: "right" as const },
+      ],
+      rows: saleOrders.map((o) => ({
+        poNumber: o.poNumber,
+        status: formatSaleOrderStatus(o.status),
+        quantity: formatMt(o.quantity),
+        dispatched: formatMt(o.dispatchedOrder),
+        balance: formatMt(o.balanceOrder),
+      })),
+      title: `${displayName} — sale orders`,
+    }),
+    [displayName, saleOrders],
+  );
+
+  const purchaseOrdersExport = useMemo(
+    () => ({
+      columns: [
+        { key: "poNumber", header: "Purchase order" },
+        { key: "status", header: "Status" },
+        { key: "quantity", header: "Quantity", align: "right" as const },
+        { key: "dispatched", header: "Dispatched", align: "right" as const },
+        { key: "balance", header: "Balance", align: "right" as const },
+      ],
+      rows: purchaseOrders.map((o) => ({
+        poNumber: o.poNumber,
+        status: formatPurchaseOrderStatus(o.status),
+        quantity: formatMt(o.quantity),
+        dispatched: formatMt(o.dispatchedOrder),
+        balance: formatMt(o.balanceOrder),
+      })),
+      title: `${displayName} — purchase orders`,
+    }),
+    [displayName, purchaseOrders],
+  );
+
+  const dispatchesExport = useMemo(
+    () => ({
+      columns: [
+        { key: "date", header: "Date" },
+        { key: "side", header: "Side" },
+        { key: "vessel", header: "Vessel" },
+        { key: "salePo", header: "Sale order" },
+        { key: "purchasePo", header: "Purchase order" },
+        { key: "qty", header: "Qty (MT)", align: "right" as const },
+        { key: "profit", header: "Profit", align: "right" as const },
+      ],
+      rows: dispatches.map((d) => ({
+        date: formatDate(d.dispatchDate),
+        side: d.side === "sale" ? "Sale" : "Purchase",
+        vessel: d.vesselName,
+        salePo: d.salePoNumber,
+        purchasePo: d.purchasePoNumber,
+        qty: formatMt(d.dispatchedQuantity),
+        profit: formatRs(d.lineProfit),
+      })),
+      title: `${displayName} — dispatches`,
+    }),
+    [displayName, dispatches],
+  );
+
+  const activeExport =
+    tab === "overview"
+      ? overviewExport
+      : tab === "sale-orders"
+        ? saleOrdersExport
+        : tab === "purchase-orders"
+          ? purchaseOrdersExport
+          : dispatchesExport;
 
   const tabs: { id: Tab; label: string; count?: number }[] = [
     { id: "overview", label: "Overview" },
@@ -322,6 +436,12 @@ export function CustomerAnalysisDetail({
             Clear
           </Link>
         )}
+        <TableDownloadButtons
+          title={activeExport.title}
+          filenameBase={`${filenameBase}-${tab}`}
+          columns={activeExport.columns}
+          rows={activeExport.rows}
+        />
       </form>
       <p className="filter-hint">
         Dates filter dispatched volume, profit, margin, and last dispatch.

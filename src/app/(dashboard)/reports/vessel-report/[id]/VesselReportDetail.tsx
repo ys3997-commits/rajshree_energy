@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo } from "react";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { VesselReportPoRow } from "@/lib/actions/reports";
 import {
   displayOrderBalance,
@@ -56,6 +58,47 @@ export function VesselReportDetail({
       ? `${vessel.portName} (${vessel.portState})`
       : vessel.portName || vessel.portState || "No port";
 
+  const exportColumns = [
+    { key: "poNumber", header: "PO number" },
+    { key: "date", header: "Date" },
+    { key: "orderQty", header: "Order qty", align: "right" as const },
+    { key: "dispatched", header: "Dispatched", align: "right" as const },
+    { key: "closing", header: "Closing", align: "right" as const },
+    { key: "balance", header: "Balance", align: "right" as const },
+    { key: "vendor", header: "Vendor" },
+    { key: "basicPrice", header: "Basic price", align: "right" as const },
+    { key: "finalPrice", header: "Final price", align: "right" as const },
+    { key: "status", header: "Status" },
+  ];
+
+  const exportRows = useMemo(
+    () =>
+      purchaseOrders.map((o) => {
+        const displayRow = {
+          orderType: o.orderType,
+          quantity: o.quantity,
+          dispatchedOrder: o.dispatchedOrder,
+          balanceOrder: o.balanceOrder,
+        };
+        return {
+          poNumber: o.poNumber,
+          date: formatDate(o.orderDate),
+          orderQty: formatSaleOrderMt(displayOrderQuantity(displayRow)),
+          dispatched: formatSaleOrderMt(o.dispatchedOrder),
+          closing: formatSaleOrderMt(o.closingQuantity),
+          balance: formatSaleOrderMt(displayOrderBalance(displayRow)),
+          vendor: o.vendorName,
+          basicPrice: formatRs(o.rate),
+          finalPrice: formatRs(o.finalRate),
+          status: formatOrderStatusForDisplay({
+            orderType: o.orderType,
+            orderStatus: o.orderStatus,
+          }),
+        };
+      }),
+    [purchaseOrders],
+  );
+
   return (
     <div className="vessel-report-detail">
       <Link href="/reports/vessel-report" className="back-link">
@@ -106,9 +149,17 @@ export function VesselReportDetail({
       </div>
 
       <section className="analysis-section">
-        <h2 className="analysis-section-title">
-          Purchase orders ({purchaseOrders.length})
-        </h2>
+        <div className="filters">
+          <h2 className="analysis-section-title">
+            Purchase orders ({purchaseOrders.length})
+          </h2>
+          <TableDownloadButtons
+            title={`${vessel.vesselName} — purchase orders`}
+            filenameBase={`vessel-report-${vessel.vesselName.replace(/\s+/g, "-").toLowerCase()}`}
+            columns={exportColumns}
+            rows={exportRows}
+          />
+        </div>
         {purchaseOrders.length === 0 ? (
           <div className="table-wrap">
             <p className="empty-state">
