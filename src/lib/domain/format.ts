@@ -246,7 +246,7 @@ export function capitalizeName(
     .join(" ");
 }
 
-/** Format lorry number as PREFIX-1234 (exactly 4 trailing digits). */
+/** Format lorry number as PREFIX-1234 (last 4 characters must be digits). */
 export function normalizeLorryNumber(
   value: string | null | undefined,
 ): string | null | undefined {
@@ -262,14 +262,15 @@ export function normalizeLorryNumber(
     );
   }
 
-  const match = /^([A-Z0-9]+?)(\d+)$/.exec(cleaned);
-  if (!match || match[2].length !== 4) {
+  if (cleaned.length < 4 || !/\d{4}$/.test(cleaned)) {
     throw new Error(
-      "Lorry number must end with exactly 4 digits (e.g. WBAS2N-1234)",
+      "Lorry number must end with 4 digits (e.g. WBAS2N-1234)",
     );
   }
 
-  return `${match[1]}-${match[2]}`;
+  const prefix = cleaned.slice(0, -4);
+  const digits = cleaned.slice(-4);
+  return prefix ? `${prefix}-${digits}` : digits;
 }
 
 /** Display helper — formats when possible, otherwise uppercases. */

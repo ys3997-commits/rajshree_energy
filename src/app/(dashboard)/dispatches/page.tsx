@@ -13,7 +13,9 @@ import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { EditDispatchPurchaseButton } from "@/components/EditDispatchPurchaseButton";
 import { EditDispatchSaleButton } from "@/components/EditDispatchSaleButton";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
+  formatDateDdMmYyyy,
   formatDispatchMt,
   formatLorryNumber,
   formatQualityClass,
@@ -41,7 +43,8 @@ type SearchParams = Promise<{
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
-  importerId?: string;
+  vendorId?: string;
+  customerId?: string;
   dispatchDate?: string;
 }>;
 
@@ -66,7 +69,8 @@ export default async function DispatchesPage({
       poNumber: sp.poNumber || "",
       purchasePoNumber: sp.purchasePoNumber || "",
       vesselId: sp.vesselId || "",
-      importerId: sp.importerId || "",
+      vendorId: sp.vendorId || "",
+      customerId: sp.customerId || "",
       dispatchDate: sp.dispatchDate || "",
     }),
     listCustomers({ activeOnly: true }),
@@ -84,6 +88,80 @@ export default async function DispatchesPage({
     category: c.category,
   }));
   const activeVessels = vessels.filter((v) => v.active);
+
+  const exportColumns = [
+    { key: "date", header: "Date" },
+    { key: "lorryNumber", header: "Lorry no" },
+    { key: "weight", header: "Weight (MT)", align: "right" as const },
+    { key: "vesselName", header: "Vessel name" },
+    { key: "quality", header: "Quality" },
+    { key: "gstState", header: "GST state" },
+    { key: "purchasePo", header: "PO no" },
+    { key: "vendor", header: "Vendor" },
+    {
+      key: "purchaseBasic",
+      header: "Purchase basic price (Rs)",
+      align: "right" as const,
+    },
+    {
+      key: "purchaseTotal",
+      header: "Purchase total price (Rs)",
+      align: "right" as const,
+    },
+    { key: "purchaseInvoice", header: "Purchase invoice" },
+    { key: "salePo", header: "SO no" },
+    { key: "customer", header: "Customer name" },
+    {
+      key: "saleBasic",
+      header: "Sale basic price (Rs)",
+      align: "right" as const,
+    },
+    {
+      key: "saleTotal",
+      header: "Sale total price (Rs)",
+      align: "right" as const,
+    },
+    { key: "saleInvoice", header: "Sale invoice" },
+    { key: "transporter", header: "Transporter name" },
+    { key: "freightPmt", header: "Freight PMT (Rs)", align: "right" as const },
+    {
+      key: "freightAmount",
+      header: "Freight amount (Rs)",
+      align: "right" as const,
+    },
+    { key: "profit", header: "Profit (Rs)", align: "right" as const },
+    { key: "received", header: "Received (MT)", align: "right" as const },
+    { key: "diff", header: "Diff (MT)", align: "right" as const },
+    { key: "purchaseInTally", header: "Purchase in tally" },
+  ];
+
+  const exportRows = dispatches.map((row) => ({
+    date: formatDateDdMmYyyy(
+      new Date(row.dispatchDate).toISOString().slice(0, 10),
+    ),
+    lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
+    weight: formatDispatchMt(row.dispatchedQuantity),
+    vesselName: row.vesselName,
+    quality: formatQualityClass(row.qualityClass),
+    gstState: row.gstState ?? "—",
+    purchasePo: displayOrderDigits(row.purchasePoNumber, "purchase"),
+    vendor: row.vendorName ?? "—",
+    purchaseBasic: formatRs(row.purchaseBasicRate),
+    purchaseTotal: formatRs(row.purchaseTotalRate),
+    purchaseInvoice: row.purchaseInvoiceNumber ?? "—",
+    salePo: displayOrderDigits(row.salePoNumber, "sale"),
+    customer: row.customerName ?? "—",
+    saleBasic: formatRs(row.saleBasicRate),
+    saleTotal: formatRs(row.saleTotalRate),
+    saleInvoice: row.saleInvoiceNumber ?? "—",
+    transporter: row.transporterName ?? "—",
+    freightPmt: formatRs(row.freight),
+    freightAmount: formatRs(row.freightAmount),
+    profit: formatRs(row.lineProfit),
+    received: formatDispatchMt(row.receivingQuantity),
+    diff: formatDispatchMt(row.diffInQuantity),
+    purchaseInTally: row.entryInTally ? "Yes" : "—",
+  }));
 
   return (
     <div>
@@ -168,8 +246,19 @@ export default async function DispatchesPage({
           </select>
         </label>
         <label>
-          Importer
-          <select name="importerId" defaultValue={sp.importerId ?? ""}>
+          Vendor
+          <select name="vendorId" defaultValue={sp.vendorId ?? ""}>
+            <option value="">All</option>
+            {customers.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Customer
+          <select name="customerId" defaultValue={sp.customerId ?? ""}>
             <option value="">All</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
@@ -181,6 +270,12 @@ export default async function DispatchesPage({
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>
+        <TableDownloadButtons
+          title="Dispatches"
+          filenameBase="dispatches"
+          columns={exportColumns}
+          rows={exportRows}
+        />
       </form>
 
       <div className="table-wrap table-wrap-scroll">

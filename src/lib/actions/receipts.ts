@@ -18,7 +18,8 @@ export type DispatchFilters = {
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
-  importerId?: string;
+  vendorId?: string;
+  customerId?: string;
   dispatchDate?: string;
 };
 
@@ -35,7 +36,10 @@ export async function listDispatches(filters: DispatchFilters = {}) {
     };
   }
   if (filters.vesselId) where.vesselId = filters.vesselId;
-  if (filters.importerId) where.importerId = filters.importerId;
+  if (filters.vendorId) where.importerId = filters.vendorId;
+  if (filters.customerId) {
+    where.order = { customerId: filters.customerId };
+  }
   if (filters.dispatchDate) {
     where.dispatchDate = {
       gte: new Date(`${filters.dispatchDate}T00:00:00.000Z`),
