@@ -22,6 +22,7 @@ export type OrderFilters = {
   customerId?: string;
   portId?: string;
   orderById?: string;
+  saleExecutive?: string;
 };
 
 /** Accept only current enum values; map legacy sale statuses to Running. */
@@ -49,6 +50,9 @@ export async function listOrders(filters: OrderFilters = {}) {
   if (filters.customerId) where.customerId = filters.customerId;
   if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;
+  if (filters.saleExecutive) {
+    where.customer = { saleExecutive: filters.saleExecutive };
+  }
 
   const rows = await prisma.order.findMany({
     where,

@@ -30,7 +30,7 @@ type PlannedCallFilter =
   | "older"
   | "future"
   | "none";
-type CollectionSortKey = "due" | "overdue";
+type CollectionSortKey = "name" | "due" | "overdue";
 type SortDir = "asc" | "desc";
 
 const BUYER_COLLECTION_CATEGORIES = new Set<CustomerCategory>([
@@ -176,9 +176,8 @@ export function PaymentsClient({
       return;
     }
     setSortKey(key);
-    setSortDir("desc");
+    setSortDir(key === "name" ? "asc" : "desc");
   }
-
   const buyerCollection = useMemo(
     () => collection.filter((row) => BUYER_COLLECTION_CATEGORIES.has(row.category)),
     [collection],
@@ -288,6 +287,11 @@ export function PaymentsClient({
   function sortCollectionRows(rows: CustomerDueRow[]): CustomerDueRow[] {
     if (!sortKey) return rows;
     const dir = sortDir === "asc" ? 1 : -1;
+    if (sortKey === "name") {
+      return [...rows].sort(
+        (a, b) => a.name.localeCompare(b.name) * dir,
+      );
+    }
     return [...rows].sort(
       (a, b) =>
         (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
@@ -832,7 +836,16 @@ export function PaymentsClient({
             <table className="data payments-table collection-table">
               <thead>
                 <tr>
-                  <th className="collection-customer-col">Customer</th>
+                  <th className="collection-customer-col">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("name")}
+                    >
+                      Customer
+                      {sortIndicator(sortKey === "name", sortDir)}
+                    </button>
+                  </th>
                   <th>Payment in charge</th>
                   <th>Contact number</th>
                   <th>Sales executive</th>

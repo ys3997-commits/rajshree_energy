@@ -4,6 +4,7 @@ import {
   suggestNextPurchasePoNumber,
 } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
+import { listSaleExecutiveOptions } from "@/lib/actions/option-lists";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { listTransporters } from "@/lib/actions/transporters";
@@ -11,6 +12,7 @@ import { listVessels } from "@/lib/actions/vessels";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { formatRs } from "@/lib/domain/computations";
 import {
+  capitalizeName,
   daysSinceOrder,
   displayOrderBalance,
   displayOrderQuantity,
@@ -34,6 +36,7 @@ type SearchParams = Promise<{
   customerId?: string;
   portId?: string;
   orderById?: string;
+  saleExecutive?: string;
 }>;
 
 export default async function OrdersPage({
@@ -46,6 +49,7 @@ export default async function OrdersPage({
     orders,
     customers,
     ports,
+    saleExecutives,
     balanceOrders,
     balancePurchases,
     transporters,
@@ -59,9 +63,11 @@ export default async function OrdersPage({
       customerId: sp.customerId || "",
       portId: sp.portId || "",
       orderById: sp.orderById || "",
+      saleExecutive: sp.saleExecutive || "",
     }),
     listCustomers({ activeOnly: true }),
     listPortOptions(),
+    listSaleExecutiveOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listTransporters(),
@@ -195,6 +201,20 @@ export default async function OrdersPage({
             {ports.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Sales executive
+          <select
+            name="saleExecutive"
+            defaultValue={sp.saleExecutive ?? ""}
+          >
+            <option value="">All</option>
+            {saleExecutives.map((se) => (
+              <option key={se.id} value={se.name}>
+                {capitalizeName(se.name) ?? se.name}
               </option>
             ))}
           </select>

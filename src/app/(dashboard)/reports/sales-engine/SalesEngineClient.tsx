@@ -144,6 +144,7 @@ export function SalesEngineClient({
 
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
+  const [saleExecutiveFilter, setSaleExecutiveFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -163,6 +164,10 @@ export function SalesEngineClient({
     setSortDir("desc");
   }
 
+  const saleExecutiveOptions = useMemo(
+    () => distinctTrimmed(rows.map((row) => row.saleExecutive)),
+    [rows],
+  );
   const cityOptions = useMemo(
     () => distinctTrimmed(rows.map((row) => row.city)),
     [rows],
@@ -184,6 +189,7 @@ export function SalesEngineClient({
 
   const hasActiveFilters = Boolean(
     plannedCallFilter ||
+      saleExecutiveFilter ||
       cityFilter ||
       stateFilter ||
       categoryFilter ||
@@ -199,6 +205,12 @@ export function SalesEngineClient({
           today,
           tomorrow,
         )
+      ) {
+        return false;
+      }
+      if (
+        saleExecutiveFilter &&
+        (row.saleExecutive?.trim() ?? "") !== saleExecutiveFilter
       ) {
         return false;
       }
@@ -219,6 +231,7 @@ export function SalesEngineClient({
   }, [
     rows,
     plannedCallFilter,
+    saleExecutiveFilter,
     cityFilter,
     stateFilter,
     categoryFilter,
@@ -324,6 +337,20 @@ export function SalesEngineClient({
           </select>
         </label>
         <label>
+          Sales executive
+          <select
+            value={saleExecutiveFilter}
+            onChange={(e) => setSaleExecutiveFilter(e.target.value)}
+          >
+            <option value="">All</option>
+            {saleExecutiveOptions.map((name) => (
+              <option key={name} value={name}>
+                {capitalizeName(name) ?? name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           City
           <select
             value={cityFilter}
@@ -385,6 +412,7 @@ export function SalesEngineClient({
             className="btn btn-secondary"
             onClick={() => {
               setPlannedCallFilter("");
+              setSaleExecutiveFilter("");
               setCityFilter("");
               setStateFilter("");
               setCategoryFilter("");

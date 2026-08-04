@@ -12,15 +12,11 @@ import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
-import { formatMt } from "@/lib/domain/format";
+import { formatDispatchMt, formatMt } from "@/lib/domain/format";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
 
 function formatQty(value: string): string {
   return formatMt(value);
-}
-
-function formatQtyMt(value: string): string {
-  return formatQty(value);
 }
 
 export default async function HomePage() {
@@ -134,8 +130,8 @@ export default async function HomePage() {
             <h2 className="home-panel-title">Dispatches</h2>
           </div>
           <div className="home-stat">
-            <span className="home-stat-label">Total (MT)</span>
-            <span className="home-stat-value">{formatQtyMt(String(weekTotal))}</span>
+            <span className="home-stat-label">Total</span>
+            <span className="home-stat-value">{formatDispatchMt(weekTotal)}</span>
           </div>
         </div>
 
@@ -150,7 +146,7 @@ export default async function HomePage() {
                 className={`home-bar-col${day.isToday ? " is-today" : ""}`}
               >
                 <div className="home-bar-value">
-                  {value > 0 ? formatQtyMt(day.total) : "—"}
+                  {value > 0 ? formatDispatchMt(day.total) : "—"}
                 </div>
                 <div className="home-bar-track">
                   <div
