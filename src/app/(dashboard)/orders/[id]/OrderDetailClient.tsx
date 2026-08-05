@@ -165,10 +165,7 @@ export function OrderDetailClient({
   }
 
   const canCloseQuantity =
-    order.quantity != null &&
-    order.closingQuantity == null &&
-    order.balanceOrder != null &&
-    Number(order.balanceOrder) > 0;
+    formatOrderStatusForDisplay(order) === "Running";
 
   return (
     <div>
@@ -221,7 +218,9 @@ export function OrderDetailClient({
             <CloseQuantityButton
               orderId={order.id}
               kind="sale"
-              balanceMt={order.balanceOrder!}
+              balanceMt={String(
+                displayOrderBalance(order) ?? order.balanceOrder ?? "0",
+              )}
             />
           )}
         </div>

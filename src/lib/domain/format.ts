@@ -174,14 +174,19 @@ export function formatSaleOrderStatus(
 }
 
 /**
- * List/detail display status. Open orders always show as Completed.
+ * List/detail display status follows the Balance column:
+ * balance ≠ 0 → Running; balance 0 (or closed / open with no qty) → Completed.
  */
 export function formatOrderStatusForDisplay(order: {
   orderType: string | null | undefined;
-  orderStatus: string | null | undefined;
+  quantity?: { toString(): string } | number | string | null | undefined;
+  balanceOrder?: { toString(): string } | number | string | null | undefined;
+  /** Kept for call-site compatibility; display uses balance, not stored status. */
+  orderStatus?: string | null | undefined;
 }): string {
-  if (order.orderType === "OPEN") return "Completed";
-  return formatSaleOrderStatus(order.orderStatus);
+  const n = parseFiniteNumber(displayOrderBalance(order));
+  if (n != null && n !== 0) return "Running";
+  return "Completed";
 }
 
 /**

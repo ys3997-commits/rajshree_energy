@@ -83,13 +83,30 @@ export function saleRevenueRate(order: {
   return order.rate;
 }
 
-/** dispatchedQuantity - receivingQuantity once receiving is set */
+/** dispatchedQuantity - receivingQuantity once receiving is set.
+ * Ex-Port: received equals weight, so diff is always 0. */
 export function diffInQuantity(dispatch: {
   dispatchedQuantity: Decimal;
   receivingQuantity: Decimal | null;
+  dispatchTerms?: DispatchTerms | null;
 }): Decimal | null {
+  if (dispatch.dispatchTerms === DispatchTerms.EX_PORT) {
+    return new Decimal(0);
+  }
   if (dispatch.receivingQuantity == null) return null;
   return dispatch.dispatchedQuantity.minus(dispatch.receivingQuantity);
+}
+
+/** Effective received qty — Ex-Port uses dispatched weight. */
+export function effectiveReceivingQuantity(dispatch: {
+  dispatchedQuantity: Decimal;
+  receivingQuantity: Decimal | null;
+  dispatchTerms?: DispatchTerms | null;
+}): Decimal | null {
+  if (dispatch.dispatchTerms === DispatchTerms.EX_PORT) {
+    return dispatch.dispatchedQuantity;
+  }
+  return dispatch.receivingQuantity;
 }
 
 export function computeOrderStatus(order: {

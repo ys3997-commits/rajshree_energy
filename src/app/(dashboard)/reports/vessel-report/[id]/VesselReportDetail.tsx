@@ -90,10 +90,7 @@ export function VesselReportDetail({
           vendor: o.vendorName,
           basicPrice: formatRs(o.rate),
           finalPrice: formatRs(o.finalRate),
-          status: formatOrderStatusForDisplay({
-            orderType: o.orderType,
-            orderStatus: o.orderStatus,
-          }),
+          status: formatOrderStatusForDisplay(displayRow),
         };
       }),
     [purchaseOrders],
@@ -218,10 +215,7 @@ export function VesselReportDetail({
                       <td className="num">{formatRs(o.rate)}</td>
                       <td className="num">{formatRs(o.finalRate)}</td>
                       <td>
-                        {formatOrderStatusForDisplay({
-                          orderType: o.orderType,
-                          orderStatus: o.orderStatus,
-                        })}
+                        {formatOrderStatusForDisplay(displayRow)}
                       </td>
                     </tr>
                   );

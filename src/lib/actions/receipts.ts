@@ -118,6 +118,8 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       saleBasicRate: row.order?.rate ?? null,
       saleTotalRate: row.order?.finalRate ?? null,
       saleInvoiceNumber: row.saleInvoiceNumber,
+      dispatchTerms: row.dispatchTerms,
+      transporterId: row.transporterId,
       transporterName: row.transporter?.name ?? null,
       freight: row.freight,
       freightAmount,

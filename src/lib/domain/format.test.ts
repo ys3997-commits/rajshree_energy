@@ -5,6 +5,7 @@ import {
   formatLorryNumber,
   formatIndianNumber,
   formatMt,
+  formatOrderStatusForDisplay,
   formatSaleOrderMt,
   formatRs,
   normalizeLorryNumber,
@@ -90,5 +91,51 @@ describe("formatLorryNumber", () => {
     expect(formatLorryNumber("wbas2n1234")).toBe("WBAS2N-1234");
     expect(formatLorryNumber("bad")).toBe("BAD");
     expect(formatLorryNumber(null)).toBeNull();
+  });
+});
+
+describe("formatOrderStatusForDisplay", () => {
+  it("is Running when displayed balance is greater than zero", () => {
+    expect(
+      formatOrderStatusForDisplay({
+        orderType: "FIXED",
+        quantity: 100,
+        balanceOrder: 25,
+        orderStatus: "COMPLETED",
+      }),
+    ).toBe("Running");
+  });
+
+  it("is Running when displayed balance is less than zero", () => {
+    expect(
+      formatOrderStatusForDisplay({
+        orderType: "FIXED",
+        quantity: 100,
+        balanceOrder: -5,
+        orderStatus: "COMPLETED",
+      }),
+    ).toBe("Running");
+  });
+
+  it("is Completed when displayed balance is zero", () => {
+    expect(
+      formatOrderStatusForDisplay({
+        orderType: "FIXED",
+        quantity: 100,
+        balanceOrder: 0,
+        orderStatus: "RUNNING",
+      }),
+    ).toBe("Completed");
+  });
+
+  it("is Completed for open orders with no quantity (balance shows 0)", () => {
+    expect(
+      formatOrderStatusForDisplay({
+        orderType: "OPEN",
+        quantity: null,
+        balanceOrder: null,
+        orderStatus: "RUNNING",
+      }),
+    ).toBe("Completed");
   });
 });

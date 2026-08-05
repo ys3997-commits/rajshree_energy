@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
 import { formatMt } from "@/lib/domain/format";
@@ -9,7 +10,11 @@ import { formatMt } from "@/lib/domain/format";
 function isSaleComplete(input: {
   saleInvoiceNumber: string | null;
   receivingQuantity: string | null;
+  dispatchTerms: DispatchTerms;
 }): boolean {
+  if (input.dispatchTerms === DispatchTerms.EX_PORT) {
+    return Boolean(input.saleInvoiceNumber?.trim());
+  }
   return (
     Boolean(input.saleInvoiceNumber?.trim()) &&
     Boolean(input.receivingQuantity?.trim())
@@ -21,36 +26,48 @@ export function EditDispatchSaleButton({
   saleInvoiceNumber,
   dispatchedQuantity,
   receivingQuantity,
+  dispatchTerms,
 }: {
   dispatchId: string;
   saleInvoiceNumber: string | null;
   dispatchedQuantity: string;
   receivingQuantity: string | null;
+  dispatchTerms: DispatchTerms;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [saleInvoice, setSaleInvoice] = useState(saleInvoiceNumber ?? "");
-  const [receivedQty, setReceivedQty] = useState(receivingQuantity ?? "");
+  const [receivedQty, setReceivedQty] = useState(
+    dispatchTerms === DispatchTerms.EX_PORT
+      ? dispatchedQuantity
+      : (receivingQuantity ?? ""),
+  );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const isExPort = dispatchTerms === DispatchTerms.EX_PORT;
 
   const complete = isSaleComplete({
     saleInvoiceNumber,
     receivingQuantity,
+    dispatchTerms,
   });
 
   const diffQty = useMemo(() => {
+    if (isExPort) return 0;
     const trimmed = receivedQty.trim();
     if (!trimmed) return null;
     const received = Number(trimmed);
     const dispatched = Number(dispatchedQuantity);
     if (!Number.isFinite(received) || !Number.isFinite(dispatched)) return null;
     return dispatched - received;
-  }, [dispatchedQuantity, receivedQty]);
+  }, [dispatchedQuantity, isExPort, receivedQty]);
 
   function openModal() {
     setSaleInvoice(saleInvoiceNumber ?? "");
-    setReceivedQty(receivingQuantity ?? "");
+    setReceivedQty(
+      isExPort ? dispatchedQuantity : (receivingQuantity ?? ""),
+    );
     setError(null);
     setOpen(true);
   }
@@ -60,7 +77,9 @@ export function EditDispatchSaleButton({
     setError(null);
     setSaving(true);
     try {
-      const trimmedReceived = receivedQty.trim();
+      const trimmedReceived = isExPort
+        ? dispatchedQuantity.trim()
+        : receivedQty.trim();
       await updateDispatch(dispatchId, {
         saleInvoiceNumber: saleInvoice,
         receivingQuantity: trimmedReceived === "" ? null : trimmedReceived,
@@ -117,9 +136,19 @@ export function EditDispatchSaleButton({
               value={receivedQty}
               onChange={(e) => setReceivedQty(e.target.value)}
               placeholder={dispatchedQuantity}
+              readOnly={isExPort}
+              tabIndex={isExPort ? -1 : undefined}
             />
             <span className="field-unit">MT</span>
           </div>
+          {isExPort && (
+            <p
+              className="text-sm text-neutral-600"
+              style={{ gridColumn: "1 / -1" }}
+            >
+              Ex-Port: received quantity matches weight automatically (diff 0).
+            </p>
+          )}
 
           <label htmlFor={`diff-qty-${dispatchId}`}>Diff quantity</label>
           <div className="field-with-unit">

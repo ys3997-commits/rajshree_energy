@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  getDispatchTotalsLast5Days,
+  getHomeDispatchCharts,
   getTopCustomersByVolumeLastMonth,
   getTopPendingOrdersByBalance,
 } from "@/lib/actions/dashboard";
@@ -12,8 +12,9 @@ import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
-import { formatDispatchMt, formatMt } from "@/lib/domain/format";
+import { formatMt } from "@/lib/domain/format";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
+import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
 
 function formatQty(value: string): string {
   return formatMt(value);
@@ -21,7 +22,7 @@ function formatQty(value: string): string {
 
 export default async function HomePage() {
   const [
-    dailyDispatches,
+    dispatchCharts,
     pendingOrders,
     topCustomers,
     customers,
@@ -34,7 +35,7 @@ export default async function HomePage() {
     suggestedPo,
     suggestedPurchasePo,
   ] = await Promise.all([
-    getDispatchTotalsLast5Days(),
+    getHomeDispatchCharts(),
     getTopPendingOrdersByBalance(5),
     getTopCustomersByVolumeLastMonth(5),
     listCustomers({ activeOnly: true }),
@@ -48,16 +49,11 @@ export default async function HomePage() {
     suggestNextPurchasePoNumber(),
   ]);
 
-  const maxDay = Math.max(
-    ...dailyDispatches.map((d) => Number(d.total) || 0),
-    0,
-  );
+  const monthlyDispatches = dispatchCharts.months;
+  const dailyDispatches = dispatchCharts.days;
+
   const maxCustomer = Math.max(
     ...topCustomers.map((c) => Number(c.volume) || 0),
-    0,
-  );
-  const weekTotal = dailyDispatches.reduce(
-    (sum, d) => sum + (Number(d.total) || 0),
     0,
   );
 
@@ -123,43 +119,20 @@ export default async function HomePage() {
         />
       </section>
 
-      <section className="home-panel home-panel-dispatch">
-        <div className="home-panel-head">
-          <div>
-            <p className="home-eyebrow">Last 5 days</p>
-            <h2 className="home-panel-title">Dispatches</h2>
-          </div>
-          <div className="home-stat">
-            <span className="home-stat-label">Total</span>
-            <span className="home-stat-value">{formatDispatchMt(weekTotal)}</span>
-          </div>
-        </div>
-
-        <div className="home-bars" role="img" aria-label="Day-wise dispatch totals">
-          {dailyDispatches.map((day) => {
-            const value = Number(day.total) || 0;
-            const height =
-              maxDay > 0 ? Math.max((value / maxDay) * 100, value > 0 ? 6 : 0) : 0;
-            return (
-              <div
-                key={day.date}
-                className={`home-bar-col${day.isToday ? " is-today" : ""}`}
-              >
-                <div className="home-bar-value">
-                  {value > 0 ? formatDispatchMt(day.total) : "—"}
-                </div>
-                <div className="home-bar-track">
-                  <div
-                    className="home-bar-fill"
-                    style={{ height: `${height}%` }}
-                  />
-                </div>
-                <div className="home-bar-label">{day.label}</div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+      <div className="home-dispatch-grid">
+        <HomeDispatchSplitChart
+          eyebrow="Last 6 months"
+          title="Monthly dispatches"
+          buckets={monthlyDispatches}
+          ariaLabel="Month-wise domestic and imported dispatch totals"
+        />
+        <HomeDispatchSplitChart
+          eyebrow="Last 7 days"
+          title="Daily dispatches"
+          buckets={dailyDispatches}
+          ariaLabel="Day-wise domestic and imported dispatch totals"
+        />
+      </div>
 
       <section className="home-section">
         <div className="home-section-head">

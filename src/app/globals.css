@@ -255,49 +255,64 @@ a {
 }
 
 /* Dispatches page: Received/Diff sit under Status (not Dispatch). */
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(10),
-.report-table-dispatches tbody td:nth-child(10) {
-  min-width: 0; /* Total price (purchase) — override master Vendor width */
-}
-
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(8),
 .report-table-dispatches tbody td:nth-child(8) {
+  min-width: 9rem; /* Purchase invoice */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(9),
+.report-table-dispatches tbody td:nth-child(9) {
   min-width: 11rem; /* Vendor */
 }
 
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(13),
-.report-table-dispatches tbody td:nth-child(13) {
-  min-width: 12rem; /* Customer name */
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(10),
+.report-table-dispatches tbody td:nth-child(10) {
+  min-width: 0; /* Basic price (purchase) — override master Vendor width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(11),
 .report-table-dispatches tbody td:nth-child(11) {
-  min-width: 9rem; /* Purchase invoice */
+  min-width: 0; /* Total price (purchase) */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(13),
+.report-table-dispatches tbody td:nth-child(13) {
+  min-width: 9rem; /* Sale invoice */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(14),
+.report-table-dispatches tbody td:nth-child(14) {
+  min-width: 12rem; /* Customer name */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(15),
 .report-table-dispatches tbody td:nth-child(15) {
-  min-width: 0; /* Total price (sale) — override master Customer width */
+  min-width: 0; /* Basic price (sale) — override master Customer width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(16),
 .report-table-dispatches tbody td:nth-child(16) {
-  min-width: 9rem; /* Sale invoice */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(18),
-.report-table-dispatches tbody td:nth-child(18) {
-  min-width: 0; /* Freight PMT — override master Sale invoice width */
+  min-width: 0; /* Total price (sale) */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(17),
 .report-table-dispatches tbody td:nth-child(17) {
-  min-width: 11rem; /* Transporter name */
+  min-width: 7rem; /* Delivery terms */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(18),
+.report-table-dispatches tbody td:nth-child(18) {
+  min-width: 11rem; /* Transporter name — override master Sale invoice width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(19),
 .report-table-dispatches tbody td:nth-child(19) {
-  min-width: 0; /* Freight amount — override master Transporter width */
+  min-width: 0; /* Freight PMT — override master Transporter width */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(20),
+.report-table-dispatches tbody td:nth-child(20) {
+  min-width: 0; /* Freight amount */
 }
 
 .table-wrap-scroll {
@@ -1426,7 +1441,7 @@ table.data tr.month-divider:hover td {
 
 .report-table-dispatches thead tr:not(.report-group-row) th:last-child,
 .report-table-dispatches tbody td:last-child {
-  min-width: 16rem;
+  min-width: 20rem;
 }
 
 /* Transport engine: keep each data row on one line */
@@ -1916,10 +1931,183 @@ table.data tbody tr.customer-row-inactive:hover td {
 }
 
 .home-panel-dispatch {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0;
   background:
-    linear-gradient(145deg, rgba(31, 92, 85, 0.06), transparent 42%),
-    rgba(255, 255, 255, 0.9);
+    linear-gradient(145deg, rgba(31, 92, 85, 0.07), transparent 40%),
+    linear-gradient(320deg, rgba(180, 120, 60, 0.05), transparent 45%),
+    rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+}
+
+.home-dispatch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.home-dispatch-head {
+  margin-bottom: 0.85rem;
+}
+
+.home-dispatch-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.35rem;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.home-stat-split .home-stat-value {
+  font-size: 1.15rem;
+}
+
+.home-stat-domestic {
+  color: var(--accent) !important;
+}
+
+.home-stat-imported {
+  color: #9a6b2f !important;
+}
+
+.home-dispatch-legend {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.home-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.home-legend-swatch {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.home-legend-swatch.is-domestic {
+  background: linear-gradient(180deg, #2f7a71, var(--accent));
+}
+
+.home-legend-swatch.is-imported {
+  background: linear-gradient(180deg, #d4a574, #9a6b2f);
+}
+
+.home-split-bars {
+  display: grid;
+  grid-template-columns: repeat(var(--bar-count, 6), minmax(0, 1fr));
+  gap: 0.55rem;
+  align-items: end;
+  min-height: 210px;
+  padding-top: 0.25rem;
+}
+
+.home-split-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.35rem 0.15rem 0.2rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.2s ease;
+}
+
+.home-split-col.is-current {
+  background: rgba(31, 92, 85, 0.06);
+}
+
+.home-split-total {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  min-height: 0.85rem;
+}
+
+.home-split-pair {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+}
+
+.home-split-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
+  max-width: 28px;
+}
+
+.home-split-value {
+  font-size: 0.6rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  line-height: 1;
+  min-height: 0.7rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.home-split-track {
+  width: 100%;
+  height: 132px;
+  border-radius: 6px 6px 3px 3px;
+  background: rgba(20, 23, 28, 0.045);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.home-split-fill {
+  width: 100%;
+  border-radius: 5px 5px 2px 2px;
+  transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  min-height: 0;
+}
+
+.home-split-fill.is-domestic {
+  background: linear-gradient(180deg, #3a9086 0%, var(--accent) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.home-split-fill.is-imported {
+  background: linear-gradient(180deg, #dbb07a 0%, #9a6b2f 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.home-split-col.is-current .home-split-fill.is-domestic {
+  background: linear-gradient(180deg, #1a5c55 0%, #0f3d38 100%);
+}
+
+.home-split-col.is-current .home-split-label {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.home-split-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.25;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .home-panel-head {
@@ -1983,64 +2171,6 @@ table.data tbody tr.customer-row-inactive:hover td {
   letter-spacing: -0.03em;
   color: var(--accent);
   line-height: 1;
-}
-
-.home-bars {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 0.85rem;
-  align-items: end;
-  min-height: 180px;
-}
-
-.home-bar-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.55rem;
-  min-width: 0;
-}
-
-.home-bar-value {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
-
-.home-bar-track {
-  width: 100%;
-  max-width: 56px;
-  height: 120px;
-  border-radius: 999px;
-  background: rgba(20, 23, 28, 0.05);
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-}
-
-.home-bar-fill {
-  width: 100%;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #2f7a71 0%, var(--accent) 100%);
-  transition: height 0.45s ease;
-  min-height: 0;
-}
-
-.home-bar-col.is-today .home-bar-fill {
-  background: linear-gradient(180deg, #1a4f49 0%, #0f3d38 100%);
-}
-
-.home-bar-col.is-today .home-bar-label {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.home-bar-label {
-  font-size: 0.72rem;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.25;
 }
 
 .home-grid {
@@ -2171,6 +2301,12 @@ a.home-rank-row:hover {
   font-size: 0.9rem;
 }
 
+@media (max-width: 1100px) {
+  .home-dispatch-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .home-grid {
     grid-template-columns: 1fr;
@@ -2180,19 +2316,23 @@ a.home-rank-row:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .home-bars {
-    gap: 0.5rem;
+  .home-split-bars {
+    gap: 0.35rem;
   }
 
-  .home-bar-track {
-    height: 96px;
+  .home-split-track {
+    height: 110px;
   }
 }
 
 @media (max-width: 640px) {
-  .home-panel-head {
+  .home-panel-head,
+  .home-dispatch-head {
     flex-direction: column;
-    align-items: stretch;
+  }
+
+  .home-dispatch-stats {
+    justify-content: flex-start;
   }
 
   .home-report-grid {
@@ -2203,12 +2343,20 @@ a.home-rank-row:hover {
     text-align: left;
   }
 
-  .home-bar-value {
+  .home-split-value {
+    font-size: 0.55rem;
+  }
+
+  .home-split-label {
+    font-size: 0.6rem;
+  }
+
+  .home-split-total {
     font-size: 0.65rem;
   }
 
-  .home-bar-label {
-    font-size: 0.65rem;
+  .home-split-bar {
+    max-width: 22px;
   }
 }
 

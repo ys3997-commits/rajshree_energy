@@ -393,9 +393,17 @@ export async function createDispatch(
         saleInvoiceNumber: normalizeInvoiceNumber(input.saleInvoiceNumber) ?? null,
         purchaseInvoiceNumber:
           normalizeInvoiceNumber(input.purchaseInvoiceNumber) ?? null,
-        receiptStatus: ReceiptStatus.PENDING,
-        receivingQuantity: null,
-        receiptDate: null,
+        ...(input.dispatchTerms === DispatchTerms.EX_PORT
+          ? {
+              receiptStatus: ReceiptStatus.RECEIVED,
+              receivingQuantity: qty,
+              receiptDate: new Date(),
+            }
+          : {
+              receiptStatus: ReceiptStatus.PENDING,
+              receivingQuantity: null,
+              receiptDate: null,
+            }),
       },
     });
   });
@@ -479,9 +487,17 @@ export async function createOpenOrderDispatch(
         saleInvoiceNumber: normalizeInvoiceNumber(input.saleInvoiceNumber) ?? null,
         purchaseInvoiceNumber:
           normalizeInvoiceNumber(input.purchaseInvoiceNumber) ?? null,
-        receiptStatus: ReceiptStatus.PENDING,
-        receivingQuantity: null,
-        receiptDate: null,
+        ...(input.dispatchTerms === DispatchTerms.EX_PORT
+          ? {
+              receiptStatus: ReceiptStatus.RECEIVED,
+              receivingQuantity: qty,
+              receiptDate: new Date(),
+            }
+          : {
+              receiptStatus: ReceiptStatus.PENDING,
+              receivingQuantity: null,
+              receiptDate: null,
+            }),
       },
     });
   });
@@ -615,7 +631,14 @@ export async function updateDispatch(
       );
     }
 
-    if (changes.receivingQuantity !== undefined) {
+    if (nextTerms === DispatchTerms.EX_PORT) {
+      // Ex-Port: received qty tracks weight automatically; diff is 0.
+      data.receivingQuantity = nextQty;
+      data.receiptStatus = ReceiptStatus.RECEIVED;
+      if (existing.receiptDate == null) {
+        data.receiptDate = new Date();
+      }
+    } else if (changes.receivingQuantity !== undefined) {
       if (changes.receivingQuantity === null || changes.receivingQuantity === "") {
         data.receivingQuantity = null;
         data.receiptDate = null;
