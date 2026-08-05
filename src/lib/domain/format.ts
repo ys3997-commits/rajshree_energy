@@ -207,7 +207,7 @@ export function displayOrderQuantity(order: {
 export function displayOrderBalance(order: {
   orderType: string | null | undefined;
   quantity?: { toString(): string } | number | string | null | undefined;
-  balanceOrder: { toString(): string } | number | string | null | undefined;
+  balanceOrder?: { toString(): string } | number | string | null | undefined;
 }): { toString(): string } | number | string | null | undefined {
   if (order.orderType === "OPEN" && (order.quantity == null || order.quantity === "")) {
     return 0;
