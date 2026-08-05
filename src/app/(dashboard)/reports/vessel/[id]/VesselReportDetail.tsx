@@ -98,16 +98,18 @@ export function VesselReportDetail({
 
   return (
     <div className="vessel-report-detail">
-      <Link href="/reports/vessel-report" className="back-link">
+      <Link href="/reports/vessel" className="back-link">
         ← All vessels
       </Link>
 
       <div className="page-header">
         <div>
           <p className="page-eyebrow">
-            <Link href="/">Home</Link>
+            <Link href="/reports">Report</Link>
             <span aria-hidden="true"> · </span>
-            <Link href="/reports/vessel-report">Vessel report</Link>
+            Vessel
+            <span aria-hidden="true"> · </span>
+            <Link href="/reports/vessel">Vessel Report</Link>
           </p>
           <h1 className="page-title">{vessel.vesselName}</h1>
           <p className="page-subtitle">

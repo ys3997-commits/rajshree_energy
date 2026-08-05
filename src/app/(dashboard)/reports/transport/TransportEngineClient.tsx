@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
@@ -12,6 +13,7 @@ import {
   capitalizeName,
   formatDateDdMmYyyy,
   formatDispatchMt,
+  formatDispatchTerms,
   formatLorryNumber,
   formatRs,
 } from "@/lib/domain/format";
@@ -62,6 +64,9 @@ export function TransportEngineClient({
 
   const [customerFilter, setCustomerFilter] = useState("");
   const [transporterFilter, setTransporterFilter] = useState("");
+  const [deliveryTermsFilter, setDeliveryTermsFilter] = useState<
+    "" | DispatchTerms
+  >("");
   const [completeFilter, setCompleteFilter] = useState<"" | "complete" | "pending">(
     "",
   );
@@ -83,7 +88,10 @@ export function TransportEngineClient({
   );
 
   const hasActiveFilters = Boolean(
-    customerFilter || transporterFilter || completeFilter,
+    customerFilter ||
+      transporterFilter ||
+      deliveryTermsFilter ||
+      completeFilter,
   );
 
   const filtered = useMemo(() => {
@@ -100,6 +108,9 @@ export function TransportEngineClient({
       ) {
         return false;
       }
+      if (deliveryTermsFilter && row.dispatchTerms !== deliveryTermsFilter) {
+        return false;
+      }
       if (completeFilter) {
         const complete = isChecklistComplete(row);
         if (completeFilter === "complete" && !complete) return false;
@@ -107,7 +118,13 @@ export function TransportEngineClient({
       }
       return true;
     });
-  }, [rows, customerFilter, transporterFilter, completeFilter]);
+  }, [
+    rows,
+    customerFilter,
+    transporterFilter,
+    deliveryTermsFilter,
+    completeFilter,
+  ]);
 
   const exportColumns = [
     { key: "date", header: "Date" },
@@ -129,6 +146,7 @@ export function TransportEngineClient({
       align: "right" as const,
     },
     { key: "customer", header: "Customer name" },
+    { key: "deliveryTerms", header: "Delivery terms" },
     { key: "transporter", header: "Transporter name" },
     {
       key: "freightPerTon",
@@ -142,6 +160,7 @@ export function TransportEngineClient({
     },
     { key: "biltyHardCopy", header: "Bilty hard copy" },
     { key: "invoiceHardCopy", header: "Invoice hard copy" },
+    { key: "transportInvoiceNo", header: "Transport invoice no" },
     { key: "entryInTally", header: "Entry in Tally" },
   ];
 
@@ -157,6 +176,7 @@ export function TransportEngineClient({
         customer: row.customerName
           ? (capitalizeName(row.customerName) ?? row.customerName)
           : "—",
+        deliveryTerms: formatDispatchTerms(row.dispatchTerms),
         transporter: row.transporterName
           ? (capitalizeName(row.transporterName) ?? row.transporterName)
           : "—",
@@ -166,6 +186,7 @@ export function TransportEngineClient({
           row.freightAmount != null ? formatRs(row.freightAmount) : "—",
         biltyHardCopy: formatChecklistYes(row.biltyHardCopy),
         invoiceHardCopy: formatChecklistYes(row.invoiceHardCopy),
+        transportInvoiceNo: row.transportInvoiceNo?.trim() || "—",
         entryInTally: formatChecklistYes(row.entryInTally),
       })),
     [filtered],
@@ -259,6 +280,19 @@ export function TransportEngineClient({
           </select>
         </label>
         <label>
+          Delivery terms
+          <select
+            value={deliveryTermsFilter}
+            onChange={(e) =>
+              setDeliveryTermsFilter(e.target.value as "" | DispatchTerms)
+            }
+          >
+            <option value="">All</option>
+            <option value={DispatchTerms.FOR}>FOR</option>
+            <option value={DispatchTerms.EX_PORT}>Ex-Port</option>
+          </select>
+        </label>
+        <label>
           Checklist
           <select
             value={completeFilter}
@@ -278,6 +312,7 @@ export function TransportEngineClient({
             onClick={() => {
               setCustomerFilter("");
               setTransporterFilter("");
+              setDeliveryTermsFilter("");
               setCompleteFilter("");
             }}
           >
@@ -285,7 +320,7 @@ export function TransportEngineClient({
           </button>
         )}
         <TableDownloadButtons
-          title="Transport engine"
+          title="Transport Engine Report"
           filenameBase="transport-engine"
           columns={exportColumns}
           rows={exportRows}
@@ -303,11 +338,13 @@ export function TransportEngineClient({
               <th className="cell-num">Receiving weight (MT)</th>
               <th className="cell-num">Diff in weight (MT)</th>
               <th>Customer name</th>
+              <th>Delivery terms</th>
               <th>Transporter name</th>
               <th className="cell-num">Freight per ton</th>
               <th className="cell-num">Freight amount</th>
               <th className="cell-center">Bilty hard copy</th>
               <th className="cell-center">Invoice hard copy</th>
+              <th>Transport invoice no</th>
               <th className="cell-center">Entry in Tally</th>
               <th>Edit</th>
             </tr>
@@ -351,6 +388,7 @@ export function TransportEngineClient({
                       ? (capitalizeName(row.customerName) ?? row.customerName)
                       : "—"}
                   </td>
+                  <td>{formatDispatchTerms(row.dispatchTerms)}</td>
                   <td
                     className={
                       row.transporterName ? undefined : "cell-center"
@@ -377,6 +415,15 @@ export function TransportEngineClient({
                   <td className="cell-center">
                     {formatChecklistYes(row.invoiceHardCopy)}
                   </td>
+                  <td
+                    className={
+                      row.transportInvoiceNo?.trim()
+                        ? undefined
+                        : "cell-center"
+                    }
+                  >
+                    {row.transportInvoiceNo?.trim() || "—"}
+                  </td>
                   <td className="cell-center">
                     {formatChecklistYes(row.entryInTally)}
                   </td>
@@ -399,7 +446,7 @@ export function TransportEngineClient({
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={14}>
+                <td colSpan={16}>
                   {rows.length === 0
                     ? "No dispatches yet."
                     : "No dispatches match these filters."}

@@ -35,7 +35,8 @@ export async function updatePlannedCollectionCall(
     select: { plannedCollectionCallDate: true },
   });
 
-  revalidatePath("/payments");
+  revalidatePath("/reports/collection");
+  revalidatePath("/reports/collection/vendor");
 
   return {
     plannedCollectionCallDate: row.plannedCollectionCallDate

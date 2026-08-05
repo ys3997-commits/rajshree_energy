@@ -77,7 +77,7 @@ export function VesselReportList({
           />
         </label>
         <TableDownloadButtons
-          title="Vessel report"
+          title="Vessel Report"
           filenameBase="vessel-report"
           columns={exportColumns}
           rows={exportRows}
@@ -113,7 +113,7 @@ export function VesselReportList({
                 >
                   <td>
                     <Link
-                      href={`/reports/vessel-report/${v.id}`}
+                      href={`/reports/vessel/${v.id}`}
                       className="ca-list-link"
                     >
                       {v.vesselName}
@@ -128,7 +128,7 @@ export function VesselReportList({
                   <td className="num">{formatSaleOrderMt(v.balanceQuantity)}</td>
                   <td className="num">
                     <Link
-                      href={`/reports/vessel-report/${v.id}`}
+                      href={`/reports/vessel/${v.id}`}
                       className="btn-link"
                     >
                       Open →

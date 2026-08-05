@@ -56,7 +56,7 @@ export function QualityReportList({
           />
         </label>
         <TableDownloadButtons
-          title="Quality report"
+          title="Quality Report"
           filenameBase="quality-report"
           columns={exportColumns}
           rows={exportRows}
@@ -82,7 +82,7 @@ export function QualityReportList({
                 <tr key={r.id} className="ca-list-row">
                   <td>
                     <Link
-                      href={`/reports/quality-report/${r.id}`}
+                      href={`/reports/product/${r.id}`}
                       className="ca-list-link"
                     >
                       {formatQualityClass(r.qualityClass)}
@@ -93,7 +93,7 @@ export function QualityReportList({
                   <td className="num">{formatSaleOrderMt(r.unsoldQuantity)}</td>
                   <td className="num">
                     <Link
-                      href={`/reports/quality-report/${r.id}`}
+                      href={`/reports/product/${r.id}`}
                       className="btn-link"
                     >
                       Open →

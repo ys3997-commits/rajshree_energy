@@ -3,15 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
-import { TableDownloadButtons } from "@/components/TableDownloadButtons";
-import {
-  updatePlannedSaleCall,
-  type SalesEngineRow,
-} from "@/lib/actions/salesEngine";
+import { CustomerCategory } from "@/generated/prisma";
+import { updatePlannedCollectionCall } from "@/lib/actions/collection";
+import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
   capitalizeName,
+  formatCreditPeriod,
   formatCustomerCategory,
-  formatDateDdMmYyyy,
   formatRs,
 } from "@/lib/domain/format";
 
@@ -22,8 +20,13 @@ type PlannedCallFilter =
   | "older"
   | "future"
   | "none";
-type SortKey = "orderInHand" | "soldQuantity" | "due" | "overdue";
+type CollectionSortKey = "name" | "due" | "overdue";
 type SortDir = "asc" | "desc";
+
+const BUYER_CATEGORIES = new Set<CustomerCategory>([
+  CustomerCategory.INDUSTRY,
+  CustomerCategory.TRADER,
+]);
 
 function todayLocal(): string {
   const d = new Date();
@@ -64,17 +67,6 @@ function matchesPlannedCallFilter(
   return p > tomorrow;
 }
 
-function rowHighlightClass(
-  planned: string | null,
-  today: string,
-): string | undefined {
-  const p = normalizePlannedDate(planned);
-  if (!p) return undefined;
-  if (p === today) return "collection-row-call-today";
-  if (p < today) return "collection-row-due-call";
-  return undefined;
-}
-
 function distinctTrimmed(values: Array<string | null | undefined>): string[] {
   const names = new Set<string>();
   for (const value of values) {
@@ -83,41 +75,9 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
   return [...names].sort((a, b) => a.localeCompare(b));
 }
 
-function numericValue(value: string | null | undefined): number {
-  if (value == null || value === "") return 0;
+function numericValue(value: string): number {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
-}
-
-function formatQtyMt(value: string | null | undefined): string {
-  if (value == null || value === "") return "—";
-  const n = Number(value);
-  if (!Number.isFinite(n)) return value;
-  return `${n.toLocaleString("en-US", {
-    useGrouping: false,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} MT`;
-}
-
-function daysSinceLastDispatch(
-  value: string | null | undefined,
-  todayYmd: string,
-): string {
-  if (!value) return "—";
-  const lastYmd = value.trim().slice(0, 10);
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(lastYmd);
-  if (!m) return "—";
-  const [, y, mo, d] = m;
-  const lastUtc = Date.UTC(Number(y), Number(mo) - 1, Number(d));
-
-  const tm = /^(\d{4})-(\d{2})-(\d{2})$/.exec(todayYmd);
-  if (!tm) return "—";
-  const [, ty, tmo, td] = tm;
-  const todayUtc = Date.UTC(Number(ty), Number(tmo) - 1, Number(td));
-
-  const diffDays = Math.floor((todayUtc - lastUtc) / 86_400_000);
-  return `${diffDays < 0 ? 0 : diffDays} days`;
 }
 
 function sortIndicator(active: boolean, dir: SortDir): string {
@@ -125,82 +85,103 @@ function sortIndicator(active: boolean, dir: SortDir): string {
   return dir === "asc" ? " ↑" : " ↓";
 }
 
-export function SalesEngineClient({
+function formatDateDdMmYyyy(value: string | null | undefined): string {
+  if (!value) return "—";
+  const datePart = value.trim().slice(0, 10);
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(datePart);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  return `${day}/${month}/${year}`;
+}
+
+export function CollectionClient({
   initialRows,
 }: {
-  initialRows: SalesEngineRow[];
+  initialRows: CustomerDueRow[];
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
-  const [prevInitial, setPrevInitial] = useState(initialRows);
-  if (initialRows !== prevInitial) {
-    setPrevInitial(initialRows);
+  const [prevInitialRows, setPrevInitialRows] = useState(initialRows);
+  if (initialRows !== prevInitialRows) {
+    setPrevInitialRows(initialRows);
     setRows(initialRows);
   }
 
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const [savingCallId, setSavingCallId] = useState<string | null>(null);
-
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
   const [saleExecutiveFilter, setSaleExecutiveFilter] = useState("");
+  const [approachForFundsFilter, setApproachForFundsFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sectorFilter, setSectorFilter] = useState("");
-  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [savingCallId, setSavingCallId] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<CollectionSortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   const today = todayLocal();
+  const yesterday = addLocalDays(today, -1);
   const tomorrow = addLocalDays(today, 1);
 
-  function toggleSort(key: SortKey) {
+  const buyerRows = useMemo(
+    () => rows.filter((row) => BUYER_CATEGORIES.has(row.category)),
+    [rows],
+  );
+
+  function toggleSort(key: CollectionSortKey) {
     if (sortKey === key) {
       setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
       return;
     }
     setSortKey(key);
-    setSortDir("desc");
+    setSortDir(key === "name" ? "asc" : "desc");
   }
 
   const saleExecutiveOptions = useMemo(
-    () => distinctTrimmed(rows.map((row) => row.saleExecutive)),
-    [rows],
+    () => distinctTrimmed(buyerRows.map((row) => row.saleExecutive)),
+    [buyerRows],
+  );
+  const approachForFundsOptions = useMemo(
+    () => distinctTrimmed(buyerRows.map((row) => row.approachForFunds)),
+    [buyerRows],
   );
   const cityOptions = useMemo(
-    () => distinctTrimmed(rows.map((row) => row.city)),
-    [rows],
+    () => distinctTrimmed(buyerRows.map((row) => row.city)),
+    [buyerRows],
   );
   const stateOptions = useMemo(
-    () => distinctTrimmed(rows.map((row) => row.state)),
-    [rows],
+    () => distinctTrimmed(buyerRows.map((row) => row.state)),
+    [buyerRows],
   );
   const sectorOptions = useMemo(
-    () => distinctTrimmed(rows.map((row) => row.sector)),
-    [rows],
+    () => distinctTrimmed(buyerRows.map((row) => row.sector)),
+    [buyerRows],
   );
-  const categoryOptions = useMemo(() => {
-    const cats = new Set(rows.map((row) => row.category));
-    return [...cats].sort((a, b) =>
-      formatCustomerCategory(a).localeCompare(formatCustomerCategory(b)),
-    );
-  }, [rows]);
+  const categoryOptions = useMemo(
+    () =>
+      [CustomerCategory.INDUSTRY, CustomerCategory.TRADER].sort((a, b) =>
+        formatCustomerCategory(a).localeCompare(formatCustomerCategory(b)),
+      ),
+    [],
+  );
 
   const hasActiveFilters = Boolean(
     plannedCallFilter ||
       saleExecutiveFilter ||
+      approachForFundsFilter ||
       cityFilter ||
       stateFilter ||
       categoryFilter ||
       sectorFilter,
   );
 
-  const filtered = useMemo(() => {
-    const next = rows.filter((row) => {
+  const filteredRows = useMemo(() => {
+    const next = buyerRows.filter((row) => {
       if (
         !matchesPlannedCallFilter(
-          row.plannedSaleCallDate,
+          row.plannedCollectionCallDate,
           plannedCallFilter,
           today,
           tomorrow,
@@ -208,30 +189,40 @@ export function SalesEngineClient({
       ) {
         return false;
       }
+      if (categoryFilter && row.category !== categoryFilter) return false;
       if (
         saleExecutiveFilter &&
         (row.saleExecutive?.trim() ?? "") !== saleExecutiveFilter
       ) {
         return false;
       }
+      if (
+        approachForFundsFilter &&
+        (row.approachForFunds?.trim() ?? "") !== approachForFundsFilter
+      ) {
+        return false;
+      }
       if (cityFilter && (row.city?.trim() ?? "") !== cityFilter) return false;
       if (stateFilter && (row.state?.trim() ?? "") !== stateFilter) return false;
-      if (categoryFilter && row.category !== categoryFilter) return false;
       if (sectorFilter && (row.sector?.trim() ?? "") !== sectorFilter) {
         return false;
       }
       return true;
     });
+
     if (!sortKey) return next;
     const dir = sortDir === "asc" ? 1 : -1;
+    if (sortKey === "name") {
+      return [...next].sort((a, b) => a.name.localeCompare(b.name) * dir);
+    }
     return [...next].sort(
-      (a, b) =>
-        (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
+      (a, b) => (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
     );
   }, [
-    rows,
+    buyerRows,
     plannedCallFilter,
     saleExecutiveFilter,
+    approachForFundsFilter,
     cityFilter,
     stateFilter,
     categoryFilter,
@@ -242,64 +233,27 @@ export function SalesEngineClient({
     tomorrow,
   ]);
 
-  const exportColumns = [
-    { key: "customer", header: "Customer name" },
-    { key: "purchaser", header: "Purchaser name" },
-    { key: "phone", header: "Phone number" },
-    { key: "role", header: "Role of purchaser" },
-    { key: "saleExecutive", header: "Sale executive" },
-    { key: "orderInHand", header: "Order in hand", align: "right" as const },
-    { key: "soldQuantity", header: "Sold quantity", align: "right" as const },
-    {
-      key: "daysSince",
-      header: "Days since last dispatch",
-      align: "right" as const,
-    },
-    { key: "due", header: "Total Due", align: "right" as const },
-    { key: "overdue", header: "Overdue", align: "right" as const },
-    { key: "plannedCall", header: "Planned call" },
-  ];
-
-  const exportRows = useMemo(
-    () =>
-      filtered.map((row) => ({
-        customer: capitalizeName(row.name) ?? row.name,
-        purchaser: row.purchaserName
-          ? (capitalizeName(row.purchaserName) ?? row.purchaserName)
-          : "—",
-        phone: row.purchaserContact ?? "—",
-        role: row.purchaserRole ?? "—",
-        saleExecutive: row.saleExecutive
-          ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
-          : "—",
-        orderInHand: formatQtyMt(row.orderInHand),
-        soldQuantity: formatQtyMt(row.soldQuantity),
-        daysSince: daysSinceLastDispatch(row.lastDispatchDate, today),
-        due: formatRs(row.due),
-        overdue: formatRs(row.overdue),
-        plannedCall: formatDateDdMmYyyy(row.plannedSaleCallDate),
-      })),
-    [filtered, today],
-  );
-
   function onPlannedCallChange(customerId: string, value: string) {
     const nextDate = value.trim() === "" ? null : value;
     setError(null);
     setRows((prev) =>
       prev.map((row) =>
         row.id === customerId
-          ? { ...row, plannedSaleCallDate: nextDate }
+          ? { ...row, plannedCollectionCallDate: nextDate }
           : row,
       ),
     );
     setSavingCallId(customerId);
     startTransition(async () => {
       try {
-        const result = await updatePlannedSaleCall(customerId, nextDate);
+        const result = await updatePlannedCollectionCall(customerId, nextDate);
         setRows((prev) =>
           prev.map((row) =>
             row.id === customerId
-              ? { ...row, plannedSaleCallDate: result.plannedSaleCallDate }
+              ? {
+                  ...row,
+                  plannedCollectionCallDate: result.plannedCollectionCallDate,
+                }
               : row,
           ),
         );
@@ -316,12 +270,12 @@ export function SalesEngineClient({
   }
 
   return (
-    <div>
-      {error && <p className="form-error">{error}</p>}
+    <>
+      {error && <div className="error-box">{error}</div>}
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Planning call
+          Planned call
           <select
             value={plannedCallFilter}
             onChange={(e) =>
@@ -344,6 +298,20 @@ export function SalesEngineClient({
           >
             <option value="">All</option>
             {saleExecutiveOptions.map((name) => (
+              <option key={name} value={name}>
+                {capitalizeName(name) ?? name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Approach for funds
+          <select
+            value={approachForFundsFilter}
+            onChange={(e) => setApproachForFundsFilter(e.target.value)}
+          >
+            <option value="">All</option>
+            {approachForFundsOptions.map((name) => (
               <option key={name} value={name}>
                 {capitalizeName(name) ?? name}
               </option>
@@ -413,6 +381,7 @@ export function SalesEngineClient({
             onClick={() => {
               setPlannedCallFilter("");
               setSaleExecutiveFilter("");
+              setApproachForFundsFilter("");
               setCityFilter("");
               setStateFilter("");
               setCategoryFilter("");
@@ -422,52 +391,25 @@ export function SalesEngineClient({
             Clear
           </button>
         )}
-        <TableDownloadButtons
-          title="Sales engine"
-          filenameBase="sales-engine"
-          columns={exportColumns}
-          rows={exportRows}
-        />
       </form>
 
       <div className="table-wrap">
-        <table className="data payments-table collection-table sales-engine-table">
+        <table className="data payments-table collection-table">
           <thead>
             <tr>
-              <th className="sales-engine-customer-col">Customer name</th>
-              <th className="sales-engine-purchaser-col">Purchaser name</th>
-              <th>Phone number</th>
-              <th className="sales-engine-role-col">
-                Role of
-                <br />
-                purchaser
-              </th>
-              <th>Sale executive</th>
-              <th className="cell-num">
+              <th className="collection-customer-col">
                 <button
                   type="button"
                   className="th-sort"
-                  onClick={() => toggleSort("orderInHand")}
+                  onClick={() => toggleSort("name")}
                 >
-                  Order in hand
-                  {sortIndicator(sortKey === "orderInHand", sortDir)}
+                  Customer
+                  {sortIndicator(sortKey === "name", sortDir)}
                 </button>
               </th>
-              <th className="cell-num">
-                <button
-                  type="button"
-                  className="th-sort"
-                  onClick={() => toggleSort("soldQuantity")}
-                >
-                  Sold quantity
-                  {sortIndicator(sortKey === "soldQuantity", sortDir)}
-                </button>
-              </th>
-              <th className="cell-num sales-engine-days-col">
-                Days since
-                <br />
-                last dispatch
-              </th>
+              <th>Payment in charge</th>
+              <th>Contact number</th>
+              <th>Sales executive</th>
               <th className="cell-num">
                 <button
                   type="button"
@@ -488,15 +430,24 @@ export function SalesEngineClient({
                   {sortIndicator(sortKey === "overdue", sortDir)}
                 </button>
               </th>
-              <th>Planned call</th>
+              <th>Last payment date</th>
+              <th className="cell-num">Last payment amount</th>
+              <th className="cell-num">Credit period</th>
+              <th>Planned call date</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((row) => {
-              const rowClass = rowHighlightClass(row.plannedSaleCallDate, today);
+            {filteredRows.map((row) => {
+              const lastPaidYesterday =
+                normalizePlannedDate(row.lastPaymentDate) === yesterday;
               return (
-                <tr key={row.id} className={rowClass}>
-                  <td className="sales-engine-customer-col">
+                <tr
+                  key={row.id}
+                  className={
+                    lastPaidYesterday ? "payment-row-yesterday" : undefined
+                  }
+                >
+                  <td className="collection-customer-col">
                     <Link
                       href={`/reports/customer-analysis/${row.id}`}
                       className="btn-link"
@@ -504,34 +455,36 @@ export function SalesEngineClient({
                       {capitalizeName(row.name) ?? row.name}
                     </Link>
                   </td>
-                  <td className="sales-engine-purchaser-col">
-                    {row.purchaserName
-                      ? (capitalizeName(row.purchaserName) ?? row.purchaserName)
+                  <td>
+                    {row.paymentInChargeName
+                      ? (capitalizeName(row.paymentInChargeName) ??
+                        row.paymentInChargeName)
                       : "—"}
                   </td>
-                  <td>{row.purchaserContact ?? "—"}</td>
-                  <td className="sales-engine-role-col">
-                    {row.purchaserRole ?? "—"}
-                  </td>
+                  <td>{row.paymentInChargeContact ?? "—"}</td>
                   <td>
                     {row.saleExecutive
                       ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
                       : "—"}
                   </td>
-                  <td className="cell-num">{formatQtyMt(row.orderInHand)}</td>
-                  <td className="cell-num">{formatQtyMt(row.soldQuantity)}</td>
-                  <td className="cell-num sales-engine-days-col">
-                    {daysSinceLastDispatch(row.lastDispatchDate, today)}
-                  </td>
                   <td className="cell-num">{formatRs(row.due)}</td>
                   <td className="cell-num">{formatRs(row.overdue)}</td>
+                  <td>{formatDateDdMmYyyy(row.lastPaymentDate)}</td>
+                  <td className="cell-num">
+                    {row.lastPaymentAmount
+                      ? formatRs(row.lastPaymentAmount)
+                      : "—"}
+                  </td>
+                  <td className="cell-num">
+                    {formatCreditPeriod(row.creditDays)}
+                  </td>
                   <td>
                     <input
                       type="date"
                       lang="en-GB"
                       className="field-input collection-date-input"
-                      aria-label={`Planned sales call for ${row.name}`}
-                      value={row.plannedSaleCallDate ?? ""}
+                      aria-label={`Planned call for ${row.name}`}
+                      value={row.plannedCollectionCallDate ?? ""}
                       disabled={savingCallId === row.id || pending}
                       onChange={(e) =>
                         onPlannedCallChange(row.id, e.target.value)
@@ -541,11 +494,11 @@ export function SalesEngineClient({
                 </tr>
               );
             })}
-            {filtered.length === 0 && (
+            {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={11}>
-                  {rows.length === 0
-                    ? "No active customers."
+                <td colSpan={10}>
+                  {buyerRows.length === 0
+                    ? "No outstanding dues."
                     : "No customers match these filters."}
                 </td>
               </tr>
@@ -553,6 +506,6 @@ export function SalesEngineClient({
           </tbody>
         </table>
       </div>
-    </div>
+    </>
   );
 }

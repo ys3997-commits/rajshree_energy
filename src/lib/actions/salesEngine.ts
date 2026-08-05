@@ -18,6 +18,7 @@ export type SalesEngineRow = {
   city: string | null;
   state: string | null;
   sector: string | null;
+  creditDays: number | null;
   orderInHand: string | null;
   soldQuantity: string;
   lastDispatchDate: string | null;
@@ -51,10 +52,13 @@ function sumOrderInHand(
   return any ? total : null;
 }
 
-/** Active customers for the sales call / follow-up report. */
+/** Active trader/industry customers for the sales call / follow-up report. */
 export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
   const customers = await prisma.customer.findMany({
-    where: { active: true },
+    where: {
+      active: true,
+      category: { in: [CustomerCategory.TRADER, CustomerCategory.INDUSTRY] },
+    },
     select: {
       id: true,
       name: true,
@@ -163,6 +167,7 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
       city: customer.city,
       state: customer.state,
       sector: customer.sector,
+      creditDays: customer.creditDays,
       orderInHand: orderInHand?.toString() ?? null,
       soldQuantity: soldQuantity.toString(),
       lastDispatchDate: lastDispatch
@@ -198,7 +203,7 @@ export async function updatePlannedSaleCall(
     select: { plannedSaleCallDate: true },
   });
 
-  revalidatePath("/reports/sales-engine");
+  revalidatePath("/reports/sales");
   revalidatePath("/");
 
   return {

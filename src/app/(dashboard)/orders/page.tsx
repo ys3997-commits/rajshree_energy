@@ -108,6 +108,7 @@ export default async function OrdersPage({
     { key: "balance", header: "Balance", align: "right" as const },
     { key: "trucks", header: "Trucks dispatch", align: "right" as const },
     { key: "daysSince", header: "Days since order", align: "right" as const },
+    { key: "creditPeriod", header: "Credit period", align: "right" as const },
     { key: "rate", header: "Basic rate", align: "right" as const },
     { key: "deliveryTerms", header: "Delivery term" },
     { key: "status", header: "Status" },
@@ -128,6 +129,7 @@ export default async function OrdersPage({
     daysSince: formatCreditPeriod(
       daysSinceOrder(row.orderDate, row.createdAt),
     ),
+    creditPeriod: formatCreditPeriod(row.creditDays),
     rate: formatRs(row.rate),
     deliveryTerms: formatDispatchTerms(row.deliveryTerms),
     status: formatOrderStatusForDisplay(row),
@@ -254,6 +256,7 @@ export default async function OrdersPage({
                 <br />
                 order
               </th>
+              <th className="num">Credit period</th>
               <th className="num">Basic rate</th>
               <th>Delivery term</th>
               <th>Status</th>
@@ -295,6 +298,7 @@ export default async function OrdersPage({
                     daysSinceOrder(row.orderDate, row.createdAt),
                   )}
                 </td>
+                <td className="num">{formatCreditPeriod(row.creditDays)}</td>
                 <td className="num">{formatRs(row.rate)}</td>
                 <td>{formatDispatchTerms(row.deliveryTerms)}</td>
                 <td>{formatOrderStatusForDisplay(row)}</td>
@@ -316,7 +320,7 @@ export default async function OrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={16}>No orders match filters.</td>
+                <td colSpan={17}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

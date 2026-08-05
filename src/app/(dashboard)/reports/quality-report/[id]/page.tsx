@@ -1,21 +1,11 @@
-import { notFound } from "next/navigation";
-import { getQualityReport } from "@/lib/actions/reports";
-import { QualityReportDetail } from "./QualityReportDetail";
+import { redirect } from "next/navigation";
 
-export default async function QualityReportDetailPage({
+/** Old Quality report detail URL → Report → Product */
+export default async function QualityReportDetailRedirectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const report = await getQualityReport(id);
-  if (!report) notFound();
-
-  return (
-    <QualityReportDetail
-      qualityClass={report.qualityClass}
-      totals={report.totals}
-      vessels={report.vessels}
-    />
-  );
+  redirect(`/reports/product/${id}`);
 }

@@ -362,7 +362,7 @@ function toCustomerData(input: CustomerInput) {
 export async function createCustomer(input: CustomerInput) {
   await assertUniqueCustomerName(input.name);
   const openingDue = parseOpeningDue(input.openingDue);
-  const row = await prisma.customer.create({
+  await prisma.customer.create({
     data: {
       ...toCustomerData(input),
       openingDue,
@@ -371,18 +371,17 @@ export async function createCustomer(input: CustomerInput) {
   });
   revalidatePath("/customers");
   revalidatePath("/payments");
-  return row;
 }
 
 export async function updateCustomer(id: string, input: CustomerInput) {
   await assertUniqueCustomerName(input.name, { excludeId: id });
   const openingDue = parseOpeningDue(input.openingDue);
-  const row = await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     const existing = await tx.customer.findUniqueOrThrow({
       where: { id },
       select: { openingDue: true },
     });
-    const updated = await tx.customer.update({
+    await tx.customer.update({
       where: { id },
       data: {
         ...toCustomerData(input),
@@ -391,11 +390,9 @@ export async function updateCustomer(id: string, input: CustomerInput) {
     });
     const delta = openingDue.minus(toDecimal(existing.openingDue));
     await adjustCustomerDue(tx, id, delta);
-    return updated;
   });
   revalidatePath("/customers");
   revalidatePath("/payments");
-  return row;
 }
 
 export async function deleteCustomer(id: string) {

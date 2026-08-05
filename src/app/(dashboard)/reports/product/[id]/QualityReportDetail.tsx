@@ -59,16 +59,18 @@ export function QualityReportDetail({
 
   return (
     <div className="quality-report-detail">
-      <Link href="/reports/quality-report" className="back-link">
+      <Link href="/reports/product" className="back-link">
         ← All qualities
       </Link>
 
       <div className="page-header">
         <div>
           <p className="page-eyebrow">
-            <Link href="/">Home</Link>
+            <Link href="/reports">Report</Link>
             <span aria-hidden="true"> · </span>
-            <Link href="/reports/quality-report">Quality report</Link>
+            Product
+            <span aria-hidden="true"> · </span>
+            <Link href="/reports/product">Quality Report</Link>
           </p>
           <h1 className="page-title">{label}</h1>
           <p className="page-subtitle">
@@ -135,7 +137,7 @@ export function QualityReportDetail({
                   >
                     <td>
                       <Link
-                        href={`/reports/vessel-report/${v.id}`}
+                        href={`/reports/vessel/${v.id}`}
                         className="font-medium"
                       >
                         {v.vesselName}

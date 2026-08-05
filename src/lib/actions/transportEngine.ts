@@ -2,7 +2,11 @@
 
 import { DispatchTerms } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
-import { diffInQuantity, toDecimal } from "@/lib/domain/computations";
+import {
+  diffInQuantity,
+  effectiveReceivingQuantity,
+  toDecimal,
+} from "@/lib/domain/computations";
 import { prisma } from "@/lib/prisma";
 
 export type TransportEngineRow = {
@@ -68,6 +72,7 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
         ? toDecimal(freightPerTon).mul(row.dispatchedQuantity)
         : null;
     const diff = diffInQuantity(row);
+    const receivingWeight = effectiveReceivingQuantity(row);
 
     return {
       id: row.id,
@@ -75,7 +80,7 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       saleInvoiceNumber: row.saleInvoiceNumber,
       lorryNumber: row.lorryNumber,
       loadingWeight: row.dispatchedQuantity.toString(),
-      receivingWeight: row.receivingQuantity?.toString() ?? null,
+      receivingWeight: receivingWeight?.toString() ?? null,
       diffInWeight: diff?.toString() ?? null,
       customerName: row.order?.customer?.name ?? null,
       transporterName: row.transporter?.name ?? null,
@@ -127,7 +132,7 @@ export async function updateTransportChecklist(
     },
   });
 
-  revalidatePath("/reports/transport-engine");
+  revalidatePath("/reports/transport");
   revalidatePath("/dispatches");
   revalidatePath("/");
 

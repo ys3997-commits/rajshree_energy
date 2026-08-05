@@ -157,35 +157,35 @@ export default async function HomePage() {
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
-          <Link href="/reports/sales-engine" className="home-report-card">
+          <Link href="/reports/sales" className="home-report-card">
             <p className="home-eyebrow">Sales</p>
-            <h3 className="home-report-card-title">Sales engine</h3>
+            <h3 className="home-report-card-title">Sales Engine Report</h3>
             <p className="home-report-card-desc">
               Purchaser contacts, order in hand, sold volume, and planned sales
               calls.
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
-          <Link href="/reports/transport-engine" className="home-report-card">
+          <Link href="/reports/transport" className="home-report-card">
             <p className="home-eyebrow">Transport</p>
-            <h3 className="home-report-card-title">Transport engine</h3>
+            <h3 className="home-report-card-title">Transport Engine Report</h3>
             <p className="home-report-card-desc">
               Dispatch freight, weight diffs, and transport document checklist.
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
-          <Link href="/reports/vessel-report" className="home-report-card">
-            <p className="home-eyebrow">Vessels</p>
-            <h3 className="home-report-card-title">Vessel report</h3>
+          <Link href="/reports/vessel" className="home-report-card">
+            <p className="home-eyebrow">Vessel</p>
+            <h3 className="home-report-card-title">Vessel Report</h3>
             <p className="home-report-card-desc">
               Order, dispatch, closing, and balance quantities by vessel, with
               linked purchase orders.
             </p>
             <span className="home-report-card-cta">Open report</span>
           </Link>
-          <Link href="/reports/quality-report" className="home-report-card">
-            <p className="home-eyebrow">Quality</p>
-            <h3 className="home-report-card-title">Quality report</h3>
+          <Link href="/reports/product" className="home-report-card">
+            <p className="home-eyebrow">Product</p>
+            <h3 className="home-report-card-title">Quality Report</h3>
             <p className="home-report-card-desc">
               PO and SO balances by quality class, with unsold stock and vessel
               breakdown.

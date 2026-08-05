@@ -1,21 +1,11 @@
-import { notFound } from "next/navigation";
-import { getVesselReport } from "@/lib/actions/reports";
-import { VesselReportDetail } from "./VesselReportDetail";
+import { redirect } from "next/navigation";
 
-export default async function VesselReportDetailPage({
+/** Old Vessel report detail URL → Report → Vessel */
+export default async function VesselReportDetailRedirectPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const report = await getVesselReport(id);
-  if (!report) notFound();
-
-  return (
-    <VesselReportDetail
-      vessel={report.vessel}
-      totals={report.totals}
-      purchaseOrders={report.purchaseOrders}
-    />
-  );
+  redirect(`/reports/vessel/${id}`);
 }
