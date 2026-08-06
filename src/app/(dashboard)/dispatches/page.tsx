@@ -446,21 +446,34 @@ export default async function DispatchesPage({
                         row.receivingQuantity?.toString() ?? null
                       }
                       entryInTally={row.entryInTally}
+                      currentSaleCustomerName={row.customerName}
+                      currentPurchaseVendorName={row.vendorName}
+                      currentVesselName={row.vesselName}
                       orders={balanceOrders.map((o) => ({
                         poNumber: o.poNumber,
                         balanceOrder: o.balanceOrder?.toString() ?? null,
-                        customerName: o.customer?.name ?? null,
+                        rate: o.rate?.toString() ?? null,
+                        customer: o.customer,
                       }))}
                       purchaseOrders={balancePurchases.map((p) => ({
                         poNumber: p.poNumber,
                         balanceOrder: p.balanceOrder?.toString() ?? null,
-                        vendorName: p.importer?.name ?? null,
-                        vesselName: p.vessel?.vesselName ?? null,
+                        rate: p.rate?.toString() ?? null,
+                        importer: p.importer,
+                        vessel: p.vessel,
+                        qualityClass: p.qualityClass,
                       }))}
                       transporters={transporters.map((t) => ({
                         id: t.id,
                         name: t.name,
                       }))}
+                      customers={customerOpts}
+                      vessels={activeVessels.map((v) => ({
+                        id: v.id,
+                        vesselName: v.vesselName,
+                      }))}
+                      suggestedPo={suggestedPo}
+                      suggestedPurchasePo={suggestedPurchasePo}
                     />
                     <EditDispatchPurchaseButton
                       dispatchId={row.id}

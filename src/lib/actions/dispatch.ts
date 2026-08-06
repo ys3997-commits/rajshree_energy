@@ -60,10 +60,24 @@ export type CreateDispatchInput = {
   purchaseInvoiceNumber?: string | null;
 };
 
+/** Create an OPEN sale order as part of a dispatch (quantity null). */
+export type OpenSaleForDispatch = {
+  poNumber: string;
+  customerId: string;
+  rate?: DecimalLike | null;
+  orderById?: string | null;
+};
+
 export type UpdateDispatchInput = {
   dispatchedQuantity?: DecimalLike;
+  /** Existing purchase PO — ignored when openPurchase is set. */
   purchasePoNumber?: string;
+  /** When set, creates an OPEN purchase order and switches the dispatch to it. */
+  openPurchase?: OpenPurchaseForDispatch;
+  /** Existing sale PO — ignored when openSale is set. */
   poNumber?: string;
+  /** When set, creates an OPEN sale order and switches the dispatch to it. */
+  openSale?: OpenSaleForDispatch;
   dispatchDate?: Date | string;
   dispatchTerms?: DispatchTerms;
   lorryNumber?: string | null;
@@ -518,10 +532,71 @@ export async function updateDispatch(
       changes.dispatchedQuantity !== undefined
         ? toDecimal(changes.dispatchedQuantity)
         : existing.dispatchedQuantity;
-    const nextPurchasePo =
-      changes.purchasePoNumber ?? existing.purchasePoNumber;
-    const nextPo = changes.poNumber ?? existing.poNumber;
     const nextTerms = changes.dispatchTerms ?? existing.dispatchTerms;
+    const nextDispatchDate =
+      changes.dispatchDate !== undefined
+        ? changes.dispatchDate
+        : existing.dispatchDate;
+
+    let nextPurchasePo =
+      changes.purchasePoNumber ?? existing.purchasePoNumber;
+    let nextPo = changes.poNumber ?? existing.poNumber;
+    let skipPurchaseBalanceCheck = false;
+
+    if (changes.openPurchase) {
+      const purchase = await resolvePurchaseForDispatch(tx, {
+        openPurchase: changes.openPurchase,
+        dispatchDate: nextDispatchDate,
+      });
+      nextPurchasePo = purchase.purchasePoNumber;
+      skipPurchaseBalanceCheck = purchase.skipPurchaseBalanceCheck;
+    }
+
+    if (changes.openSale) {
+      const poNumber = normalizeSaleOrderNumber(changes.openSale.poNumber);
+      if (!changes.openSale.customerId) {
+        throw new Error("Customer is required");
+      }
+
+      const existingSale = await tx.order.findUnique({ where: { poNumber } });
+      if (existingSale) {
+        throw new Error(`PO number ${poNumber} is already taken`);
+      }
+
+      const customer = await tx.customer.findUnique({
+        where: { id: changes.openSale.customerId },
+        select: { category: true },
+      });
+      if (!customer) throw new Error("Customer not found");
+
+      const rate =
+        changes.openSale.rate === undefined ||
+        changes.openSale.rate === null ||
+        changes.openSale.rate === ""
+          ? null
+          : toDecimal(changes.openSale.rate);
+      const finalRate = computeSaleFinalRate(rate, customer.category);
+
+      await tx.order.create({
+        data: {
+          poNumber,
+          orderType: OrderType.OPEN,
+          customerId: changes.openSale.customerId,
+          orderDate: asDate(nextDispatchDate),
+          orderById: changes.openSale.orderById || null,
+          quantity: null,
+          rate,
+          finalRate,
+          creditDays: null,
+          portId: null,
+          qualityClassId: null,
+          orderStatus: OrderStatus.RUNNING,
+          dispatchedOrder: new Decimal(0),
+        },
+      });
+
+      nextPo = poNumber;
+    }
 
     const balanceAffecting =
       !nextQty.eq(existing.dispatchedQuantity) ||
@@ -562,8 +637,9 @@ export async function updateDispatch(
         throw new Error(`Purchase order ${nextPurchasePo} not found`);
       }
       const skipPurchase =
-        targetPurchase.orderType === OrderType.OPEN &&
-        targetPurchase.quantity == null;
+        skipPurchaseBalanceCheck ||
+        (targetPurchase.orderType === OrderType.OPEN &&
+          targetPurchase.quantity == null);
 
       await applyDispatchDelta(tx, {
         poNumber: nextPo,

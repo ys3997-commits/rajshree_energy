@@ -2,30 +2,54 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DispatchTerms } from "@/generated/prisma";
+import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
 import {
   formatMt,
+  formatQualityClass,
+  formatRateBreakdownLine,
   normalizeLorryNumber,
 } from "@/lib/domain/format";
+import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
+import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
 
 type OrderOpt = {
   poNumber: string;
   balanceOrder: string | null;
-  customerName: string | null;
+  rate: string | null;
+  customer: { name: string; category: CustomerCategory } | null;
+};
+
+type QualityClassOpt = {
+  domestic: boolean;
+  origin: { name: string };
+  qualityOption: { name: string };
 };
 
 type PurchaseOpt = {
   poNumber: string;
   balanceOrder: string | null;
-  vendorName: string | null;
-  vesselName: string | null;
+  rate: string | null;
+  importer: { name: string } | null;
+  vessel: { vesselName: string } | null;
+  qualityClass: QualityClassOpt | null;
 };
 
 type TransporterOpt = {
   id: string;
   name: string;
+};
+
+type CustomerOpt = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+};
+
+type VesselOpt = {
+  id: string;
+  vesselName: string;
 };
 
 export function EditDispatchButton({
@@ -42,9 +66,16 @@ export function EditDispatchButton({
   purchaseInvoiceNumber,
   receivingQuantity,
   entryInTally,
+  currentSaleCustomerName,
+  currentPurchaseVendorName,
+  currentVesselName,
   orders,
   purchaseOrders,
   transporters,
+  customers,
+  vessels,
+  suggestedPo,
+  suggestedPurchasePo,
 }: {
   dispatchId: string;
   dispatchDate: string;
@@ -59,17 +90,36 @@ export function EditDispatchButton({
   purchaseInvoiceNumber: string | null;
   receivingQuantity: string | null;
   entryInTally: boolean;
+  currentSaleCustomerName: string | null;
+  currentPurchaseVendorName: string | null;
+  currentVesselName: string | null;
   orders: OrderOpt[];
   purchaseOrders: PurchaseOpt[];
   transporters: TransporterOpt[];
+  customers: CustomerOpt[];
+  vessels: VesselOpt[];
+  suggestedPo: string;
+  suggestedPurchasePo: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(dispatchDate);
   const [lorry, setLorry] = useState(lorryNumber ?? "");
   const [qty, setQty] = useState(dispatchedQuantity);
+  const [purchaseMode, setPurchaseMode] = useState<"existing" | "open">(
+    "existing",
+  );
+  const [saleMode, setSaleMode] = useState<"existing" | "open">("existing");
   const [purchasePo, setPurchasePo] = useState(purchasePoNumber);
+  const [openPurchasePoNumber, setOpenPurchasePoNumber] =
+    useState(suggestedPurchasePo);
+  const [vendorId, setVendorId] = useState("");
+  const [vesselId, setVesselId] = useState("");
+  const [purchaseRate, setPurchaseRate] = useState("");
   const [salePo, setSalePo] = useState(salePoNumber);
+  const [openSalePoNumber, setOpenSalePoNumber] = useState(suggestedPo);
+  const [customerId, setCustomerId] = useState("");
+  const [saleRate, setSaleRate] = useState("");
   const [terms, setTerms] = useState<DispatchTerms>(dispatchTerms);
   const [transporter, setTransporter] = useState(transporterId ?? "");
   const [freightValue, setFreightValue] = useState(freight ?? "");
@@ -85,14 +135,26 @@ export function EditDispatchButton({
   const saleOptions = useMemo(() => {
     const list = [...orders];
     if (salePoNumber && !list.some((o) => o.poNumber === salePoNumber)) {
+      const matchedCustomer =
+        currentSaleCustomerName != null
+          ? (customers.find((c) => c.name === currentSaleCustomerName) ?? null)
+          : null;
       list.unshift({
         poNumber: salePoNumber,
         balanceOrder: null,
-        customerName: null,
+        rate: null,
+        customer: matchedCustomer
+          ? { name: matchedCustomer.name, category: matchedCustomer.category }
+          : currentSaleCustomerName
+            ? {
+                name: currentSaleCustomerName,
+                category: CustomerCategory.TRADER,
+              }
+            : null,
       });
     }
     return list;
-  }, [orders, salePoNumber]);
+  }, [orders, salePoNumber, currentSaleCustomerName, customers]);
 
   const purchaseOptions = useMemo(() => {
     const list = [...purchaseOrders];
@@ -103,12 +165,55 @@ export function EditDispatchButton({
       list.unshift({
         poNumber: purchasePoNumber,
         balanceOrder: null,
-        vendorName: null,
-        vesselName: null,
+        rate: null,
+        importer: currentPurchaseVendorName
+          ? { name: currentPurchaseVendorName }
+          : null,
+        vessel: currentVesselName ? { vesselName: currentVesselName } : null,
+        qualityClass: null,
       });
     }
     return list;
-  }, [purchaseOrders, purchasePoNumber]);
+  }, [
+    purchaseOrders,
+    purchasePoNumber,
+    currentPurchaseVendorName,
+    currentVesselName,
+  ]);
+
+  const selectedOrder = useMemo(
+    () => saleOptions.find((o) => o.poNumber === salePo) ?? null,
+    [saleOptions, salePo],
+  );
+  const selectedPurchase = useMemo(
+    () => purchaseOptions.find((p) => p.poNumber === purchasePo) ?? null,
+    [purchaseOptions, purchasePo],
+  );
+  const selectedCustomer = useMemo(
+    () => customers.find((c) => c.id === customerId) ?? null,
+    [customers, customerId],
+  );
+
+  const purchaseRateBreakdown = useMemo(
+    () => computePurchaseRateBreakdown(purchaseRate),
+    [purchaseRate],
+  );
+  const selectedPurchaseRateBreakdown = useMemo(
+    () => computePurchaseRateBreakdown(selectedPurchase?.rate),
+    [selectedPurchase?.rate],
+  );
+  const saleRateBreakdown = useMemo(
+    () => computeSaleRateBreakdown(saleRate, selectedCustomer?.category),
+    [saleRate, selectedCustomer?.category],
+  );
+  const selectedSaleRateBreakdown = useMemo(
+    () =>
+      computeSaleRateBreakdown(
+        selectedOrder?.rate,
+        selectedOrder?.customer?.category,
+      ),
+    [selectedOrder?.rate, selectedOrder?.customer?.category],
+  );
 
   const diffQty = useMemo(() => {
     if (terms === DispatchTerms.EX_PORT) return 0;
@@ -124,8 +229,17 @@ export function EditDispatchButton({
     setDate(dispatchDate);
     setLorry(lorryNumber ?? "");
     setQty(dispatchedQuantity);
+    setPurchaseMode("existing");
+    setSaleMode("existing");
     setPurchasePo(purchasePoNumber);
+    setOpenPurchasePoNumber(suggestedPurchasePo);
+    setVendorId("");
+    setVesselId("");
+    setPurchaseRate("");
     setSalePo(salePoNumber);
+    setOpenSalePoNumber(suggestedPo);
+    setCustomerId("");
+    setSaleRate("");
     setTerms(dispatchTerms);
     setTransporter(transporterId ?? "");
     setFreightValue(freight ?? "");
@@ -146,22 +260,58 @@ export function EditDispatchButton({
     setError(null);
     setSaving(true);
     try {
+      if (purchaseMode === "existing" && !purchasePo) {
+        throw new Error("Select a purchase order");
+      }
+      if (purchaseMode === "open") {
+        if (!openPurchasePoNumber.trim()) {
+          throw new Error("Purchase PO number is required");
+        }
+        if (!vendorId) throw new Error("Vendor is required");
+        if (!vesselId) throw new Error("Vessel is required");
+      }
+      if (saleMode === "existing" && !salePo) {
+        throw new Error("Select an existing sale PO");
+      }
+      if (saleMode === "open") {
+        if (!openSalePoNumber.trim()) {
+          throw new Error("Sale order number is required");
+        }
+        if (!customerId) throw new Error("Customer is required");
+      }
+
       const trimmedReceived =
         terms === DispatchTerms.EX_PORT ? qty.trim() : receivedQty.trim();
+
       await updateDispatch(dispatchId, {
         dispatchDate: date,
         lorryNumber: lorry.trim()
           ? (normalizeLorryNumber(lorry) ?? null)
           : null,
         dispatchedQuantity: qty,
-        purchasePoNumber: purchasePo,
-        poNumber: salePo,
+        ...(purchaseMode === "open"
+          ? {
+              openPurchase: {
+                poNumber: openPurchasePoNumber,
+                importerId: vendorId,
+                vesselId,
+                rate: purchaseRate.trim() || null,
+              },
+            }
+          : { purchasePoNumber: purchasePo }),
+        ...(saleMode === "open"
+          ? {
+              openSale: {
+                poNumber: openSalePoNumber,
+                customerId,
+                rate: saleRate.trim() || null,
+              },
+            }
+          : { poNumber: salePo }),
         dispatchTerms: terms,
         transporterId: terms === DispatchTerms.FOR ? transporter || null : null,
         freight:
-          terms === DispatchTerms.FOR
-            ? freightValue.trim() || null
-            : null,
+          terms === DispatchTerms.FOR ? freightValue.trim() || null : null,
         saleInvoiceNumber: saleInvoice,
         purchaseInvoiceNumber: purchaseInvoice,
         receivingQuantity: trimmedReceived === "" ? null : trimmedReceived,
@@ -178,7 +328,11 @@ export function EditDispatchButton({
 
   return (
     <span className="dispatch-edit-action">
-      <button type="button" className="btn btn-sm btn-secondary" onClick={openModal}>
+      <button
+        type="button"
+        className="btn btn-sm btn-secondary"
+        onClick={openModal}
+      >
         Edit
       </button>
       <Modal
@@ -237,38 +391,280 @@ export function EditDispatchButton({
             <span className="field-unit">MT</span>
           </div>
 
-          <label htmlFor={`edit-purchase-po-${dispatchId}`}>Purchase order</label>
-          <select
-            id={`edit-purchase-po-${dispatchId}`}
-            required
-            value={purchasePo}
-            onChange={(e) => setPurchasePo(e.target.value)}
+          <div
+            className="option-cards"
+            role="radiogroup"
+            aria-label="Purchase order type"
+            style={{ gridColumn: "1 / -1" }}
           >
-            {purchaseOptions.map((p) => (
-              <option key={p.poNumber} value={p.poNumber}>
-                {p.poNumber}
-                {p.vendorName ? ` — ${p.vendorName}` : ""}
-                {p.vesselName ? ` — ${p.vesselName}` : ""}
-                {p.balanceOrder != null ? ` (bal ${p.balanceOrder} MT)` : ""}
-              </option>
-            ))}
-          </select>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={purchaseMode === "existing"}
+              className={`option-card${purchaseMode === "existing" ? " option-card-selected" : ""}`}
+              onClick={() => setPurchaseMode("existing")}
+            >
+              <span className="option-card-title">Existing purchase PO</span>
+              <span className="option-card-desc">
+                Keep or switch to a purchase order already on file
+              </span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={purchaseMode === "open"}
+              className={`option-card${purchaseMode === "open" ? " option-card-selected" : ""}`}
+              onClick={() => setPurchaseMode("open")}
+            >
+              <span className="option-card-title">Open purchase order</span>
+              <span className="option-card-desc">
+                Create a new open purchase order and move this dispatch to it
+              </span>
+            </button>
+          </div>
 
-          <label htmlFor={`edit-sale-po-${dispatchId}`}>Sale order</label>
-          <select
-            id={`edit-sale-po-${dispatchId}`}
-            required
-            value={salePo}
-            onChange={(e) => setSalePo(e.target.value)}
+          {purchaseMode === "existing" ? (
+            <>
+              <label htmlFor={`edit-purchase-po-${dispatchId}`}>
+                Purchase order
+              </label>
+              <select
+                id={`edit-purchase-po-${dispatchId}`}
+                required
+                value={purchasePo}
+                onChange={(e) => setPurchasePo(e.target.value)}
+              >
+                <option value="">Select</option>
+                {purchaseOptions.map((p) => (
+                  <option key={p.poNumber} value={p.poNumber}>
+                    {p.poNumber} — {p.importer?.name ?? "?"} —{" "}
+                    {p.vessel?.vesselName ?? "?"}
+                    {p.balanceOrder != null
+                      ? ` (bal ${p.balanceOrder} MT)`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+              {selectedPurchase && (
+                <>
+                  <label>Purchase balance</label>
+                  <div className="text-sm">
+                    {selectedPurchase.balanceOrder != null
+                      ? `${selectedPurchase.balanceOrder} MT`
+                      : "—"}
+                  </div>
+                  <label>Vessel</label>
+                  <div className="text-sm">
+                    {selectedPurchase.vessel?.vesselName ?? "—"}
+                  </div>
+                  <label>Quality</label>
+                  <div className="text-sm">
+                    {formatQualityClass(selectedPurchase.qualityClass)}
+                  </div>
+                  <label>Rate breakdown</label>
+                  <div className="text-sm font-medium">
+                    {selectedPurchaseRateBreakdown != null
+                      ? formatRateBreakdownLine(selectedPurchaseRateBreakdown)
+                      : "—"}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <label htmlFor={`edit-open-purchase-po-${dispatchId}`}>
+                Purchase order number
+              </label>
+              <input
+                id={`edit-open-purchase-po-${dispatchId}`}
+                required
+                value={openPurchasePoNumber}
+                onChange={(e) => setOpenPurchasePoNumber(e.target.value)}
+                placeholder="PO 0001"
+              />
+              <label htmlFor={`edit-vendor-${dispatchId}`}>Vendor</label>
+              <select
+                id={`edit-vendor-${dispatchId}`}
+                required
+                value={vendorId}
+                onChange={(e) => setVendorId(e.target.value)}
+              >
+                <option value="">Select</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <label htmlFor={`edit-vessel-${dispatchId}`}>Vessel</label>
+              <select
+                id={`edit-vessel-${dispatchId}`}
+                required
+                value={vesselId}
+                onChange={(e) => setVesselId(e.target.value)}
+              >
+                <option value="">Select</option>
+                {vessels.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.vesselName}
+                  </option>
+                ))}
+              </select>
+              <label htmlFor={`edit-purchase-rate-${dispatchId}`}>
+                Basic rate
+              </label>
+              <div className="field-with-unit field-with-prefix">
+                <span className="field-unit">Rs</span>
+                <input
+                  id={`edit-purchase-rate-${dispatchId}`}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={purchaseRate}
+                  onChange={(e) => setPurchaseRate(e.target.value)}
+                />
+              </div>
+              {purchaseRateBreakdown != null && (
+                <>
+                  <label>Rate breakdown</label>
+                  <div className="text-sm font-medium">
+                    {formatRateBreakdownLine(purchaseRateBreakdown)}
+                  </div>
+                </>
+              )}
+              <p
+                className="text-sm text-neutral-600"
+                style={{ gridColumn: "1 / -1" }}
+              >
+                Creates an OPEN purchase order with quantity null, then moves
+                this dispatch onto it.
+              </p>
+            </>
+          )}
+
+          <div
+            className="option-cards"
+            role="radiogroup"
+            aria-label="Sale order type"
+            style={{ gridColumn: "1 / -1" }}
           >
-            {saleOptions.map((o) => (
-              <option key={o.poNumber} value={o.poNumber}>
-                {o.poNumber}
-                {o.customerName ? ` — ${o.customerName}` : ""}
-                {o.balanceOrder != null ? ` (bal ${o.balanceOrder} MT)` : ""}
-              </option>
-            ))}
-          </select>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={saleMode === "existing"}
+              className={`option-card${saleMode === "existing" ? " option-card-selected" : ""}`}
+              onClick={() => setSaleMode("existing")}
+            >
+              <span className="option-card-title">Existing sale PO</span>
+              <span className="option-card-desc">
+                Keep or switch to a sale order already on file
+              </span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={saleMode === "open"}
+              className={`option-card${saleMode === "open" ? " option-card-selected" : ""}`}
+              onClick={() => setSaleMode("open")}
+            >
+              <span className="option-card-title">Open sale order</span>
+              <span className="option-card-desc">
+                Create a new open sale order and move this dispatch to it
+              </span>
+            </button>
+          </div>
+
+          {saleMode === "existing" ? (
+            <>
+              <label htmlFor={`edit-sale-po-${dispatchId}`}>Sale order</label>
+              <select
+                id={`edit-sale-po-${dispatchId}`}
+                required
+                value={salePo}
+                onChange={(e) => setSalePo(e.target.value)}
+              >
+                <option value="">Select</option>
+                {saleOptions.map((o) => (
+                  <option key={o.poNumber} value={o.poNumber}>
+                    {o.poNumber} — {o.customer?.name ?? "?"}
+                    {o.balanceOrder != null
+                      ? ` (bal ${o.balanceOrder} MT)`
+                      : ""}
+                  </option>
+                ))}
+              </select>
+              {selectedOrder && (
+                <>
+                  <label>Sale balance</label>
+                  <div className="text-sm">
+                    {selectedOrder.balanceOrder != null
+                      ? `${selectedOrder.balanceOrder} MT`
+                      : "—"}
+                  </div>
+                  <label>Rate breakdown</label>
+                  <div className="text-sm font-medium">
+                    {selectedSaleRateBreakdown != null
+                      ? formatRateBreakdownLine(selectedSaleRateBreakdown)
+                      : "—"}
+                  </div>
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <label htmlFor={`edit-open-sale-po-${dispatchId}`}>
+                Sale order number
+              </label>
+              <input
+                id={`edit-open-sale-po-${dispatchId}`}
+                required
+                value={openSalePoNumber}
+                onChange={(e) => setOpenSalePoNumber(e.target.value)}
+                placeholder="SO 0001"
+              />
+              <label htmlFor={`edit-customer-${dispatchId}`}>Customer</label>
+              <select
+                id={`edit-customer-${dispatchId}`}
+                required
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+              >
+                <option value="">Select</option>
+                {customers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <label htmlFor={`edit-sale-rate-${dispatchId}`}>Basic rate</label>
+              <div className="field-with-unit field-with-prefix">
+                <span className="field-unit">Rs</span>
+                <input
+                  id={`edit-sale-rate-${dispatchId}`}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={saleRate}
+                  onChange={(e) => setSaleRate(e.target.value)}
+                />
+              </div>
+              {saleRateBreakdown != null && (
+                <>
+                  <label>Rate breakdown</label>
+                  <div className="text-sm font-medium">
+                    {formatRateBreakdownLine(saleRateBreakdown)}
+                  </div>
+                </>
+              )}
+              <p
+                className="text-sm text-neutral-600"
+                style={{ gridColumn: "1 / -1" }}
+              >
+                Creates an OPEN sale order with quantity null, then moves this
+                dispatch onto it.
+              </p>
+            </>
+          )}
 
           <label>Delivery terms</label>
           <div
@@ -317,7 +713,9 @@ export function EditDispatchButton({
               ))}
             </select>
           ) : (
-            <div className="text-sm text-neutral-600">Not required for Ex-Port</div>
+            <div className="text-sm text-neutral-600">
+              Not required for Ex-Port
+            </div>
           )}
 
           {terms === DispatchTerms.FOR ? (
