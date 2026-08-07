@@ -29,7 +29,11 @@ export default async function PaymentsPage({
   return (
     <PaymentsClient
       initial={payments}
-      customers={customers.map((c) => ({ id: c.id, name: c.name }))}
+      customers={customers.map((c) => ({
+        id: c.id,
+        name: c.name,
+        category: c.category,
+      }))}
     />
   );
 }

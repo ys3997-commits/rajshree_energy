@@ -19,6 +19,7 @@ import {
   adjustCustomerDue,
   dispatchedAmount,
 } from "@/lib/domain/customerDue";
+import { formatOrderStatusForDisplay } from "@/lib/domain/format";
 import {
   nextPurchaseOrderNumber,
   normalizePurchaseOrderNumber,
@@ -30,9 +31,37 @@ export type PurchaseOrderFilters = {
   vesselId?: string;
 };
 
+/**
+ * Match Status column display: open POs with no quantity show Completed
+ * even when stored orderStatus is still Running.
+ */
+function purchaseOrderStatusWhere(
+  status: PurchaseOrderStatus,
+): Prisma.PurchaseOrderWhereInput {
+  const openWithNoQuantity: Prisma.PurchaseOrderWhereInput = {
+    AND: [{ orderType: OrderType.OPEN }, { quantity: null }],
+  };
+
+  if (status === PurchaseOrderStatus.RUNNING) {
+    return {
+      AND: [
+        { orderStatus: PurchaseOrderStatus.RUNNING },
+        { NOT: openWithNoQuantity },
+      ],
+    };
+  }
+
+  return {
+    OR: [
+      { orderStatus: PurchaseOrderStatus.COMPLETED },
+      openWithNoQuantity,
+    ],
+  };
+}
+
 export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
   const where: Prisma.PurchaseOrderWhereInput = {};
-  if (filters.status) where.orderStatus = filters.status;
+  if (filters.status) Object.assign(where, purchaseOrderStatusWhere(filters.status));
   if (filters.importerId) where.importerId = filters.importerId;
   if (filters.vesselId) where.vesselId = filters.vesselId;
 
@@ -51,7 +80,14 @@ export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
     orderBy: { createdAt: "desc" },
   });
 
-  return rows.map(withPurchaseOrderComputed);
+  const computed = rows.map(withPurchaseOrderComputed);
+  if (!filters.status) return computed;
+
+  const want =
+    filters.status === PurchaseOrderStatus.COMPLETED ? "Completed" : "Running";
+  return computed.filter(
+    (row) => formatOrderStatusForDisplay(row) === want,
+  );
 }
 
 export async function getPurchaseOrder(id: string) {

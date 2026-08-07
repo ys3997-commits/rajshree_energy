@@ -522,6 +522,26 @@ a {
   padding-top: 0.22rem;
   padding-bottom: 0.22rem;
   letter-spacing: 0.03em;
+  white-space: normal;
+  overflow: visible;
+  vertical-align: bottom;
+  line-height: 1.2;
+}
+
+.collection-table th button.th-sort {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* Beat table.data th { text-align: left } / cell-num right-align */
+table.data.collection-table th,
+table.data.collection-table th.cell-num,
+table.data.collection-table th button.th-sort,
+table.data.collection-table th.cell-num button.th-sort {
+  text-align: center;
+  white-space: normal;
 }
 
 .collection-table th.collection-customer-col,
@@ -773,13 +793,8 @@ table.data th.cell-num button.th-sort {
   font-variant-numeric: tabular-nums;
 }
 
-/* Collection table: amount columns stay right-aligned (header + cells) */
+/* Collection table: amount cells stay right-aligned; headers stay centered above */
 .collection-table td.cell-num {
-  text-align: right;
-}
-
-.collection-table th.cell-num,
-.collection-table th.cell-num button.th-sort {
   text-align: right;
 }
 
@@ -811,6 +826,14 @@ button.th-sort:hover {
   min-width: 0;
   padding: 0.35rem 0.5rem;
   font-size: 0.8125rem;
+}
+
+.payment-amount-cell {
+  min-width: 9rem;
+}
+
+.payment-amount-cell .field-input {
+  text-align: right;
 }
 
 .payments-table tbody tr.payment-date-break > td {
@@ -1967,14 +1990,25 @@ table.data tr.month-divider:hover td {
 }
 
 .customers-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
   margin: 0 0 1.25rem;
-  text-align: left;
 }
 
-.customers-name-search {
-  display: block;
-  width: min(100%, 20rem);
-  margin: 0;
+.customers-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: min(100%, 16rem);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.customers-filter-field .field-input {
+  min-width: min(100%, 16rem);
 }
 
 .customer-row-inactive td {

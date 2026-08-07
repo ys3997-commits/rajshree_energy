@@ -5,6 +5,8 @@ import { toDecimal } from "@/lib/domain/computations";
 import {
   adjustCustomerDue,
   computeOverdue,
+  dispatchedAmount,
+  sumSalesSuppliedInCreditWindow,
 } from "@/lib/domain/customerDue";
 import { capitalizeName } from "@/lib/domain/format";
 import { Decimal } from "@prisma/client/runtime/library";
@@ -15,6 +17,40 @@ export async function listCustomers(options?: { activeOnly?: boolean }) {
   return prisma.customer.findMany({
     where: options?.activeOnly ? { active: true } : undefined,
     orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      active: true,
+      ownerName: true,
+      ownerContact: true,
+      purchaserName: true,
+      purchaserContact: true,
+      purchaserRole: true,
+      paymentInChargeName: true,
+      paymentInChargeContact: true,
+      paymentInChargeRole: true,
+      accountantName: true,
+      accountantContact: true,
+      factoryContactName: true,
+      factoryContactContact: true,
+      factoryContactRole: true,
+      email: true,
+      city: true,
+      state: true,
+      creditDays: true,
+      sector: true,
+      saleExecutive: true,
+      dealById: true,
+      approachForFunds: true,
+      dealingCompany: true,
+      openingDue: true,
+      due: true,
+      plannedCollectionCallDate: true,
+      plannedSaleCallDate: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 }
 
@@ -45,6 +81,7 @@ export type CustomerListRow = {
   sector: string | null;
   saleExecutive: string | null;
   approachForFunds: string | null;
+  dealingCompany: string | null;
   openingDue: string;
 };
 
@@ -54,31 +91,47 @@ export type CustomerListResult = {
   page: number;
   pageSize: number;
   totalPages: number;
-  q: string;
+  customerId: string;
+  category: string;
 };
 
 export async function listCustomersPage(options?: {
   page?: number;
   pageSize?: number;
-  q?: string;
+  customerId?: string;
+  category?: string;
 }): Promise<CustomerListResult> {
   const pageSize = Math.max(
     1,
     Math.min(100, options?.pageSize ?? CUSTOMERS_PAGE_SIZE),
   );
   const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
-  const q = (options?.q ?? "").trim();
-  const where = q
-    ? { name: { contains: q, mode: "insensitive" as const } }
-    : undefined;
+  const customerId = (options?.customerId ?? "").trim();
+  const category = (options?.category ?? "").trim();
 
-  const total = await prisma.customer.count({ where });
+  const where: {
+    id?: string;
+    category?: CustomerCategory;
+  } = {};
+  if (customerId) where.id = customerId;
+  if (
+    category === CustomerCategory.SUPPLIER ||
+    category === CustomerCategory.TRADER ||
+    category === CustomerCategory.INDUSTRY
+  ) {
+    where.category = category;
+  }
+
+  const hasFilter = Boolean(where.id || where.category);
+  const total = await prisma.customer.count({
+    where: hasFilter ? where : undefined,
+  });
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(requestedPage, totalPages);
   const skip = (page - 1) * pageSize;
 
   const rows = await prisma.customer.findMany({
-    where,
+    where: hasFilter ? where : undefined,
     orderBy: { name: "asc" },
     skip,
     take: pageSize,
@@ -107,6 +160,7 @@ export async function listCustomersPage(options?: {
       sector: true,
       saleExecutive: true,
       approachForFunds: true,
+      dealingCompany: true,
       openingDue: true,
     },
   });
@@ -120,7 +174,13 @@ export async function listCustomersPage(options?: {
     page,
     pageSize,
     totalPages,
-    q,
+    customerId,
+    category:
+      category === CustomerCategory.SUPPLIER ||
+      category === CustomerCategory.TRADER ||
+      category === CustomerCategory.INDUSTRY
+        ? category
+        : "",
   };
 }
 
@@ -135,6 +195,7 @@ export type CustomerDueRow = {
   city: string | null;
   state: string | null;
   sector: string | null;
+  dealingCompany: string | null;
   creditDays: number | null;
   plannedCollectionCallDate: string | null;
   due: string;
@@ -156,12 +217,14 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       paymentInChargeName: true,
       paymentInChargeContact: true,
       due: true,
+      openingDue: true,
       creditDays: true,
       saleExecutive: true,
       approachForFunds: true,
       city: true,
       state: true,
       sector: true,
+      dealingCompany: true,
       plannedCollectionCallDate: true,
     },
     orderBy: { due: "desc" },
@@ -170,18 +233,18 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
   if (customers.length === 0) return [];
 
   const ids = customers.map((c) => c.id);
-  const [orders, payments] = await Promise.all([
-    prisma.order.findMany({
-      where: { customerId: { in: ids } },
+  const [saleDispatches, payments] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: { order: { customerId: { in: ids } } },
       select: {
-        customerId: true,
-        finalRate: true,
-        quantity: true,
-        dispatchedOrder: true,
-        closingQuantity: true,
-        orderDate: true,
-        createdAt: true,
-        creditDays: true,
+        dispatchDate: true,
+        dispatchedQuantity: true,
+        order: {
+          select: {
+            customerId: true,
+            finalRate: true,
+          },
+        },
       },
     }),
     prisma.payment.findMany({
@@ -197,11 +260,20 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
     }),
   ]);
 
-  const ordersByCustomer = new Map<string, typeof orders>();
-  for (const order of orders) {
-    const list = ordersByCustomer.get(order.customerId) ?? [];
-    list.push(order);
-    ordersByCustomer.set(order.customerId, list);
+  const supplyLinesByCustomer = new Map<
+    string,
+    { amount: Decimal; supplyDate: Date }[]
+  >();
+  for (const row of saleDispatches) {
+    const customerId = row.order.customerId;
+    const amount = dispatchedAmount(
+      row.order.finalRate,
+      row.dispatchedQuantity,
+    );
+    if (amount.lte(0)) continue;
+    const list = supplyLinesByCustomer.get(customerId) ?? [];
+    list.push({ amount, supplyDate: row.dispatchDate });
+    supplyLinesByCustomer.set(customerId, list);
   }
 
   const paymentsByCustomer = new Map<string, typeof payments>();
@@ -212,15 +284,20 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
   }
 
   return customers.map((customer) => {
-    const customerOrders = ordersByCustomer.get(customer.id) ?? [];
     const customerPayments = paymentsByCustomer.get(customer.id) ?? [];
-    const received = customerPayments
-      .filter((p) => p.direction === "RECEIVED")
-      .map((p) => p.amount);
+    const recentSales =
+      customer.creditDays == null
+        ? new Decimal(0)
+        : sumSalesSuppliedInCreditWindow(
+            supplyLinesByCustomer.get(customer.id) ?? [],
+            customer.creditDays,
+            new Date(),
+            customer.openingDue,
+          );
     const overdue = computeOverdue(
-      customerOrders,
+      customer.due,
       customer.creditDays,
-      received,
+      recentSales,
     );
     const last = customerPayments[0] ?? null;
 
@@ -235,6 +312,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       city: customer.city,
       state: customer.state,
       sector: customer.sector,
+      dealingCompany: customer.dealingCompany,
       creditDays: customer.creditDays,
       plannedCollectionCallDate: customer.plannedCollectionCallDate
         ? customer.plannedCollectionCallDate.toISOString().slice(0, 10)
@@ -282,6 +360,7 @@ export type CustomerInput = {
   sector?: string | null;
   saleExecutive?: string | null;
   approachForFunds?: string | null;
+  dealingCompany?: string | null;
   /** Carry-forward balance before this system; included in total due. */
   openingDue?: string | number | null;
 };
@@ -356,6 +435,7 @@ function toCustomerData(input: CustomerInput) {
     sector: input.sector || null,
     saleExecutive: input.saleExecutive || null,
     approachForFunds: input.approachForFunds || null,
+    dealingCompany: input.dealingCompany || null,
   };
 }
 
@@ -368,6 +448,7 @@ export async function createCustomer(input: CustomerInput) {
       openingDue,
       due: openingDue,
     },
+    select: { id: true },
   });
   revalidatePath("/customers");
   revalidatePath("/payments");
@@ -387,6 +468,7 @@ export async function updateCustomer(id: string, input: CustomerInput) {
         ...toCustomerData(input),
         openingDue,
       },
+      select: { id: true },
     });
     const delta = openingDue.minus(toDecimal(existing.openingDue));
     await adjustCustomerDue(tx, id, delta);
@@ -396,6 +478,6 @@ export async function updateCustomer(id: string, input: CustomerInput) {
 }
 
 export async function deleteCustomer(id: string) {
-  await prisma.customer.delete({ where: { id } });
+  await prisma.customer.delete({ where: { id }, select: { id: true } });
   revalidatePath("/customers");
 }

@@ -33,6 +33,46 @@ export function formatIndianNumber(
   return n.toLocaleString("en-IN", { maximumFractionDigits: 0 });
 }
 
+/** Strip commas / currency junk from a typed amount → raw numeric string. */
+export function parseAmountInput(value: string): string {
+  return value.replace(/,/g, "").trim();
+}
+
+/**
+ * Format a partially typed amount with Indian commas (e.g. 10,00,000.50).
+ * Keeps a trailing decimal point while typing.
+ */
+export function formatIndianAmountTyping(value: string): string {
+  const cleaned = parseAmountInput(value).replace(/[^\d.]/g, "");
+  if (!cleaned) return "";
+
+  const dot = cleaned.indexOf(".");
+  let intDigits = dot === -1 ? cleaned : cleaned.slice(0, dot);
+  let fracDigits = dot === -1 ? null : cleaned.slice(dot + 1).replace(/\./g, "");
+
+  if (fracDigits != null) fracDigits = fracDigits.slice(0, 2);
+  // Avoid leading zeros like 0001 → 1, but keep a lone 0.
+  intDigits = intDigits.replace(/^0+(?=\d)/, "");
+
+  const formattedInt = formatIndianDigitGroups(intDigits || (dot !== -1 ? "0" : ""));
+  if (fracDigits != null) return `${formattedInt}.${fracDigits}`;
+  if (dot !== -1) return `${formattedInt}.`;
+  return formattedInt;
+}
+
+function formatIndianDigitGroups(digits: string): string {
+  if (!digits) return "";
+  if (digits.length <= 3) return digits;
+  let result = digits.slice(-3);
+  let rest = digits.slice(0, -3);
+  while (rest.length > 0) {
+    const chunk = rest.slice(-2);
+    rest = rest.slice(0, -2);
+    result = `${chunk},${result}`;
+  }
+  return result;
+}
+
 /** Human-readable label for dispatch / sale delivery terms. */
 export function formatDispatchTerms(
   terms: DispatchTerms | null | undefined,

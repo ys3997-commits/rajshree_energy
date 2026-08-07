@@ -193,6 +193,13 @@ exports.Prisma.SectorOptionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DealingCompanyOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.QualityClassScalarFieldEnum = {
   id: 'id',
   originId: 'originId',
@@ -228,6 +235,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   saleExecutive: 'saleExecutive',
   dealById: 'dealById',
   approachForFunds: 'approachForFunds',
+  dealingCompany: 'dealingCompany',
   openingDue: 'openingDue',
   due: 'due',
   plannedCollectionCallDate: 'plannedCollectionCallDate',
@@ -382,6 +390,7 @@ exports.Prisma.ModelName = {
   CityOption: 'CityOption',
   StateOption: 'StateOption',
   SectorOption: 'SectorOption',
+  DealingCompanyOption: 'DealingCompanyOption',
   QualityClass: 'QualityClass',
   Customer: 'Customer',
   Vessel: 'Vessel',

@@ -277,7 +277,9 @@ export default async function MasterDispatchReportPage({
             {rows.map((row) => (
               <tr key={row.id}>
                 <td>
-                  {new Date(row.dispatchDate).toISOString().slice(0, 10)}
+                  {formatDateDdMmYyyy(
+                    new Date(row.dispatchDate).toISOString().slice(0, 10),
+                  )}
                 </td>
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}

@@ -125,3 +125,29 @@ export async function deleteSectorOption(id: string) {
   await prisma.sectorOption.delete({ where: { id } });
   revalidateOptionPaths();
 }
+
+export async function listDealingCompanyOptions() {
+  return prisma.dealingCompanyOption.findMany({ orderBy: { name: "asc" } });
+}
+
+export async function createDealingCompanyOption(name: string) {
+  const row = await prisma.dealingCompanyOption.create({
+    data: { name: trimName(name, "Name") },
+  });
+  revalidateOptionPaths();
+  return { id: row.id };
+}
+
+export async function updateDealingCompanyOption(id: string, name: string) {
+  const row = await prisma.dealingCompanyOption.update({
+    where: { id },
+    data: { name: trimName(name, "Name") },
+  });
+  revalidateOptionPaths();
+  return { id: row.id };
+}
+
+export async function deleteDealingCompanyOption(id: string) {
+  await prisma.dealingCompanyOption.delete({ where: { id } });
+  revalidateOptionPaths();
+}

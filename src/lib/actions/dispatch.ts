@@ -171,6 +171,7 @@ async function resolvePurchaseForDispatch(
   purchasePoNumber: string;
   vesselId: string;
   importerId: string;
+  qualityClassId: string | null;
   skipPurchaseBalanceCheck: boolean;
 }> {
   if (input.openPurchase) {
@@ -197,6 +198,8 @@ async function resolvePurchaseForDispatch(
         ? null
         : toDecimal(input.openPurchase.rate);
     const finalRate = computePurchaseFinalRate(rate);
+    const qualityClassId =
+      input.openPurchase.qualityClassId || vessel.qualityClassId || null;
 
     const purchase = await tx.purchaseOrder.create({
       data: {
@@ -205,8 +208,7 @@ async function resolvePurchaseForDispatch(
         importerId: input.openPurchase.importerId,
         vesselId: input.openPurchase.vesselId,
         orderDate: asDate(input.dispatchDate),
-        qualityClassId:
-          input.openPurchase.qualityClassId || vessel.qualityClassId || null,
+        qualityClassId,
         rate,
         finalRate,
         quantity: null,
@@ -219,6 +221,7 @@ async function resolvePurchaseForDispatch(
       purchasePoNumber: purchase.poNumber,
       vesselId: purchase.vesselId,
       importerId: purchase.importerId,
+      qualityClassId,
       skipPurchaseBalanceCheck: true,
     };
   }
@@ -230,6 +233,7 @@ async function resolvePurchaseForDispatch(
 
   const purchase = await tx.purchaseOrder.findUnique({
     where: { poNumber: purchasePoNumber },
+    include: { vessel: { select: { qualityClassId: true } } },
   });
   if (!purchase) {
     throw new Error(`Purchase order ${purchasePoNumber} not found`);
@@ -239,6 +243,8 @@ async function resolvePurchaseForDispatch(
     purchasePoNumber: purchase.poNumber,
     vesselId: purchase.vesselId,
     importerId: purchase.importerId,
+    qualityClassId:
+      purchase.qualityClassId || purchase.vessel.qualityClassId || null,
     skipPurchaseBalanceCheck:
       purchase.orderType === OrderType.OPEN && purchase.quantity == null,
   };
@@ -471,7 +477,7 @@ export async function createOpenOrderDispatch(
         finalRate,
         creditDays: null,
         portId: null,
-        qualityClassId: null,
+        qualityClassId: purchase.qualityClassId,
         orderStatus: OrderStatus.RUNNING,
         dispatchedOrder: new Decimal(0),
       },
@@ -577,6 +583,18 @@ export async function updateDispatch(
           : toDecimal(changes.openSale.rate);
       const finalRate = computeSaleFinalRate(rate, customer.category);
 
+      const purchaseForQuality = await tx.purchaseOrder.findUnique({
+        where: { poNumber: nextPurchasePo },
+        select: {
+          qualityClassId: true,
+          vessel: { select: { qualityClassId: true } },
+        },
+      });
+      const qualityClassId =
+        purchaseForQuality?.qualityClassId ||
+        purchaseForQuality?.vessel.qualityClassId ||
+        null;
+
       await tx.order.create({
         data: {
           poNumber,
@@ -589,7 +607,7 @@ export async function updateDispatch(
           finalRate,
           creditDays: null,
           portId: null,
-          qualityClassId: null,
+          qualityClassId,
           orderStatus: OrderStatus.RUNNING,
           dispatchedOrder: new Decimal(0),
         },

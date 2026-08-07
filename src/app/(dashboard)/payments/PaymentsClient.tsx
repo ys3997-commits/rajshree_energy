@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState, useTransition } from "react";
+import { FormEvent, useMemo, useState, useTransition } from "react";
+import { CustomerCategory } from "@/generated/prisma";
 import {
   createPayment,
   deletePayment,
@@ -10,9 +11,14 @@ import {
   type PaymentListResult,
   type PaymentRow,
 } from "@/lib/actions/payments";
-import { formatRs } from "@/lib/domain/format";
+import {
+  formatCustomerCategory,
+  formatIndianAmountTyping,
+  formatRs,
+  parseAmountInput,
+} from "@/lib/domain/format";
 
-type Opt = { id: string; name: string };
+type Opt = { id: string; name: string; category: CustomerCategory };
 type Direction = "RECEIVED" | "SENT" | "";
 
 function todayLocal(): string {
@@ -63,6 +69,22 @@ export function PaymentsClient({
   const [editing, setEditing] = useState<PaymentRow | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const amountDisplay = useMemo(
+    () => formatIndianAmountTyping(form.amount),
+    [form.amount],
+  );
+
+  function onAmountChange(value: string) {
+    const raw = parseAmountInput(value).replace(/[^\d.]/g, "");
+    if (raw === "") {
+      setForm({ ...form, amount: "" });
+      return;
+    }
+    // One decimal point, max 2 fraction digits.
+    if (!/^\d*\.?\d{0,2}$/.test(raw)) return;
+    setForm({ ...form, amount: raw });
+  }
 
   function resetForm(customerId = "") {
     setEditing(null);
@@ -195,7 +217,7 @@ export function PaymentsClient({
                   <option value="">Select customer</option>
                   {customers.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name}
+                      {c.name} — {formatCustomerCategory(c.category)}
                     </option>
                   ))}
                 </select>
@@ -219,20 +241,17 @@ export function PaymentsClient({
                   <option value="SENT">Fund Paid</option>
                 </select>
               </td>
-              <td className="cell-num">
+              <td className="cell-num payment-amount-cell">
                 <input
                   form="payment-entry-form"
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   required
-                  min="0.01"
-                  step="0.01"
                   className="field-input"
                   placeholder="0.00"
                   aria-label="Amount"
-                  value={form.amount}
-                  onChange={(e) =>
-                    setForm({ ...form, amount: e.target.value })
-                  }
+                  value={amountDisplay}
+                  onChange={(e) => onAmountChange(e.target.value)}
                 />
               </td>
               <td className="space-x-2 whitespace-nowrap">

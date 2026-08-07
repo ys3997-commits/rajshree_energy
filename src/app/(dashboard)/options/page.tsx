@@ -1,6 +1,7 @@
 import { listPortOptions } from "@/lib/actions/ports";
 import {
   listCityOptions,
+  listDealingCompanyOptions,
   listSaleExecutiveOptions,
   listSectorOptions,
   listStateOptions,
@@ -13,17 +14,27 @@ import { listStaff } from "@/lib/actions/staff";
 import { OptionsClient } from "./OptionsClient";
 
 export default async function OptionsPage() {
-  const [origins, qualities, ports, saleExecutives, cities, states, sectors, people] =
-    await Promise.all([
-      listOriginOptions(),
-      listQualityOptions(),
-      listPortOptions(),
-      listSaleExecutiveOptions(),
-      listCityOptions(),
-      listStateOptions(),
-      listSectorOptions(),
-      listStaff(),
-    ]);
+  const [
+    origins,
+    qualities,
+    ports,
+    saleExecutives,
+    cities,
+    states,
+    sectors,
+    people,
+    dealingCompanies,
+  ] = await Promise.all([
+    listOriginOptions(),
+    listQualityOptions(),
+    listPortOptions(),
+    listSaleExecutiveOptions(),
+    listCityOptions(),
+    listStateOptions(),
+    listSectorOptions(),
+    listStaff(),
+    listDealingCompanyOptions(),
+  ]);
 
   return (
     <OptionsClient
@@ -35,6 +46,7 @@ export default async function OptionsPage() {
       states={states}
       sectors={sectors}
       people={people}
+      dealingCompanies={dealingCompanies}
     />
   );
 }

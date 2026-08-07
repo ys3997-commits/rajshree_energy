@@ -139,6 +139,14 @@ model SectorOption {
   updatedAt DateTime @updatedAt
 }
 
+/// Managed list of dealing companies (suggested across the app; stored as text).
+model DealingCompanyOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 /// A coal quality class: origin + domestic flag + quality grade.
 model QualityClass {
   id              String   @id @default(cuid())
@@ -183,6 +191,8 @@ model Customer {
   saleExecutive            String?
   dealById                 String?
   approachForFunds         String?
+  /// Suggested dealing company name (from Options list; stored as text).
+  dealingCompany           String?
   /// Carry-forward balance from before this system (manual). Included in `due`.
   openingDue               Decimal          @default(0) @db.Decimal(18, 2)
   /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent).

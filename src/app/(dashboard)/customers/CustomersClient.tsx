@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CustomerCategory } from "@/generated/prisma";
-import { FormEvent, useEffect, useState, useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
 import {
   createCustomer,
   deleteCustomer,
@@ -23,13 +23,28 @@ import { OptionSelect } from "@/components/OptionSelect";
 
 const COLLECTION_OFFICER = "Collection Officer";
 
-type Row = CustomerListRow;
+const CATEGORY_FILTERS: CustomerCategory[] = [
+  CustomerCategory.INDUSTRY,
+  CustomerCategory.TRADER,
+  CustomerCategory.SUPPLIER,
+];
 
-function customersHref(page: number, q: string): string {
+type Row = CustomerListRow;
+type CustomerOpt = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+};
+
+function customersHref(
+  page: number,
+  customerId: string,
+  category: string,
+): string {
   const params = new URLSearchParams();
   if (page > 1) params.set("page", String(page));
-  const trimmed = q.trim();
-  if (trimmed) params.set("q", trimmed);
+  if (customerId) params.set("customerId", customerId);
+  if (category) params.set("category", category);
   const qs = params.toString();
   return qs ? `/customers?${qs}` : "/customers";
 }
@@ -59,6 +74,7 @@ const empty = {
   saleExecutive: "",
   approachForFunds: "",
   openingDue: "0",
+  dealingCompany: "",
 };
 
 function parseCreditDays(value: string): number | null {
@@ -95,41 +111,42 @@ function formatContact(name: string | null, contact: string | null): string {
 
 export function CustomersClient({
   initial,
+  customerOptions,
   cities,
   states,
   sectors,
   saleExecutives,
+  dealingCompanies,
 }: {
   initial: CustomerListResult;
+  customerOptions: CustomerOpt[];
   cities: string[];
   states: string[];
   sectors: string[];
   saleExecutives: string[];
+  dealingCompanies: string[];
 }) {
   const router = useRouter();
-  const { rows, total, page, pageSize, totalPages, q } = initial;
+  const {
+    rows,
+    total,
+    page,
+    pageSize,
+    totalPages,
+    customerId,
+    category,
+  } = initial;
   const [form, setForm] = useState(empty);
   const [editing, setEditing] = useState<Row | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const [nameSearch, setNameSearch] = useState(q);
-  const [prevQ, setPrevQ] = useState(q);
-  if (q !== prevQ) {
-    setPrevQ(q);
-    setNameSearch(q);
-  }
-
-  useEffect(() => {
-    const trimmed = nameSearch.trim();
-    if (trimmed === q) return;
-    const handle = window.setTimeout(() => {
-      router.push(customersHref(1, trimmed));
-    }, 300);
-    return () => window.clearTimeout(handle);
-  }, [nameSearch, q, router]);
 
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, total);
+
+  function applyFilters(nextCustomerId: string, nextCategory: string) {
+    router.push(customersHref(1, nextCustomerId, nextCategory));
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -163,6 +180,7 @@ export function CustomersClient({
       saleExecutive: form.saleExecutive || null,
       approachForFunds: form.approachForFunds || null,
       openingDue: parseOpeningDueInput(form.openingDue),
+      dealingCompany: form.dealingCompany || null,
     };
     try {
       if (editing) await updateCustomer(editing.id, payload);
@@ -212,6 +230,7 @@ export function CustomersClient({
       saleExecutive: row.saleExecutive ?? "",
       approachForFunds: row.approachForFunds ?? "",
       openingDue: row.openingDue,
+      dealingCompany: row.dealingCompany ?? "",
     });
   }
 
@@ -461,18 +480,6 @@ export function CustomersClient({
           <span className="field-unit">days</span>
         </div>
 
-        <label>Opening due</label>
-        <div className="field-with-unit">
-          <input
-            type="number"
-            step="0.01"
-            placeholder="0"
-            value={form.openingDue}
-            onChange={(e) => setForm({ ...form, openingDue: e.target.value })}
-          />
-          <span className="field-unit">Rs</span>
-        </div>
-
         <label>Sales executive</label>
         <OptionSelect
           value={form.saleExecutive}
@@ -499,6 +506,25 @@ export function CustomersClient({
           options={sectors}
         />
 
+        <label>Opening due</label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            step="0.01"
+            placeholder="0"
+            value={form.openingDue}
+            onChange={(e) => setForm({ ...form, openingDue: e.target.value })}
+          />
+          <span className="field-unit">Rs</span>
+        </div>
+
+        <label>Dealing company</label>
+        <OptionSelect
+          value={form.dealingCompany}
+          onChange={(dealingCompany) => setForm({ ...form, dealingCompany })}
+          options={dealingCompanies}
+        />
+
         <div />
         <div className="flex gap-2">
           <button type="submit" className="btn" disabled={pending}>
@@ -520,14 +546,39 @@ export function CustomersClient({
       </form>
 
       <div className="customers-table-toolbar">
-        <input
-          type="search"
-          className="field-input customers-name-search"
-          placeholder="Search by company name…"
-          aria-label="Search customers by name"
-          value={nameSearch}
-          onChange={(e) => setNameSearch(e.target.value)}
-        />
+        <label className="customers-filter-field">
+          Customer
+          <select
+            className="field-input"
+            aria-label="Customer"
+            value={customerId}
+            onChange={(e) => applyFilters(e.target.value, category)}
+          >
+            <option value="">All</option>
+            {customerOptions.map((c) => (
+              <option key={c.id} value={c.id}>
+                {capitalizeName(c.name) ?? c.name} —{" "}
+                {formatCustomerCategory(c.category)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="customers-filter-field">
+          Category
+          <select
+            className="field-input"
+            aria-label="Category"
+            value={category}
+            onChange={(e) => applyFilters(customerId, e.target.value)}
+          >
+            <option value="">All</option>
+            {CATEGORY_FILTERS.map((value) => (
+              <option key={value} value={value}>
+                {formatCustomerCategory(value)}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <div className="table-wrap">
@@ -544,6 +595,7 @@ export function CustomersClient({
               <th className="num">Opening due</th>
               <th>Sector</th>
               <th>Sales Executive</th>
+              <th>Dealing company</th>
               <th />
             </tr>
           </thead>
@@ -577,6 +629,7 @@ export function CustomersClient({
                 <td className="num">{formatRs(row.openingDue)}</td>
                 <td>{row.sector ?? "—"}</td>
                 <td>{row.saleExecutive ?? "—"}</td>
+                <td>{row.dealingCompany ?? "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">
                   <Link
                     href={`/reports/customer-analysis/${row.id}`}
@@ -604,8 +657,8 @@ export function CustomersClient({
             {rows.length === 0 && (
               <tr>
                 <td colSpan={11}>
-                  {q
-                    ? "No customers match that name."
+                  {customerId || category
+                    ? "No customers match these filters."
                     : "No customers yet."}
                 </td>
               </tr>
@@ -622,7 +675,7 @@ export function CustomersClient({
           <div className="payments-pagination-actions">
             {page > 1 && (
               <Link
-                href={customersHref(page - 1, q)}
+                href={customersHref(page - 1, customerId, category)}
                 className="btn btn-secondary btn-sm"
                 prefetch={false}
               >
@@ -634,7 +687,7 @@ export function CustomersClient({
             </span>
             {page < totalPages && (
               <Link
-                href={customersHref(page + 1, q)}
+                href={customersHref(page + 1, customerId, category)}
                 className="btn btn-secondary btn-sm"
                 prefetch={false}
               >

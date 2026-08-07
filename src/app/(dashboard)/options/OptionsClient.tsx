@@ -3,14 +3,17 @@
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import {
   createCityOption,
+  createDealingCompanyOption,
   createSaleExecutiveOption,
   createSectorOption,
   createStateOption,
   deleteCityOption,
+  deleteDealingCompanyOption,
   deleteSaleExecutiveOption,
   deleteSectorOption,
   deleteStateOption,
   updateCityOption,
+  updateDealingCompanyOption,
   updateSaleExecutiveOption,
   updateSectorOption,
   updateStateOption,
@@ -48,7 +51,8 @@ type CategoryId =
   | "cities"
   | "states"
   | "sectors"
-  | "people";
+  | "people"
+  | "dealingCompanies";
 
 const CATEGORIES: {
   id: CategoryId;
@@ -104,6 +108,12 @@ const CATEGORIES: {
     description: "People who deal and operate on the desk.",
     placeholder: "New person",
   },
+  {
+    id: "dealingCompanies",
+    label: "Dealing company",
+    description: "Companies you deal with, suggested across the app.",
+    placeholder: "New dealing company",
+  },
 ];
 
 type SimpleCategoryId = Exclude<CategoryId, "people">;
@@ -115,6 +125,7 @@ type ItemMap = {
   cities: Opt[];
   states: Opt[];
   sectors: Opt[];
+  dealingCompanies: Opt[];
 };
 
 export function OptionsClient({
@@ -126,6 +137,7 @@ export function OptionsClient({
   states,
   sectors,
   people,
+  dealingCompanies,
 }: {
   origins: Opt[];
   qualities: Opt[];
@@ -135,6 +147,7 @@ export function OptionsClient({
   states: Opt[];
   sectors: Opt[];
   people: PeopleOpt[];
+  dealingCompanies: Opt[];
 }) {
   const [items, setItems] = useState<ItemMap>({
     origins,
@@ -144,6 +157,7 @@ export function OptionsClient({
     cities,
     states,
     sectors,
+    dealingCompanies,
   });
   const [peopleItems, setPeopleItems] = useState(people);
   const [activeId, setActiveId] = useState<CategoryId>("origins");
@@ -217,6 +231,8 @@ export function OptionsClient({
         return createStateOption(name);
       case "sectors":
         return createSectorOption(name);
+      case "dealingCompanies":
+        return createDealingCompanyOption(name);
       case "people": {
         const row = await createStaff({ name, role: role || null });
         return { id: row.id };
@@ -241,6 +257,8 @@ export function OptionsClient({
         return updateStateOption(id, name);
       case "sectors":
         return updateSectorOption(id, name);
+      case "dealingCompanies":
+        return updateDealingCompanyOption(id, name);
       case "people":
         await updateStaff(id, { name, role: role || null });
         return { id };
@@ -263,6 +281,8 @@ export function OptionsClient({
         return deleteStateOption(id);
       case "sectors":
         return deleteSectorOption(id);
+      case "dealingCompanies":
+        return deleteDealingCompanyOption(id);
       case "people":
         return deleteStaff(id);
     }

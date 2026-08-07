@@ -3,6 +3,7 @@ import {
   formatDateDdMmYyyy,
   formatDispatchMt,
   formatLorryNumber,
+  formatIndianAmountTyping,
   formatIndianNumber,
   formatMt,
   formatOrderStatusForDisplay,
@@ -26,6 +27,19 @@ describe("formatIndianNumber", () => {
   it("returns em dash for empty values", () => {
     expect(formatIndianNumber(null)).toBe("—");
     expect(formatIndianNumber("")).toBe("—");
+  });
+});
+
+describe("formatIndianAmountTyping", () => {
+  it("formats with Indian commas while typing", () => {
+    expect(formatIndianAmountTyping("1000000")).toBe("10,00,000");
+    expect(formatIndianAmountTyping("100000")).toBe("1,00,000");
+    expect(formatIndianAmountTyping("1000000.5")).toBe("10,00,000.5");
+    expect(formatIndianAmountTyping("1000000.50")).toBe("10,00,000.50");
+  });
+
+  it("keeps a trailing decimal while typing", () => {
+    expect(formatIndianAmountTyping("10.")).toBe("10.");
   });
 });
 

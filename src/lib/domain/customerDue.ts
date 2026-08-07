@@ -107,67 +107,72 @@ function addUtcDays(date: Date, days: number): Date {
   return next;
 }
 
-type SaleForOverdue = {
-  finalRate: DecimalLike | null;
-  quantity: DecimalLike | null;
-  dispatchedOrder: DecimalLike;
-  closingQuantity?: DecimalLike | null;
-  orderDate: Date | null;
-  createdAt: Date;
-  creditDays: number | null;
+type SaleSupplyLine = {
+  amount: DecimalLike;
+  supplyDate: Date;
 };
 
+/** Opening due is treated as supplied on 01/08/2026 for credit-window / overdue math. */
+export const OPENING_DUE_DATE = new Date("2026-08-01T00:00:00.000Z");
+
 /**
- * Unpaid sale amount past credit period (FIFO allocation of RECEIVED payments).
- * Open orders use dispatched quantity when order quantity is still null.
- * Sales with no credit days are excluded from overdue.
+ * Sale amount supplied on or after (asOf − creditDays), inclusive.
+ * Matches credit period: supply on day D stays current through D + creditDays.
+ * Positive opening due is included as a supply on {@link OPENING_DUE_DATE}.
  */
-export function computeOverdue(
-  sales: SaleForOverdue[],
-  customerCreditDays: number | null | undefined,
-  receivedPayments: DecimalLike[],
+export function sumSalesSuppliedInCreditWindow(
+  lines: SaleSupplyLine[],
+  creditDays: number,
   asOf: Date = new Date(),
+  openingDue: DecimalLike | null | undefined = null,
 ): Decimal {
-  const today = startOfUtcDay(asOf);
+  if (creditDays <= 0) return new Decimal(0);
 
-  const lines = sales
-    .map((sale) => {
-      const amount = billedAmount(
-        sale.finalRate,
-        sale.quantity,
-        sale.dispatchedOrder,
-        sale.closingQuantity,
-      );
-      if (amount.lte(0)) return null;
+  const windowStart = addUtcDays(startOfUtcDay(asOf), -creditDays);
+  let total = new Decimal(0);
 
-      const creditDays = sale.creditDays ?? customerCreditDays;
-      if (creditDays == null) return null;
-
-      const basis = sale.orderDate ?? sale.createdAt;
-      const dueDate = addUtcDays(basis, creditDays);
-      const orderDate = startOfUtcDay(basis);
-
-      return { amount, dueDate, orderDate };
-    })
-    .filter((line): line is NonNullable<typeof line> => line != null)
-    .sort((a, b) => a.orderDate.getTime() - b.orderDate.getTime());
-
-  let received = receivedPayments.reduce<Decimal>(
-    (sum, amt) => sum.plus(toDecimal(amt)),
-    new Decimal(0),
-  );
-
-  let overdue = new Decimal(0);
-  for (const line of lines) {
-    const applied = received.gte(line.amount) ? line.amount : received;
-    received = received.minus(applied);
-    const unpaid = line.amount.minus(applied);
-    if (unpaid.gt(0) && line.dueDate < today) {
-      overdue = overdue.plus(unpaid);
+  const allLines: SaleSupplyLine[] = [...lines];
+  if (openingDue != null) {
+    const opening = toDecimal(openingDue);
+    if (opening.isFinite() && opening.gt(0)) {
+      allLines.push({ amount: opening, supplyDate: OPENING_DUE_DATE });
     }
   }
 
-  return overdue.toDecimalPlaces(2);
+  for (const line of allLines) {
+    if (startOfUtcDay(line.supplyDate) < windowStart) continue;
+    const amount = toDecimal(line.amount);
+    if (amount.isFinite() && amount.gt(0)) {
+      total = total.plus(amount);
+    }
+  }
+  return total;
+}
+
+/**
+ * Overdue = due − (opening due + sales) still inside the credit window.
+ *
+ * Due already equals:
+ * openingDue + total sale supplied − fund received + fund payment − total purchase.
+ * Opening due is dated {@link OPENING_DUE_DATE} (01/08/2026).
+ * Sales with no credit days are excluded from overdue (returns 0).
+ */
+export function computeOverdue(
+  due: DecimalLike,
+  creditDays: number | null | undefined,
+  salesSuppliedInCreditWindow: DecimalLike,
+): Decimal {
+  if (creditDays == null) return new Decimal(0);
+
+  const balance = toDecimal(due);
+  if (!balance.isFinite()) return new Decimal(0);
+
+  if (creditDays <= 0) {
+    return balance.gt(0) ? balance.toDecimalPlaces(2) : new Decimal(0);
+  }
+
+  const overdue = balance.minus(toDecimal(salesSuppliedInCreditWindow));
+  return overdue.gt(0) ? overdue.toDecimalPlaces(2) : new Decimal(0);
 }
 
 /**

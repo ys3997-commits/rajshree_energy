@@ -15,6 +15,7 @@ import {
   adjustCustomerDue,
   dispatchedAmount,
 } from "@/lib/domain/customerDue";
+import { formatOrderStatusForDisplay } from "@/lib/domain/format";
 import { normalizeSaleOrderNumber } from "@/lib/domain/orderNumbers";
 
 export type OrderFilters = {
@@ -43,10 +44,33 @@ function normalizeOrderStatusFilter(
   return undefined;
 }
 
+/**
+ * Match Status column display: open orders with no quantity show Completed
+ * even when stored orderStatus is still Running.
+ */
+function orderStatusWhere(status: OrderStatus): Prisma.OrderWhereInput {
+  const openWithNoQuantity: Prisma.OrderWhereInput = {
+    AND: [{ orderType: OrderType.OPEN }, { quantity: null }],
+  };
+
+  if (status === OrderStatus.RUNNING) {
+    return {
+      AND: [
+        { orderStatus: OrderStatus.RUNNING },
+        { NOT: openWithNoQuantity },
+      ],
+    };
+  }
+
+  return {
+    OR: [{ orderStatus: OrderStatus.COMPLETED }, openWithNoQuantity],
+  };
+}
+
 export async function listOrders(filters: OrderFilters = {}) {
   const where: Prisma.OrderWhereInput = {};
   const status = normalizeOrderStatusFilter(filters.status);
-  if (status) where.orderStatus = status;
+  if (status) Object.assign(where, orderStatusWhere(status));
   if (filters.customerId) where.customerId = filters.customerId;
   if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;
@@ -68,12 +92,52 @@ export async function listOrders(filters: OrderFilters = {}) {
           qualityOption: { select: { id: true, name: true } },
         },
       },
+      dispatches: {
+        take: 1,
+        orderBy: { dispatchDate: "desc" },
+        select: {
+          purchaseOrder: {
+            select: {
+              qualityClass: {
+                include: {
+                  origin: { select: { id: true, name: true } },
+                  qualityOption: { select: { id: true, name: true } },
+                },
+              },
+              vessel: {
+                select: {
+                  qualityClass: {
+                    include: {
+                      origin: { select: { id: true, name: true } },
+                      qualityOption: { select: { id: true, name: true } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       _count: { select: { dispatches: true } },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  return rows.map(withOrderComputed);
+  const computed = rows.map((row) => {
+    const base = withOrderComputed(row);
+    if (base.qualityClass) return base;
+    const purchase = row.dispatches[0]?.purchaseOrder;
+    const qualityClass =
+      purchase?.qualityClass ?? purchase?.vessel?.qualityClass ?? null;
+    return { ...base, qualityClass };
+  });
+  if (!status) return computed;
+
+  // Keep filter aligned with Status column (balance-based display).
+  const want = status === OrderStatus.COMPLETED ? "Completed" : "Running";
+  return computed.filter(
+    (row) => formatOrderStatusForDisplay(row) === want,
+  );
 }
 
 export async function getOrder(id: string) {

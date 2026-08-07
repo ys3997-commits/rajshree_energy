@@ -112,14 +112,15 @@ export function CollectionClient({
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
   const [saleExecutiveFilter, setSaleExecutiveFilter] = useState("");
+  const [dealingCompanyFilter, setDealingCompanyFilter] = useState("");
   const [approachForFundsFilter, setApproachForFundsFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sectorFilter, setSectorFilter] = useState("");
   const [savingCallId, setSavingCallId] = useState<string | null>(null);
-  const [sortKey, setSortKey] = useState<CollectionSortKey | null>(null);
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [sortKey, setSortKey] = useState<CollectionSortKey>("name");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const today = todayLocal();
   const yesterday = addLocalDays(today, -1);
@@ -141,6 +142,10 @@ export function CollectionClient({
 
   const saleExecutiveOptions = useMemo(
     () => distinctTrimmed(buyerRows.map((row) => row.saleExecutive)),
+    [buyerRows],
+  );
+  const dealingCompanyOptions = useMemo(
+    () => distinctTrimmed(buyerRows.map((row) => row.dealingCompany)),
     [buyerRows],
   );
   const approachForFundsOptions = useMemo(
@@ -170,6 +175,7 @@ export function CollectionClient({
   const hasActiveFilters = Boolean(
     plannedCallFilter ||
       saleExecutiveFilter ||
+      dealingCompanyFilter ||
       approachForFundsFilter ||
       cityFilter ||
       stateFilter ||
@@ -193,6 +199,12 @@ export function CollectionClient({
       if (
         saleExecutiveFilter &&
         (row.saleExecutive?.trim() ?? "") !== saleExecutiveFilter
+      ) {
+        return false;
+      }
+      if (
+        dealingCompanyFilter &&
+        (row.dealingCompany?.trim() ?? "") !== dealingCompanyFilter
       ) {
         return false;
       }
@@ -222,6 +234,7 @@ export function CollectionClient({
     buyerRows,
     plannedCallFilter,
     saleExecutiveFilter,
+    dealingCompanyFilter,
     approachForFundsFilter,
     cityFilter,
     stateFilter,
@@ -305,6 +318,20 @@ export function CollectionClient({
           </select>
         </label>
         <label>
+          Dealing company
+          <select
+            value={dealingCompanyFilter}
+            onChange={(e) => setDealingCompanyFilter(e.target.value)}
+          >
+            <option value="">All</option>
+            {dealingCompanyOptions.map((name) => (
+              <option key={name} value={name}>
+                {capitalizeName(name) ?? name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           Approach for funds
           <select
             value={approachForFundsFilter}
@@ -381,6 +408,7 @@ export function CollectionClient({
             onClick={() => {
               setPlannedCallFilter("");
               setSaleExecutiveFilter("");
+              setDealingCompanyFilter("");
               setApproachForFundsFilter("");
               setCityFilter("");
               setStateFilter("");
@@ -407,16 +435,35 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "name", sortDir)}
                 </button>
               </th>
-              <th>Payment in charge</th>
-              <th>Contact number</th>
-              <th>Sales executive</th>
+              <th>
+                Payment
+                <br />
+                in charge
+              </th>
+              <th>
+                Contact
+                <br />
+                number
+              </th>
+              <th>
+                Sales
+                <br />
+                executive
+              </th>
+              <th>
+                Dealing
+                <br />
+                company
+              </th>
               <th className="cell-num">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("due")}
                 >
-                  Total Due
+                  Total
+                  <br />
+                  Due
                   {sortIndicator(sortKey === "due", sortDir)}
                 </button>
               </th>
@@ -430,10 +477,26 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "overdue", sortDir)}
                 </button>
               </th>
-              <th>Last payment date</th>
-              <th className="cell-num">Last payment amount</th>
-              <th className="cell-num">Credit period</th>
-              <th>Planned call date</th>
+              <th>
+                Last
+                <br />
+                payment date
+              </th>
+              <th className="cell-num">
+                Last
+                <br />
+                payment amount
+              </th>
+              <th className="cell-num">
+                Credit
+                <br />
+                period
+              </th>
+              <th>
+                Planned
+                <br />
+                call date
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -467,6 +530,12 @@ export function CollectionClient({
                       ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
                       : "—"}
                   </td>
+                  <td>
+                    {row.dealingCompany
+                      ? (capitalizeName(row.dealingCompany) ??
+                        row.dealingCompany)
+                      : "—"}
+                  </td>
                   <td className="cell-num">{formatRs(row.due)}</td>
                   <td className="cell-num">{formatRs(row.overdue)}</td>
                   <td>{formatDateDdMmYyyy(row.lastPaymentDate)}</td>
@@ -496,7 +565,7 @@ export function CollectionClient({
             })}
             {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={10}>
+                <td colSpan={11}>
                   {buyerRows.length === 0
                     ? "No outstanding dues."
                     : "No customers match these filters."}

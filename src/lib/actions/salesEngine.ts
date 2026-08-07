@@ -4,7 +4,11 @@ import { CustomerCategory } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { balanceOrder } from "@/lib/domain/computations";
-import { computeOverdue } from "@/lib/domain/customerDue";
+import {
+  computeOverdue,
+  dispatchedAmount,
+  sumSalesSuppliedInCreditWindow,
+} from "@/lib/domain/customerDue";
 import { prisma } from "@/lib/prisma";
 
 export type SalesEngineRow = {
@@ -72,6 +76,7 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
       sector: true,
       creditDays: true,
       due: true,
+      openingDue: true,
       plannedSaleCallDate: true,
     },
     orderBy: { name: "asc" },
@@ -80,40 +85,35 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
   if (customers.length === 0) return [];
 
   const ids = customers.map((c) => c.id);
-  const [orders, payments, saleDispatches] = await Promise.all([
+  const [orders, saleDispatches] = await Promise.all([
     prisma.order.findMany({
       where: { customerId: { in: ids } },
       select: {
         customerId: true,
-        finalRate: true,
         quantity: true,
         dispatchedOrder: true,
-        closingQuantity: true,
-        orderDate: true,
-        createdAt: true,
-        creditDays: true,
       },
-    }),
-    prisma.payment.findMany({
-      where: { customerId: { in: ids }, direction: "RECEIVED" },
-      select: {
-        customerId: true,
-        amount: true,
-        date: true,
-        createdAt: true,
-      },
-      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
     }),
     prisma.dispatch.findMany({
       where: { order: { customerId: { in: ids } } },
       select: {
         dispatchDate: true,
-        order: { select: { customerId: true } },
+        dispatchedQuantity: true,
+        order: {
+          select: {
+            customerId: true,
+            finalRate: true,
+          },
+        },
       },
     }),
   ]);
 
   const lastDispatchByCustomer = new Map<string, Date>();
+  const supplyLinesByCustomer = new Map<
+    string,
+    { amount: Decimal; supplyDate: Date }[]
+  >();
   for (const row of saleDispatches) {
     const customerId = row.order.customerId;
     const existing = lastDispatchByCustomer.get(customerId);
@@ -123,6 +123,15 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     ) {
       lastDispatchByCustomer.set(customerId, row.dispatchDate);
     }
+
+    const amount = dispatchedAmount(
+      row.order.finalRate,
+      row.dispatchedQuantity,
+    );
+    if (amount.lte(0)) continue;
+    const list = supplyLinesByCustomer.get(customerId) ?? [];
+    list.push({ amount, supplyDate: row.dispatchDate });
+    supplyLinesByCustomer.set(customerId, list);
   }
 
   const ordersByCustomer = new Map<string, typeof orders>();
@@ -132,20 +141,21 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     ordersByCustomer.set(order.customerId, list);
   }
 
-  const paymentsByCustomer = new Map<string, typeof payments>();
-  for (const payment of payments) {
-    const list = paymentsByCustomer.get(payment.customerId) ?? [];
-    list.push(payment);
-    paymentsByCustomer.set(payment.customerId, list);
-  }
-
   return customers.map((customer) => {
     const customerOrders = ordersByCustomer.get(customer.id) ?? [];
-    const received = paymentsByCustomer.get(customer.id) ?? [];
+    const recentSales =
+      customer.creditDays == null
+        ? new Decimal(0)
+        : sumSalesSuppliedInCreditWindow(
+            supplyLinesByCustomer.get(customer.id) ?? [],
+            customer.creditDays,
+            new Date(),
+            customer.openingDue,
+          );
     const overdue = computeOverdue(
-      customerOrders,
+      customer.due,
       customer.creditDays,
-      received.map((p) => p.amount),
+      recentSales,
     );
 
     let soldQuantity = new Decimal(0);

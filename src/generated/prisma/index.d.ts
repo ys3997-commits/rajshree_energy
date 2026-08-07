@@ -59,6 +59,11 @@ export type StateOption = $Result.DefaultSelection<Prisma.$StateOptionPayload>
  */
 export type SectorOption = $Result.DefaultSelection<Prisma.$SectorOptionPayload>
 /**
+ * Model DealingCompanyOption
+ * Managed list of dealing companies (suggested across the app; stored as text).
+ */
+export type DealingCompanyOption = $Result.DefaultSelection<Prisma.$DealingCompanyOptionPayload>
+/**
  * Model QualityClass
  * A coal quality class: origin + domestic flag + quality grade.
  */
@@ -396,6 +401,16 @@ export class PrismaClient<
     * ```
     */
   get sectorOption(): Prisma.SectorOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.dealingCompanyOption`: Exposes CRUD operations for the **DealingCompanyOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DealingCompanyOptions
+    * const dealingCompanyOptions = await prisma.dealingCompanyOption.findMany()
+    * ```
+    */
+  get dealingCompanyOption(): Prisma.DealingCompanyOptionDelegate<ExtArgs>;
 
   /**
    * `prisma.qualityClass`: Exposes CRUD operations for the **QualityClass** model.
@@ -916,6 +931,7 @@ export namespace Prisma {
     CityOption: 'CityOption',
     StateOption: 'StateOption',
     SectorOption: 'SectorOption',
+    DealingCompanyOption: 'DealingCompanyOption',
     QualityClass: 'QualityClass',
     Customer: 'Customer',
     Vessel: 'Vessel',
@@ -938,7 +954,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1569,6 +1585,76 @@ export namespace Prisma {
           count: {
             args: Prisma.SectorOptionCountArgs<ExtArgs>
             result: $Utils.Optional<SectorOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      DealingCompanyOption: {
+        payload: Prisma.$DealingCompanyOptionPayload<ExtArgs>
+        fields: Prisma.DealingCompanyOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DealingCompanyOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DealingCompanyOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.DealingCompanyOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DealingCompanyOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>
+          }
+          findMany: {
+            args: Prisma.DealingCompanyOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>[]
+          }
+          create: {
+            args: Prisma.DealingCompanyOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>
+          }
+          createMany: {
+            args: Prisma.DealingCompanyOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DealingCompanyOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.DealingCompanyOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>
+          }
+          update: {
+            args: Prisma.DealingCompanyOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DealingCompanyOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DealingCompanyOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DealingCompanyOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DealingCompanyOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.DealingCompanyOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDealingCompanyOption>
+          }
+          groupBy: {
+            args: Prisma.DealingCompanyOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DealingCompanyOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DealingCompanyOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<DealingCompanyOptionCountAggregateOutputType> | number
           }
         }
       }
@@ -10899,6 +10985,872 @@ export namespace Prisma {
 
 
   /**
+   * Model DealingCompanyOption
+   */
+
+  export type AggregateDealingCompanyOption = {
+    _count: DealingCompanyOptionCountAggregateOutputType | null
+    _min: DealingCompanyOptionMinAggregateOutputType | null
+    _max: DealingCompanyOptionMaxAggregateOutputType | null
+  }
+
+  export type DealingCompanyOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DealingCompanyOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DealingCompanyOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DealingCompanyOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DealingCompanyOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DealingCompanyOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DealingCompanyOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DealingCompanyOption to aggregate.
+     */
+    where?: DealingCompanyOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DealingCompanyOptions to fetch.
+     */
+    orderBy?: DealingCompanyOptionOrderByWithRelationInput | DealingCompanyOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DealingCompanyOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DealingCompanyOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DealingCompanyOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DealingCompanyOptions
+    **/
+    _count?: true | DealingCompanyOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DealingCompanyOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DealingCompanyOptionMaxAggregateInputType
+  }
+
+  export type GetDealingCompanyOptionAggregateType<T extends DealingCompanyOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDealingCompanyOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDealingCompanyOption[P]>
+      : GetScalarType<T[P], AggregateDealingCompanyOption[P]>
+  }
+
+
+
+
+  export type DealingCompanyOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DealingCompanyOptionWhereInput
+    orderBy?: DealingCompanyOptionOrderByWithAggregationInput | DealingCompanyOptionOrderByWithAggregationInput[]
+    by: DealingCompanyOptionScalarFieldEnum[] | DealingCompanyOptionScalarFieldEnum
+    having?: DealingCompanyOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DealingCompanyOptionCountAggregateInputType | true
+    _min?: DealingCompanyOptionMinAggregateInputType
+    _max?: DealingCompanyOptionMaxAggregateInputType
+  }
+
+  export type DealingCompanyOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: DealingCompanyOptionCountAggregateOutputType | null
+    _min: DealingCompanyOptionMinAggregateOutputType | null
+    _max: DealingCompanyOptionMaxAggregateOutputType | null
+  }
+
+  type GetDealingCompanyOptionGroupByPayload<T extends DealingCompanyOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DealingCompanyOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DealingCompanyOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DealingCompanyOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], DealingCompanyOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DealingCompanyOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dealingCompanyOption"]>
+
+  export type DealingCompanyOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dealingCompanyOption"]>
+
+  export type DealingCompanyOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $DealingCompanyOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DealingCompanyOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["dealingCompanyOption"]>
+    composites: {}
+  }
+
+  type DealingCompanyOptionGetPayload<S extends boolean | null | undefined | DealingCompanyOptionDefaultArgs> = $Result.GetResult<Prisma.$DealingCompanyOptionPayload, S>
+
+  type DealingCompanyOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DealingCompanyOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DealingCompanyOptionCountAggregateInputType | true
+    }
+
+  export interface DealingCompanyOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DealingCompanyOption'], meta: { name: 'DealingCompanyOption' } }
+    /**
+     * Find zero or one DealingCompanyOption that matches the filter.
+     * @param {DealingCompanyOptionFindUniqueArgs} args - Arguments to find a DealingCompanyOption
+     * @example
+     * // Get one DealingCompanyOption
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DealingCompanyOptionFindUniqueArgs>(args: SelectSubset<T, DealingCompanyOptionFindUniqueArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DealingCompanyOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DealingCompanyOptionFindUniqueOrThrowArgs} args - Arguments to find a DealingCompanyOption
+     * @example
+     * // Get one DealingCompanyOption
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DealingCompanyOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, DealingCompanyOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DealingCompanyOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionFindFirstArgs} args - Arguments to find a DealingCompanyOption
+     * @example
+     * // Get one DealingCompanyOption
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DealingCompanyOptionFindFirstArgs>(args?: SelectSubset<T, DealingCompanyOptionFindFirstArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DealingCompanyOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionFindFirstOrThrowArgs} args - Arguments to find a DealingCompanyOption
+     * @example
+     * // Get one DealingCompanyOption
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DealingCompanyOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, DealingCompanyOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DealingCompanyOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DealingCompanyOptions
+     * const dealingCompanyOptions = await prisma.dealingCompanyOption.findMany()
+     * 
+     * // Get first 10 DealingCompanyOptions
+     * const dealingCompanyOptions = await prisma.dealingCompanyOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dealingCompanyOptionWithIdOnly = await prisma.dealingCompanyOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DealingCompanyOptionFindManyArgs>(args?: SelectSubset<T, DealingCompanyOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DealingCompanyOption.
+     * @param {DealingCompanyOptionCreateArgs} args - Arguments to create a DealingCompanyOption.
+     * @example
+     * // Create one DealingCompanyOption
+     * const DealingCompanyOption = await prisma.dealingCompanyOption.create({
+     *   data: {
+     *     // ... data to create a DealingCompanyOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends DealingCompanyOptionCreateArgs>(args: SelectSubset<T, DealingCompanyOptionCreateArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DealingCompanyOptions.
+     * @param {DealingCompanyOptionCreateManyArgs} args - Arguments to create many DealingCompanyOptions.
+     * @example
+     * // Create many DealingCompanyOptions
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DealingCompanyOptionCreateManyArgs>(args?: SelectSubset<T, DealingCompanyOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DealingCompanyOptions and returns the data saved in the database.
+     * @param {DealingCompanyOptionCreateManyAndReturnArgs} args - Arguments to create many DealingCompanyOptions.
+     * @example
+     * // Create many DealingCompanyOptions
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DealingCompanyOptions and only return the `id`
+     * const dealingCompanyOptionWithIdOnly = await prisma.dealingCompanyOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DealingCompanyOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, DealingCompanyOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DealingCompanyOption.
+     * @param {DealingCompanyOptionDeleteArgs} args - Arguments to delete one DealingCompanyOption.
+     * @example
+     * // Delete one DealingCompanyOption
+     * const DealingCompanyOption = await prisma.dealingCompanyOption.delete({
+     *   where: {
+     *     // ... filter to delete one DealingCompanyOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DealingCompanyOptionDeleteArgs>(args: SelectSubset<T, DealingCompanyOptionDeleteArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DealingCompanyOption.
+     * @param {DealingCompanyOptionUpdateArgs} args - Arguments to update one DealingCompanyOption.
+     * @example
+     * // Update one DealingCompanyOption
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DealingCompanyOptionUpdateArgs>(args: SelectSubset<T, DealingCompanyOptionUpdateArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DealingCompanyOptions.
+     * @param {DealingCompanyOptionDeleteManyArgs} args - Arguments to filter DealingCompanyOptions to delete.
+     * @example
+     * // Delete a few DealingCompanyOptions
+     * const { count } = await prisma.dealingCompanyOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DealingCompanyOptionDeleteManyArgs>(args?: SelectSubset<T, DealingCompanyOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DealingCompanyOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DealingCompanyOptions
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DealingCompanyOptionUpdateManyArgs>(args: SelectSubset<T, DealingCompanyOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DealingCompanyOption.
+     * @param {DealingCompanyOptionUpsertArgs} args - Arguments to update or create a DealingCompanyOption.
+     * @example
+     * // Update or create a DealingCompanyOption
+     * const dealingCompanyOption = await prisma.dealingCompanyOption.upsert({
+     *   create: {
+     *     // ... data to create a DealingCompanyOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DealingCompanyOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DealingCompanyOptionUpsertArgs>(args: SelectSubset<T, DealingCompanyOptionUpsertArgs<ExtArgs>>): Prisma__DealingCompanyOptionClient<$Result.GetResult<Prisma.$DealingCompanyOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DealingCompanyOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionCountArgs} args - Arguments to filter DealingCompanyOptions to count.
+     * @example
+     * // Count the number of DealingCompanyOptions
+     * const count = await prisma.dealingCompanyOption.count({
+     *   where: {
+     *     // ... the filter for the DealingCompanyOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DealingCompanyOptionCountArgs>(
+      args?: Subset<T, DealingCompanyOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DealingCompanyOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DealingCompanyOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DealingCompanyOptionAggregateArgs>(args: Subset<T, DealingCompanyOptionAggregateArgs>): Prisma.PrismaPromise<GetDealingCompanyOptionAggregateType<T>>
+
+    /**
+     * Group by DealingCompanyOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DealingCompanyOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DealingCompanyOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DealingCompanyOptionGroupByArgs['orderBy'] }
+        : { orderBy?: DealingCompanyOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DealingCompanyOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDealingCompanyOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DealingCompanyOption model
+   */
+  readonly fields: DealingCompanyOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DealingCompanyOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DealingCompanyOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DealingCompanyOption model
+   */ 
+  interface DealingCompanyOptionFieldRefs {
+    readonly id: FieldRef<"DealingCompanyOption", 'String'>
+    readonly name: FieldRef<"DealingCompanyOption", 'String'>
+    readonly createdAt: FieldRef<"DealingCompanyOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"DealingCompanyOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DealingCompanyOption findUnique
+   */
+  export type DealingCompanyOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DealingCompanyOption to fetch.
+     */
+    where: DealingCompanyOptionWhereUniqueInput
+  }
+
+  /**
+   * DealingCompanyOption findUniqueOrThrow
+   */
+  export type DealingCompanyOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DealingCompanyOption to fetch.
+     */
+    where: DealingCompanyOptionWhereUniqueInput
+  }
+
+  /**
+   * DealingCompanyOption findFirst
+   */
+  export type DealingCompanyOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DealingCompanyOption to fetch.
+     */
+    where?: DealingCompanyOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DealingCompanyOptions to fetch.
+     */
+    orderBy?: DealingCompanyOptionOrderByWithRelationInput | DealingCompanyOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DealingCompanyOptions.
+     */
+    cursor?: DealingCompanyOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DealingCompanyOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DealingCompanyOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DealingCompanyOptions.
+     */
+    distinct?: DealingCompanyOptionScalarFieldEnum | DealingCompanyOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DealingCompanyOption findFirstOrThrow
+   */
+  export type DealingCompanyOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DealingCompanyOption to fetch.
+     */
+    where?: DealingCompanyOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DealingCompanyOptions to fetch.
+     */
+    orderBy?: DealingCompanyOptionOrderByWithRelationInput | DealingCompanyOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DealingCompanyOptions.
+     */
+    cursor?: DealingCompanyOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DealingCompanyOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DealingCompanyOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DealingCompanyOptions.
+     */
+    distinct?: DealingCompanyOptionScalarFieldEnum | DealingCompanyOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DealingCompanyOption findMany
+   */
+  export type DealingCompanyOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which DealingCompanyOptions to fetch.
+     */
+    where?: DealingCompanyOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DealingCompanyOptions to fetch.
+     */
+    orderBy?: DealingCompanyOptionOrderByWithRelationInput | DealingCompanyOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DealingCompanyOptions.
+     */
+    cursor?: DealingCompanyOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DealingCompanyOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DealingCompanyOptions.
+     */
+    skip?: number
+    distinct?: DealingCompanyOptionScalarFieldEnum | DealingCompanyOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DealingCompanyOption create
+   */
+  export type DealingCompanyOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a DealingCompanyOption.
+     */
+    data: XOR<DealingCompanyOptionCreateInput, DealingCompanyOptionUncheckedCreateInput>
+  }
+
+  /**
+   * DealingCompanyOption createMany
+   */
+  export type DealingCompanyOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DealingCompanyOptions.
+     */
+    data: DealingCompanyOptionCreateManyInput | DealingCompanyOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DealingCompanyOption createManyAndReturn
+   */
+  export type DealingCompanyOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DealingCompanyOptions.
+     */
+    data: DealingCompanyOptionCreateManyInput | DealingCompanyOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DealingCompanyOption update
+   */
+  export type DealingCompanyOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a DealingCompanyOption.
+     */
+    data: XOR<DealingCompanyOptionUpdateInput, DealingCompanyOptionUncheckedUpdateInput>
+    /**
+     * Choose, which DealingCompanyOption to update.
+     */
+    where: DealingCompanyOptionWhereUniqueInput
+  }
+
+  /**
+   * DealingCompanyOption updateMany
+   */
+  export type DealingCompanyOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DealingCompanyOptions.
+     */
+    data: XOR<DealingCompanyOptionUpdateManyMutationInput, DealingCompanyOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DealingCompanyOptions to update
+     */
+    where?: DealingCompanyOptionWhereInput
+  }
+
+  /**
+   * DealingCompanyOption upsert
+   */
+  export type DealingCompanyOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the DealingCompanyOption to update in case it exists.
+     */
+    where: DealingCompanyOptionWhereUniqueInput
+    /**
+     * In case the DealingCompanyOption found by the `where` argument doesn't exist, create a new DealingCompanyOption with this data.
+     */
+    create: XOR<DealingCompanyOptionCreateInput, DealingCompanyOptionUncheckedCreateInput>
+    /**
+     * In case the DealingCompanyOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DealingCompanyOptionUpdateInput, DealingCompanyOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * DealingCompanyOption delete
+   */
+  export type DealingCompanyOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+    /**
+     * Filter which DealingCompanyOption to delete.
+     */
+    where: DealingCompanyOptionWhereUniqueInput
+  }
+
+  /**
+   * DealingCompanyOption deleteMany
+   */
+  export type DealingCompanyOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DealingCompanyOptions to delete
+     */
+    where?: DealingCompanyOptionWhereInput
+  }
+
+  /**
+   * DealingCompanyOption without action
+   */
+  export type DealingCompanyOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DealingCompanyOption
+     */
+    select?: DealingCompanyOptionSelect<ExtArgs> | null
+  }
+
+
+  /**
    * Model QualityClass
    */
 
@@ -11973,6 +12925,7 @@ export namespace Prisma {
     saleExecutive: string | null
     dealById: string | null
     approachForFunds: string | null
+    dealingCompany: string | null
     openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
@@ -12007,6 +12960,7 @@ export namespace Prisma {
     saleExecutive: string | null
     dealById: string | null
     approachForFunds: string | null
+    dealingCompany: string | null
     openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
@@ -12041,6 +12995,7 @@ export namespace Prisma {
     saleExecutive: number
     dealById: number
     approachForFunds: number
+    dealingCompany: number
     openingDue: number
     due: number
     plannedCollectionCallDate: number
@@ -12089,6 +13044,7 @@ export namespace Prisma {
     saleExecutive?: true
     dealById?: true
     approachForFunds?: true
+    dealingCompany?: true
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
@@ -12123,6 +13079,7 @@ export namespace Prisma {
     saleExecutive?: true
     dealById?: true
     approachForFunds?: true
+    dealingCompany?: true
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
@@ -12157,6 +13114,7 @@ export namespace Prisma {
     saleExecutive?: true
     dealById?: true
     approachForFunds?: true
+    dealingCompany?: true
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
@@ -12278,6 +13236,7 @@ export namespace Prisma {
     saleExecutive: string | null
     dealById: string | null
     approachForFunds: string | null
+    dealingCompany: string | null
     openingDue: Decimal
     due: Decimal
     plannedCollectionCallDate: Date | null
@@ -12331,6 +13290,7 @@ export namespace Prisma {
     saleExecutive?: boolean
     dealById?: boolean
     approachForFunds?: boolean
+    dealingCompany?: boolean
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
@@ -12371,6 +13331,7 @@ export namespace Prisma {
     saleExecutive?: boolean
     dealById?: boolean
     approachForFunds?: boolean
+    dealingCompany?: boolean
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
@@ -12406,6 +13367,7 @@ export namespace Prisma {
     saleExecutive?: boolean
     dealById?: boolean
     approachForFunds?: boolean
+    dealingCompany?: boolean
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
@@ -12461,6 +13423,10 @@ export namespace Prisma {
       saleExecutive: string | null
       dealById: string | null
       approachForFunds: string | null
+      /**
+       * Suggested dealing company name (from Options list; stored as text).
+       */
+      dealingCompany: string | null
       /**
        * Carry-forward balance from before this system (manual). Included in `due`.
        */
@@ -12902,6 +13868,7 @@ export namespace Prisma {
     readonly saleExecutive: FieldRef<"Customer", 'String'>
     readonly dealById: FieldRef<"Customer", 'String'>
     readonly approachForFunds: FieldRef<"Customer", 'String'>
+    readonly dealingCompany: FieldRef<"Customer", 'String'>
     readonly openingDue: FieldRef<"Customer", 'Decimal'>
     readonly due: FieldRef<"Customer", 'Decimal'>
     readonly plannedCollectionCallDate: FieldRef<"Customer", 'DateTime'>
@@ -19184,6 +20151,16 @@ export namespace Prisma {
   export type SectorOptionScalarFieldEnum = (typeof SectorOptionScalarFieldEnum)[keyof typeof SectorOptionScalarFieldEnum]
 
 
+  export const DealingCompanyOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DealingCompanyOptionScalarFieldEnum = (typeof DealingCompanyOptionScalarFieldEnum)[keyof typeof DealingCompanyOptionScalarFieldEnum]
+
+
   export const QualityClassScalarFieldEnum: {
     id: 'id',
     originId: 'originId',
@@ -19222,6 +20199,7 @@ export namespace Prisma {
     saleExecutive: 'saleExecutive',
     dealById: 'dealById',
     approachForFunds: 'approachForFunds',
+    dealingCompany: 'dealingCompany',
     openingDue: 'openingDue',
     due: 'due',
     plannedCollectionCallDate: 'plannedCollectionCallDate',
@@ -20025,6 +21003,53 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"SectorOption"> | Date | string
   }
 
+  export type DealingCompanyOptionWhereInput = {
+    AND?: DealingCompanyOptionWhereInput | DealingCompanyOptionWhereInput[]
+    OR?: DealingCompanyOptionWhereInput[]
+    NOT?: DealingCompanyOptionWhereInput | DealingCompanyOptionWhereInput[]
+    id?: StringFilter<"DealingCompanyOption"> | string
+    name?: StringFilter<"DealingCompanyOption"> | string
+    createdAt?: DateTimeFilter<"DealingCompanyOption"> | Date | string
+    updatedAt?: DateTimeFilter<"DealingCompanyOption"> | Date | string
+  }
+
+  export type DealingCompanyOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DealingCompanyOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: DealingCompanyOptionWhereInput | DealingCompanyOptionWhereInput[]
+    OR?: DealingCompanyOptionWhereInput[]
+    NOT?: DealingCompanyOptionWhereInput | DealingCompanyOptionWhereInput[]
+    createdAt?: DateTimeFilter<"DealingCompanyOption"> | Date | string
+    updatedAt?: DateTimeFilter<"DealingCompanyOption"> | Date | string
+  }, "id" | "name">
+
+  export type DealingCompanyOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DealingCompanyOptionCountOrderByAggregateInput
+    _max?: DealingCompanyOptionMaxOrderByAggregateInput
+    _min?: DealingCompanyOptionMinOrderByAggregateInput
+  }
+
+  export type DealingCompanyOptionScalarWhereWithAggregatesInput = {
+    AND?: DealingCompanyOptionScalarWhereWithAggregatesInput | DealingCompanyOptionScalarWhereWithAggregatesInput[]
+    OR?: DealingCompanyOptionScalarWhereWithAggregatesInput[]
+    NOT?: DealingCompanyOptionScalarWhereWithAggregatesInput | DealingCompanyOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DealingCompanyOption"> | string
+    name?: StringWithAggregatesFilter<"DealingCompanyOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DealingCompanyOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DealingCompanyOption"> | Date | string
+  }
+
   export type QualityClassWhereInput = {
     AND?: QualityClassWhereInput | QualityClassWhereInput[]
     OR?: QualityClassWhereInput[]
@@ -20127,6 +21152,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
+    dealingCompany?: StringNullableFilter<"Customer"> | string | null
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
@@ -20166,6 +21192,7 @@ export namespace Prisma {
     saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
     approachForFunds?: SortOrderInput | SortOrder
+    dealingCompany?: SortOrderInput | SortOrder
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
@@ -20208,6 +21235,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
+    dealingCompany?: StringNullableFilter<"Customer"> | string | null
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
@@ -20247,6 +21275,7 @@ export namespace Prisma {
     saleExecutive?: SortOrderInput | SortOrder
     dealById?: SortOrderInput | SortOrder
     approachForFunds?: SortOrderInput | SortOrder
+    dealingCompany?: SortOrderInput | SortOrder
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
@@ -20289,6 +21318,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     dealById?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     approachForFunds?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    dealingCompany?: StringNullableWithAggregatesFilter<"Customer"> | string | null
     openingDue?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
@@ -21377,6 +22407,55 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DealingCompanyOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DealingCompanyOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DealingCompanyOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DealingCompanyOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DealingCompanyOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DealingCompanyOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DealingCompanyOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type QualityClassCreateInput = {
     id?: string
     domestic: boolean
@@ -21475,6 +22554,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -21514,6 +22594,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -21551,6 +22632,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21590,6 +22672,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21628,6 +22711,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -21661,6 +22745,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -21695,6 +22780,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -22665,6 +23751,27 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type DealingCompanyOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DealingCompanyOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DealingCompanyOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type BoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -22812,6 +23919,7 @@ export namespace Prisma {
     saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFunds?: SortOrder
+    dealingCompany?: SortOrder
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
@@ -22852,6 +23960,7 @@ export namespace Prisma {
     saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFunds?: SortOrder
+    dealingCompany?: SortOrder
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
@@ -22886,6 +23995,7 @@ export namespace Prisma {
     saleExecutive?: SortOrder
     dealById?: SortOrder
     approachForFunds?: SortOrder
+    dealingCompany?: SortOrder
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
@@ -24947,6 +26057,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -24984,6 +26095,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -25105,6 +26217,7 @@ export namespace Prisma {
     saleExecutive?: StringNullableFilter<"Customer"> | string | null
     dealById?: StringNullableFilter<"Customer"> | string | null
     approachForFunds?: StringNullableFilter<"Customer"> | string | null
+    dealingCompany?: StringNullableFilter<"Customer"> | string | null
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
@@ -26379,6 +27492,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -26417,6 +27531,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -26602,6 +27717,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26640,6 +27756,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26783,6 +27900,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -26821,6 +27939,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -26987,6 +28106,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27025,6 +28145,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27291,6 +28412,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -27329,6 +28451,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -27553,6 +28676,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27591,6 +28715,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27627,6 +28752,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -27665,6 +28791,7 @@ export namespace Prisma {
     saleExecutive?: string | null
     dealById?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -27717,6 +28844,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27755,6 +28883,7 @@ export namespace Prisma {
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     dealById?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27791,6 +28920,7 @@ export namespace Prisma {
     sector?: string | null
     saleExecutive?: string | null
     approachForFunds?: string | null
+    dealingCompany?: string | null
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
@@ -27845,6 +28975,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27882,6 +29013,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -27919,6 +29051,7 @@ export namespace Prisma {
     sector?: NullableStringFieldUpdateOperationsInput | string | null
     saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
     approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -29233,6 +30366,10 @@ export namespace Prisma {
      * @deprecated Use SectorOptionDefaultArgs instead
      */
     export type SectorOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SectorOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DealingCompanyOptionDefaultArgs instead
+     */
+    export type DealingCompanyOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DealingCompanyOptionDefaultArgs<ExtArgs>
     /**
      * @deprecated Use QualityClassDefaultArgs instead
      */

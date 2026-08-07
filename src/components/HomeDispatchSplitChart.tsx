@@ -1,4 +1,3 @@
-import { formatMt } from "@/lib/domain/format";
 import type { DispatchSplitBucket } from "@/lib/actions/dashboard";
 
 type Props = {
@@ -18,6 +17,12 @@ function sumField(
 function barHeight(value: number, max: number): number {
   if (max <= 0 || value <= 0) return 0;
   return Math.max((value / max) * 100, 8);
+}
+
+/** Whole MT for chart labels — no thousand separators. */
+function formatChartQty(value: number): string {
+  if (!Number.isFinite(value)) return "—";
+  return String(Math.round(value));
 }
 
 export function HomeDispatchSplitChart({
@@ -47,18 +52,18 @@ export function HomeDispatchSplitChart({
         <div className="home-dispatch-stats">
           <div className="home-stat">
             <span className="home-stat-label">Total</span>
-            <span className="home-stat-value">{formatMt(total)} MT</span>
+            <span className="home-stat-value">{formatChartQty(total)} MT</span>
           </div>
           <div className="home-stat home-stat-split">
             <span className="home-stat-label">Domestic</span>
             <span className="home-stat-value home-stat-domestic">
-              {formatMt(domesticTotal)}
+              {formatChartQty(domesticTotal)}
             </span>
           </div>
           <div className="home-stat home-stat-split">
             <span className="home-stat-label">Imported</span>
             <span className="home-stat-value home-stat-imported">
-              {formatMt(importedTotal)}
+              {formatChartQty(importedTotal)}
             </span>
           </div>
         </div>
@@ -91,30 +96,30 @@ export function HomeDispatchSplitChart({
               className={`home-split-col${bucket.isCurrent ? " is-current" : ""}`}
             >
               <div className="home-split-total">
-                {periodTotal > 0 ? formatMt(periodTotal) : "—"}
+                {periodTotal > 0 ? formatChartQty(periodTotal) : "—"}
               </div>
               <div className="home-split-pair">
                 <div className="home-split-bar">
                   <div className="home-split-value">
-                    {domestic > 0 ? formatMt(domestic) : ""}
+                    {domestic > 0 ? formatChartQty(domestic) : ""}
                   </div>
                   <div className="home-split-track">
                     <div
                       className="home-split-fill is-domestic"
                       style={{ height: `${barHeight(domestic, maxValue)}%` }}
-                      title={`Domestic: ${formatMt(domestic)} MT`}
+                      title={`Domestic: ${formatChartQty(domestic)} MT`}
                     />
                   </div>
                 </div>
                 <div className="home-split-bar">
                   <div className="home-split-value">
-                    {imported > 0 ? formatMt(imported) : ""}
+                    {imported > 0 ? formatChartQty(imported) : ""}
                   </div>
                   <div className="home-split-track">
                     <div
                       className="home-split-fill is-imported"
                       style={{ height: `${barHeight(imported, maxValue)}%` }}
-                      title={`Imported: ${formatMt(imported)} MT`}
+                      title={`Imported: ${formatChartQty(imported)} MT`}
                     />
                   </div>
                 </div>
