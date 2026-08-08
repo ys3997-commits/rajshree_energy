@@ -43,7 +43,11 @@ function parseOptionalDate(value: string | null): Date | null {
 }
 
 function sumOrderInHand(
-  orders: { quantity: Decimal | null; dispatchedOrder: Decimal }[],
+  orders: {
+    quantity: Decimal | null;
+    dispatchedOrder: Decimal;
+    closingQuantity: Decimal | null;
+  }[],
 ): Decimal | null {
   let total = new Decimal(0);
   let any = false;
@@ -92,6 +96,7 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
         customerId: true,
         quantity: true,
         dispatchedOrder: true,
+        closingQuantity: true,
       },
     }),
     prisma.dispatch.findMany({

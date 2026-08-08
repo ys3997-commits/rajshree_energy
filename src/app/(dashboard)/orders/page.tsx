@@ -21,7 +21,6 @@ import {
   formatDispatchTerms,
   formatIndianNumber,
   formatOrderStatusForDisplay,
-  formatOrderType,
   formatQualityClass,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
@@ -37,6 +36,7 @@ type SearchParams = Promise<{
   portId?: string;
   orderById?: string;
   saleExecutive?: string;
+  qualityClassId?: string;
 }>;
 
 export default async function OrdersPage({
@@ -45,34 +45,37 @@ export default async function OrdersPage({
   searchParams: SearchParams;
 }) {
   const sp = await searchParams;
+
+  // Keep concurrency under Prisma/Supabase pool (connection_limit=5).
+  const [orders, customers, ports, saleExecutives, qualityClasses] =
+    await Promise.all([
+      listOrders({
+        status: sp.status || "",
+        customerId: sp.customerId || "",
+        portId: sp.portId || "",
+        orderById: sp.orderById || "",
+        saleExecutive: sp.saleExecutive || "",
+        qualityClassId: sp.qualityClassId || "",
+      }),
+      listCustomers({ activeOnly: true }),
+      listPortOptions(),
+      listSaleExecutiveOptions(),
+      listQualityClasses(),
+    ]);
+
   const [
-    orders,
-    customers,
-    ports,
-    saleExecutives,
     balanceOrders,
     balancePurchases,
     transporters,
     vessels,
-    qualityClasses,
-    suggestedPo,
-    suggestedPurchasePo,
   ] = await Promise.all([
-    listOrders({
-      status: sp.status || "",
-      customerId: sp.customerId || "",
-      portId: sp.portId || "",
-      orderById: sp.orderById || "",
-      saleExecutive: sp.saleExecutive || "",
-    }),
-    listCustomers({ activeOnly: true }),
-    listPortOptions(),
-    listSaleExecutiveOptions(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listTransporters(),
     listVessels({ activeOnly: true }),
-    listQualityClasses(),
+  ]);
+
+  const [suggestedPo, suggestedPurchasePo] = await Promise.all([
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
   ]);
@@ -95,7 +98,6 @@ export default async function OrdersPage({
     { key: "poNumber", header: "PO number" },
     { key: "date", header: "Date" },
     { key: "customer", header: "Customer" },
-    { key: "type", header: "Type" },
     { key: "quality", header: "Quality class" },
     { key: "lorries", header: "Number of lorries", align: "right" as const },
     { key: "orderQty", header: "Order quantity", align: "right" as const },
@@ -106,6 +108,7 @@ export default async function OrdersPage({
     },
     { key: "closingQty", header: "Closing quantity", align: "right" as const },
     { key: "balance", header: "Balance", align: "right" as const },
+    { key: "lastDispatch", header: "Last dispatch", align: "right" as const },
     { key: "trucks", header: "Trucks dispatch", align: "right" as const },
     { key: "daysSince", header: "Days since order", align: "right" as const },
     { key: "creditPeriod", header: "Credit period", align: "right" as const },
@@ -118,13 +121,15 @@ export default async function OrdersPage({
     poNumber: row.poNumber,
     date: formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null),
     customer: row.customer.name,
-    type: formatOrderType(row.orderType),
     quality: formatQualityClass(row.qualityClass),
     lorries: formatIndianNumber(row.numberOfLorries),
     orderQty: formatSaleOrderMt(displayOrderQuantity(row)),
     dispatchedQty: formatSaleOrderMt(row.dispatchedOrder),
     closingQty: formatSaleOrderMt(row.closingQuantity),
     balance: formatSaleOrderMt(displayOrderBalance(row)),
+    lastDispatch: formatCreditPeriod(
+      daysSinceOrder(row.dispatches[0]?.dispatchDate ?? null),
+    ),
     trucks: formatIndianNumber(row._count.dispatches),
     daysSince: formatCreditPeriod(
       daysSinceOrder(row.orderDate, row.createdAt),
@@ -197,6 +202,20 @@ export default async function OrdersPage({
           </select>
         </label>
         <label>
+          Quality class
+          <select
+            name="qualityClassId"
+            defaultValue={sp.qualityClassId ?? ""}
+          >
+            <option value="">All</option>
+            {qualityClasses.map((qc) => (
+              <option key={qc.id} value={qc.id}>
+                {formatQualityClass(qc)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           Port
           <select name="portId" defaultValue={sp.portId ?? ""}>
             <option value="">All</option>
@@ -239,7 +258,6 @@ export default async function OrdersPage({
               <th>PO number</th>
               <th>Date</th>
               <th>Customer</th>
-              <th>Type</th>
               <th>Quality class</th>
               <th className="num col-lorries">
                 Number of
@@ -250,6 +268,11 @@ export default async function OrdersPage({
               <th className="num">Dispatched quantity</th>
               <th className="num">Closing quantity</th>
               <th className="num">Balance</th>
+              <th className="num">
+                Last
+                <br />
+                dispatch
+              </th>
               <th className="num">Trucks dispatch</th>
               <th className="num col-days-since-order">
                 Days since
@@ -281,7 +304,6 @@ export default async function OrdersPage({
                   {formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null)}
                 </td>
                 <td>{row.customer.name}</td>
-                <td>{formatOrderType(row.orderType)}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className="num col-lorries">
                   {formatIndianNumber(row.numberOfLorries)}
@@ -290,6 +312,11 @@ export default async function OrdersPage({
                 <td className="num">{formatSaleOrderMt(row.dispatchedOrder)}</td>
                 <td className="num">{formatSaleOrderMt(row.closingQuantity)}</td>
                 <td className="num">{formatSaleOrderMt(displayOrderBalance(row))}</td>
+                <td className="num">
+                  {formatCreditPeriod(
+                    daysSinceOrder(row.dispatches[0]?.dispatchDate ?? null),
+                  )}
+                </td>
                 <td className="num">
                   {formatIndianNumber(row._count.dispatches)}
                 </td>

@@ -38,6 +38,7 @@ type OrderData = {
   orderStatus: string;
   orderDate: string | null;
   quantity: string | null;
+  numberOfLorries: number | null;
   dispatchedOrder: string;
   closingQuantity: string | null;
   balanceOrder: string | null;
@@ -83,7 +84,14 @@ export function OrderDetailClient({
   const [quantity, setQuantity] = useState(
     order.quantity ??
       (order.orderType === OrderType.OPEN ? order.dispatchedOrder : ""),
-  );  const [rate, setRate] = useState(order.rate ?? "");
+  );
+  const [numberOfLorries, setNumberOfLorries] = useState(
+    order.numberOfLorries != null ? String(order.numberOfLorries) : "",
+  );
+  const [closingQuantity, setClosingQuantity] = useState(
+    order.closingQuantity ?? "",
+  );
+  const [rate, setRate] = useState(order.rate ?? "");
   const [creditDays, setCreditDays] = useState(
     order.creditDays != null ? String(order.creditDays) : "",
   );
@@ -117,6 +125,9 @@ export function OrderDetailClient({
           poNumber,
           orderDate: orderDate || null,
           deliveryTerms,
+          numberOfLorries:
+            numberOfLorries === "" ? null : Number(numberOfLorries),
+          closingQuantity: closingQuantity === "" ? null : closingQuantity,
         });
       } else {
         await updateOrderFields(order.id, {
@@ -128,6 +139,9 @@ export function OrderDetailClient({
           qualityClassId: qualityClassId || null,
           portId: portId || null,
           deliveryTerms,
+          numberOfLorries:
+            numberOfLorries === "" ? null : Number(numberOfLorries),
+          closingQuantity: closingQuantity === "" ? null : closingQuantity,
         });
       }
       setMessage("Order updated.");
@@ -265,6 +279,15 @@ export function OrderDetailClient({
           />
           <span className="field-unit">MT</span>
         </div>
+        <label>Number of lorries</label>
+        <input
+          type="number"
+          min="0"
+          step="1"
+          value={numberOfLorries}
+          onChange={(e) => setNumberOfLorries(e.target.value)}
+          placeholder="0"
+        />
         <label>Basic rate</label>
         <div className="field-with-unit field-with-prefix">
           <span className="field-unit">Rs</span>
@@ -328,6 +351,18 @@ export function OrderDetailClient({
           >
             Ex-Port
           </button>
+        </div>
+        <label>Closing quantity</label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            step="any"
+            min="0"
+            value={closingQuantity}
+            onChange={(e) => setClosingQuantity(e.target.value)}
+            placeholder="0"
+          />
+          <span className="field-unit">MT</span>
         </div>
         <div />
         <button type="submit" className="btn w-fit">

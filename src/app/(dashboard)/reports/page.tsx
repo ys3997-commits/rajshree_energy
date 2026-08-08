@@ -8,6 +8,11 @@ const reports = [
     desc: "Buyer collection balances and planned calls.",
   },
   {
+    href: "/reports/customer-analysis",
+    title: "Customer Analysis",
+    desc: "Customer-level orders, payments, and balance analysis.",
+  },
+  {
     href: "/reports/master-dispatch",
     title: "Dispatch",
     desc: "Purchase, sale, freight, and basic-rate profit for every dispatch.",
@@ -41,6 +46,11 @@ const reports = [
     href: "/reports/vessel",
     title: "Vessel Report",
     desc: "Order, dispatch, closing, and balance quantities by vessel.",
+  },
+  {
+    href: "/reports/vessel/supplied",
+    title: "Vessel Supplied",
+    desc: "Total, industry, and trader/vendor supplied quantities by vessel.",
   },
 ].sort((a, b) => a.title.localeCompare(b.title));
 

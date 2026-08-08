@@ -24,6 +24,7 @@ export type OrderFilters = {
   portId?: string;
   orderById?: string;
   saleExecutive?: string;
+  qualityClassId?: string;
 };
 
 /** Accept only current enum values; map legacy sale statuses to Running. */
@@ -74,6 +75,7 @@ export async function listOrders(filters: OrderFilters = {}) {
   if (filters.customerId) where.customerId = filters.customerId;
   if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;
+  if (filters.qualityClassId) where.qualityClassId = filters.qualityClassId;
   if (filters.saleExecutive) {
     where.customer = { saleExecutive: filters.saleExecutive };
   }
@@ -96,6 +98,7 @@ export async function listOrders(filters: OrderFilters = {}) {
         take: 1,
         orderBy: { dispatchDate: "desc" },
         select: {
+          dispatchDate: true,
           purchaseOrder: {
             select: {
               qualityClass: {
@@ -271,6 +274,8 @@ export async function updateOrderFields(
     qualityClassId?: string | null;
     portId?: string | null;
     deliveryTerms?: DispatchTerms | null;
+    numberOfLorries?: number | null;
+    closingQuantity?: DecimalLike | null;
   },
 ) {
   const existing = await prisma.order.findUnique({
@@ -299,6 +304,38 @@ export async function updateOrderFields(
     );
   }
 
+  let numberOfLorries = existing.numberOfLorries;
+  if (data.numberOfLorries !== undefined) {
+    if (data.numberOfLorries === null) {
+      numberOfLorries = null;
+    } else {
+      numberOfLorries = Number(data.numberOfLorries);
+      if (!Number.isInteger(numberOfLorries) || numberOfLorries < 0) {
+        throw new Error("Number of lorries must be a whole number ≥ 0");
+      }
+    }
+  }
+
+  let closingQuantity = existing.closingQuantity;
+  if (data.closingQuantity !== undefined) {
+    if (data.closingQuantity === null || data.closingQuantity === "") {
+      closingQuantity = null;
+    } else {
+      closingQuantity = toDecimal(data.closingQuantity);
+      if (!closingQuantity.isFinite() || closingQuantity.lt(0)) {
+        throw new Error("Closing quantity must be a valid amount ≥ 0");
+      }
+      if (quantity != null) {
+        const maxClosing = quantity.minus(existing.dispatchedOrder);
+        if (closingQuantity.gt(maxClosing)) {
+          throw new Error(
+            `Closing quantity cannot exceed remaining (${maxClosing})`,
+          );
+        }
+      }
+    }
+  }
+
   let rate = existing.rate;
   if (data.rate !== undefined) {
     rate = data.rate === null ? null : toDecimal(data.rate);
@@ -312,7 +349,7 @@ export async function updateOrderFields(
     orderType: existing.orderType,
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
-    closingQuantity: existing.closingQuantity,
+    closingQuantity,
   });
 
   const oldAmount = dispatchedAmount(
@@ -336,6 +373,10 @@ export async function updateOrderFields(
         portId: data.portId === undefined ? undefined : data.portId || null,
         deliveryTerms:
           data.deliveryTerms === undefined ? undefined : data.deliveryTerms,
+        numberOfLorries:
+          data.numberOfLorries === undefined ? undefined : numberOfLorries,
+        closingQuantity:
+          data.closingQuantity === undefined ? undefined : closingQuantity,
         orderDate:
           data.orderDate === undefined
             ? undefined

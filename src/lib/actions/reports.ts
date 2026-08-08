@@ -1,6 +1,6 @@
 "use server";
 
-import type { Prisma } from "@/generated/prisma";
+import { CustomerCategory, type Prisma } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
 import {
@@ -154,6 +154,108 @@ export type CustomerAnalysisFilters = {
   dateFrom?: string;
   dateTo?: string;
 };
+
+export type CustomerAnalysisListRow = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+  active: boolean;
+  city: string | null;
+  state: string | null;
+  totalQuantity: string;
+  totalProfit: string | null;
+  marginPmt: string | null;
+};
+
+export async function listCustomerAnalysisReport(): Promise<
+  CustomerAnalysisListRow[]
+> {
+  const customers = await prisma.customer.findMany({
+    where: {
+      category: {
+        in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
+      },
+    },
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      active: true,
+      city: true,
+      state: true,
+    },
+  });
+
+  const dispatches = await prisma.dispatch.findMany({
+    select: {
+      dispatchedQuantity: true,
+      dispatchTerms: true,
+      freight: true,
+      order: {
+        select: {
+          customerId: true,
+          rate: true,
+          finalRate: true,
+        },
+      },
+      purchaseOrder: {
+        select: {
+          rate: true,
+          finalRate: true,
+        },
+      },
+    },
+  });
+
+  const byCustomer = new Map<
+    string,
+    { volume: Decimal; profit: Decimal | null }
+  >();
+
+  for (const d of dispatches) {
+    const customerId = d.order.customerId;
+    let agg = byCustomer.get(customerId);
+    if (!agg) {
+      agg = { volume: new Decimal(0), profit: null };
+      byCustomer.set(customerId, agg);
+    }
+    agg.volume = agg.volume.plus(d.dispatchedQuantity);
+
+    const profit = lineProfit({
+      saleRate: saleRevenueRate(d.order),
+      costRate: d.purchaseOrder ? purchaseCostRate(d.purchaseOrder) : null,
+      quantity: d.dispatchedQuantity,
+      dispatchTerms: d.dispatchTerms,
+      freight: d.freight,
+    });
+    if (profit != null) {
+      agg.profit = agg.profit == null ? profit : agg.profit.plus(profit);
+    }
+  }
+
+  return customers.map((c) => {
+    const agg = byCustomer.get(c.id);
+    const totalQuantity = (agg?.volume ?? new Decimal(0)).toString();
+    const totalProfit = agg?.profit?.toDecimalPlaces(2).toString() ?? null;
+    const marginPmt =
+      agg?.profit != null && agg.volume.gt(0)
+        ? agg.profit.div(agg.volume).toDecimalPlaces(2).toString()
+        : null;
+
+    return {
+      id: c.id,
+      name: c.name,
+      category: c.category,
+      active: c.active,
+      city: c.city,
+      state: c.state,
+      totalQuantity,
+      totalProfit,
+      marginPmt,
+    };
+  });
+}
 
 export type CustomerSideMetrics = {
   orderCount: number;
@@ -605,6 +707,166 @@ export async function getVesselReport(vesselId: string) {
         finalRate: o.finalRate?.toString() ?? null,
       }),
     ),
+  };
+}
+
+export type VesselSuppliedListRow = {
+  id: string;
+  vesselName: string;
+  active: boolean;
+  qualityClass: {
+    origin: { name: string };
+    domestic: boolean;
+    qualityOption: { name: string };
+  } | null;
+  totalQuantity: string;
+  industryQuantity: string;
+  traderVendorQuantity: string;
+};
+
+export async function listVesselSuppliedReport(): Promise<
+  VesselSuppliedListRow[]
+> {
+  const vessels = await prisma.vessel.findMany({
+    include: {
+      qualityClass: { include: qualityClassInclude },
+      dispatches: {
+        select: {
+          dispatchedQuantity: true,
+          order: {
+            select: {
+              customer: { select: { category: true } },
+            },
+          },
+        },
+      },
+    },
+    orderBy: { vesselName: "asc" },
+  });
+
+  return vessels.map((v) => {
+    let total = new Decimal(0);
+    let industry = new Decimal(0);
+    let traderVendor = new Decimal(0);
+
+    for (const d of v.dispatches) {
+      const qty = d.dispatchedQuantity;
+      total = total.plus(qty);
+      const category = d.order.customer.category;
+      if (category === CustomerCategory.INDUSTRY) {
+        industry = industry.plus(qty);
+      } else if (
+        category === CustomerCategory.TRADER ||
+        category === CustomerCategory.SUPPLIER
+      ) {
+        traderVendor = traderVendor.plus(qty);
+      }
+    }
+
+    return {
+      id: v.id,
+      vesselName: v.vesselName,
+      active: v.active,
+      qualityClass: v.qualityClass,
+      totalQuantity: total.toString(),
+      industryQuantity: industry.toString(),
+      traderVendorQuantity: traderVendor.toString(),
+    };
+  });
+}
+
+export type VesselSuppliedCustomerRow = {
+  customerId: string;
+  customerName: string;
+  category: CustomerCategory;
+  totalQuantity: string;
+  profit: string | null;
+};
+
+export async function getVesselSuppliedReport(vesselId: string) {
+  const vessel = await prisma.vessel.findUnique({
+    where: { id: vesselId },
+    include: {
+      qualityClass: { include: qualityClassInclude },
+      dispatches: {
+        select: {
+          dispatchedQuantity: true,
+          dispatchTerms: true,
+          freight: true,
+          order: {
+            select: {
+              rate: true,
+              customer: {
+                select: { id: true, name: true, category: true },
+              },
+            },
+          },
+          purchaseOrder: {
+            select: { rate: true },
+          },
+        },
+      },
+    },
+  });
+  if (!vessel) return null;
+
+  const byCustomer = new Map<
+    string,
+    {
+      customerId: string;
+      customerName: string;
+      category: CustomerCategory;
+      totalQuantity: Decimal;
+      profit: Decimal | null;
+    }
+  >();
+
+  for (const d of vessel.dispatches) {
+    const customer = d.order.customer;
+    let row = byCustomer.get(customer.id);
+    if (!row) {
+      row = {
+        customerId: customer.id,
+        customerName: customer.name,
+        category: customer.category,
+        totalQuantity: new Decimal(0),
+        profit: null,
+      };
+      byCustomer.set(customer.id, row);
+    }
+
+    row.totalQuantity = row.totalQuantity.plus(d.dispatchedQuantity);
+
+    const profit = lineProfit({
+      saleRate: d.order.rate,
+      costRate: d.purchaseOrder?.rate ?? null,
+      quantity: d.dispatchedQuantity,
+      dispatchTerms: d.dispatchTerms,
+      freight: d.freight,
+    });
+    if (profit != null) {
+      row.profit = row.profit == null ? profit : row.profit.plus(profit);
+    }
+  }
+
+  const customers: VesselSuppliedCustomerRow[] = [...byCustomer.values()]
+    .map((row) => ({
+      customerId: row.customerId,
+      customerName: row.customerName,
+      category: row.category,
+      totalQuantity: row.totalQuantity.toString(),
+      profit: row.profit?.toDecimalPlaces(2).toString() ?? null,
+    }))
+    .sort((a, b) => a.customerName.localeCompare(b.customerName));
+
+  return {
+    vessel: {
+      id: vessel.id,
+      vesselName: vessel.vesselName,
+      active: vessel.active,
+      qualityClass: vessel.qualityClass,
+    },
+    customers,
   };
 }
 

@@ -37,6 +37,12 @@ const reportLinks: ReportItem[] = [
       { href: "/reports/collection/vendor", label: "Vendor Collection" },
     ],
   },
+  {
+    label: "Customer",
+    children: [
+      { href: "/reports/customer-analysis", label: "Customer Analysis" },
+    ],
+  },
   { href: "/reports/master-dispatch", label: "Dispatch" },
   {
     label: "Product",
@@ -57,7 +63,10 @@ const reportLinks: ReportItem[] = [
   },
   {
     label: "Vessel",
-    children: [{ href: "/reports/vessel", label: "Vessel Report" }],
+    children: [
+      { href: "/reports/vessel", label: "Vessel Report" },
+      { href: "/reports/vessel/supplied", label: "Vessel Supplied" },
+    ],
   },
 ].sort((a, b) => a.label.localeCompare(b.label));
 
