@@ -18,7 +18,7 @@ export default async function SalesEnginePage() {
           </p>
           <h1 className="page-title">Sales Engine Report</h1>
           <p className="page-subtitle">
-            Purchaser contacts, balance orders, and planned sales calls.
+            Purchaser contacts with balance orders and planned sales calls.
           </p>
         </div>
       </div>

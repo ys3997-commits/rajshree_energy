@@ -5,6 +5,7 @@ import {
   buildCsv,
   downloadTablePdf,
   downloadTextFile,
+  shareTablePdfViaWhatsApp,
   type ExportColumn,
   type ExportRow,
 } from "@/lib/export/tableDownload";
@@ -14,6 +15,8 @@ type Props = {
   filenameBase: string;
   columns: ExportColumn[];
   rows: ExportRow[];
+  /** Show WhatsApp button to share the PDF (Sales Engine, etc.). */
+  whatsapp?: boolean;
 };
 
 export function TableDownloadButtons({
@@ -21,8 +24,9 @@ export function TableDownloadButtons({
   filenameBase,
   columns,
   rows,
+  whatsapp = false,
 }: Props) {
-  const [busy, setBusy] = useState<"csv" | "pdf" | null>(null);
+  const [busy, setBusy] = useState<"csv" | "pdf" | "whatsapp" | null>(null);
   const disabled = rows.length === 0 || busy != null;
 
   function downloadCsv() {
@@ -53,6 +57,23 @@ export function TableDownloadButtons({
     }
   }
 
+  async function shareWhatsApp() {
+    setBusy("whatsapp");
+    try {
+      await shareTablePdfViaWhatsApp({
+        title,
+        filename: `${filenameBase}.pdf`,
+        columns,
+        rows,
+      });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      console.error(err);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   return (
     <div className="flex gap-2">
       <button
@@ -71,6 +92,16 @@ export function TableDownloadButtons({
       >
         {busy === "pdf" ? "Downloading…" : "Download PDF"}
       </button>
+      {whatsapp ? (
+        <button
+          type="button"
+          className="btn btn-secondary"
+          disabled={disabled}
+          onClick={() => void shareWhatsApp()}
+        >
+          {busy === "whatsapp" ? "Opening…" : "WhatsApp"}
+        </button>
+      ) : null}
     </div>
   );
 }

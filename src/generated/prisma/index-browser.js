@@ -330,6 +330,17 @@ exports.Prisma.PaymentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DiscountScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  customerId: 'customerId',
+  status: 'status',
+  amount: 'amount',
+  remarks: 'remarks',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -380,6 +391,11 @@ exports.PaymentDirection = exports.$Enums.PaymentDirection = {
   SENT: 'SENT'
 };
 
+exports.DiscountStatus = exports.$Enums.DiscountStatus = {
+  RECEIVED: 'RECEIVED',
+  PAID: 'PAID'
+};
+
 exports.Prisma.ModelName = {
   Staff: 'Staff',
   Transporter: 'Transporter',
@@ -397,7 +413,8 @@ exports.Prisma.ModelName = {
   Order: 'Order',
   PurchaseOrder: 'PurchaseOrder',
   Dispatch: 'Dispatch',
-  Payment: 'Payment'
+  Payment: 'Payment',
+  Discount: 'Discount'
 };
 
 /**

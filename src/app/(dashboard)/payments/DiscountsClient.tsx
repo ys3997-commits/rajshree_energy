@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
 import {
-  createPayment,
-  deletePayment,
-  updatePayment,
-  type PaymentListResult,
-  type PaymentRow,
-} from "@/lib/actions/payments";
+  createDiscount,
+  deleteDiscount,
+  updateDiscount,
+  type DiscountListResult,
+  type DiscountRow,
+} from "@/lib/actions/discounts";
 import {
   formatCustomerCategory,
   formatIndianAmountTyping,
@@ -20,7 +20,7 @@ import {
 import { PaymentsTabs } from "./PaymentsTabs";
 
 type Opt = { id: string; name: string; category: CustomerCategory };
-type Direction = "RECEIVED" | "SENT" | "";
+type Status = "RECEIVED" | "PAID" | "";
 
 function todayLocal(): string {
   const d = new Date();
@@ -34,17 +34,19 @@ function emptyForm(customerId = "") {
   return {
     date: todayLocal(),
     customerId,
-    direction: "" as Direction,
+    status: "" as Status,
     amount: "",
+    remarks: "",
   };
 }
 
-function directionLabel(direction: string): string {
-  return direction === "RECEIVED" ? "Fund Received" : "Fund Paid";
+function statusLabel(status: string): string {
+  return status === "RECEIVED" ? "Discount Received" : "Discount Paid";
 }
 
 function pageHref(page: number): string {
-  return page <= 1 ? "/payments" : `/payments?page=${page}`;
+  const base = "/payments?tab=discount";
+  return page <= 1 ? base : `${base}&page=${page}`;
 }
 
 function formatDateDdMmYyyy(value: string | null | undefined): string {
@@ -56,18 +58,18 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
   return `${day}/${month}/${year}`;
 }
 
-export function PaymentsClient({
+export function DiscountsClient({
   initial,
   customers,
 }: {
-  initial: PaymentListResult;
+  initial: DiscountListResult;
   customers: Opt[];
 }) {
   const router = useRouter();
   const { rows, total, page, pageSize, totalPages } = initial;
 
   const [form, setForm] = useState(() => emptyForm());
-  const [editing, setEditing] = useState<PaymentRow | null>(null);
+  const [editing, setEditing] = useState<DiscountRow | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -82,7 +84,6 @@ export function PaymentsClient({
       setForm({ ...form, amount: "" });
       return;
     }
-    // One decimal point, max 2 fraction digits.
     if (!/^\d*\.?\d{0,2}$/.test(raw)) return;
     setForm({ ...form, amount: raw });
   }
@@ -92,13 +93,14 @@ export function PaymentsClient({
     setForm(emptyForm(customerId));
   }
 
-  function startEdit(row: PaymentRow) {
+  function startEdit(row: DiscountRow) {
     setEditing(row);
     setForm({
       date: row.date,
       customerId: row.customerId,
-      direction: row.direction,
+      status: row.status,
       amount: row.amount,
+      remarks: row.remarks,
     });
     setError(null);
   }
@@ -116,30 +118,35 @@ export function PaymentsClient({
       setError("Customer is required");
       return;
     }
-    if (!form.direction) {
-      setError("Select Fund Received or Fund Paid");
+    if (!form.status) {
+      setError("Select Discount Received or Discount Paid");
       return;
     }
     if (!form.amount || Number(form.amount) <= 0) {
       setError("Amount must be greater than zero");
       return;
     }
+    if (!form.remarks.trim()) {
+      setError("Remarks are required");
+      return;
+    }
 
     const payload = {
       date: form.date,
       customerId: form.customerId,
-      direction: form.direction,
+      status: form.status,
       amount: form.amount,
+      remarks: form.remarks,
     };
 
     startTransition(async () => {
       try {
         if (editing) {
-          await updatePayment(editing.id, payload);
+          await updateDiscount(editing.id, payload);
           resetForm();
           goToPage(page);
         } else {
-          await createPayment(payload);
+          await createDiscount(payload);
           resetForm();
           goToPage(1);
         }
@@ -149,12 +156,12 @@ export function PaymentsClient({
     });
   }
 
-  function onDelete(row: PaymentRow) {
-    if (!confirm(`Delete payment of ${formatRs(row.amount)}?`)) return;
+  function onDelete(row: DiscountRow) {
+    if (!confirm(`Delete discount of ${formatRs(row.amount)}?`)) return;
     setError(null);
     startTransition(async () => {
       try {
-        await deletePayment(row.id);
+        await deleteDiscount(row.id);
         if (editing?.id === row.id) resetForm();
         const remainingOnPage = rows.length - 1;
         const nextPage =
@@ -173,10 +180,10 @@ export function PaymentsClient({
     <div>
       <h1 className="page-title">Payments</h1>
       <p className="page-subtitle">
-        Record money received from or sent to customers.
+        Record discounts received from or paid to customers.
       </p>
 
-      <PaymentsTabs active="payment" />
+      <PaymentsTabs active="discount" />
 
       {error && <div className="error-box">{error}</div>}
 
@@ -186,8 +193,9 @@ export function PaymentsClient({
             <tr>
               <th>Date</th>
               <th>Customer</th>
-              <th>Fund Received / Fund Paid</th>
+              <th>Status</th>
               <th className="cell-num">Amount</th>
+              <th>Remarks</th>
               <th />
             </tr>
           </thead>
@@ -195,7 +203,7 @@ export function PaymentsClient({
             <tr className="payment-entry-row">
               <td>
                 <input
-                  form="payment-entry-form"
+                  form="discount-entry-form"
                   type="date"
                   required
                   className="field-input"
@@ -208,7 +216,7 @@ export function PaymentsClient({
               </td>
               <td>
                 <select
-                  form="payment-entry-form"
+                  form="discount-entry-form"
                   required
                   className="field-input"
                   aria-label="Customer"
@@ -227,26 +235,26 @@ export function PaymentsClient({
               </td>
               <td>
                 <select
-                  form="payment-entry-form"
+                  form="discount-entry-form"
                   required
                   className="field-input"
-                  aria-label="Fund Received or Fund Paid"
-                  value={form.direction}
+                  aria-label="Status"
+                  value={form.status}
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      direction: e.target.value as Direction,
+                      status: e.target.value as Status,
                     })
                   }
                 >
                   <option value="">Select</option>
-                  <option value="RECEIVED">Fund Received</option>
-                  <option value="SENT">Fund Paid</option>
+                  <option value="RECEIVED">Discount Received</option>
+                  <option value="PAID">Discount Paid</option>
                 </select>
               </td>
               <td className="cell-num payment-amount-cell">
                 <input
-                  form="payment-entry-form"
+                  form="discount-entry-form"
                   type="text"
                   inputMode="decimal"
                   required
@@ -257,9 +265,23 @@ export function PaymentsClient({
                   onChange={(e) => onAmountChange(e.target.value)}
                 />
               </td>
+              <td>
+                <input
+                  form="discount-entry-form"
+                  type="text"
+                  required
+                  className="field-input"
+                  placeholder="Write remarks…"
+                  aria-label="Remarks"
+                  value={form.remarks}
+                  onChange={(e) =>
+                    setForm({ ...form, remarks: e.target.value })
+                  }
+                />
+              </td>
               <td className="space-x-2 whitespace-nowrap">
                 <button
-                  form="payment-entry-form"
+                  form="discount-entry-form"
                   type="submit"
                   className="btn btn-sm"
                   disabled={pending}
@@ -289,8 +311,9 @@ export function PaymentsClient({
                 >
                   <td>{formatDateDdMmYyyy(row.date)}</td>
                   <td>{row.customerName}</td>
-                  <td>{directionLabel(row.direction)}</td>
+                  <td>{statusLabel(row.status)}</td>
                   <td className="cell-num">{formatRs(row.amount)}</td>
+                  <td>{row.remarks || "—"}</td>
                   <td className="space-x-2 whitespace-nowrap">
                     <button
                       type="button"
@@ -315,7 +338,7 @@ export function PaymentsClient({
 
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5}>No payments yet.</td>
+                <td colSpan={6}>No discounts yet.</td>
               </tr>
             )}
           </tbody>
@@ -353,7 +376,7 @@ export function PaymentsClient({
         </div>
       )}
 
-      <form id="payment-entry-form" onSubmit={onSubmit} hidden />
+      <form id="discount-entry-form" onSubmit={onSubmit} hidden />
     </div>
   );
 }

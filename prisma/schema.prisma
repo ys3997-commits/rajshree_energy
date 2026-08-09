@@ -47,6 +47,11 @@ enum PaymentDirection {
   SENT
 }
 
+enum DiscountStatus {
+  RECEIVED
+  PAID
+}
+
 model Staff {
   id        String   @id @default(cuid())
   name      String
@@ -195,7 +200,7 @@ model Customer {
   dealingCompany           String?
   /// Carry-forward balance from before this system (manual). Included in `due`.
   openingDue               Decimal          @default(0) @db.Decimal(18, 2)
-  /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent).
+  /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent − discount paid + discount received).
   due                      Decimal          @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?
@@ -209,6 +214,7 @@ model Customer {
   purchaseOrders   PurchaseOrder[]
   dispatches       Dispatch[]      @relation("DispatchImporter")
   payments         Payment[]
+  discounts        Discount[]
 }
 
 model Vessel {
@@ -342,6 +348,23 @@ model Payment {
   amount     Decimal          @db.Decimal(18, 2)
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+  @@index([date])
+}
+
+/// Discount received from or paid to a customer.
+model Discount {
+  id         String         @id @default(cuid())
+  date       DateTime
+  customerId String
+  status     DiscountStatus
+  amount     Decimal        @db.Decimal(18, 2)
+  remarks    String         @default("")
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 
   customer Customer @relation(fields: [customerId], references: [id])
 

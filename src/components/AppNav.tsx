@@ -41,6 +41,7 @@ const reportLinks: ReportItem[] = [
     label: "Customer",
     children: [
       { href: "/reports/customer-analysis", label: "Customer Analysis" },
+      { href: "/reports/ledger", label: "Ledger" },
     ],
   },
   { href: "/reports/master-dispatch", label: "Dispatch" },

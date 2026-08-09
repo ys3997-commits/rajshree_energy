@@ -13,6 +13,11 @@ const reports = [
     desc: "Customer-level orders, payments, and balance analysis.",
   },
   {
+    href: "/reports/ledger",
+    title: "Ledger",
+    desc: "Customer ledger of dues, payments, and discounts.",
+  },
+  {
     href: "/reports/master-dispatch",
     title: "Dispatch",
     desc: "Purchase, sale, freight, and basic-rate profit for every dispatch.",

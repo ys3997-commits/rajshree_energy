@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   computeOverdue,
+  discountDueDelta,
   dispatchedAmount,
   purchaseDispatchDueDelta,
   saleDispatchDueDelta,
@@ -23,6 +24,16 @@ describe("dispatch-based due math", () => {
   it("reverses due when a dispatch is reversed", () => {
     expect(saleDispatchDueDelta(1203.6, -10).toString()).toBe("-12036");
     expect(purchaseDispatchDueDelta(1203.6, -10).toString()).toBe("12036");
+  });
+});
+
+describe("discount-based due math", () => {
+  it("increases due on discount received", () => {
+    expect(discountDueDelta("RECEIVED", 500).toString()).toBe("500");
+  });
+
+  it("decreases due on discount paid", () => {
+    expect(discountDueDelta("PAID", 500).toString()).toBe("-500");
   });
 });
 

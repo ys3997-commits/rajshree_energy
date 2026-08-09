@@ -1,4 +1,8 @@
-import { PaymentDirection, type Prisma } from "@/generated/prisma";
+import {
+  DiscountStatus,
+  PaymentDirection,
+  type Prisma,
+} from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal, type DecimalLike } from "@/lib/domain/computations";
 import { prisma } from "@/lib/prisma";
@@ -81,6 +85,18 @@ export function paymentDueDelta(
   return amt;
 }
 
+/** RECEIVED increases due; PAID decreases due. */
+export function discountDueDelta(
+  status: DiscountStatus | "RECEIVED" | "PAID",
+  amount: DecimalLike,
+): Decimal {
+  const amt = toDecimal(amount);
+  if (status === DiscountStatus.PAID || status === "PAID") {
+    return amt.neg();
+  }
+  return amt;
+}
+
 export async function adjustCustomerDue(
   db: DbClient,
   customerId: string,
@@ -153,7 +169,8 @@ export function sumSalesSuppliedInCreditWindow(
  * Overdue = due − (opening due + sales) still inside the credit window.
  *
  * Due already equals:
- * openingDue + total sale supplied − fund received + fund payment − total purchase.
+ * openingDue + sale dispatches − purchase dispatches − received + sent
+ * − discount paid + discount received.
  * Opening due is dated {@link OPENING_DUE_DATE} (01/08/2026).
  * Sales with no credit days are excluded from overdue (returns 0).
  */
@@ -184,7 +201,7 @@ export async function recalculateAllCustomerDues(): Promise<void> {
   });
 
   for (const customer of customers) {
-    const [orders, purchaseOrders, payments] = await Promise.all([
+    const [orders, purchaseOrders, payments, discounts] = await Promise.all([
       prisma.order.findMany({
         where: { customerId: customer.id },
         select: {
@@ -207,6 +224,10 @@ export async function recalculateAllCustomerDues(): Promise<void> {
         where: { customerId: customer.id },
         select: { direction: true, amount: true },
       }),
+      prisma.discount.findMany({
+        where: { customerId: customer.id },
+        select: { status: true, amount: true },
+      }),
     ]);
 
     let due = toDecimal(customer.openingDue);
@@ -222,6 +243,9 @@ export async function recalculateAllCustomerDues(): Promise<void> {
     }
     for (const payment of payments) {
       due = due.plus(paymentDueDelta(payment.direction, payment.amount));
+    }
+    for (const discount of discounts) {
+      due = due.plus(discountDueDelta(discount.status, discount.amount));
     }
 
     await prisma.customer.update({

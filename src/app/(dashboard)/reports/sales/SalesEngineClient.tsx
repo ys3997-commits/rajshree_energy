@@ -261,22 +261,22 @@ export function SalesEngineClient({
   ]);
 
   const exportColumns = [
-    { key: "customer", header: "Customer name" },
-    { key: "purchaser", header: "Purchaser name" },
-    { key: "phone", header: "Phone number" },
-    { key: "role", header: "Role of purchaser" },
-    { key: "saleExecutive", header: "Sale executive" },
-    { key: "orderInHand", header: "Order in hand", align: "right" as const },
-    { key: "soldQuantity", header: "Sold quantity", align: "right" as const },
+    { key: "customer", header: "Customer Name" },
+    { key: "purchaser", header: "Purchaser Name" },
+    { key: "phone", header: "Phone Number" },
+    { key: "role", header: "Role" },
+    { key: "saleExecutive", header: "Sale Executive" },
+    { key: "orderInHand", header: "Order In Hand", align: "right" as const },
+    { key: "soldQuantity", header: "Sold Quantity", align: "right" as const },
     {
       key: "daysSince",
-      header: "Days since last dispatch",
+      header: "Days Since Last Dispatch",
       align: "right" as const,
     },
     { key: "due", header: "Total Due", align: "right" as const },
     { key: "overdue", header: "Overdue", align: "right" as const },
-    { key: "creditPeriod", header: "Credit period", align: "right" as const },
-    { key: "plannedCall", header: "Planned call" },
+    { key: "creditPeriod", header: "Credit Period", align: "right" as const },
+    { key: "plannedCall", header: "Planned Call" },
   ];
 
   const exportRows = useMemo(
@@ -443,10 +443,11 @@ export function SalesEngineClient({
           </button>
         )}
         <TableDownloadButtons
-          title="Sales"
+          title="Sales Engine Report"
           filenameBase="sales"
           columns={exportColumns}
           rows={exportRows}
+          whatsapp
         />
       </form>
 
@@ -462,19 +463,19 @@ export function SalesEngineClient({
                 >
                   Customer
                   <br />
-                  name
+                  Name
                   {sortIndicator(sortKey === "name", sortDir)}
                 </button>
               </th>
               <th className="sales-engine-purchaser-col">
                 Purchaser
                 <br />
-                name
+                Name
               </th>
               <th>
                 Phone
                 <br />
-                number
+                Number
               </th>
               <th className="sales-engine-role-col">Role</th>
               <th className="sales-engine-sale-exec-col">
@@ -485,7 +486,7 @@ export function SalesEngineClient({
                 >
                   Sale
                   <br />
-                  executive
+                  Executive
                   {sortIndicator(sortKey === "saleExecutive", sortDir)}
                 </button>
               </th>
@@ -497,7 +498,7 @@ export function SalesEngineClient({
                 >
                   Order
                   <br />
-                  in hand
+                  In Hand
                   {sortIndicator(sortKey === "orderInHand", sortDir)}
                 </button>
               </th>
@@ -509,14 +510,14 @@ export function SalesEngineClient({
                 >
                   Sold
                   <br />
-                  quantity
+                  Quantity
                   {sortIndicator(sortKey === "soldQuantity", sortDir)}
                 </button>
               </th>
               <th className="cell-num sales-engine-days-col">
                 Last
                 <br />
-                dispatch
+                Dispatch
               </th>
               <th className="cell-num">
                 <button
@@ -543,12 +544,12 @@ export function SalesEngineClient({
               <th className="cell-num">
                 Credit
                 <br />
-                period
+                Period
               </th>
               <th>
                 Planned
                 <br />
-                call
+                Call
               </th>
             </tr>
           </thead>
