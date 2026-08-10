@@ -1,9 +1,10 @@
 "use server";
 
-import { OrderStatus } from "@/generated/prisma";
+import { DispatchTerms, OrderStatus } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
-import { withOrderComputed } from "@/lib/domain/computations";
+import { lineProfit, withOrderComputed } from "@/lib/domain/computations";
+import { listQualityReport } from "@/lib/actions/reports";
 
 function startOfLocalDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -52,30 +53,54 @@ type QualityDomestic = { domestic: boolean } | null | undefined;
 type DispatchSplitRow = {
   dispatchDate: Date;
   dispatchedQuantity: Decimal;
-  purchaseOrder: { qualityClass: QualityDomestic };
+  dispatchTerms: DispatchTerms;
+  freight: Decimal | null;
+  purchaseOrder: {
+    rate: Decimal | null;
+    qualityClass: QualityDomestic;
+  };
   vessel: { qualityClass: QualityDomestic };
-  order: { qualityClass: QualityDomestic };
+  order: {
+    rate: Decimal | null;
+    qualityClass: QualityDomestic;
+  };
 };
 
 function resolveDomestic(row: DispatchSplitRow): boolean {
-  const qc =
-    row.purchaseOrder.qualityClass ??
-    row.vessel.qualityClass ??
-    row.order.qualityClass;
-  return qc?.domestic === true;
+  return isDomesticQuality(
+    row.purchaseOrder.qualityClass,
+    row.vessel.qualityClass,
+    row.order.qualityClass,
+  );
+}
+
+function isDomesticQuality(
+  purchaseQc: QualityDomestic,
+  vesselQc: QualityDomestic,
+  orderQc: QualityDomestic,
+): boolean {
+  return (purchaseQc ?? vesselQc ?? orderQc)?.domestic === true;
 }
 
 const dispatchSplitSelect = {
   dispatchDate: true,
   dispatchedQuantity: true,
+  dispatchTerms: true,
+  freight: true,
   purchaseOrder: {
-    select: { qualityClass: { select: { domestic: true } } },
+    select: {
+      rate: true,
+      qualityClass: { select: { domestic: true } },
+    },
   },
   vessel: {
     select: { qualityClass: { select: { domestic: true } } },
   },
   order: {
-    select: { qualityClass: { select: { domestic: true } } },
+    select: {
+      rate: true,
+      qualityClass: { select: { domestic: true } },
+    },
   },
 } as const;
 
@@ -126,13 +151,24 @@ function addToSplit(
   }
 }
 
+function buildBuckets(
+  map: Map<string, SplitTotals>,
+  keys: { key: string; label: string; isCurrent: boolean }[],
+): DispatchSplitBucket[] {
+  return keys.map(({ key, label, isCurrent }) =>
+    toBucket(key, label, map.get(key) ?? emptySplit(), isCurrent),
+  );
+}
+
 /**
- * One query for both home charts: last 6 months (month-wise) and last 7 days
- * (day-wise), each split into domestic / imported.
+ * One query for home charts: last 6 months + last 7 days, each split into
+ * domestic / imported for both dispatch volume (MT) and basic-rate profit (Rs).
  */
 export async function getHomeDispatchCharts(): Promise<{
   months: DispatchSplitBucket[];
   days: DispatchSplitBucket[];
+  profitMonths: DispatchSplitBucket[];
+  profitDays: DispatchSplitBucket[];
 }> {
   const today = startOfLocalDay(new Date());
   const monthStart = startOfMonth(addMonths(today, -5));
@@ -151,35 +187,109 @@ export async function getHomeDispatchCharts(): Promise<{
     select: dispatchSplitSelect,
   });
 
-  const monthTotals = new Map<string, SplitTotals>();
+  const monthQty = new Map<string, SplitTotals>();
+  const monthProfit = new Map<string, SplitTotals>();
   for (let i = 0; i < 6; i++) {
-    monthTotals.set(monthKey(addMonths(monthStart, i)), emptySplit());
+    const key = monthKey(addMonths(monthStart, i));
+    monthQty.set(key, emptySplit());
+    monthProfit.set(key, emptySplit());
   }
 
-  const dayTotals = new Map<string, SplitTotals>();
+  const dayQty = new Map<string, SplitTotals>();
+  const dayProfit = new Map<string, SplitTotals>();
   for (let i = 0; i < 7; i++) {
-    dayTotals.set(dayKey(addDays(dayStart, i)), emptySplit());
+    const key = dayKey(addDays(dayStart, i));
+    dayQty.set(key, emptySplit());
+    dayProfit.set(key, emptySplit());
   }
 
   for (const row of rows) {
     const local = startOfLocalDay(row.dispatchDate);
     const domestic = resolveDomestic(row);
-    addToSplit(monthTotals, monthKey(local), row.dispatchedQuantity, domestic);
-    addToSplit(dayTotals, dayKey(local), row.dispatchedQuantity, domestic);
+    const mk = monthKey(local);
+    const dk = dayKey(local);
+
+    addToSplit(monthQty, mk, row.dispatchedQuantity, domestic);
+    addToSplit(dayQty, dk, row.dispatchedQuantity, domestic);
+
+    const profit = lineProfit({
+      saleRate: row.order.rate,
+      costRate: row.purchaseOrder.rate,
+      quantity: row.dispatchedQuantity,
+      dispatchTerms: row.dispatchTerms,
+      freight: row.freight,
+    });
+    if (profit != null) {
+      addToSplit(monthProfit, mk, profit, domestic);
+      addToSplit(dayProfit, dk, profit, domestic);
+    }
   }
 
-  const months = Array.from({ length: 6 }, (_, i) => {
+  const monthKeys = Array.from({ length: 6 }, (_, i) => {
     const month = addMonths(monthStart, i);
     const key = monthKey(month);
-    return toBucket(
+    return {
       key,
-      formatMonthLabel(month),
-      monthTotals.get(key) ?? emptySplit(),
-      key === currentMonthKey,
-    );
+      label: formatMonthLabel(month),
+      isCurrent: key === currentMonthKey,
+    };
   });
 
-  const days = Array.from({ length: 7 }, (_, i) => {
+  const dayKeys = Array.from({ length: 7 }, (_, i) => {
+    const day = addDays(dayStart, i);
+    const key = dayKey(day);
+    return {
+      key,
+      label: formatDayLabel(day),
+      isCurrent: key === todayKey,
+    };
+  });
+
+  return {
+    months: buildBuckets(monthQty, monthKeys),
+    days: buildBuckets(dayQty, dayKeys),
+    profitMonths: buildBuckets(monthProfit, monthKeys),
+    profitDays: buildBuckets(dayProfit, dayKeys),
+  };
+}
+
+/**
+ * Home fund chart: last 15 days of fund received only.
+ * Bucket field `domestic` holds received amount; `imported` is always 0.
+ */
+export async function getHomeFundCharts(): Promise<{
+  days: DispatchSplitBucket[];
+}> {
+  const today = startOfLocalDay(new Date());
+  const dayStart = addDays(today, -14);
+  const dayEnd = addDays(today, 1);
+  const todayKey = dayKey(today);
+
+  const rows = await prisma.payment.findMany({
+    where: {
+      direction: "RECEIVED",
+      date: {
+        gte: dayStart,
+        lt: dayEnd,
+      },
+    },
+    select: {
+      date: true,
+      amount: true,
+    },
+  });
+
+  const dayTotals = new Map<string, SplitTotals>();
+  for (let i = 0; i < 15; i++) {
+    dayTotals.set(dayKey(addDays(dayStart, i)), emptySplit());
+  }
+
+  for (const row of rows) {
+    const local = startOfLocalDay(row.date);
+    addToSplit(dayTotals, dayKey(local), row.amount, true);
+  }
+
+  const days = Array.from({ length: 15 }, (_, i) => {
     const day = addDays(dayStart, i);
     const key = dayKey(day);
     return toBucket(
@@ -190,11 +300,27 @@ export async function getHomeDispatchCharts(): Promise<{
     );
   });
 
-  return { months, days };
+  return { days };
 }
 
-/** Top 5 open-balance orders, largest remaining quantity first. */
-export async function getTopPendingOrdersByBalance(limit = 5) {
+export type PendingOrderRank = {
+  id: string;
+  poNumber: string;
+  customerName: string;
+  balance: string;
+  quantity: string;
+  dispatched: string;
+  orderStatus: OrderStatus;
+};
+
+/**
+ * Top pending sale orders by remaining balance, split by domestic vs imported
+ * quality on the order.
+ */
+export async function getTopPendingOrdersByCoalOrigin(limit = 10): Promise<{
+  domestic: PendingOrderRank[];
+  imported: PendingOrderRank[];
+}> {
   const rows = await prisma.order.findMany({
     where: {
       orderStatus: OrderStatus.RUNNING,
@@ -202,63 +328,61 @@ export async function getTopPendingOrdersByBalance(limit = 5) {
     },
     include: {
       customer: { select: { id: true, name: true } },
+      qualityClass: { select: { domestic: true } },
     },
   });
 
-  return rows
-    .map(withOrderComputed)
-    .filter((o) => o.balanceOrder != null && o.balanceOrder.gt(0))
-    .sort((a, b) => b.balanceOrder!.comparedTo(a.balanceOrder!))
-    .slice(0, limit)
-    .map((o) => ({
-      id: o.id,
-      poNumber: o.poNumber,
-      customerName: o.customer.name,
-      balance: o.balanceOrder!.toString(),
-      quantity: o.quantity!.toString(),
-      dispatched: o.dispatchedOrder.toString(),
-      orderStatus: o.orderStatus,
-    }));
-}
+  const mapped = rows
+    .map((o) => {
+      const computed = withOrderComputed(o);
+      return {
+        id: o.id,
+        poNumber: o.poNumber,
+        customerName: o.customer.name,
+        balance: computed.balanceOrder,
+        quantity: o.quantity!,
+        dispatched: o.dispatchedOrder,
+        orderStatus: o.orderStatus,
+        domestic: o.qualityClass?.domestic === true,
+      };
+    })
+    .filter((o) => o.balance != null && o.balance.gt(0));
 
-/** Top customers by dispatched volume over the last ~30 days. */
-export async function getTopCustomersByVolumeLastMonth(limit = 5) {
-  const since = addDays(startOfLocalDay(new Date()), -30);
-
-  const rows = await prisma.dispatch.findMany({
-    where: {
-      dispatchDate: { gte: since },
-    },
-    select: {
-      dispatchedQuantity: true,
-      order: {
-        select: {
-          customer: { select: { id: true, name: true } },
-        },
-      },
-    },
-  });
-
-  const byCustomer = new Map<
-    string,
-    { id: string; name: string; volume: Decimal }
-  >();
-
-  for (const row of rows) {
-    const customer = row.order.customer;
-    const existing = byCustomer.get(customer.id);
-    if (existing) {
-      existing.volume = existing.volume.plus(row.dispatchedQuantity);
-    } else {
-      byCustomer.set(customer.id, {
-        id: customer.id,
-        name: customer.name,
-        volume: new Decimal(row.dispatchedQuantity),
-      });
-    }
+  function toTop(domestic: boolean): PendingOrderRank[] {
+    return mapped
+      .filter((o) => o.domestic === domestic)
+      .sort((a, b) => b.balance!.comparedTo(a.balance!))
+      .slice(0, limit)
+      .map((o) => ({
+        id: o.id,
+        poNumber: o.poNumber,
+        customerName: o.customerName,
+        balance: o.balance!.toString(),
+        quantity: o.quantity.toString(),
+        dispatched: o.dispatched.toString(),
+        orderStatus: o.orderStatus,
+      }));
   }
 
-  return Array.from(byCustomer.values())
+  return {
+    domestic: toTop(true),
+    imported: toTop(false),
+  };
+}
+
+export type TopCustomerVolume = {
+  id: string;
+  name: string;
+  volume: string;
+};
+
+type CustomerVolumeAgg = { id: string; name: string; volume: Decimal };
+
+function toTopCustomerVolumes(
+  map: Map<string, CustomerVolumeAgg>,
+  limit: number,
+): TopCustomerVolume[] {
+  return Array.from(map.values())
     .sort((a, b) => b.volume.comparedTo(a.volume))
     .slice(0, limit)
     .map((c) => ({
@@ -266,4 +390,139 @@ export async function getTopCustomersByVolumeLastMonth(limit = 5) {
       name: c.name,
       volume: c.volume.toString(),
     }));
+}
+
+function addCustomerVolume(
+  map: Map<string, CustomerVolumeAgg>,
+  customer: { id: string; name: string },
+  qty: Decimal,
+) {
+  const existing = map.get(customer.id);
+  if (existing) {
+    existing.volume = existing.volume.plus(qty);
+  } else {
+    map.set(customer.id, {
+      id: customer.id,
+      name: customer.name,
+      volume: new Decimal(qty),
+    });
+  }
+}
+
+/**
+ * Top customers by dispatch volume, split by domestic vs imported quality.
+ * Returns last-30-day rankings and all-time (total) rankings.
+ */
+export async function getTopCustomersByCoalOrigin(limit = 7): Promise<{
+  last30: { domestic: TopCustomerVolume[]; imported: TopCustomerVolume[] };
+  total: { domestic: TopCustomerVolume[]; imported: TopCustomerVolume[] };
+}> {
+  const since30 = addDays(startOfLocalDay(new Date()), -30);
+
+  const rows = await prisma.dispatch.findMany({
+    select: {
+      dispatchDate: true,
+      dispatchedQuantity: true,
+      purchaseOrder: {
+        select: { qualityClass: { select: { domestic: true } } },
+      },
+      vessel: {
+        select: { qualityClass: { select: { domestic: true } } },
+      },
+      order: {
+        select: {
+          qualityClass: { select: { domestic: true } },
+          customer: { select: { id: true, name: true } },
+        },
+      },
+    },
+  });
+
+  const last30Domestic = new Map<string, CustomerVolumeAgg>();
+  const last30Imported = new Map<string, CustomerVolumeAgg>();
+  const totalDomestic = new Map<string, CustomerVolumeAgg>();
+  const totalImported = new Map<string, CustomerVolumeAgg>();
+
+  for (const row of rows) {
+    const customer = row.order.customer;
+    const isDomestic = isDomesticQuality(
+      row.purchaseOrder.qualityClass,
+      row.vessel.qualityClass,
+      row.order.qualityClass,
+    );
+    const totalMap = isDomestic ? totalDomestic : totalImported;
+    addCustomerVolume(totalMap, customer, row.dispatchedQuantity);
+
+    if (startOfLocalDay(row.dispatchDate) >= since30) {
+      const last30Map = isDomestic ? last30Domestic : last30Imported;
+      addCustomerVolume(last30Map, customer, row.dispatchedQuantity);
+    }
+  }
+
+  return {
+    last30: {
+      domestic: toTopCustomerVolumes(last30Domestic, limit),
+      imported: toTopCustomerVolumes(last30Imported, limit),
+    },
+    total: {
+      domestic: toTopCustomerVolumes(totalDomestic, limit),
+      imported: toTopCustomerVolumes(totalImported, limit),
+    },
+  };
+}
+
+export type HomeQualityStockRow = {
+  id: string;
+  origin: string;
+  quality: string;
+  stockInHand: string;
+  orderInHand: string;
+  unsoldQty: string;
+};
+
+/**
+ * Quality-class stock lists for home: domestic / imported.
+ * Hides classes where stock, order in hand, and unsold are all zero.
+ */
+export async function getHomeQualityStockLists(): Promise<{
+  domestic: HomeQualityStockRow[];
+  imported: HomeQualityStockRow[];
+}> {
+  const rows = await listQualityReport();
+
+  const mapped = rows
+    .map((row) => {
+      const stock = Number(row.poBalance) || 0;
+      const order = Number(row.soBalance) || 0;
+      const unsold = Number(row.unsoldQuantity) || 0;
+      return {
+        id: row.id,
+        domestic: row.qualityClass.domestic,
+        origin: row.qualityClass.origin.name,
+        quality: row.qualityClass.qualityOption.name,
+        stockInHand: row.poBalance,
+        orderInHand: row.soBalance,
+        unsoldQty: row.unsoldQuantity,
+        allZero: stock === 0 && order === 0 && unsold === 0,
+      };
+    })
+    .filter((row) => !row.allZero);
+
+  function toList(domestic: boolean): HomeQualityStockRow[] {
+    return mapped
+      .filter((row) => row.domestic === domestic)
+      .map(({ id, origin, quality, stockInHand, orderInHand, unsoldQty }) => ({
+        id,
+        origin,
+        quality,
+        stockInHand,
+        orderInHand,
+        unsoldQty,
+      }));
+  }
+
+  return {
+    domestic: toList(true),
+    imported: toList(false),
+  };
 }

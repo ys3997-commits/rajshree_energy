@@ -2238,6 +2238,14 @@ table.data tbody tr.customer-row-inactive:hover td {
   margin-bottom: 1.25rem;
 }
 
+.home-dispatch-grid-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.home-split-bars.is-single .home-split-bar {
+  max-width: 40px;
+}
+
 .home-dispatch-head {
   margin-bottom: 0.85rem;
 }
@@ -2380,6 +2388,10 @@ table.data tbody tr.customer-row-inactive:hover td {
 .home-split-fill.is-imported {
   background: linear-gradient(180deg, #dbb07a 0%, #9a6b2f 100%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.home-split-fill.is-negative {
+  opacity: 0.55;
 }
 
 .home-split-col.is-current .home-split-fill.is-domestic {
@@ -2548,6 +2560,107 @@ a.home-rank-row:hover {
 
 .home-rank-metric {
   text-align: right;
+}
+
+.home-rank-metrics-triple {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.1rem;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.home-rank-metrics-triple .home-rank-metric-value {
+  font-size: 0.85rem;
+}
+
+.home-rank-metrics-triple .home-rank-metric-label {
+  font-size: 0.62rem;
+}
+
+.home-quality-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.home-quality-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+}
+
+a.home-quality-row:hover {
+  background: rgba(31, 92, 85, 0.06);
+}
+
+.home-quality-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.home-quality-origin {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.home-quality-grade {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.home-quality-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.home-quality-metric {
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(20, 23, 28, 0.035);
+}
+
+.home-quality-metric-value {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.home-quality-metric-label {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+@media (max-width: 900px) {
+  .home-quality-metrics {
+    grid-template-columns: 1fr;
+  }
 }
 
 .home-rank-metric-value {

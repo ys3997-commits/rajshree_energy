@@ -1,8 +1,10 @@
 import Link from "next/link";
 import {
   getHomeDispatchCharts,
-  getTopCustomersByVolumeLastMonth,
-  getTopPendingOrdersByBalance,
+  getHomeFundCharts,
+  getHomeQualityStockLists,
+  getTopCustomersByCoalOrigin,
+  getTopPendingOrdersByCoalOrigin,
 } from "@/lib/actions/dashboard";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
 import { listPurchaseOrdersWithBalance, suggestNextPurchasePoNumber } from "@/lib/actions/purchaseOrders";
@@ -12,19 +14,21 @@ import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { suggestNextPoNumber } from "@/lib/actions/dispatch";
-import { formatMt } from "@/lib/domain/format";
+import { formatDispatchMt } from "@/lib/domain/format";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
 import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
 
 function formatQty(value: string): string {
-  return formatMt(value);
+  return formatDispatchMt(value);
 }
 
 export default async function HomePage() {
   const [
     dispatchCharts,
-    pendingOrders,
-    topCustomers,
+    fundCharts,
+    pendingOrdersByCoal,
+    topCustomersByCoal,
+    qualityStockLists,
     customers,
     ports,
     balanceOrders,
@@ -36,8 +40,10 @@ export default async function HomePage() {
     suggestedPurchasePo,
   ] = await Promise.all([
     getHomeDispatchCharts(),
-    getTopPendingOrdersByBalance(5),
-    getTopCustomersByVolumeLastMonth(5),
+    getHomeFundCharts(),
+    getTopPendingOrdersByCoalOrigin(10),
+    getTopCustomersByCoalOrigin(7),
+    getHomeQualityStockLists(),
     listCustomers({ activeOnly: true }),
     listPortOptions(),
     listOrdersWithBalance(),
@@ -51,9 +57,32 @@ export default async function HomePage() {
 
   const monthlyDispatches = dispatchCharts.months;
   const dailyDispatches = dispatchCharts.days;
+  const monthlyProfit = dispatchCharts.profitMonths;
+  const dailyProfit = dispatchCharts.profitDays;
+  const dailyFundsReceived = fundCharts.days;
+  const pendingDomesticOrders = pendingOrdersByCoal.domestic;
+  const pendingImportedOrders = pendingOrdersByCoal.imported;
+  const topDomesticCustomers = topCustomersByCoal.last30.domestic;
+  const topImportedCustomers = topCustomersByCoal.last30.imported;
+  const topDomesticTotal = topCustomersByCoal.total.domestic;
+  const topImportedTotal = topCustomersByCoal.total.imported;
+  const domesticQualityStock = qualityStockLists.domestic;
+  const importedQualityStock = qualityStockLists.imported;
 
-  const maxCustomer = Math.max(
-    ...topCustomers.map((c) => Number(c.volume) || 0),
+  const maxDomestic = Math.max(
+    ...topDomesticCustomers.map((c) => Number(c.volume) || 0),
+    0,
+  );
+  const maxImported = Math.max(
+    ...topImportedCustomers.map((c) => Number(c.volume) || 0),
+    0,
+  );
+  const maxDomesticTotal = Math.max(
+    ...topDomesticTotal.map((c) => Number(c.volume) || 0),
+    0,
+  );
+  const maxImportedTotal = Math.max(
+    ...topImportedTotal.map((c) => Number(c.volume) || 0),
     0,
   );
 
@@ -78,7 +107,7 @@ export default async function HomePage() {
         <div>
           <h1 className="page-title">Home</h1>
           <p className="page-subtitle">
-            Dispatch pulse, pending balances, and top movers.
+            Dispatch, profit, and fund pulse, pending balances, and top movers.
           </p>
         </div>
       </div>
@@ -122,16 +151,346 @@ export default async function HomePage() {
       <div className="home-dispatch-grid">
         <HomeDispatchSplitChart
           eyebrow="Last 6 months"
-          title="Monthly dispatches"
+          title="Monthly Dispatch"
           buckets={monthlyDispatches}
           ariaLabel="Month-wise domestic and imported dispatch totals"
         />
         <HomeDispatchSplitChart
           eyebrow="Last 7 days"
-          title="Daily dispatches"
+          title="Daily Dispatch"
           buckets={dailyDispatches}
           ariaLabel="Day-wise domestic and imported dispatch totals"
         />
+      </div>
+
+      <div className="home-dispatch-grid">
+        <HomeDispatchSplitChart
+          eyebrow="Last 6 months · basic-rate margin"
+          title="Monthly Profit"
+          buckets={monthlyProfit}
+          valueKind="rupees"
+          ariaLabel="Month-wise domestic and imported profit totals"
+        />
+        <HomeDispatchSplitChart
+          eyebrow="Last 7 days · basic-rate margin"
+          title="Daily Profit"
+          buckets={dailyProfit}
+          valueKind="rupees"
+          ariaLabel="Day-wise domestic and imported profit totals"
+        />
+      </div>
+
+      <div className="home-dispatch-grid home-dispatch-grid-single">
+        <HomeDispatchSplitChart
+          eyebrow="Last 15 days"
+          title="Fund Received"
+          buckets={dailyFundsReceived}
+          valueKind="rupees"
+          totalMode="left"
+          hideTotals
+          seriesLabels={{ left: "Received", total: "Total" }}
+          ariaLabel="Day-wise fund received totals for the last 15 days"
+        />
+      </div>
+
+      <div className="home-grid">
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <p className="home-eyebrow">Last 30 days · volume</p>
+              <h2 className="home-panel-title">Top Domestic Coal Buyer</h2>
+            </div>
+            <Link href="/customers" className="home-panel-link">
+              Customers
+            </Link>
+          </div>
+
+          {topDomesticCustomers.length === 0 ? (
+            <p className="home-empty">No domestic dispatches in the last month.</p>
+          ) : (
+            <ul className="home-rank-list">
+              {topDomesticCustomers.map((customer, index) => {
+                const volume = Number(customer.volume) || 0;
+                const width =
+                  maxDomestic > 0 ? (volume / maxDomestic) * 100 : 0;
+                return (
+                  <li key={customer.id}>
+                    <div className="home-rank-row home-rank-row-static">
+                      <span className="home-rank-index">{index + 1}</span>
+                      <span className="home-rank-main">
+                        <span className="home-rank-title">{customer.name}</span>
+                        <span className="home-inline-bar" aria-hidden="true">
+                          <span style={{ width: `${width}%` }} />
+                        </span>
+                      </span>
+                      <span className="home-rank-metric">
+                        <span className="home-rank-metric-value">
+                          {formatQty(customer.volume)}
+                        </span>
+                        <span className="home-rank-metric-label">volume</span>
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <p className="home-eyebrow">Last 30 days · volume</p>
+              <h2 className="home-panel-title">Top Imported Coal Buyer</h2>
+            </div>
+            <Link href="/customers" className="home-panel-link">
+              Customers
+            </Link>
+          </div>
+
+          {topImportedCustomers.length === 0 ? (
+            <p className="home-empty">No imported dispatches in the last month.</p>
+          ) : (
+            <ul className="home-rank-list">
+              {topImportedCustomers.map((customer, index) => {
+                const volume = Number(customer.volume) || 0;
+                const width =
+                  maxImported > 0 ? (volume / maxImported) * 100 : 0;
+                return (
+                  <li key={customer.id}>
+                    <div className="home-rank-row home-rank-row-static">
+                      <span className="home-rank-index">{index + 1}</span>
+                      <span className="home-rank-main">
+                        <span className="home-rank-title">{customer.name}</span>
+                        <span className="home-inline-bar" aria-hidden="true">
+                          <span style={{ width: `${width}%` }} />
+                        </span>
+                      </span>
+                      <span className="home-rank-metric">
+                        <span className="home-rank-metric-value">
+                          {formatQty(customer.volume)}
+                        </span>
+                        <span className="home-rank-metric-label">volume</span>
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <p className="home-eyebrow">All time · total volume</p>
+              <h2 className="home-panel-title">Top Domestic Coal Buyer</h2>
+            </div>
+            <Link href="/customers" className="home-panel-link">
+              Customers
+            </Link>
+          </div>
+
+          {topDomesticTotal.length === 0 ? (
+            <p className="home-empty">No domestic dispatches yet.</p>
+          ) : (
+            <ul className="home-rank-list">
+              {topDomesticTotal.map((customer, index) => {
+                const volume = Number(customer.volume) || 0;
+                const width =
+                  maxDomesticTotal > 0 ? (volume / maxDomesticTotal) * 100 : 0;
+                return (
+                  <li key={customer.id}>
+                    <div className="home-rank-row home-rank-row-static">
+                      <span className="home-rank-index">{index + 1}</span>
+                      <span className="home-rank-main">
+                        <span className="home-rank-title">{customer.name}</span>
+                        <span className="home-inline-bar" aria-hidden="true">
+                          <span style={{ width: `${width}%` }} />
+                        </span>
+                      </span>
+                      <span className="home-rank-metric">
+                        <span className="home-rank-metric-value">
+                          {formatQty(customer.volume)}
+                        </span>
+                        <span className="home-rank-metric-label">
+                          total volume
+                        </span>
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <p className="home-eyebrow">All time · total volume</p>
+              <h2 className="home-panel-title">Top Imported Coal Buyer</h2>
+            </div>
+            <Link href="/customers" className="home-panel-link">
+              Customers
+            </Link>
+          </div>
+
+          {topImportedTotal.length === 0 ? (
+            <p className="home-empty">No imported dispatches yet.</p>
+          ) : (
+            <ul className="home-rank-list">
+              {topImportedTotal.map((customer, index) => {
+                const volume = Number(customer.volume) || 0;
+                const width =
+                  maxImportedTotal > 0 ? (volume / maxImportedTotal) * 100 : 0;
+                return (
+                  <li key={customer.id}>
+                    <div className="home-rank-row home-rank-row-static">
+                      <span className="home-rank-index">{index + 1}</span>
+                      <span className="home-rank-main">
+                        <span className="home-rank-title">{customer.name}</span>
+                        <span className="home-inline-bar" aria-hidden="true">
+                          <span style={{ width: `${width}%` }} />
+                        </span>
+                      </span>
+                      <span className="home-rank-metric">
+                        <span className="home-rank-metric-value">
+                          {formatQty(customer.volume)}
+                        </span>
+                        <span className="home-rank-metric-label">
+                          total volume
+                        </span>
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <p className="home-eyebrow">PO − SO balances</p>
+              <h2 className="home-panel-title">Domestic Coal Stock</h2>
+            </div>
+            <Link href="/reports/product" className="home-panel-link">
+              Quality report
+            </Link>
+          </div>
+
+          {domesticQualityStock.length === 0 ? (
+            <p className="home-empty">No domestic quality stock to show.</p>
+          ) : (
+            <ul className="home-quality-list">
+              {domesticQualityStock.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/reports/product/${row.id}`}
+                    className="home-quality-row"
+                  >
+                    <div className="home-quality-name">
+                      <span className="home-quality-origin">
+                        {row.origin} - {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-quality-metrics">
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.stockInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Stock in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.orderInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Order in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.unsoldQty)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Unsold qty
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <p className="home-eyebrow">PO − SO balances</p>
+              <h2 className="home-panel-title">Imported Coal Stock</h2>
+            </div>
+            <Link href="/reports/product" className="home-panel-link">
+              Quality report
+            </Link>
+          </div>
+
+          {importedQualityStock.length === 0 ? (
+            <p className="home-empty">No imported quality stock to show.</p>
+          ) : (
+            <ul className="home-quality-list">
+              {importedQualityStock.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/reports/product/${row.id}`}
+                    className="home-quality-row"
+                  >
+                    <div className="home-quality-name">
+                      <span className="home-quality-origin">
+                        {row.origin} - {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-quality-metrics">
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.stockInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Stock in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.orderInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Order in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.unsoldQty)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Unsold qty
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
 
       <section className="home-section">
@@ -199,26 +558,26 @@ export default async function HomePage() {
         <section className="home-panel">
           <div className="home-panel-head">
             <div>
-              <p className="home-eyebrow">Largest balance first</p>
-              <h2 className="home-panel-title">Pending orders</h2>
+              <p className="home-eyebrow">Largest balance first · top 10</p>
+              <h2 className="home-panel-title">Top Domestic Coal</h2>
             </div>
             <Link href="/orders?status=RUNNING" className="home-panel-link">
               View all
             </Link>
           </div>
 
-          {pendingOrders.length === 0 ? (
-            <p className="home-empty">No pending balances right now.</p>
+          {pendingDomesticOrders.length === 0 ? (
+            <p className="home-empty">No pending domestic orders right now.</p>
           ) : (
             <ul className="home-rank-list">
-              {pendingOrders.map((order, index) => (
+              {pendingDomesticOrders.map((order, index) => (
                 <li key={order.id}>
                   <Link href={`/orders/${order.id}`} className="home-rank-row">
                     <span className="home-rank-index">{index + 1}</span>
                     <span className="home-rank-main">
-                      <span className="home-rank-title">{order.poNumber}</span>
+                      <span className="home-rank-title">{order.customerName}</span>
                       <span className="home-rank-meta">
-                        {order.customerName}
+                        {order.poNumber}
                         <span className="home-dot" />
                         Running
                       </span>
@@ -227,7 +586,7 @@ export default async function HomePage() {
                       <span className="home-rank-metric-value">
                         {formatQty(order.balance)}
                       </span>
-                      <span className="home-rank-metric-label">MT balance</span>
+                      <span className="home-rank-metric-label">balance</span>
                     </span>
                   </Link>
                 </li>
@@ -239,45 +598,39 @@ export default async function HomePage() {
         <section className="home-panel">
           <div className="home-panel-head">
             <div>
-              <p className="home-eyebrow">Last 30 days</p>
-              <h2 className="home-panel-title">Top customers</h2>
+              <p className="home-eyebrow">Largest balance first · top 10</p>
+              <h2 className="home-panel-title">Top Imported Coal</h2>
             </div>
-            <Link href="/customers" className="home-panel-link">
-              Customers
+            <Link href="/orders?status=RUNNING" className="home-panel-link">
+              View all
             </Link>
           </div>
 
-          {topCustomers.length === 0 ? (
-            <p className="home-empty">No dispatches in the last month.</p>
+          {pendingImportedOrders.length === 0 ? (
+            <p className="home-empty">No pending imported orders right now.</p>
           ) : (
             <ul className="home-rank-list">
-              {topCustomers.map((customer, index) => {
-                const volume = Number(customer.volume) || 0;
-                const width =
-                  maxCustomer > 0 ? (volume / maxCustomer) * 100 : 0;
-                return (
-                  <li key={customer.id}>
-                    <div className="home-rank-row home-rank-row-static">
-                      <span className="home-rank-index">{index + 1}</span>
-                      <span className="home-rank-main">
-                        <span className="home-rank-title">{customer.name}</span>
-                        <span
-                          className="home-inline-bar"
-                          aria-hidden="true"
-                        >
-                          <span style={{ width: `${width}%` }} />
-                        </span>
+              {pendingImportedOrders.map((order, index) => (
+                <li key={order.id}>
+                  <Link href={`/orders/${order.id}`} className="home-rank-row">
+                    <span className="home-rank-index">{index + 1}</span>
+                    <span className="home-rank-main">
+                      <span className="home-rank-title">{order.customerName}</span>
+                      <span className="home-rank-meta">
+                        {order.poNumber}
+                        <span className="home-dot" />
+                        Running
                       </span>
-                      <span className="home-rank-metric">
-                        <span className="home-rank-metric-value">
-                          {formatQty(customer.volume)}
-                        </span>
-                        <span className="home-rank-metric-label">MT volume</span>
+                    </span>
+                    <span className="home-rank-metric">
+                      <span className="home-rank-metric-value">
+                        {formatQty(order.balance)}
                       </span>
-                    </div>
-                  </li>
-                );
-              })}
+                      <span className="home-rank-metric-label">balance</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
             </ul>
           )}
         </section>
