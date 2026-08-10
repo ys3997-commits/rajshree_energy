@@ -206,7 +206,9 @@ export function effectiveSaleRate(args: {
   return args.saleRate;
 }
 
-/** Sale rate − purchase (cost) rate per MT when both present. FOR subtracts freight first. */
+/** Sale rate − purchase (cost) rate per MT when both present.
+ * Uses basic rates; FOR subtracts freight PMT from sale before subtracting cost.
+ */
 export function profitPerMt(args: {
   saleRate: Decimal | null;
   costRate: Decimal | null;
@@ -234,7 +236,10 @@ export function purchaseCostRate(order: {
   return order.rate;
 }
 
-/** (effective saleRate − costRate) × qty when rates present. */
+/**
+ * Line profit = weight × (basic sale − freight PMT if FOR − basic purchase).
+ * Pass basic rates (order.rate / purchaseOrder.rate), not final/all-in rates.
+ */
 export function lineProfit(args: {
   saleRate: Decimal | null;
   costRate: Decimal | null;

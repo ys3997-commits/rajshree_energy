@@ -10,8 +10,6 @@ import {
   diffInQuantity,
   effectiveSaleRate,
   lineProfit,
-  purchaseCostRate,
-  saleRevenueRate,
   toDecimal,
 } from "@/lib/domain/computations";
 
@@ -223,8 +221,8 @@ export async function listCustomerAnalysisReport(): Promise<
     agg.volume = agg.volume.plus(d.dispatchedQuantity);
 
     const profit = lineProfit({
-      saleRate: saleRevenueRate(d.order),
-      costRate: d.purchaseOrder ? purchaseCostRate(d.purchaseOrder) : null,
+      saleRate: d.order.rate,
+      costRate: d.purchaseOrder?.rate ?? null,
       quantity: d.dispatchedQuantity,
       dispatchTerms: d.dispatchTerms,
       freight: d.freight,
@@ -352,14 +350,12 @@ function aggregateSide(args: {
       lastDispatchDate = d.dispatchDate;
     }
 
-    const saleRate = d.order ? saleRevenueRate(d.order) : null;
-    const costRate = d.purchaseOrder
-      ? purchaseCostRate(d.purchaseOrder)
-      : null;
+    const basicSale = d.order?.rate ?? null;
+    const basicCost = d.purchaseOrder?.rate ?? null;
 
     const profit = lineProfit({
-      saleRate,
-      costRate,
+      saleRate: basicSale,
+      costRate: basicCost,
       quantity: d.dispatchedQuantity,
       dispatchTerms: d.dispatchTerms,
       freight: d.freight,
@@ -369,7 +365,7 @@ function aggregateSide(args: {
     }
 
     const goodsRate = effectiveSaleRate({
-      saleRate,
+      saleRate: basicSale,
       dispatchTerms: d.dispatchTerms,
       freight: d.freight,
     });
@@ -493,10 +489,8 @@ export async function getCustomerAnalysis(
       purchaseOrderId: row.purchaseOrder?.id ?? null,
       lineProfit:
         lineProfit({
-          saleRate: row.order ? saleRevenueRate(row.order) : null,
-          costRate: row.purchaseOrder
-            ? purchaseCostRate(row.purchaseOrder)
-            : null,
+          saleRate: row.order?.rate ?? null,
+          costRate: row.purchaseOrder?.rate ?? null,
           quantity: row.dispatchedQuantity,
           dispatchTerms: row.dispatchTerms,
           freight: row.freight,

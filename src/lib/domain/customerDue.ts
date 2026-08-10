@@ -91,7 +91,7 @@ export function discountDueDelta(
   amount: DecimalLike,
 ): Decimal {
   const amt = toDecimal(amount);
-  if (status === DiscountStatus.PAID || status === "PAID") {
+  if (status === DiscountStatus.PAID) {
     return amt.neg();
   }
   return amt;

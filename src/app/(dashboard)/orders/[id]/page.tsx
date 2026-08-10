@@ -4,8 +4,6 @@ import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import {
   lineProfit,
-  purchaseCostRate,
-  saleRevenueRate,
 } from "@/lib/domain/computations";
 import { OrderDetailClient } from "./OrderDetailClient";
 
@@ -74,10 +72,8 @@ export default async function OrderDetailPage({
           transporter: d.transporter,
           lineProfit:
             lineProfit({
-              saleRate: saleRevenueRate(order),
-              costRate: d.purchaseOrder
-                ? purchaseCostRate(d.purchaseOrder)
-                : null,
+              saleRate: order.rate,
+              costRate: d.purchaseOrder?.rate ?? null,
               quantity: d.dispatchedQuantity,
               dispatchTerms: d.dispatchTerms,
               freight: d.freight,

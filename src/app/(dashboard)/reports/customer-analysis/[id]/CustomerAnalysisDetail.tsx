@@ -13,6 +13,7 @@ import {
   capitalizeName,
   formatCreditPeriod,
   formatCustomerCategory,
+  formatDispatchMt,
   formatMt,
   formatPurchaseOrderStatus,
   formatRs,
@@ -301,7 +302,7 @@ export function CustomerAnalysisDetail({
         vessel: d.vesselName,
         salePo: d.salePoNumber,
         purchasePo: d.purchasePoNumber,
-        qty: formatMt(d.dispatchedQuantity),
+        qty: formatDispatchMt(d.dispatchedQuantity),
         profit: formatRs(d.lineProfit),
       })),
       title: `${displayName} — dispatches`,
@@ -542,7 +543,9 @@ export function CustomerAnalysisDetail({
                           d.purchasePoNumber
                         )}
                       </td>
-                      <td className="num">{formatMt(d.dispatchedQuantity)}</td>
+                      <td className="num">
+                        {formatDispatchMt(d.dispatchedQuantity)}
+                      </td>
                       <td className="num">{formatRs(d.lineProfit)}</td>
                     </tr>
                   ))}

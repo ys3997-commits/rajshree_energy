@@ -1,11 +1,7 @@
 import { notFound } from "next/navigation";
 import { getPurchaseOrder } from "@/lib/actions/purchaseOrders";
 import { listQualityClasses } from "@/lib/actions/qualities";
-import {
-  lineProfit,
-  purchaseCostRate,
-  saleRevenueRate,
-} from "@/lib/domain/computations";
+import { lineProfit } from "@/lib/domain/computations";
 import { PurchaseOrderDetailClient } from "./PurchaseOrderDetailClient";
 
 export default async function PurchaseOrderDetailPage({
@@ -19,8 +15,6 @@ export default async function PurchaseOrderDetailPage({
     listQualityClasses(),
   ]);
   if (!order) notFound();
-
-  const costRate = purchaseCostRate(order);
 
   return (
     <PurchaseOrderDetailClient
@@ -61,8 +55,8 @@ export default async function PurchaseOrderDetailPage({
           transporter: d.transporter,
           lineProfit:
             lineProfit({
-              saleRate: d.order ? saleRevenueRate(d.order) : null,
-              costRate,
+              saleRate: d.order?.rate ?? null,
+              costRate: order.rate,
               quantity: d.dispatchedQuantity,
               dispatchTerms: d.dispatchTerms,
               freight: d.freight,
