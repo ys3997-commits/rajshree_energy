@@ -13542,7 +13542,7 @@ export namespace Prisma {
        */
       openingDue: Prisma.Decimal
       /**
-       * Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent).
+       * Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent − discount paid + discount received).
        */
       due: Prisma.Decimal
       /**

@@ -37,3 +37,9 @@ yarn-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prisma query engines (generated per-platform by `prisma generate`)
+src/generated/prisma/*.node
+src/generated/prisma/*.node.tmp*
+src/generated/prisma/libquery_engine-*
+src/generated/prisma/query_engine-*

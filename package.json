@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NODE_OPTIONS='--dns-result-order=ipv6first' next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && node scripts/prune-prisma-nft.mjs && next build",
     "start": "NODE_OPTIONS='--dns-result-order=ipv6first' next start",
     "lint": "eslint",
     "test": "vitest run",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && node scripts/prune-prisma-nft.mjs",
     "db:push": "NODE_OPTIONS='--dns-result-order=ipv6first' prisma db push",
     "db:seed": "NODE_OPTIONS='--dns-result-order=ipv6first' prisma db seed",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate && node scripts/prune-prisma-nft.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -1,6 +1,8 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  /// native for local dev; rhel-openssl-3.0.x for Vercel Node runtimes
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
@@ -200,7 +202,7 @@ model Customer {
   dealingCompany            String?
   /// Carry-forward balance from before this system (manual). Included in `due`.
   openingDue                Decimal          @default(0) @db.Decimal(18, 2)
-  /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent).
+  /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent − discount paid + discount received).
   due                       Decimal          @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?
