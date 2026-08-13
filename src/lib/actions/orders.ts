@@ -399,7 +399,7 @@ export async function updateOrderFields(
 
 /**
  * Write off the remaining balance as closingQuantity and mark the order completed.
- * Balance becomes 0; further dispatches are blocked by the zero balance check.
+ * Balance becomes 0.
  */
 export async function closeOrderQuantity(id: string) {
   const existing = await prisma.order.findUnique({ where: { id } });

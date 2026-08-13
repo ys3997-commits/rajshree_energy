@@ -3775,8 +3775,18 @@ export namespace Prisma {
 
   export type AggregateTransporter = {
     _count: TransporterCountAggregateOutputType | null
+    _avg: TransporterAvgAggregateOutputType | null
+    _sum: TransporterSumAggregateOutputType | null
     _min: TransporterMinAggregateOutputType | null
     _max: TransporterMaxAggregateOutputType | null
+  }
+
+  export type TransporterAvgAggregateOutputType = {
+    openingDue: Decimal | null
+  }
+
+  export type TransporterSumAggregateOutputType = {
+    openingDue: Decimal | null
   }
 
   export type TransporterMinAggregateOutputType = {
@@ -3788,6 +3798,7 @@ export namespace Prisma {
     email: string | null
     city: string | null
     state: string | null
+    openingDue: Decimal | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3801,6 +3812,7 @@ export namespace Prisma {
     email: string | null
     city: string | null
     state: string | null
+    openingDue: Decimal | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3814,11 +3826,20 @@ export namespace Prisma {
     email: number
     city: number
     state: number
+    openingDue: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
+
+  export type TransporterAvgAggregateInputType = {
+    openingDue?: true
+  }
+
+  export type TransporterSumAggregateInputType = {
+    openingDue?: true
+  }
 
   export type TransporterMinAggregateInputType = {
     id?: true
@@ -3829,6 +3850,7 @@ export namespace Prisma {
     email?: true
     city?: true
     state?: true
+    openingDue?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3842,6 +3864,7 @@ export namespace Prisma {
     email?: true
     city?: true
     state?: true
+    openingDue?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3855,6 +3878,7 @@ export namespace Prisma {
     email?: true
     city?: true
     state?: true
+    openingDue?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3898,6 +3922,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TransporterAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TransporterSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TransporterMinAggregateInputType
@@ -3928,6 +3964,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TransporterCountAggregateInputType | true
+    _avg?: TransporterAvgAggregateInputType
+    _sum?: TransporterSumAggregateInputType
     _min?: TransporterMinAggregateInputType
     _max?: TransporterMaxAggregateInputType
   }
@@ -3941,9 +3979,12 @@ export namespace Prisma {
     email: string | null
     city: string | null
     state: string | null
+    openingDue: Decimal
     createdAt: Date
     updatedAt: Date
     _count: TransporterCountAggregateOutputType | null
+    _avg: TransporterAvgAggregateOutputType | null
+    _sum: TransporterSumAggregateOutputType | null
     _min: TransporterMinAggregateOutputType | null
     _max: TransporterMaxAggregateOutputType | null
   }
@@ -3971,6 +4012,7 @@ export namespace Prisma {
     email?: boolean
     city?: boolean
     state?: boolean
+    openingDue?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dispatches?: boolean | Transporter$dispatchesArgs<ExtArgs>
@@ -3986,6 +4028,7 @@ export namespace Prisma {
     email?: boolean
     city?: boolean
     state?: boolean
+    openingDue?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["transporter"]>
@@ -3999,6 +4042,7 @@ export namespace Prisma {
     email?: boolean
     city?: boolean
     state?: boolean
+    openingDue?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -4026,6 +4070,10 @@ export namespace Prisma {
       email: string | null
       city: string | null
       state: string | null
+      /**
+       * Carry-forward balance before this system (manual). Treated as on 01/08/2026.
+       */
+      openingDue: Prisma.Decimal
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["transporter"]>
@@ -4430,6 +4478,7 @@ export namespace Prisma {
     readonly email: FieldRef<"Transporter", 'String'>
     readonly city: FieldRef<"Transporter", 'String'>
     readonly state: FieldRef<"Transporter", 'String'>
+    readonly openingDue: FieldRef<"Transporter", 'Decimal'>
     readonly createdAt: FieldRef<"Transporter", 'DateTime'>
     readonly updatedAt: FieldRef<"Transporter", 'DateTime'>
   }
@@ -21207,6 +21256,7 @@ export namespace Prisma {
     email: 'email',
     city: 'city',
     state: 'state',
+    openingDue: 'openingDue',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -21518,6 +21568,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Decimal'
+   */
+  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
+    
+
+
+  /**
+   * Reference to a field of type 'Decimal[]'
+   */
+  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -21549,20 +21613,6 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Decimal'
-   */
-  export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
-    
-
-
-  /**
-   * Reference to a field of type 'Decimal[]'
-   */
-  export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
     
 
 
@@ -21751,6 +21801,7 @@ export namespace Prisma {
     email?: StringNullableFilter<"Transporter"> | string | null
     city?: StringNullableFilter<"Transporter"> | string | null
     state?: StringNullableFilter<"Transporter"> | string | null
+    openingDue?: DecimalFilter<"Transporter"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Transporter"> | Date | string
     updatedAt?: DateTimeFilter<"Transporter"> | Date | string
     dispatches?: DispatchListRelationFilter
@@ -21765,6 +21816,7 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     state?: SortOrderInput | SortOrder
+    openingDue?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dispatches?: DispatchOrderByRelationAggregateInput
@@ -21782,6 +21834,7 @@ export namespace Prisma {
     email?: StringNullableFilter<"Transporter"> | string | null
     city?: StringNullableFilter<"Transporter"> | string | null
     state?: StringNullableFilter<"Transporter"> | string | null
+    openingDue?: DecimalFilter<"Transporter"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Transporter"> | Date | string
     updatedAt?: DateTimeFilter<"Transporter"> | Date | string
     dispatches?: DispatchListRelationFilter
@@ -21796,11 +21849,14 @@ export namespace Prisma {
     email?: SortOrderInput | SortOrder
     city?: SortOrderInput | SortOrder
     state?: SortOrderInput | SortOrder
+    openingDue?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: TransporterCountOrderByAggregateInput
+    _avg?: TransporterAvgOrderByAggregateInput
     _max?: TransporterMaxOrderByAggregateInput
     _min?: TransporterMinOrderByAggregateInput
+    _sum?: TransporterSumOrderByAggregateInput
   }
 
   export type TransporterScalarWhereWithAggregatesInput = {
@@ -21815,6 +21871,7 @@ export namespace Prisma {
     email?: StringNullableWithAggregatesFilter<"Transporter"> | string | null
     city?: StringNullableWithAggregatesFilter<"Transporter"> | string | null
     state?: StringNullableWithAggregatesFilter<"Transporter"> | string | null
+    openingDue?: DecimalWithAggregatesFilter<"Transporter"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"Transporter"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Transporter"> | Date | string
   }
@@ -23192,6 +23249,7 @@ export namespace Prisma {
     email?: string | null
     city?: string | null
     state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatches?: DispatchCreateNestedManyWithoutTransporterInput
@@ -23206,6 +23264,7 @@ export namespace Prisma {
     email?: string | null
     city?: string | null
     state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatches?: DispatchUncheckedCreateNestedManyWithoutTransporterInput
@@ -23220,6 +23279,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUpdateManyWithoutTransporterNestedInput
@@ -23234,6 +23294,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUncheckedUpdateManyWithoutTransporterNestedInput
@@ -23248,6 +23309,7 @@ export namespace Prisma {
     email?: string | null
     city?: string | null
     state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23261,6 +23323,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23274,6 +23337,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24849,6 +24913,17 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type DispatchListRelationFilter = {
     every?: DispatchWhereInput
     some?: DispatchWhereInput
@@ -24868,8 +24943,13 @@ export namespace Prisma {
     email?: SortOrder
     city?: SortOrder
     state?: SortOrder
+    openingDue?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TransporterAvgOrderByAggregateInput = {
+    openingDue?: SortOrder
   }
 
   export type TransporterMaxOrderByAggregateInput = {
@@ -24881,6 +24961,7 @@ export namespace Prisma {
     email?: SortOrder
     city?: SortOrder
     state?: SortOrder
+    openingDue?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -24894,8 +24975,29 @@ export namespace Prisma {
     email?: SortOrder
     city?: SortOrder
     state?: SortOrder
+    openingDue?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type TransporterSumOrderByAggregateInput = {
+    openingDue?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type QualityClassListRelationFilter = {
@@ -25173,17 +25275,6 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type DecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-  }
-
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
@@ -25361,22 +25452,6 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
-  }
-
-  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -26061,6 +26136,14 @@ export namespace Prisma {
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
   }
 
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
+  }
+
   export type DispatchUpdateManyWithoutTransporterNestedInput = {
     create?: XOR<DispatchCreateWithoutTransporterInput, DispatchUncheckedCreateWithoutTransporterInput> | DispatchCreateWithoutTransporterInput[] | DispatchUncheckedCreateWithoutTransporterInput[]
     connectOrCreate?: DispatchCreateOrConnectWithoutTransporterInput | DispatchCreateOrConnectWithoutTransporterInput[]
@@ -26501,14 +26584,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type DecimalFieldUpdateOperationsInput = {
-    set?: Decimal | DecimalJsLike | number | string
-    increment?: Decimal | DecimalJsLike | number | string
-    decrement?: Decimal | DecimalJsLike | number | string
-    multiply?: Decimal | DecimalJsLike | number | string
-    divide?: Decimal | DecimalJsLike | number | string
   }
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
@@ -27222,6 +27297,33 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedDecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -27240,17 +27342,6 @@ export namespace Prisma {
     in?: $Enums.CustomerCategory[] | ListEnumCustomerCategoryFieldRefInput<$PrismaModel>
     notIn?: $Enums.CustomerCategory[] | ListEnumCustomerCategoryFieldRefInput<$PrismaModel>
     not?: NestedEnumCustomerCategoryFilter<$PrismaModel> | $Enums.CustomerCategory
-  }
-
-  export type NestedDecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
@@ -27299,22 +27390,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
-  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -29897,6 +29972,7 @@ export namespace Prisma {
     email?: string | null
     city?: string | null
     state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -29910,6 +29986,7 @@ export namespace Prisma {
     email?: string | null
     city?: string | null
     state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30157,6 +30234,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30170,6 +30248,7 @@ export namespace Prisma {
     email?: NullableStringFieldUpdateOperationsInput | string | null
     city?: NullableStringFieldUpdateOperationsInput | string | null
     state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

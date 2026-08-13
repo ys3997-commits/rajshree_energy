@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   getHomeDispatchCharts,
   getHomeFundCharts,
+  getHomeOverdueCharts,
   getHomeQualityStockLists,
   getTopCustomersByCoalOrigin,
   getTopPendingOrdersByCoalOrigin,
@@ -26,6 +27,7 @@ export default async function HomePage() {
   const [
     dispatchCharts,
     fundCharts,
+    overdueCharts,
     pendingOrdersByCoal,
     topCustomersByCoal,
     qualityStockLists,
@@ -41,6 +43,7 @@ export default async function HomePage() {
   ] = await Promise.all([
     getHomeDispatchCharts(),
     getHomeFundCharts(),
+    getHomeOverdueCharts(),
     getTopPendingOrdersByCoalOrigin(10),
     getTopCustomersByCoalOrigin(7),
     getHomeQualityStockLists(),
@@ -60,6 +63,7 @@ export default async function HomePage() {
   const monthlyProfit = dispatchCharts.profitMonths;
   const dailyProfit = dispatchCharts.profitDays;
   const dailyFundsReceived = fundCharts.days;
+  const dailyOverdue = overdueCharts.days;
   const pendingDomesticOrders = pendingOrdersByCoal.domestic;
   const pendingImportedOrders = pendingOrdersByCoal.imported;
   const topDomesticCustomers = topCustomersByCoal.last30.domestic;
@@ -190,6 +194,19 @@ export default async function HomePage() {
           hideTotals
           seriesLabels={{ left: "Received", total: "Total" }}
           ariaLabel="Day-wise fund received totals for the last 15 days"
+        />
+      </div>
+
+      <div className="home-dispatch-grid home-dispatch-grid-single">
+        <HomeDispatchSplitChart
+          eyebrow="Last 15 days"
+          title="Overdue"
+          buckets={dailyOverdue}
+          valueKind="rupees"
+          totalMode="left"
+          hideTotals
+          seriesLabels={{ left: "Overdue", total: "Total" }}
+          ariaLabel="Day-wise overdue totals for the last 15 days"
         />
       </div>
 

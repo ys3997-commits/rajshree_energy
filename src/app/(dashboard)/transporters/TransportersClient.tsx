@@ -6,20 +6,10 @@ import {
   createTransporter,
   deleteTransporter,
   updateTransporter,
+  type TransporterListRow,
 } from "@/lib/actions/transporters";
-import { capitalizeName } from "@/lib/domain/format";
+import { capitalizeName, formatRs } from "@/lib/domain/format";
 import { OptionSelect } from "@/components/OptionSelect";
-
-type Row = {
-  id: string;
-  name: string;
-  ownerName: string | null;
-  ownerContactNumber1: string | null;
-  ownerContactNumber2: string | null;
-  email: string | null;
-  city: string | null;
-  state: string | null;
-};
 
 const empty = {
   name: "",
@@ -29,6 +19,7 @@ const empty = {
   email: "",
   city: "",
   state: "",
+  openingDue: "0",
 };
 
 function formatNameField(value: string): string {
@@ -39,18 +30,28 @@ function digitsOnly(value: string): string {
   return value.replace(/\D/g, "");
 }
 
+function parseOpeningDueInput(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "0";
+  const n = Number(trimmed);
+  if (!Number.isFinite(n)) {
+    throw new Error("Opening due must be a valid amount");
+  }
+  return trimmed;
+}
+
 export function TransportersClient({
   initial,
   cities,
   states,
 }: {
-  initial: Row[];
+  initial: TransporterListRow[];
   cities: string[];
   states: string[];
 }) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState(empty);
-  const [editing, setEditing] = useState<Row | null>(null);
+  const [editing, setEditing] = useState<TransporterListRow | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -58,10 +59,14 @@ export function TransportersClient({
     e.preventDefault();
     setError(null);
     try {
+      const payload = {
+        ...form,
+        openingDue: parseOpeningDueInput(form.openingDue),
+      };
       if (editing) {
-        await updateTransporter(editing.id, form);
+        await updateTransporter(editing.id, payload);
       } else {
-        await createTransporter(form);
+        await createTransporter(payload);
       }
       setForm(empty);
       setEditing(null);
@@ -99,9 +104,7 @@ export function TransportersClient({
   return (
     <div>
       <h1 className="page-title">Transporters</h1>
-      <p className="page-subtitle">
-        Logistics partners and contacts.
-      </p>
+      <p className="page-subtitle">Logistics partners and contacts.</p>
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="mb-6 form-grid">
@@ -152,6 +155,20 @@ export function TransportersClient({
           onChange={(state) => setForm({ ...form, state })}
           options={states}
         />
+        <label>
+          Opening due
+          <span className="field-hint"> as on 01/08/2026</span>
+        </label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            step="0.01"
+            placeholder="0"
+            value={form.openingDue}
+            onChange={(e) => setForm({ ...form, openingDue: e.target.value })}
+          />
+          <span className="field-unit">Rs</span>
+        </div>
         <div />
         <div className="flex gap-2">
           <button type="submit" className="btn" disabled={pending}>
@@ -183,6 +200,7 @@ export function TransportersClient({
               <th>Email</th>
               <th>City</th>
               <th>State</th>
+              <th className="num">Opening due</th>
               <th />
             </tr>
           </thead>
@@ -204,6 +222,7 @@ export function TransportersClient({
                 <td>{row.email ?? "—"}</td>
                 <td>{row.city ?? "—"}</td>
                 <td>{row.state ?? "—"}</td>
+                <td className="num">{formatRs(row.openingDue)}</td>
                 <td className="space-x-2 whitespace-nowrap">
                   <button
                     type="button"
@@ -218,6 +237,7 @@ export function TransportersClient({
                         email: row.email ?? "",
                         city: row.city ?? "",
                         state: row.state ?? "",
+                        openingDue: row.openingDue,
                       });
                     }}
                   >
@@ -235,7 +255,7 @@ export function TransportersClient({
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={8}>No transporters yet.</td>
+                <td colSpan={9}>No transporters yet.</td>
               </tr>
             )}
           </tbody>

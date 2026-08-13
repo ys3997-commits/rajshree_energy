@@ -1,9 +1,21 @@
 "use server";
 
-import { DispatchTerms, OrderStatus } from "@/generated/prisma";
+import {
+  CustomerCategory,
+  DispatchTerms,
+  OrderStatus,
+} from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
 import { lineProfit, withOrderComputed } from "@/lib/domain/computations";
+import {
+  computeOverdue,
+  discountDueDelta,
+  paymentDueDelta,
+  purchaseDispatchDueDelta,
+  saleDispatchDueDelta,
+  sumSalesSuppliedInCreditWindow,
+} from "@/lib/domain/customerDue";
 import { listQualityReport } from "@/lib/actions/reports";
 
 function startOfLocalDay(d: Date): Date {
@@ -287,6 +299,181 @@ export async function getHomeFundCharts(): Promise<{
   for (const row of rows) {
     const local = startOfLocalDay(row.date);
     addToSplit(dayTotals, dayKey(local), row.amount, true);
+  }
+
+  const days = Array.from({ length: 15 }, (_, i) => {
+    const day = addDays(dayStart, i);
+    const key = dayKey(day);
+    return toBucket(
+      key,
+      formatDayLabel(day),
+      dayTotals.get(key) ?? emptySplit(),
+      key === todayKey,
+    );
+  });
+
+  return { days };
+}
+
+/**
+ * Home overdue chart: total overdue for Industry + Trader customers (excludes Vendor)
+ * for each of the last 15 days. Due is reconstructed from opening + dated events;
+ * credit window uses end of that day as asOf.
+ * Bucket field `domestic` holds overdue amount; `imported` is always 0.
+ */
+export async function getHomeOverdueCharts(): Promise<{
+  days: DispatchSplitBucket[];
+}> {
+  const today = startOfLocalDay(new Date());
+  const dayStart = addDays(today, -14);
+  const todayKey = dayKey(today);
+
+  const [customers, dispatches, payments, discounts] = await Promise.all([
+    prisma.customer.findMany({
+      where: {
+        category: {
+          in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
+        },
+      },
+      select: { id: true, openingDue: true, creditDays: true },
+    }),
+    prisma.dispatch.findMany({
+      select: {
+        dispatchDate: true,
+        dispatchedQuantity: true,
+        order: { select: { customerId: true, finalRate: true } },
+        purchaseOrder: { select: { importerId: true, finalRate: true } },
+      },
+    }),
+    prisma.payment.findMany({
+      select: {
+        customerId: true,
+        date: true,
+        amount: true,
+        direction: true,
+      },
+    }),
+    prisma.discount.findMany({
+      select: {
+        customerId: true,
+        date: true,
+        amount: true,
+        status: true,
+      },
+    }),
+  ]);
+
+  type DueEvent = { day: string; delta: Decimal };
+  type SupplyLine = { day: string; amount: Decimal; supplyDate: Date };
+
+  const dueEventsByCustomer = new Map<string, DueEvent[]>();
+  const supplyByCustomer = new Map<string, SupplyLine[]>();
+
+  function pushDue(customerId: string, date: Date, delta: Decimal) {
+    if (delta.isZero()) return;
+    const list = dueEventsByCustomer.get(customerId) ?? [];
+    list.push({ day: dayKey(startOfLocalDay(date)), delta });
+    dueEventsByCustomer.set(customerId, list);
+  }
+
+  for (const row of dispatches) {
+    if (row.order) {
+      const delta = saleDispatchDueDelta(
+        row.order.finalRate,
+        row.dispatchedQuantity,
+      );
+      pushDue(row.order.customerId, row.dispatchDate, delta);
+      if (delta.gt(0)) {
+        const list = supplyByCustomer.get(row.order.customerId) ?? [];
+        list.push({
+          day: dayKey(startOfLocalDay(row.dispatchDate)),
+          amount: delta,
+          supplyDate: row.dispatchDate,
+        });
+        supplyByCustomer.set(row.order.customerId, list);
+      }
+    }
+    if (row.purchaseOrder) {
+      pushDue(
+        row.purchaseOrder.importerId,
+        row.dispatchDate,
+        purchaseDispatchDueDelta(
+          row.purchaseOrder.finalRate,
+          row.dispatchedQuantity,
+        ),
+      );
+    }
+  }
+
+  for (const payment of payments) {
+    pushDue(
+      payment.customerId,
+      payment.date,
+      paymentDueDelta(payment.direction, payment.amount),
+    );
+  }
+
+  for (const discount of discounts) {
+    pushDue(
+      discount.customerId,
+      discount.date,
+      discountDueDelta(discount.status, discount.amount),
+    );
+  }
+
+  for (const list of dueEventsByCustomer.values()) {
+    list.sort((a, b) => a.day.localeCompare(b.day));
+  }
+
+  const dayTotals = new Map<string, SplitTotals>();
+  for (let i = 0; i < 15; i++) {
+    dayTotals.set(dayKey(addDays(dayStart, i)), emptySplit());
+  }
+
+  for (const customer of customers) {
+    let due = new Decimal(customer.openingDue);
+    const events = dueEventsByCustomer.get(customer.id) ?? [];
+    let eventIdx = 0;
+    const allSupply = supplyByCustomer.get(customer.id) ?? [];
+
+    for (let i = 0; i < 15; i++) {
+      const day = addDays(dayStart, i);
+      const key = dayKey(day);
+
+      while (eventIdx < events.length && events[eventIdx]!.day <= key) {
+        due = due.plus(events[eventIdx]!.delta);
+        eventIdx += 1;
+      }
+
+      const supplyLines = allSupply
+        .filter((s) => s.day <= key)
+        .map((s) => ({ amount: s.amount, supplyDate: s.supplyDate }));
+
+      const asOf = new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate(),
+        23,
+        59,
+        59,
+        999,
+      );
+
+      const inWindow =
+        customer.creditDays == null
+          ? new Decimal(0)
+          : sumSalesSuppliedInCreditWindow(
+              supplyLines,
+              customer.creditDays,
+              asOf,
+              customer.openingDue,
+            );
+
+      const overdue = computeOverdue(due, customer.creditDays, inWindow);
+      if (overdue.gt(0)) {
+        addToSplit(dayTotals, key, overdue, true);
+      }
+    }
   }
 
   const days = Array.from({ length: 15 }, (_, i) => {

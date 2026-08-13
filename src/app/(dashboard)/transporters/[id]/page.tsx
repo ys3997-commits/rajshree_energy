@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { getTransporter } from "@/lib/actions/transporters";
 import { formatMt } from "@/lib/domain/computations";
-import { capitalizeName, formatLorryNumber } from "@/lib/domain/format";
+import { capitalizeName, formatLorryNumber, formatRs } from "@/lib/domain/format";
 
 function monthKey(date: Date | string): string {
   const d = date instanceof Date ? date : new Date(date);
@@ -114,6 +114,13 @@ export default async function TransporterDetailPage({
           <span className="detail-meta-label">State</span>
           <span className="detail-meta-value">
             {transporter.state || "—"}
+          </span>
+        </div>
+        <div className="detail-meta-item">
+          <span className="detail-meta-label">Opening due</span>
+          <span className="detail-meta-value">
+            {formatRs(transporter.openingDue)}
+            <span className="detail-meta-note"> as on 01/08/2026</span>
           </span>
         </div>
       </div>

@@ -996,3 +996,275 @@ export async function getQualityReport(qualityClassId: string) {
     ),
   };
 }
+
+export type SaleGeoAnalysisFilters = {
+  dateFrom?: string;
+  dateTo?: string;
+};
+
+export type SaleGeoCityRow = {
+  city: string;
+  quantity: string;
+  /** Share of this product's total dispatched quantity. */
+  percent: string;
+};
+
+export type SaleGeoStateRow = {
+  state: string;
+  quantity: string;
+  /** Share of this product's total dispatched quantity. */
+  percent: string;
+  cities: SaleGeoCityRow[];
+};
+
+export type SaleGeoProductRow = {
+  productKey: string;
+  /** Short product label (quality grade), e.g. "6000 GCV". */
+  product: string;
+  /** Full quality class label for clarity when grades repeat. */
+  productDetail: string | null;
+  quantity: string;
+  /** Share of grand total dispatched quantity. */
+  percent: string;
+  states: SaleGeoStateRow[];
+};
+
+export type SaleGeoCityFlatRow = {
+  city: string;
+  state: string;
+  quantity: string;
+  percent: string;
+};
+
+export type SaleGeoCityProductRow = {
+  productKey: string;
+  product: string;
+  productDetail: string | null;
+  quantity: string;
+  percent: string;
+  cities: SaleGeoCityFlatRow[];
+};
+
+export type SaleGeoAnalysisReport = {
+  totalQuantity: string;
+  productCount: number;
+  stateCount: number;
+  cityCount: number;
+  /** Product → state → city hierarchy (state-wise view). */
+  products: SaleGeoProductRow[];
+  /** Product → city hierarchy (city-wise view). */
+  cityProducts: SaleGeoCityProductRow[];
+};
+
+function normalizePlace(value: string | null | undefined): string {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : "Unspecified";
+}
+
+function pctOf(part: Decimal, whole: Decimal): string {
+  if (whole.isZero()) return "0.00";
+  return part.mul(100).div(whole).toFixed(2);
+}
+
+/**
+ * Sale-side geographic analysis: dispatched MT by product (quality),
+ * buyer state, and buyer city.
+ */
+export async function listSaleGeoAnalysisReport(
+  filters: SaleGeoAnalysisFilters = {},
+): Promise<SaleGeoAnalysisReport> {
+  const where: Prisma.DispatchWhereInput = {};
+  if (filters.dateFrom || filters.dateTo) {
+    where.dispatchDate = {};
+    if (filters.dateFrom) {
+      where.dispatchDate.gte = new Date(`${filters.dateFrom}T00:00:00.000Z`);
+    }
+    if (filters.dateTo) {
+      where.dispatchDate.lte = new Date(`${filters.dateTo}T23:59:59.999Z`);
+    }
+  }
+
+  const rows = await prisma.dispatch.findMany({
+    where,
+    select: {
+      dispatchedQuantity: true,
+      order: {
+        select: {
+          customer: { select: { state: true, city: true } },
+          qualityClass: { include: qualityClassInclude },
+        },
+      },
+      vessel: {
+        select: { qualityClass: { include: qualityClassInclude } },
+      },
+      purchaseOrder: {
+        select: { qualityClass: { include: qualityClassInclude } },
+      },
+    },
+  });
+
+  type CityAgg = { quantity: Decimal };
+  type StateAgg = { quantity: Decimal; cities: Map<string, CityAgg> };
+  type ProductAgg = {
+    product: string;
+    productDetail: string | null;
+    quantity: Decimal;
+    states: Map<string, StateAgg>;
+  };
+
+  const productsMap = new Map<string, ProductAgg>();
+  const allStates = new Set<string>();
+  const allCities = new Set<string>();
+  let grandTotal = new Decimal(0);
+
+  for (const row of rows) {
+    const qualityClass =
+      row.purchaseOrder?.qualityClass ??
+      row.vessel.qualityClass ??
+      row.order?.qualityClass ??
+      null;
+
+    const productKey = qualityClass?.id ?? "__unknown__";
+    const product = qualityClass?.qualityOption.name ?? "Unspecified";
+    const detail = qualityClass
+      ? formatQualityClassLabel(qualityClass)
+      : null;
+    // Prefer short grade name; keep detail when it differs meaningfully.
+    const productDetail =
+      detail && detail !== product ? detail : null;
+
+    const state = normalizePlace(row.order?.customer?.state);
+    const city = normalizePlace(row.order?.customer?.city);
+    const qty = toDecimal(row.dispatchedQuantity);
+
+    grandTotal = grandTotal.plus(qty);
+    allStates.add(state);
+    allCities.add(`${state}::${city}`);
+
+    let productAgg = productsMap.get(productKey);
+    if (!productAgg) {
+      productAgg = {
+        product,
+        productDetail,
+        quantity: new Decimal(0),
+        states: new Map(),
+      };
+      productsMap.set(productKey, productAgg);
+    }
+    productAgg.quantity = productAgg.quantity.plus(qty);
+
+    let stateAgg = productAgg.states.get(state);
+    if (!stateAgg) {
+      stateAgg = { quantity: new Decimal(0), cities: new Map() };
+      productAgg.states.set(state, stateAgg);
+    }
+    stateAgg.quantity = stateAgg.quantity.plus(qty);
+
+    let cityAgg = stateAgg.cities.get(city);
+    if (!cityAgg) {
+      cityAgg = { quantity: new Decimal(0) };
+      stateAgg.cities.set(city, cityAgg);
+    }
+    cityAgg.quantity = cityAgg.quantity.plus(qty);
+  }
+
+  const products: SaleGeoProductRow[] = [...productsMap.entries()]
+    .map(([productKey, p]) => {
+      const states: SaleGeoStateRow[] = [...p.states.entries()]
+        .map(([state, s]) => {
+          const cities: SaleGeoCityRow[] = [...s.cities.entries()]
+            .map(([city, c]) => ({
+              city,
+              quantity: c.quantity.toFixed(2),
+              percent: pctOf(c.quantity, p.quantity),
+            }))
+            .sort(
+              (a, b) =>
+                Number(b.quantity) - Number(a.quantity) ||
+                a.city.localeCompare(b.city),
+            );
+
+          return {
+            state,
+            quantity: s.quantity.toFixed(2),
+            percent: pctOf(s.quantity, p.quantity),
+            cities,
+          };
+        })
+        .sort(
+          (a, b) =>
+            Number(b.quantity) - Number(a.quantity) ||
+            a.state.localeCompare(b.state),
+        );
+
+      return {
+        productKey,
+        product: p.product,
+        productDetail: p.productDetail,
+        quantity: p.quantity.toFixed(2),
+        percent: pctOf(p.quantity, grandTotal),
+        states,
+      };
+    })
+    .sort(
+      (a, b) =>
+        Number(b.quantity) - Number(a.quantity) ||
+        a.product.localeCompare(b.product),
+    );
+
+  const cityProducts: SaleGeoCityProductRow[] = products.map((p) => {
+    const cityMap = new Map<string, SaleGeoCityFlatRow>();
+    for (const state of p.states) {
+      for (const city of state.cities) {
+        const key = `${city.city}::${state.state}`;
+        const existing = cityMap.get(key);
+        if (existing) {
+          const nextQty = new Decimal(existing.quantity).plus(city.quantity);
+          cityMap.set(key, {
+            city: city.city,
+            state: state.state,
+            quantity: nextQty.toFixed(2),
+            percent: city.percent,
+          });
+        } else {
+          cityMap.set(key, {
+            city: city.city,
+            state: state.state,
+            quantity: city.quantity,
+            percent: city.percent,
+          });
+        }
+      }
+    }
+
+    const cities = [...cityMap.values()].sort(
+      (a, b) =>
+        Number(b.quantity) - Number(a.quantity) ||
+        a.city.localeCompare(b.city),
+    );
+
+    // Recompute city % from product total after any merges.
+    const productQty = new Decimal(p.quantity);
+    for (const city of cities) {
+      city.percent = pctOf(new Decimal(city.quantity), productQty);
+    }
+
+    return {
+      productKey: p.productKey,
+      product: p.product,
+      productDetail: p.productDetail,
+      quantity: p.quantity,
+      percent: p.percent,
+      cities,
+    };
+  });
+
+  return {
+    totalQuantity: grandTotal.toFixed(2),
+    productCount: products.length,
+    stateCount: allStates.size,
+    cityCount: allCities.size,
+    products,
+    cityProducts,
+  };
+}

@@ -12,7 +12,6 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
-  balanceOrder,
   computeOrderStatus,
   computePurchaseFinalRate,
   computePurchaseOrderStatus,
@@ -172,7 +171,6 @@ async function resolvePurchaseForDispatch(
   vesselId: string;
   importerId: string;
   qualityClassId: string | null;
-  skipPurchaseBalanceCheck: boolean;
 }> {
   if (input.openPurchase) {
     const poNumber = normalizePurchaseOrderNumber(input.openPurchase.poNumber);
@@ -222,7 +220,6 @@ async function resolvePurchaseForDispatch(
       vesselId: purchase.vesselId,
       importerId: purchase.importerId,
       qualityClassId,
-      skipPurchaseBalanceCheck: true,
     };
   }
 
@@ -245,8 +242,6 @@ async function resolvePurchaseForDispatch(
     importerId: purchase.importerId,
     qualityClassId:
       purchase.qualityClassId || purchase.vessel.qualityClassId || null,
-    skipPurchaseBalanceCheck:
-      purchase.orderType === OrderType.OPEN && purchase.quantity == null,
   };
 }
 
@@ -267,7 +262,6 @@ async function applyDispatchDelta(
     poNumber: string;
     purchasePoNumber: string;
     qty: Decimal;
-    skipPurchaseBalanceCheck?: boolean;
   },
 ) {
   const order = await tx.order.findUnique({ where: { poNumber: args.poNumber } });
@@ -289,21 +283,8 @@ async function applyDispatchDelta(
     throw new Error(`Vessel ${purchase.vesselId} not found`);
   }
 
-  if (args.qty.gt(0)) {
-    if (!args.skipPurchaseBalanceCheck) {
-      const pBal = balanceOrder(purchase);
-      if (pBal == null) {
-        throw new Error(
-          `Purchase order ${args.purchasePoNumber} has no quantity; cannot validate balance`,
-        );
-      }
-      if (args.qty.gt(pBal)) {
-        throw new Error(
-          `Over-dispatch blocked: ${args.qty} exceeds purchase order balance ${pBal} for ${args.purchasePoNumber}`,
-        );
-      }
-    }
-  } else if (args.qty.lt(0)) {
+  // Dispatched qty may exceed purchase / sale order balances (over-dispatch allowed).
+  if (args.qty.lt(0)) {
     if (order.dispatchedOrder.plus(args.qty).lt(0)) {
       throw new Error("Cannot reverse more than sale order.dispatchedOrder");
     }
@@ -393,7 +374,6 @@ export async function createDispatch(
       poNumber: input.poNumber,
       purchasePoNumber: purchase.purchasePoNumber,
       qty,
-      skipPurchaseBalanceCheck: purchase.skipPurchaseBalanceCheck,
     });
 
     return tx.dispatch.create({
@@ -487,7 +467,6 @@ export async function createOpenOrderDispatch(
       poNumber,
       purchasePoNumber: purchase.purchasePoNumber,
       qty,
-      skipPurchaseBalanceCheck: purchase.skipPurchaseBalanceCheck,
     });
 
     return tx.dispatch.create({
@@ -547,7 +526,6 @@ export async function updateDispatch(
     let nextPurchasePo =
       changes.purchasePoNumber ?? existing.purchasePoNumber;
     let nextPo = changes.poNumber ?? existing.poNumber;
-    let skipPurchaseBalanceCheck = false;
 
     if (changes.openPurchase) {
       const purchase = await resolvePurchaseForDispatch(tx, {
@@ -555,7 +533,6 @@ export async function updateDispatch(
         dispatchDate: nextDispatchDate,
       });
       nextPurchasePo = purchase.purchasePoNumber;
-      skipPurchaseBalanceCheck = purchase.skipPurchaseBalanceCheck;
     }
 
     if (changes.openSale) {
@@ -638,7 +615,6 @@ export async function updateDispatch(
         poNumber: existing.poNumber,
         purchasePoNumber: existing.purchasePoNumber,
         qty: existing.dispatchedQuantity.neg(),
-        skipPurchaseBalanceCheck: true,
       });
 
       const targetOrder = await tx.order.findUnique({
@@ -654,16 +630,11 @@ export async function updateDispatch(
       if (!targetPurchase) {
         throw new Error(`Purchase order ${nextPurchasePo} not found`);
       }
-      const skipPurchase =
-        skipPurchaseBalanceCheck ||
-        (targetPurchase.orderType === OrderType.OPEN &&
-          targetPurchase.quantity == null);
 
       await applyDispatchDelta(tx, {
         poNumber: nextPo,
         purchasePoNumber: nextPurchasePo,
         qty: nextQty,
-        skipPurchaseBalanceCheck: skipPurchase,
       });
 
       vesselId = targetPurchase.vesselId;
@@ -775,7 +746,6 @@ export async function deleteDispatch(id: string): Promise<void> {
       poNumber: existing.poNumber,
       purchasePoNumber: existing.purchasePoNumber,
       qty: existing.dispatchedQuantity.neg(),
-      skipPurchaseBalanceCheck: true,
     });
 
     await tx.dispatch.delete({ where: { id } });

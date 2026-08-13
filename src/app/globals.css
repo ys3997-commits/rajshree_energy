@@ -1621,6 +1621,19 @@ table.data tr.month-divider:hover td {
   border-color: var(--accent);
 }
 
+.field-hint {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.detail-meta-note {
+  margin-left: 0.35rem;
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
 .field-with-unit.field-with-prefix .field-unit {
   border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   border-right: none;
@@ -3052,5 +3065,98 @@ a.home-quality-row:hover {
   .ledger-panel-funds {
     border-left: none;
     border-top: 1px solid var(--line-strong);
+  }
+}
+
+/* —— Sale analysis (state / city) —— */
+.sale-analysis-report {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sale-analysis-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.sale-analysis-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
+}
+
+.sale-analysis-stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sale-analysis-stat-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sale-analysis-filters {
+  align-items: end;
+}
+
+.sale-analysis-date-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+table.data.sale-analysis-table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.data.sale-analysis-table .sale-analysis-product-cell {
+  vertical-align: middle;
+  background: rgba(31, 92, 85, 0.04);
+  min-width: 11rem;
+}
+
+table.data.sale-analysis-table tr.sale-analysis-product-start td {
+  border-top: 1px solid var(--line-strong);
+}
+
+.sale-analysis-product-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.sale-analysis-product-detail {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.sale-analysis-product-total {
+  margin-top: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .sale-analysis-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .sale-analysis-summary {
+    grid-template-columns: 1fr;
   }
 }

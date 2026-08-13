@@ -1,11 +1,42 @@
 "use server";
 
+import { Decimal } from "@prisma/client/runtime/library";
 import { capitalizeName } from "@/lib/domain/format";
+import { toDecimal } from "@/lib/domain/computations";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-export async function listTransporters() {
-  return prisma.transporter.findMany({ orderBy: { name: "asc" } });
+export type TransporterListRow = {
+  id: string;
+  name: string;
+  ownerName: string | null;
+  ownerContactNumber1: string | null;
+  ownerContactNumber2: string | null;
+  email: string | null;
+  city: string | null;
+  state: string | null;
+  openingDue: string;
+};
+
+export async function listTransporters(): Promise<TransporterListRow[]> {
+  const rows = await prisma.transporter.findMany({
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      ownerName: true,
+      ownerContactNumber1: true,
+      ownerContactNumber2: true,
+      email: true,
+      city: true,
+      state: true,
+      openingDue: true,
+    },
+  });
+  return rows.map((row) => ({
+    ...row,
+    openingDue: row.openingDue.toString(),
+  }));
 }
 
 export async function getTransporter(id: string) {
@@ -38,12 +69,25 @@ export type TransporterInput = {
   email?: string | null;
   city?: string | null;
   state?: string | null;
+  /** Carry-forward balance; treated as on 01/08/2026. */
+  openingDue?: string | number | null;
 };
 
 function normalizePhone(value: string | null | undefined): string | null {
   if (!value) return null;
   const digits = value.replace(/\D/g, "");
   return digits || null;
+}
+
+function parseOpeningDue(value: string | number | null | undefined): Decimal {
+  if (value === undefined || value === null || value === "") {
+    return new Decimal(0);
+  }
+  const d = toDecimal(value);
+  if (!d.isFinite()) {
+    throw new Error("Opening due must be a valid amount");
+  }
+  return d.toDecimalPlaces(2);
 }
 
 function toTransporterData(input: TransporterInput) {
@@ -55,6 +99,7 @@ function toTransporterData(input: TransporterInput) {
     email: input.email || null,
     city: input.city || null,
     state: input.state || null,
+    openingDue: parseOpeningDue(input.openingDue),
   };
 }
 
@@ -72,6 +117,7 @@ export async function updateTransporter(id: string, input: TransporterInput) {
     data: toTransporterData(input),
   });
   revalidatePath("/transporters");
+  revalidatePath(`/transporters/${id}`);
   return row;
 }
 

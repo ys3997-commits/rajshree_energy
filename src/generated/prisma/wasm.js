@@ -139,6 +139,7 @@ exports.Prisma.TransporterScalarFieldEnum = {
   email: 'email',
   city: 'city',
   state: 'state',
+  openingDue: 'openingDue',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

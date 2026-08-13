@@ -207,7 +207,7 @@ describe("computed balances", () => {
 });
 
 describe("over-dispatch rules (pure checks mirroring createDispatch)", () => {
-  it("no longer blocks sale-order over-dispatch (qty independent of SO)", () => {
+  it("does not block sale-order over-dispatch (qty independent of SO)", () => {
     const bal = balanceOrder({
       quantity: new Decimal(100),
       dispatchedOrder: new Decimal(90),
@@ -217,12 +217,13 @@ describe("over-dispatch rules (pure checks mirroring createDispatch)", () => {
     expect(requested.gt(bal)).toBe(true);
   });
 
-  it("detects purchase-order over-dispatch", () => {
+  it("does not block purchase-order over-dispatch (qty independent of PO)", () => {
     const bal = balanceOrder({
       quantity: new Decimal(50),
       dispatchedOrder: new Decimal(40),
     })!;
     const requested = new Decimal(15);
+    // Balance math still works; createDispatch does not enforce PO cap
     expect(requested.gt(bal)).toBe(true);
   });
 
