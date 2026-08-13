@@ -17,9 +17,15 @@ import {
   formatRs,
   parseAmountInput,
 } from "@/lib/domain/format";
+import { parsePartyKey, partyKey } from "@/lib/domain/paymentParty";
 import { PaymentsTabs } from "./PaymentsTabs";
 
-type Opt = { id: string; name: string; category: CustomerCategory };
+type Opt = {
+  id: string;
+  name: string;
+  kind: "customer" | "transporter";
+  category?: CustomerCategory;
+};
 type Direction = "RECEIVED" | "SENT" | "";
 
 function todayLocal(): string {
@@ -30,10 +36,10 @@ function todayLocal(): string {
   return `${y}-${m}-${day}`;
 }
 
-function emptyForm(customerId = "") {
+function emptyForm(partyId = "") {
   return {
     date: todayLocal(),
-    customerId,
+    partyId,
     direction: "" as Direction,
     amount: "",
   };
@@ -58,10 +64,10 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 
 export function PaymentsClient({
   initial,
-  customers,
+  parties,
 }: {
   initial: PaymentListResult;
-  customers: Opt[];
+  parties: Opt[];
 }) {
   const router = useRouter();
   const { rows, total, page, pageSize, totalPages } = initial;
@@ -87,16 +93,18 @@ export function PaymentsClient({
     setForm({ ...form, amount: raw });
   }
 
-  function resetForm(customerId = "") {
+  function resetForm(partyId = "") {
     setEditing(null);
-    setForm(emptyForm(customerId));
+    setForm(emptyForm(partyId));
   }
 
   function startEdit(row: PaymentRow) {
     setEditing(row);
     setForm({
       date: row.date,
-      customerId: row.customerId,
+      partyId: row.transporterId
+        ? partyKey("transporter", row.transporterId)
+        : partyKey("customer", row.customerId ?? ""),
       direction: row.direction,
       amount: row.amount,
     });
@@ -112,8 +120,8 @@ export function PaymentsClient({
     e.preventDefault();
     setError(null);
 
-    if (!form.customerId) {
-      setError("Customer is required");
+    if (!form.partyId) {
+      setError("Customer or transporter is required");
       return;
     }
     if (!form.direction) {
@@ -125,9 +133,11 @@ export function PaymentsClient({
       return;
     }
 
+    const party = parsePartyKey(form.partyId);
     const payload = {
       date: form.date,
-      customerId: form.customerId,
+      customerId: party.kind === "customer" ? party.id : null,
+      transporterId: party.kind === "transporter" ? party.id : null,
       direction: form.direction,
       amount: form.amount,
     };
@@ -211,18 +221,37 @@ export function PaymentsClient({
                   form="payment-entry-form"
                   required
                   className="field-input"
-                  aria-label="Customer"
-                  value={form.customerId}
+                  aria-label="Customer or transporter"
+                  value={form.partyId}
                   onChange={(e) =>
-                    setForm({ ...form, customerId: e.target.value })
+                    setForm({ ...form, partyId: e.target.value })
                   }
                 >
-                  <option value="">Select customer</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} — {formatCustomerCategory(c.category)}
-                    </option>
-                  ))}
+                  <option value="">Select customer or transporter</option>
+                  <optgroup label="Customers">
+                    {parties
+                      .filter((c) => c.kind === "customer")
+                      .map((c) => (
+                        <option
+                          key={partyKey("customer", c.id)}
+                          value={partyKey("customer", c.id)}
+                        >
+                          {c.name} — {formatCustomerCategory(c.category)}
+                        </option>
+                      ))}
+                  </optgroup>
+                  <optgroup label="Transporters">
+                    {parties
+                      .filter((c) => c.kind === "transporter")
+                      .map((c) => (
+                        <option
+                          key={partyKey("transporter", c.id)}
+                          value={partyKey("transporter", c.id)}
+                        >
+                          {c.name} — Transporter
+                        </option>
+                      ))}
+                  </optgroup>
                 </select>
               </td>
               <td>
@@ -288,7 +317,11 @@ export function PaymentsClient({
                   className={dateBreak ? "payment-date-break" : undefined}
                 >
                   <td>{formatDateDdMmYyyy(row.date)}</td>
-                  <td>{row.customerName}</td>
+                  <td>
+                    {row.transporterId
+                      ? `${row.customerName} — Transporter`
+                      : row.customerName}
+                  </td>
                   <td>{directionLabel(row.direction)}</td>
                   <td className="cell-num">{formatRs(row.amount)}</td>
                   <td className="space-x-2 whitespace-nowrap">

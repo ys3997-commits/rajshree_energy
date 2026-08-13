@@ -81,6 +81,8 @@ model Transporter {
   updatedAt           DateTime @updatedAt
 
   dispatches Dispatch[]
+  payments   Payment[]
+  discounts  Discount[]
 }
 
 /// Managed list of origin names (Indonesia, Coal India, …).
@@ -343,35 +345,41 @@ model Dispatch {
   @@index([purchasePoNumber])
 }
 
-/// Money received from or sent to a customer.
+/// Money received from or sent to a customer or transporter.
 model Payment {
-  id         String           @id @default(cuid())
-  date       DateTime
-  customerId String
-  direction  PaymentDirection
-  amount     Decimal          @db.Decimal(18, 2)
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  id            String           @id @default(cuid())
+  date          DateTime
+  customerId    String?
+  transporterId String?
+  direction     PaymentDirection
+  amount        Decimal          @db.Decimal(18, 2)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
-  customer Customer @relation(fields: [customerId], references: [id])
+  customer    Customer?    @relation(fields: [customerId], references: [id])
+  transporter Transporter? @relation(fields: [transporterId], references: [id])
 
   @@index([customerId])
+  @@index([transporterId])
   @@index([date])
 }
 
-/// Discount received from or paid to a customer.
+/// Discount received from or paid to a customer or transporter.
 model Discount {
-  id         String         @id @default(cuid())
-  date       DateTime
-  customerId String
-  status     DiscountStatus
-  amount     Decimal        @db.Decimal(18, 2)
-  remarks    String         @default("")
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id            String         @id @default(cuid())
+  date          DateTime
+  customerId    String?
+  transporterId String?
+  status        DiscountStatus
+  amount        Decimal        @db.Decimal(18, 2)
+  remarks       String         @default("")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
-  customer Customer @relation(fields: [customerId], references: [id])
+  customer    Customer?    @relation(fields: [customerId], references: [id])
+  transporter Transporter? @relation(fields: [transporterId], references: [id])
 
   @@index([customerId])
+  @@index([transporterId])
   @@index([date])
 }

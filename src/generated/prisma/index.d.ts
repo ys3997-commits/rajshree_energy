@@ -95,12 +95,12 @@ export type PurchaseOrder = $Result.DefaultSelection<Prisma.$PurchaseOrderPayloa
 export type Dispatch = $Result.DefaultSelection<Prisma.$DispatchPayload>
 /**
  * Model Payment
- * Money received from or sent to a customer.
+ * Money received from or sent to a customer or transporter.
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
  * Model Discount
- * Discount received from or paid to a customer.
+ * Discount received from or paid to a customer or transporter.
  */
 export type Discount = $Result.DefaultSelection<Prisma.$DiscountPayload>
 
@@ -2448,10 +2448,14 @@ export namespace Prisma {
 
   export type TransporterCountOutputType = {
     dispatches: number
+    payments: number
+    discounts: number
   }
 
   export type TransporterCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dispatches?: boolean | TransporterCountOutputTypeCountDispatchesArgs
+    payments?: boolean | TransporterCountOutputTypeCountPaymentsArgs
+    discounts?: boolean | TransporterCountOutputTypeCountDiscountsArgs
   }
 
   // Custom InputTypes
@@ -2470,6 +2474,20 @@ export namespace Prisma {
    */
   export type TransporterCountOutputTypeCountDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DispatchWhereInput
+  }
+
+  /**
+   * TransporterCountOutputType without action
+   */
+  export type TransporterCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentWhereInput
+  }
+
+  /**
+   * TransporterCountOutputType without action
+   */
+  export type TransporterCountOutputTypeCountDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DiscountWhereInput
   }
 
 
@@ -4016,6 +4034,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     dispatches?: boolean | Transporter$dispatchesArgs<ExtArgs>
+    payments?: boolean | Transporter$paymentsArgs<ExtArgs>
+    discounts?: boolean | Transporter$discountsArgs<ExtArgs>
     _count?: boolean | TransporterCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["transporter"]>
 
@@ -4049,6 +4069,8 @@ export namespace Prisma {
 
   export type TransporterInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dispatches?: boolean | Transporter$dispatchesArgs<ExtArgs>
+    payments?: boolean | Transporter$paymentsArgs<ExtArgs>
+    discounts?: boolean | Transporter$discountsArgs<ExtArgs>
     _count?: boolean | TransporterCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type TransporterIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4057,6 +4079,8 @@ export namespace Prisma {
     name: "Transporter"
     objects: {
       dispatches: Prisma.$DispatchPayload<ExtArgs>[]
+      payments: Prisma.$PaymentPayload<ExtArgs>[]
+      discounts: Prisma.$DiscountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4441,6 +4465,8 @@ export namespace Prisma {
   export interface Prisma__TransporterClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dispatches<T extends Transporter$dispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Transporter$dispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
+    payments<T extends Transporter$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, Transporter$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    discounts<T extends Transporter$discountsArgs<ExtArgs> = {}>(args?: Subset<T, Transporter$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4812,6 +4838,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DispatchScalarFieldEnum | DispatchScalarFieldEnum[]
+  }
+
+  /**
+   * Transporter.payments
+   */
+  export type Transporter$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
+    cursor?: PaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
+  }
+
+  /**
+   * Transporter.discounts
+   */
+  export type Transporter$discountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Discount
+     */
+    select?: DiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DiscountInclude<ExtArgs> | null
+    where?: DiscountWhereInput
+    orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
+    cursor?: DiscountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DiscountScalarFieldEnum | DiscountScalarFieldEnum[]
   }
 
   /**
@@ -19252,6 +19318,7 @@ export namespace Prisma {
     id: string | null
     date: Date | null
     customerId: string | null
+    transporterId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
     createdAt: Date | null
@@ -19262,6 +19329,7 @@ export namespace Prisma {
     id: string | null
     date: Date | null
     customerId: string | null
+    transporterId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
     createdAt: Date | null
@@ -19272,6 +19340,7 @@ export namespace Prisma {
     id: number
     date: number
     customerId: number
+    transporterId: number
     direction: number
     amount: number
     createdAt: number
@@ -19292,6 +19361,7 @@ export namespace Prisma {
     id?: true
     date?: true
     customerId?: true
+    transporterId?: true
     direction?: true
     amount?: true
     createdAt?: true
@@ -19302,6 +19372,7 @@ export namespace Prisma {
     id?: true
     date?: true
     customerId?: true
+    transporterId?: true
     direction?: true
     amount?: true
     createdAt?: true
@@ -19312,6 +19383,7 @@ export namespace Prisma {
     id?: true
     date?: true
     customerId?: true
+    transporterId?: true
     direction?: true
     amount?: true
     createdAt?: true
@@ -19408,7 +19480,8 @@ export namespace Prisma {
   export type PaymentGroupByOutputType = {
     id: string
     date: Date
-    customerId: string
+    customerId: string | null
+    transporterId: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal
     createdAt: Date
@@ -19438,28 +19511,33 @@ export namespace Prisma {
     id?: boolean
     date?: boolean
     customerId?: boolean
+    transporterId?: boolean
     direction?: boolean
     amount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Payment$customerArgs<ExtArgs>
+    transporter?: boolean | Payment$transporterArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     date?: boolean
     customerId?: boolean
+    transporterId?: boolean
     direction?: boolean
     amount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Payment$customerArgs<ExtArgs>
+    transporter?: boolean | Payment$transporterArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectScalar = {
     id?: boolean
     date?: boolean
     customerId?: boolean
+    transporterId?: boolean
     direction?: boolean
     amount?: boolean
     createdAt?: boolean
@@ -19467,21 +19545,25 @@ export namespace Prisma {
   }
 
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Payment$customerArgs<ExtArgs>
+    transporter?: boolean | Payment$transporterArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Payment$customerArgs<ExtArgs>
+    transporter?: boolean | Payment$transporterArgs<ExtArgs>
   }
 
   export type $PaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Payment"
     objects: {
-      customer: Prisma.$CustomerPayload<ExtArgs>
+      customer: Prisma.$CustomerPayload<ExtArgs> | null
+      transporter: Prisma.$TransporterPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       date: Date
-      customerId: string
+      customerId: string | null
+      transporterId: string | null
       direction: $Enums.PaymentDirection
       amount: Prisma.Decimal
       createdAt: Date
@@ -19850,7 +19932,8 @@ export namespace Prisma {
    */
   export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    customer<T extends Payment$customerArgs<ExtArgs> = {}>(args?: Subset<T, Payment$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    transporter<T extends Payment$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Payment$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -19883,6 +19966,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Payment", 'String'>
     readonly date: FieldRef<"Payment", 'DateTime'>
     readonly customerId: FieldRef<"Payment", 'String'>
+    readonly transporterId: FieldRef<"Payment", 'String'>
     readonly direction: FieldRef<"Payment", 'PaymentDirection'>
     readonly amount: FieldRef<"Payment", 'Decimal'>
     readonly createdAt: FieldRef<"Payment", 'DateTime'>
@@ -20205,6 +20289,36 @@ export namespace Prisma {
   }
 
   /**
+   * Payment.customer
+   */
+  export type Payment$customerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerInclude<ExtArgs> | null
+    where?: CustomerWhereInput
+  }
+
+  /**
+   * Payment.transporter
+   */
+  export type Payment$transporterArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transporter
+     */
+    select?: TransporterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransporterInclude<ExtArgs> | null
+    where?: TransporterWhereInput
+  }
+
+  /**
    * Payment without action
    */
   export type PaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20243,6 +20357,7 @@ export namespace Prisma {
     id: string | null
     date: Date | null
     customerId: string | null
+    transporterId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
     remarks: string | null
@@ -20254,6 +20369,7 @@ export namespace Prisma {
     id: string | null
     date: Date | null
     customerId: string | null
+    transporterId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
     remarks: string | null
@@ -20265,6 +20381,7 @@ export namespace Prisma {
     id: number
     date: number
     customerId: number
+    transporterId: number
     status: number
     amount: number
     remarks: number
@@ -20286,6 +20403,7 @@ export namespace Prisma {
     id?: true
     date?: true
     customerId?: true
+    transporterId?: true
     status?: true
     amount?: true
     remarks?: true
@@ -20297,6 +20415,7 @@ export namespace Prisma {
     id?: true
     date?: true
     customerId?: true
+    transporterId?: true
     status?: true
     amount?: true
     remarks?: true
@@ -20308,6 +20427,7 @@ export namespace Prisma {
     id?: true
     date?: true
     customerId?: true
+    transporterId?: true
     status?: true
     amount?: true
     remarks?: true
@@ -20405,7 +20525,8 @@ export namespace Prisma {
   export type DiscountGroupByOutputType = {
     id: string
     date: Date
-    customerId: string
+    customerId: string | null
+    transporterId: string | null
     status: $Enums.DiscountStatus
     amount: Decimal
     remarks: string
@@ -20436,30 +20557,35 @@ export namespace Prisma {
     id?: boolean
     date?: boolean
     customerId?: boolean
+    transporterId?: boolean
     status?: boolean
     amount?: boolean
     remarks?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Discount$customerArgs<ExtArgs>
+    transporter?: boolean | Discount$transporterArgs<ExtArgs>
   }, ExtArgs["result"]["discount"]>
 
   export type DiscountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     date?: boolean
     customerId?: boolean
+    transporterId?: boolean
     status?: boolean
     amount?: boolean
     remarks?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Discount$customerArgs<ExtArgs>
+    transporter?: boolean | Discount$transporterArgs<ExtArgs>
   }, ExtArgs["result"]["discount"]>
 
   export type DiscountSelectScalar = {
     id?: boolean
     date?: boolean
     customerId?: boolean
+    transporterId?: boolean
     status?: boolean
     amount?: boolean
     remarks?: boolean
@@ -20468,21 +20594,25 @@ export namespace Prisma {
   }
 
   export type DiscountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Discount$customerArgs<ExtArgs>
+    transporter?: boolean | Discount$transporterArgs<ExtArgs>
   }
   export type DiscountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    customer?: boolean | Discount$customerArgs<ExtArgs>
+    transporter?: boolean | Discount$transporterArgs<ExtArgs>
   }
 
   export type $DiscountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Discount"
     objects: {
-      customer: Prisma.$CustomerPayload<ExtArgs>
+      customer: Prisma.$CustomerPayload<ExtArgs> | null
+      transporter: Prisma.$TransporterPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       date: Date
-      customerId: string
+      customerId: string | null
+      transporterId: string | null
       status: $Enums.DiscountStatus
       amount: Prisma.Decimal
       remarks: string
@@ -20852,7 +20982,8 @@ export namespace Prisma {
    */
   export interface Prisma__DiscountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    customer<T extends Discount$customerArgs<ExtArgs> = {}>(args?: Subset<T, Discount$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    transporter<T extends Discount$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Discount$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20885,6 +21016,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Discount", 'String'>
     readonly date: FieldRef<"Discount", 'DateTime'>
     readonly customerId: FieldRef<"Discount", 'String'>
+    readonly transporterId: FieldRef<"Discount", 'String'>
     readonly status: FieldRef<"Discount", 'DiscountStatus'>
     readonly amount: FieldRef<"Discount", 'Decimal'>
     readonly remarks: FieldRef<"Discount", 'String'>
@@ -21208,6 +21340,36 @@ export namespace Prisma {
   }
 
   /**
+   * Discount.customer
+   */
+  export type Discount$customerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerInclude<ExtArgs> | null
+    where?: CustomerWhereInput
+  }
+
+  /**
+   * Discount.transporter
+   */
+  export type Discount$transporterArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Transporter
+     */
+    select?: TransporterSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TransporterInclude<ExtArgs> | null
+    where?: TransporterWhereInput
+  }
+
+  /**
    * Discount without action
    */
   export type DiscountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21487,6 +21649,7 @@ export namespace Prisma {
     id: 'id',
     date: 'date',
     customerId: 'customerId',
+    transporterId: 'transporterId',
     direction: 'direction',
     amount: 'amount',
     createdAt: 'createdAt',
@@ -21500,6 +21663,7 @@ export namespace Prisma {
     id: 'id',
     date: 'date',
     customerId: 'customerId',
+    transporterId: 'transporterId',
     status: 'status',
     amount: 'amount',
     remarks: 'remarks',
@@ -21805,6 +21969,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Transporter"> | Date | string
     updatedAt?: DateTimeFilter<"Transporter"> | Date | string
     dispatches?: DispatchListRelationFilter
+    payments?: PaymentListRelationFilter
+    discounts?: DiscountListRelationFilter
   }
 
   export type TransporterOrderByWithRelationInput = {
@@ -21820,6 +21986,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dispatches?: DispatchOrderByRelationAggregateInput
+    payments?: PaymentOrderByRelationAggregateInput
+    discounts?: DiscountOrderByRelationAggregateInput
   }
 
   export type TransporterWhereUniqueInput = Prisma.AtLeast<{
@@ -21838,6 +22006,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Transporter"> | Date | string
     updatedAt?: DateTimeFilter<"Transporter"> | Date | string
     dispatches?: DispatchListRelationFilter
+    payments?: PaymentListRelationFilter
+    discounts?: DiscountListRelationFilter
   }, "id">
 
   export type TransporterOrderByWithAggregationInput = {
@@ -23043,23 +23213,27 @@ export namespace Prisma {
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     id?: StringFilter<"Payment"> | string
     date?: DateTimeFilter<"Payment"> | Date | string
-    customerId?: StringFilter<"Payment"> | string
+    customerId?: StringNullableFilter<"Payment"> | string | null
+    transporterId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
-    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
+    transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
   }
 
   export type PaymentOrderByWithRelationInput = {
     id?: SortOrder
     date?: SortOrder
-    customerId?: SortOrder
+    customerId?: SortOrderInput | SortOrder
+    transporterId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
+    transporter?: TransporterOrderByWithRelationInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -23068,18 +23242,21 @@ export namespace Prisma {
     OR?: PaymentWhereInput[]
     NOT?: PaymentWhereInput | PaymentWhereInput[]
     date?: DateTimeFilter<"Payment"> | Date | string
-    customerId?: StringFilter<"Payment"> | string
+    customerId?: StringNullableFilter<"Payment"> | string | null
+    transporterId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
-    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
+    transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
   }, "id">
 
   export type PaymentOrderByWithAggregationInput = {
     id?: SortOrder
     date?: SortOrder
-    customerId?: SortOrder
+    customerId?: SortOrderInput | SortOrder
+    transporterId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -23097,7 +23274,8 @@ export namespace Prisma {
     NOT?: PaymentScalarWhereWithAggregatesInput | PaymentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Payment"> | string
     date?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
-    customerId?: StringWithAggregatesFilter<"Payment"> | string
+    customerId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    transporterId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionWithAggregatesFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalWithAggregatesFilter<"Payment"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
@@ -23110,25 +23288,29 @@ export namespace Prisma {
     NOT?: DiscountWhereInput | DiscountWhereInput[]
     id?: StringFilter<"Discount"> | string
     date?: DateTimeFilter<"Discount"> | Date | string
-    customerId?: StringFilter<"Discount"> | string
+    customerId?: StringNullableFilter<"Discount"> | string | null
+    transporterId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
     remarks?: StringFilter<"Discount"> | string
     createdAt?: DateTimeFilter<"Discount"> | Date | string
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
-    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
+    transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
   }
 
   export type DiscountOrderByWithRelationInput = {
     id?: SortOrder
     date?: SortOrder
-    customerId?: SortOrder
+    customerId?: SortOrderInput | SortOrder
+    transporterId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
     remarks?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
+    transporter?: TransporterOrderByWithRelationInput
   }
 
   export type DiscountWhereUniqueInput = Prisma.AtLeast<{
@@ -23137,19 +23319,22 @@ export namespace Prisma {
     OR?: DiscountWhereInput[]
     NOT?: DiscountWhereInput | DiscountWhereInput[]
     date?: DateTimeFilter<"Discount"> | Date | string
-    customerId?: StringFilter<"Discount"> | string
+    customerId?: StringNullableFilter<"Discount"> | string | null
+    transporterId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
     remarks?: StringFilter<"Discount"> | string
     createdAt?: DateTimeFilter<"Discount"> | Date | string
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
-    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
+    transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
   }, "id">
 
   export type DiscountOrderByWithAggregationInput = {
     id?: SortOrder
     date?: SortOrder
-    customerId?: SortOrder
+    customerId?: SortOrderInput | SortOrder
+    transporterId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
     remarks?: SortOrder
@@ -23168,7 +23353,8 @@ export namespace Prisma {
     NOT?: DiscountScalarWhereWithAggregatesInput | DiscountScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Discount"> | string
     date?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
-    customerId?: StringWithAggregatesFilter<"Discount"> | string
+    customerId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
+    transporterId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     status?: EnumDiscountStatusWithAggregatesFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalWithAggregatesFilter<"Discount"> | Decimal | DecimalJsLike | number | string
     remarks?: StringWithAggregatesFilter<"Discount"> | string
@@ -23253,6 +23439,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatches?: DispatchCreateNestedManyWithoutTransporterInput
+    payments?: PaymentCreateNestedManyWithoutTransporterInput
+    discounts?: DiscountCreateNestedManyWithoutTransporterInput
   }
 
   export type TransporterUncheckedCreateInput = {
@@ -23268,6 +23456,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatches?: DispatchUncheckedCreateNestedManyWithoutTransporterInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutTransporterInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutTransporterInput
   }
 
   export type TransporterUpdateInput = {
@@ -23283,6 +23473,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUpdateManyWithoutTransporterNestedInput
+    payments?: PaymentUpdateManyWithoutTransporterNestedInput
+    discounts?: DiscountUpdateManyWithoutTransporterNestedInput
   }
 
   export type TransporterUncheckedUpdateInput = {
@@ -23298,6 +23490,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUncheckedUpdateManyWithoutTransporterNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutTransporterNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
   export type TransporterCreateManyInput = {
@@ -24635,13 +24829,15 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    customer: CustomerCreateNestedOneWithoutPaymentsInput
+    customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    transporter?: TransporterCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateInput = {
     id?: string
     date: Date | string
-    customerId: string
+    customerId?: string | null
+    transporterId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -24655,13 +24851,15 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    customer?: CustomerUpdateOneRequiredWithoutPaymentsNestedInput
+    customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    customerId?: StringFieldUpdateOperationsInput | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24671,7 +24869,8 @@ export namespace Prisma {
   export type PaymentCreateManyInput = {
     id?: string
     date: Date | string
-    customerId: string
+    customerId?: string | null
+    transporterId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -24690,7 +24889,8 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    customerId?: StringFieldUpdateOperationsInput | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24705,13 +24905,15 @@ export namespace Prisma {
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    customer: CustomerCreateNestedOneWithoutDiscountsInput
+    customer?: CustomerCreateNestedOneWithoutDiscountsInput
+    transporter?: TransporterCreateNestedOneWithoutDiscountsInput
   }
 
   export type DiscountUncheckedCreateInput = {
     id?: string
     date: Date | string
-    customerId: string
+    customerId?: string | null
+    transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     remarks?: string
@@ -24727,13 +24929,15 @@ export namespace Prisma {
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    customer?: CustomerUpdateOneRequiredWithoutDiscountsNestedInput
+    customer?: CustomerUpdateOneWithoutDiscountsNestedInput
+    transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
   }
 
   export type DiscountUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    customerId?: StringFieldUpdateOperationsInput | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     remarks?: StringFieldUpdateOperationsInput | string
@@ -24744,7 +24948,8 @@ export namespace Prisma {
   export type DiscountCreateManyInput = {
     id?: string
     date: Date | string
-    customerId: string
+    customerId?: string | null
+    transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     remarks?: string
@@ -24765,7 +24970,8 @@ export namespace Prisma {
   export type DiscountUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    customerId?: StringFieldUpdateOperationsInput | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     remarks?: StringFieldUpdateOperationsInput | string
@@ -24930,7 +25136,27 @@ export namespace Prisma {
     none?: DispatchWhereInput
   }
 
+  export type PaymentListRelationFilter = {
+    every?: PaymentWhereInput
+    some?: PaymentWhereInput
+    none?: PaymentWhereInput
+  }
+
+  export type DiscountListRelationFilter = {
+    every?: DiscountWhereInput
+    some?: DiscountWhereInput
+    none?: DiscountWhereInput
+  }
+
   export type DispatchOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PaymentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DiscountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -25289,26 +25515,6 @@ export namespace Prisma {
   export type StaffNullableRelationFilter = {
     is?: StaffWhereInput | null
     isNot?: StaffWhereInput | null
-  }
-
-  export type PaymentListRelationFilter = {
-    every?: PaymentWhereInput
-    some?: PaymentWhereInput
-    none?: PaymentWhereInput
-  }
-
-  export type DiscountListRelationFilter = {
-    every?: DiscountWhereInput
-    some?: DiscountWhereInput
-    none?: DiscountWhereInput
-  }
-
-  export type PaymentOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type DiscountOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type CustomerCountOrderByAggregateInput = {
@@ -25924,6 +26130,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
+    transporterId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -25938,6 +26145,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
+    transporterId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -25948,6 +26156,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
+    transporterId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -25979,6 +26188,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
+    transporterId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
     remarks?: SortOrder
@@ -25994,6 +26204,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
+    transporterId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
     remarks?: SortOrder
@@ -26005,6 +26216,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
+    transporterId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
     remarks?: SortOrder
@@ -26129,11 +26341,39 @@ export namespace Prisma {
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
   }
 
+  export type PaymentCreateNestedManyWithoutTransporterInput = {
+    create?: XOR<PaymentCreateWithoutTransporterInput, PaymentUncheckedCreateWithoutTransporterInput> | PaymentCreateWithoutTransporterInput[] | PaymentUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutTransporterInput | PaymentCreateOrConnectWithoutTransporterInput[]
+    createMany?: PaymentCreateManyTransporterInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type DiscountCreateNestedManyWithoutTransporterInput = {
+    create?: XOR<DiscountCreateWithoutTransporterInput, DiscountUncheckedCreateWithoutTransporterInput> | DiscountCreateWithoutTransporterInput[] | DiscountUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutTransporterInput | DiscountCreateOrConnectWithoutTransporterInput[]
+    createMany?: DiscountCreateManyTransporterInputEnvelope
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+  }
+
   export type DispatchUncheckedCreateNestedManyWithoutTransporterInput = {
     create?: XOR<DispatchCreateWithoutTransporterInput, DispatchUncheckedCreateWithoutTransporterInput> | DispatchCreateWithoutTransporterInput[] | DispatchUncheckedCreateWithoutTransporterInput[]
     connectOrCreate?: DispatchCreateOrConnectWithoutTransporterInput | DispatchCreateOrConnectWithoutTransporterInput[]
     createMany?: DispatchCreateManyTransporterInputEnvelope
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+  }
+
+  export type PaymentUncheckedCreateNestedManyWithoutTransporterInput = {
+    create?: XOR<PaymentCreateWithoutTransporterInput, PaymentUncheckedCreateWithoutTransporterInput> | PaymentCreateWithoutTransporterInput[] | PaymentUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutTransporterInput | PaymentCreateOrConnectWithoutTransporterInput[]
+    createMany?: PaymentCreateManyTransporterInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type DiscountUncheckedCreateNestedManyWithoutTransporterInput = {
+    create?: XOR<DiscountCreateWithoutTransporterInput, DiscountUncheckedCreateWithoutTransporterInput> | DiscountCreateWithoutTransporterInput[] | DiscountUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutTransporterInput | DiscountCreateOrConnectWithoutTransporterInput[]
+    createMany?: DiscountCreateManyTransporterInputEnvelope
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
   }
 
   export type DecimalFieldUpdateOperationsInput = {
@@ -26158,6 +26398,34 @@ export namespace Prisma {
     deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
   }
 
+  export type PaymentUpdateManyWithoutTransporterNestedInput = {
+    create?: XOR<PaymentCreateWithoutTransporterInput, PaymentUncheckedCreateWithoutTransporterInput> | PaymentCreateWithoutTransporterInput[] | PaymentUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutTransporterInput | PaymentCreateOrConnectWithoutTransporterInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutTransporterInput | PaymentUpsertWithWhereUniqueWithoutTransporterInput[]
+    createMany?: PaymentCreateManyTransporterInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutTransporterInput | PaymentUpdateWithWhereUniqueWithoutTransporterInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutTransporterInput | PaymentUpdateManyWithWhereWithoutTransporterInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type DiscountUpdateManyWithoutTransporterNestedInput = {
+    create?: XOR<DiscountCreateWithoutTransporterInput, DiscountUncheckedCreateWithoutTransporterInput> | DiscountCreateWithoutTransporterInput[] | DiscountUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutTransporterInput | DiscountCreateOrConnectWithoutTransporterInput[]
+    upsert?: DiscountUpsertWithWhereUniqueWithoutTransporterInput | DiscountUpsertWithWhereUniqueWithoutTransporterInput[]
+    createMany?: DiscountCreateManyTransporterInputEnvelope
+    set?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    disconnect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    delete?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    update?: DiscountUpdateWithWhereUniqueWithoutTransporterInput | DiscountUpdateWithWhereUniqueWithoutTransporterInput[]
+    updateMany?: DiscountUpdateManyWithWhereWithoutTransporterInput | DiscountUpdateManyWithWhereWithoutTransporterInput[]
+    deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+  }
+
   export type DispatchUncheckedUpdateManyWithoutTransporterNestedInput = {
     create?: XOR<DispatchCreateWithoutTransporterInput, DispatchUncheckedCreateWithoutTransporterInput> | DispatchCreateWithoutTransporterInput[] | DispatchUncheckedCreateWithoutTransporterInput[]
     connectOrCreate?: DispatchCreateOrConnectWithoutTransporterInput | DispatchCreateOrConnectWithoutTransporterInput[]
@@ -26170,6 +26438,34 @@ export namespace Prisma {
     update?: DispatchUpdateWithWhereUniqueWithoutTransporterInput | DispatchUpdateWithWhereUniqueWithoutTransporterInput[]
     updateMany?: DispatchUpdateManyWithWhereWithoutTransporterInput | DispatchUpdateManyWithWhereWithoutTransporterInput[]
     deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutTransporterNestedInput = {
+    create?: XOR<PaymentCreateWithoutTransporterInput, PaymentUncheckedCreateWithoutTransporterInput> | PaymentCreateWithoutTransporterInput[] | PaymentUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutTransporterInput | PaymentCreateOrConnectWithoutTransporterInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutTransporterInput | PaymentUpsertWithWhereUniqueWithoutTransporterInput[]
+    createMany?: PaymentCreateManyTransporterInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutTransporterInput | PaymentUpdateWithWhereUniqueWithoutTransporterInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutTransporterInput | PaymentUpdateManyWithWhereWithoutTransporterInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type DiscountUncheckedUpdateManyWithoutTransporterNestedInput = {
+    create?: XOR<DiscountCreateWithoutTransporterInput, DiscountUncheckedCreateWithoutTransporterInput> | DiscountCreateWithoutTransporterInput[] | DiscountUncheckedCreateWithoutTransporterInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutTransporterInput | DiscountCreateOrConnectWithoutTransporterInput[]
+    upsert?: DiscountUpsertWithWhereUniqueWithoutTransporterInput | DiscountUpsertWithWhereUniqueWithoutTransporterInput[]
+    createMany?: DiscountCreateManyTransporterInputEnvelope
+    set?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    disconnect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    delete?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    update?: DiscountUpdateWithWhereUniqueWithoutTransporterInput | DiscountUpdateWithWhereUniqueWithoutTransporterInput[]
+    updateMany?: DiscountUpdateManyWithWhereWithoutTransporterInput | DiscountUpdateManyWithWhereWithoutTransporterInput[]
+    deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
   }
 
   export type QualityClassCreateNestedManyWithoutOriginInput = {
@@ -27158,16 +27454,34 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput
   }
 
+  export type TransporterCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: TransporterCreateOrConnectWithoutPaymentsInput
+    connect?: TransporterWhereUniqueInput
+  }
+
   export type EnumPaymentDirectionFieldUpdateOperationsInput = {
     set?: $Enums.PaymentDirection
   }
 
-  export type CustomerUpdateOneRequiredWithoutPaymentsNestedInput = {
+  export type CustomerUpdateOneWithoutPaymentsNestedInput = {
     create?: XOR<CustomerCreateWithoutPaymentsInput, CustomerUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutPaymentsInput
     upsert?: CustomerUpsertWithoutPaymentsInput
+    disconnect?: CustomerWhereInput | boolean
+    delete?: CustomerWhereInput | boolean
     connect?: CustomerWhereUniqueInput
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutPaymentsInput, CustomerUpdateWithoutPaymentsInput>, CustomerUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type TransporterUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: TransporterCreateOrConnectWithoutPaymentsInput
+    upsert?: TransporterUpsertWithoutPaymentsInput
+    disconnect?: TransporterWhereInput | boolean
+    delete?: TransporterWhereInput | boolean
+    connect?: TransporterWhereUniqueInput
+    update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutPaymentsInput, TransporterUpdateWithoutPaymentsInput>, TransporterUncheckedUpdateWithoutPaymentsInput>
   }
 
   export type CustomerCreateNestedOneWithoutDiscountsInput = {
@@ -27176,16 +27490,34 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput
   }
 
+  export type TransporterCreateNestedOneWithoutDiscountsInput = {
+    create?: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
+    connectOrCreate?: TransporterCreateOrConnectWithoutDiscountsInput
+    connect?: TransporterWhereUniqueInput
+  }
+
   export type EnumDiscountStatusFieldUpdateOperationsInput = {
     set?: $Enums.DiscountStatus
   }
 
-  export type CustomerUpdateOneRequiredWithoutDiscountsNestedInput = {
+  export type CustomerUpdateOneWithoutDiscountsNestedInput = {
     create?: XOR<CustomerCreateWithoutDiscountsInput, CustomerUncheckedCreateWithoutDiscountsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutDiscountsInput
     upsert?: CustomerUpsertWithoutDiscountsInput
+    disconnect?: CustomerWhereInput | boolean
+    delete?: CustomerWhereInput | boolean
     connect?: CustomerWhereUniqueInput
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutDiscountsInput, CustomerUpdateWithoutDiscountsInput>, CustomerUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type TransporterUpdateOneWithoutDiscountsNestedInput = {
+    create?: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
+    connectOrCreate?: TransporterCreateOrConnectWithoutDiscountsInput
+    upsert?: TransporterUpsertWithoutDiscountsInput
+    disconnect?: TransporterWhereInput | boolean
+    delete?: TransporterWhereInput | boolean
+    connect?: TransporterWhereUniqueInput
+    update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutDiscountsInput, TransporterUpdateWithoutDiscountsInput>, TransporterUncheckedUpdateWithoutDiscountsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -27866,6 +28198,68 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PaymentCreateWithoutTransporterInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutTransporterInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateOrConnectWithoutTransporterInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutTransporterInput, PaymentUncheckedCreateWithoutTransporterInput>
+  }
+
+  export type PaymentCreateManyTransporterInputEnvelope = {
+    data: PaymentCreateManyTransporterInput | PaymentCreateManyTransporterInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DiscountCreateWithoutTransporterInput = {
+    id?: string
+    date: Date | string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutDiscountsInput
+  }
+
+  export type DiscountUncheckedCreateWithoutTransporterInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DiscountCreateOrConnectWithoutTransporterInput = {
+    where: DiscountWhereUniqueInput
+    create: XOR<DiscountCreateWithoutTransporterInput, DiscountUncheckedCreateWithoutTransporterInput>
+  }
+
+  export type DiscountCreateManyTransporterInputEnvelope = {
+    data: DiscountCreateManyTransporterInput | DiscountCreateManyTransporterInput[]
+    skipDuplicates?: boolean
+  }
+
   export type DispatchUpsertWithWhereUniqueWithoutTransporterInput = {
     where: DispatchWhereUniqueInput
     update: XOR<DispatchUpdateWithoutTransporterInput, DispatchUncheckedUpdateWithoutTransporterInput>
@@ -27909,6 +28303,67 @@ export namespace Prisma {
     purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
+  }
+
+  export type PaymentUpsertWithWhereUniqueWithoutTransporterInput = {
+    where: PaymentWhereUniqueInput
+    update: XOR<PaymentUpdateWithoutTransporterInput, PaymentUncheckedUpdateWithoutTransporterInput>
+    create: XOR<PaymentCreateWithoutTransporterInput, PaymentUncheckedCreateWithoutTransporterInput>
+  }
+
+  export type PaymentUpdateWithWhereUniqueWithoutTransporterInput = {
+    where: PaymentWhereUniqueInput
+    data: XOR<PaymentUpdateWithoutTransporterInput, PaymentUncheckedUpdateWithoutTransporterInput>
+  }
+
+  export type PaymentUpdateManyWithWhereWithoutTransporterInput = {
+    where: PaymentScalarWhereInput
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutTransporterInput>
+  }
+
+  export type PaymentScalarWhereInput = {
+    AND?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+    OR?: PaymentScalarWhereInput[]
+    NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+    id?: StringFilter<"Payment"> | string
+    date?: DateTimeFilter<"Payment"> | Date | string
+    customerId?: StringNullableFilter<"Payment"> | string | null
+    transporterId?: StringNullableFilter<"Payment"> | string | null
+    direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
+    amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Payment"> | Date | string
+    updatedAt?: DateTimeFilter<"Payment"> | Date | string
+  }
+
+  export type DiscountUpsertWithWhereUniqueWithoutTransporterInput = {
+    where: DiscountWhereUniqueInput
+    update: XOR<DiscountUpdateWithoutTransporterInput, DiscountUncheckedUpdateWithoutTransporterInput>
+    create: XOR<DiscountCreateWithoutTransporterInput, DiscountUncheckedCreateWithoutTransporterInput>
+  }
+
+  export type DiscountUpdateWithWhereUniqueWithoutTransporterInput = {
+    where: DiscountWhereUniqueInput
+    data: XOR<DiscountUpdateWithoutTransporterInput, DiscountUncheckedUpdateWithoutTransporterInput>
+  }
+
+  export type DiscountUpdateManyWithWhereWithoutTransporterInput = {
+    where: DiscountScalarWhereInput
+    data: XOR<DiscountUpdateManyMutationInput, DiscountUncheckedUpdateManyWithoutTransporterInput>
+  }
+
+  export type DiscountScalarWhereInput = {
+    AND?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+    OR?: DiscountScalarWhereInput[]
+    NOT?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+    id?: StringFilter<"Discount"> | string
+    date?: DateTimeFilter<"Discount"> | Date | string
+    customerId?: StringNullableFilter<"Discount"> | string | null
+    transporterId?: StringNullableFilter<"Discount"> | string | null
+    status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
+    amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
+    remarks?: StringFilter<"Discount"> | string
+    createdAt?: DateTimeFilter<"Discount"> | Date | string
+    updatedAt?: DateTimeFilter<"Discount"> | Date | string
   }
 
   export type QualityClassCreateWithoutOriginInput = {
@@ -28629,11 +29084,13 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    transporter?: TransporterCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutCustomerInput = {
     id?: string
     date: Date | string
+    transporterId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -28658,11 +29115,13 @@ export namespace Prisma {
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    transporter?: TransporterCreateNestedOneWithoutDiscountsInput
   }
 
   export type DiscountUncheckedCreateWithoutCustomerInput = {
     id?: string
     date: Date | string
+    transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     remarks?: string
@@ -28773,19 +29232,6 @@ export namespace Prisma {
     data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutCustomerInput>
   }
 
-  export type PaymentScalarWhereInput = {
-    AND?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
-    OR?: PaymentScalarWhereInput[]
-    NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
-    id?: StringFilter<"Payment"> | string
-    date?: DateTimeFilter<"Payment"> | Date | string
-    customerId?: StringFilter<"Payment"> | string
-    direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
-    amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
-    createdAt?: DateTimeFilter<"Payment"> | Date | string
-    updatedAt?: DateTimeFilter<"Payment"> | Date | string
-  }
-
   export type DiscountUpsertWithWhereUniqueWithoutCustomerInput = {
     where: DiscountWhereUniqueInput
     update: XOR<DiscountUpdateWithoutCustomerInput, DiscountUncheckedUpdateWithoutCustomerInput>
@@ -28800,20 +29246,6 @@ export namespace Prisma {
   export type DiscountUpdateManyWithWhereWithoutCustomerInput = {
     where: DiscountScalarWhereInput
     data: XOR<DiscountUpdateManyMutationInput, DiscountUncheckedUpdateManyWithoutCustomerInput>
-  }
-
-  export type DiscountScalarWhereInput = {
-    AND?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
-    OR?: DiscountScalarWhereInput[]
-    NOT?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
-    id?: StringFilter<"Discount"> | string
-    date?: DateTimeFilter<"Discount"> | Date | string
-    customerId?: StringFilter<"Discount"> | string
-    status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
-    amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
-    remarks?: StringFilter<"Discount"> | string
-    createdAt?: DateTimeFilter<"Discount"> | Date | string
-    updatedAt?: DateTimeFilter<"Discount"> | Date | string
   }
 
   export type QualityClassCreateWithoutVesselsInput = {
@@ -29975,6 +30407,8 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutTransporterInput
+    discounts?: DiscountCreateNestedManyWithoutTransporterInput
   }
 
   export type TransporterUncheckedCreateWithoutDispatchesInput = {
@@ -29989,6 +30423,8 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutTransporterInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutTransporterInput
   }
 
   export type TransporterCreateOrConnectWithoutDispatchesInput = {
@@ -30237,6 +30673,8 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutTransporterNestedInput
+    discounts?: DiscountUpdateManyWithoutTransporterNestedInput
   }
 
   export type TransporterUncheckedUpdateWithoutDispatchesInput = {
@@ -30251,6 +30689,8 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutTransporterNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
   export type CustomerUpsertWithoutDispatchesInput = {
@@ -30425,6 +30865,43 @@ export namespace Prisma {
     create: XOR<CustomerCreateWithoutPaymentsInput, CustomerUncheckedCreateWithoutPaymentsInput>
   }
 
+  export type TransporterCreateWithoutPaymentsInput = {
+    id?: string
+    name: string
+    ownerName?: string | null
+    ownerContactNumber1?: string | null
+    ownerContactNumber2?: string | null
+    email?: string | null
+    city?: string | null
+    state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatches?: DispatchCreateNestedManyWithoutTransporterInput
+    discounts?: DiscountCreateNestedManyWithoutTransporterInput
+  }
+
+  export type TransporterUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    name: string
+    ownerName?: string | null
+    ownerContactNumber1?: string | null
+    ownerContactNumber2?: string | null
+    email?: string | null
+    city?: string | null
+    state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatches?: DispatchUncheckedCreateNestedManyWithoutTransporterInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutTransporterInput
+  }
+
+  export type TransporterCreateOrConnectWithoutPaymentsInput = {
+    where: TransporterWhereUniqueInput
+    create: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
+  }
+
   export type CustomerUpsertWithoutPaymentsInput = {
     update: XOR<CustomerUpdateWithoutPaymentsInput, CustomerUncheckedUpdateWithoutPaymentsInput>
     create: XOR<CustomerCreateWithoutPaymentsInput, CustomerUncheckedCreateWithoutPaymentsInput>
@@ -30514,6 +30991,49 @@ export namespace Prisma {
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
+  export type TransporterUpsertWithoutPaymentsInput = {
+    update: XOR<TransporterUpdateWithoutPaymentsInput, TransporterUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
+    where?: TransporterWhereInput
+  }
+
+  export type TransporterUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: TransporterWhereInput
+    data: XOR<TransporterUpdateWithoutPaymentsInput, TransporterUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type TransporterUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber1?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber2?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatches?: DispatchUpdateManyWithoutTransporterNestedInput
+    discounts?: DiscountUpdateManyWithoutTransporterNestedInput
+  }
+
+  export type TransporterUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber1?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber2?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatches?: DispatchUncheckedUpdateManyWithoutTransporterNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutTransporterNestedInput
+  }
+
   export type CustomerCreateWithoutDiscountsInput = {
     id?: string
     name: string
@@ -30595,6 +31115,43 @@ export namespace Prisma {
   export type CustomerCreateOrConnectWithoutDiscountsInput = {
     where: CustomerWhereUniqueInput
     create: XOR<CustomerCreateWithoutDiscountsInput, CustomerUncheckedCreateWithoutDiscountsInput>
+  }
+
+  export type TransporterCreateWithoutDiscountsInput = {
+    id?: string
+    name: string
+    ownerName?: string | null
+    ownerContactNumber1?: string | null
+    ownerContactNumber2?: string | null
+    email?: string | null
+    city?: string | null
+    state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatches?: DispatchCreateNestedManyWithoutTransporterInput
+    payments?: PaymentCreateNestedManyWithoutTransporterInput
+  }
+
+  export type TransporterUncheckedCreateWithoutDiscountsInput = {
+    id?: string
+    name: string
+    ownerName?: string | null
+    ownerContactNumber1?: string | null
+    ownerContactNumber2?: string | null
+    email?: string | null
+    city?: string | null
+    state?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatches?: DispatchUncheckedCreateNestedManyWithoutTransporterInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutTransporterInput
+  }
+
+  export type TransporterCreateOrConnectWithoutDiscountsInput = {
+    where: TransporterWhereUniqueInput
+    create: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
   }
 
   export type CustomerUpsertWithoutDiscountsInput = {
@@ -30684,6 +31241,49 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type TransporterUpsertWithoutDiscountsInput = {
+    update: XOR<TransporterUpdateWithoutDiscountsInput, TransporterUncheckedUpdateWithoutDiscountsInput>
+    create: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
+    where?: TransporterWhereInput
+  }
+
+  export type TransporterUpdateToOneWithWhereWithoutDiscountsInput = {
+    where?: TransporterWhereInput
+    data: XOR<TransporterUpdateWithoutDiscountsInput, TransporterUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type TransporterUpdateWithoutDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber1?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber2?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatches?: DispatchUpdateManyWithoutTransporterNestedInput
+    payments?: PaymentUpdateManyWithoutTransporterNestedInput
+  }
+
+  export type TransporterUncheckedUpdateWithoutDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber1?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContactNumber2?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatches?: DispatchUncheckedUpdateManyWithoutTransporterNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
   export type CustomerCreateManyDealByInput = {
@@ -30943,6 +31543,27 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PaymentCreateManyTransporterInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DiscountCreateManyTransporterInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type DispatchUpdateWithoutTransporterInput = {
     id?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31014,6 +31635,69 @@ export namespace Prisma {
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUpdateWithoutTransporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutTransporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutTransporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DiscountUpdateWithoutTransporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutDiscountsNestedInput
+  }
+
+  export type DiscountUncheckedUpdateWithoutTransporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DiscountUncheckedUpdateManyWithoutTransporterInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -31482,6 +32166,7 @@ export namespace Prisma {
   export type PaymentCreateManyCustomerInput = {
     id?: string
     date: Date | string
+    transporterId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -31491,6 +32176,7 @@ export namespace Prisma {
   export type DiscountCreateManyCustomerInput = {
     id?: string
     date: Date | string
+    transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     remarks?: string
@@ -31698,11 +32384,13 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31712,6 +32400,7 @@ export namespace Prisma {
   export type PaymentUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31726,11 +32415,13 @@ export namespace Prisma {
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
   }
 
   export type DiscountUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     remarks?: StringFieldUpdateOperationsInput | string
@@ -31741,6 +32432,7 @@ export namespace Prisma {
   export type DiscountUncheckedUpdateManyWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     remarks?: StringFieldUpdateOperationsInput | string

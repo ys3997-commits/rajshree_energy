@@ -278,6 +278,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
 
   const paymentsByCustomer = new Map<string, typeof payments>();
   for (const payment of payments) {
+    if (!payment.customerId) continue;
     const list = paymentsByCustomer.get(payment.customerId) ?? [];
     list.push(payment);
     paymentsByCustomer.set(payment.customerId, list);

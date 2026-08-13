@@ -1,6 +1,7 @@
 import { listCustomers } from "@/lib/actions/customers";
 import { listDiscounts } from "@/lib/actions/discounts";
 import { listPayments } from "@/lib/actions/payments";
+import { listTransporters } from "@/lib/actions/transporters";
 import { redirect } from "next/navigation";
 import { DiscountsClient } from "./DiscountsClient";
 import { PaymentsClient } from "./PaymentsClient";
@@ -24,39 +25,36 @@ export default async function PaymentsPage({
   const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
   const isDiscount = sp.tab === "discount";
 
-  const customersPromise = listCustomers({ activeOnly: true });
-
-  if (isDiscount) {
-    const [discounts, customers] = await Promise.all([
-      listDiscounts({ page }),
-      customersPromise,
-    ]);
-
-    return (
-      <DiscountsClient
-        initial={discounts}
-        customers={customers.map((c) => ({
-          id: c.id,
-          name: c.name,
-          category: c.category,
-        }))}
-      />
-    );
-  }
-
-  const [payments, customers] = await Promise.all([
-    listPayments({ page }),
-    customersPromise,
+  const partiesPromise = Promise.all([
+    listCustomers({ activeOnly: true }),
+    listTransporters(),
+  ]).then(([customers, transporters]) => [
+    ...customers.map((c) => ({
+      id: c.id,
+      name: c.name,
+      kind: "customer" as const,
+      category: c.category,
+    })),
+    ...transporters.map((t) => ({
+      id: t.id,
+      name: t.name,
+      kind: "transporter" as const,
+    })),
   ]);
 
-  return (
-    <PaymentsClient
-      initial={payments}
-      customers={customers.map((c) => ({
-        id: c.id,
-        name: c.name,
-        category: c.category,
-      }))}
-    />
-  );
+  if (isDiscount) {
+    const [discounts, parties] = await Promise.all([
+      listDiscounts({ page }),
+      partiesPromise,
+    ]);
+
+    return <DiscountsClient initial={discounts} parties={parties} />;
+  }
+
+  const [payments, parties] = await Promise.all([
+    listPayments({ page }),
+    partiesPromise,
+  ]);
+
+  return <PaymentsClient initial={payments} parties={parties} />;
 }

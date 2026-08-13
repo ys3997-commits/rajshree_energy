@@ -17,9 +17,15 @@ import {
   formatRs,
   parseAmountInput,
 } from "@/lib/domain/format";
+import { parsePartyKey, partyKey } from "@/lib/domain/paymentParty";
 import { PaymentsTabs } from "./PaymentsTabs";
 
-type Opt = { id: string; name: string; category: CustomerCategory };
+type Opt = {
+  id: string;
+  name: string;
+  kind: "customer" | "transporter";
+  category?: CustomerCategory;
+};
 type Status = "RECEIVED" | "PAID" | "";
 
 function todayLocal(): string {
@@ -30,10 +36,10 @@ function todayLocal(): string {
   return `${y}-${m}-${day}`;
 }
 
-function emptyForm(customerId = "") {
+function emptyForm(partyId = "") {
   return {
     date: todayLocal(),
-    customerId,
+    partyId,
     status: "" as Status,
     amount: "",
     remarks: "",
@@ -60,10 +66,10 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 
 export function DiscountsClient({
   initial,
-  customers,
+  parties,
 }: {
   initial: DiscountListResult;
-  customers: Opt[];
+  parties: Opt[];
 }) {
   const router = useRouter();
   const { rows, total, page, pageSize, totalPages } = initial;
@@ -88,16 +94,18 @@ export function DiscountsClient({
     setForm({ ...form, amount: raw });
   }
 
-  function resetForm(customerId = "") {
+  function resetForm(partyId = "") {
     setEditing(null);
-    setForm(emptyForm(customerId));
+    setForm(emptyForm(partyId));
   }
 
   function startEdit(row: DiscountRow) {
     setEditing(row);
     setForm({
       date: row.date,
-      customerId: row.customerId,
+      partyId: row.transporterId
+        ? partyKey("transporter", row.transporterId)
+        : partyKey("customer", row.customerId ?? ""),
       status: row.status,
       amount: row.amount,
       remarks: row.remarks,
@@ -114,8 +122,8 @@ export function DiscountsClient({
     e.preventDefault();
     setError(null);
 
-    if (!form.customerId) {
-      setError("Customer is required");
+    if (!form.partyId) {
+      setError("Customer or transporter is required");
       return;
     }
     if (!form.status) {
@@ -131,9 +139,11 @@ export function DiscountsClient({
       return;
     }
 
+    const party = parsePartyKey(form.partyId);
     const payload = {
       date: form.date,
-      customerId: form.customerId,
+      customerId: party.kind === "customer" ? party.id : null,
+      transporterId: party.kind === "transporter" ? party.id : null,
       status: form.status,
       amount: form.amount,
       remarks: form.remarks,
@@ -219,18 +229,37 @@ export function DiscountsClient({
                   form="discount-entry-form"
                   required
                   className="field-input"
-                  aria-label="Customer"
-                  value={form.customerId}
+                  aria-label="Customer or transporter"
+                  value={form.partyId}
                   onChange={(e) =>
-                    setForm({ ...form, customerId: e.target.value })
+                    setForm({ ...form, partyId: e.target.value })
                   }
                 >
-                  <option value="">Select customer</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} — {formatCustomerCategory(c.category)}
-                    </option>
-                  ))}
+                  <option value="">Select customer or transporter</option>
+                  <optgroup label="Customers">
+                    {parties
+                      .filter((c) => c.kind === "customer")
+                      .map((c) => (
+                        <option
+                          key={partyKey("customer", c.id)}
+                          value={partyKey("customer", c.id)}
+                        >
+                          {c.name} — {formatCustomerCategory(c.category)}
+                        </option>
+                      ))}
+                  </optgroup>
+                  <optgroup label="Transporters">
+                    {parties
+                      .filter((c) => c.kind === "transporter")
+                      .map((c) => (
+                        <option
+                          key={partyKey("transporter", c.id)}
+                          value={partyKey("transporter", c.id)}
+                        >
+                          {c.name} — Transporter
+                        </option>
+                      ))}
+                  </optgroup>
                 </select>
               </td>
               <td>
@@ -310,7 +339,11 @@ export function DiscountsClient({
                   className={dateBreak ? "payment-date-break" : undefined}
                 >
                   <td>{formatDateDdMmYyyy(row.date)}</td>
-                  <td>{row.customerName}</td>
+                  <td>
+                    {row.transporterId
+                      ? `${row.customerName} — Transporter`
+                      : row.customerName}
+                  </td>
                   <td>{statusLabel(row.status)}</td>
                   <td className="cell-num">{formatRs(row.amount)}</td>
                   <td>{row.remarks || "—"}</td>

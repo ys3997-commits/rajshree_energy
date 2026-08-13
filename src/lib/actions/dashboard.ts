@@ -406,6 +406,7 @@ export async function getHomeOverdueCharts(): Promise<{
   }
 
   for (const payment of payments) {
+    if (!payment.customerId) continue;
     pushDue(
       payment.customerId,
       payment.date,
@@ -414,6 +415,7 @@ export async function getHomeOverdueCharts(): Promise<{
   }
 
   for (const discount of discounts) {
+    if (!discount.customerId) continue;
     pushDue(
       discount.customerId,
       discount.date,

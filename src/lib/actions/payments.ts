@@ -6,6 +6,10 @@ import {
   adjustCustomerDue,
   paymentDueDelta,
 } from "@/lib/domain/customerDue";
+import {
+  parsePaymentParty,
+  type PaymentParty,
+} from "@/lib/domain/paymentParty";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -13,7 +17,8 @@ const PAYMENTS_PAGE_SIZE = 20;
 
 export type PaymentInput = {
   date: string;
-  customerId: string;
+  customerId?: string | null;
+  transporterId?: string | null;
   direction: "RECEIVED" | "SENT" | string;
   amount: string | number;
 };
@@ -21,7 +26,8 @@ export type PaymentInput = {
 export type PaymentRow = {
   id: string;
   date: string;
-  customerId: string;
+  customerId: string | null;
+  transporterId: string | null;
   customerName: string;
   direction: "RECEIVED" | "SENT";
   amount: string;
@@ -55,30 +61,33 @@ function parseDate(value: string): Date {
 function toPaymentRow(row: {
   id: string;
   date: Date;
-  customerId: string;
+  customerId: string | null;
+  transporterId: string | null;
   direction: PaymentDirection;
   amount: { toString(): string };
-  customer: { name: string };
+  customer: { name: string } | null;
+  transporter: { name: string } | null;
 }): PaymentRow {
   return {
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
     customerId: row.customerId,
-    customerName: row.customer.name,
+    transporterId: row.transporterId,
+    customerName: row.customer?.name ?? row.transporter?.name ?? "—",
     direction: row.direction,
     amount: row.amount.toString(),
   };
 }
 
 function validatePaymentInput(input: PaymentInput) {
-  if (!input.customerId) throw new Error("Customer is required");
+  const party = parsePaymentParty(input);
   const amount = toDecimal(input.amount);
   if (!amount.isFinite() || amount.lte(0)) {
     throw new Error("Amount must be greater than zero");
   }
   return {
     date: parseDate(input.date),
-    customerId: input.customerId,
+    party,
     direction: parseDirection(String(input.direction)),
     amount,
   };
@@ -86,6 +95,7 @@ function validatePaymentInput(input: PaymentInput) {
 
 const paymentInclude = {
   customer: { select: { id: true, name: true } },
+  transporter: { select: { id: true, name: true } },
 } as const;
 
 const paymentOrderBy = [
@@ -93,9 +103,47 @@ const paymentOrderBy = [
   { createdAt: "desc" as const },
 ];
 
-function revalidatePaymentPaths() {
+function partyCreateData(party: PaymentParty) {
+  return party.kind === "customer"
+    ? { customer: { connect: { id: party.id } } }
+    : { transporter: { connect: { id: party.id } } };
+}
+
+function partyUpdateData(party: PaymentParty) {
+  return {
+    customer:
+      party.kind === "customer"
+        ? { connect: { id: party.id } }
+        : { disconnect: true },
+    transporter:
+      party.kind === "transporter"
+        ? { connect: { id: party.id } }
+        : { disconnect: true },
+  };
+}
+
+async function assertPartyExists(party: PaymentParty) {
+  if (party.kind === "customer") {
+    const customer = await prisma.customer.findUnique({
+      where: { id: party.id },
+      select: { id: true },
+    });
+    if (!customer) throw new Error("Customer not found");
+    return;
+  }
+  const transporter = await prisma.transporter.findUnique({
+    where: { id: party.id },
+    select: { id: true },
+  });
+  if (!transporter) throw new Error("Transporter not found");
+}
+
+function revalidatePaymentPaths(party?: PaymentParty) {
   revalidatePath("/payments");
   revalidatePath("/customers");
+  if (!party || party.kind === "transporter") {
+    revalidatePath("/transporters");
+  }
 }
 
 export async function listPayments(options?: {
@@ -131,12 +179,7 @@ export async function listPayments(options?: {
 
 export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
   const data = validatePaymentInput(input);
-
-  const customer = await prisma.customer.findUnique({
-    where: { id: data.customerId },
-    select: { id: true, name: true },
-  });
-  if (!customer) throw new Error("Customer not found");
+  await assertPartyExists(data.party);
 
   const row = await prisma.$transaction(async (tx) => {
     const created = await tx.payment.create({
@@ -144,21 +187,23 @@ export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
         date: data.date,
         direction: data.direction,
         amount: data.amount,
-        customer: { connect: { id: data.customerId } },
+        ...partyCreateData(data.party),
       },
       include: paymentInclude,
     });
 
-    await adjustCustomerDue(
-      tx,
-      data.customerId,
-      paymentDueDelta(data.direction, data.amount),
-    );
+    if (data.party.kind === "customer") {
+      await adjustCustomerDue(
+        tx,
+        data.party.id,
+        paymentDueDelta(data.direction, data.amount),
+      );
+    }
 
     return created;
   });
 
-  revalidatePaymentPaths();
+  revalidatePaymentPaths(data.party);
   return toPaymentRow(row);
 }
 
@@ -171,19 +216,16 @@ export async function updatePayment(
   const existing = await prisma.payment.findUnique({ where: { id } });
   if (!existing) throw new Error("Payment not found");
 
-  const customer = await prisma.customer.findUnique({
-    where: { id: data.customerId },
-    select: { id: true },
-  });
-  if (!customer) throw new Error("Customer not found");
+  await assertPartyExists(data.party);
 
   const row = await prisma.$transaction(async (tx) => {
-    // Reverse the old payment's effect on due.
-    await adjustCustomerDue(
-      tx,
-      existing.customerId,
-      paymentDueDelta(existing.direction, existing.amount).neg(),
-    );
+    if (existing.customerId) {
+      await adjustCustomerDue(
+        tx,
+        existing.customerId,
+        paymentDueDelta(existing.direction, existing.amount).neg(),
+      );
+    }
 
     const updated = await tx.payment.update({
       where: { id },
@@ -191,22 +233,23 @@ export async function updatePayment(
         date: data.date,
         direction: data.direction,
         amount: data.amount,
-        customer: { connect: { id: data.customerId } },
+        ...partyUpdateData(data.party),
       },
       include: paymentInclude,
     });
 
-    // Apply the new payment's effect.
-    await adjustCustomerDue(
-      tx,
-      data.customerId,
-      paymentDueDelta(data.direction, data.amount),
-    );
+    if (data.party.kind === "customer") {
+      await adjustCustomerDue(
+        tx,
+        data.party.id,
+        paymentDueDelta(data.direction, data.amount),
+      );
+    }
 
     return updated;
   });
 
-  revalidatePaymentPaths();
+  revalidatePaymentPaths(data.party);
   return toPaymentRow(row);
 }
 
@@ -215,13 +258,19 @@ export async function deletePayment(id: string) {
   if (!existing) throw new Error("Payment not found");
 
   await prisma.$transaction(async (tx) => {
-    await adjustCustomerDue(
-      tx,
-      existing.customerId,
-      paymentDueDelta(existing.direction, existing.amount).neg(),
-    );
+    if (existing.customerId) {
+      await adjustCustomerDue(
+        tx,
+        existing.customerId,
+        paymentDueDelta(existing.direction, existing.amount).neg(),
+      );
+    }
     await tx.payment.delete({ where: { id } });
   });
 
-  revalidatePaymentPaths();
+  revalidatePaymentPaths(
+    existing.transporterId
+      ? { kind: "transporter", id: existing.transporterId }
+      : undefined,
+  );
 }

@@ -6,6 +6,10 @@ import {
   adjustCustomerDue,
   discountDueDelta,
 } from "@/lib/domain/customerDue";
+import {
+  parsePaymentParty,
+  type PaymentParty,
+} from "@/lib/domain/paymentParty";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -13,7 +17,8 @@ const DISCOUNTS_PAGE_SIZE = 20;
 
 export type DiscountInput = {
   date: string;
-  customerId: string;
+  customerId?: string | null;
+  transporterId?: string | null;
   status: "RECEIVED" | "PAID" | string;
   amount: string | number;
   remarks: string;
@@ -22,7 +27,8 @@ export type DiscountInput = {
 export type DiscountRow = {
   id: string;
   date: string;
-  customerId: string;
+  customerId: string | null;
+  transporterId: string | null;
   customerName: string;
   status: "RECEIVED" | "PAID";
   amount: string;
@@ -57,17 +63,20 @@ function parseDate(value: string): Date {
 function toDiscountRow(row: {
   id: string;
   date: Date;
-  customerId: string;
+  customerId: string | null;
+  transporterId: string | null;
   status: DiscountStatus;
   amount: { toString(): string };
   remarks: string;
-  customer: { name: string };
+  customer: { name: string } | null;
+  transporter: { name: string } | null;
 }): DiscountRow {
   return {
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
     customerId: row.customerId,
-    customerName: row.customer.name,
+    transporterId: row.transporterId,
+    customerName: row.customer?.name ?? row.transporter?.name ?? "—",
     status: row.status,
     amount: row.amount.toString(),
     remarks: row.remarks,
@@ -75,7 +84,7 @@ function toDiscountRow(row: {
 }
 
 function validateDiscountInput(input: DiscountInput) {
-  if (!input.customerId) throw new Error("Customer is required");
+  const party = parsePaymentParty(input);
   const remarks = String(input.remarks ?? "").trim();
   if (!remarks) throw new Error("Remarks are required");
   const amount = toDecimal(input.amount);
@@ -84,7 +93,7 @@ function validateDiscountInput(input: DiscountInput) {
   }
   return {
     date: parseDate(input.date),
-    customerId: input.customerId,
+    party,
     status: parseStatus(String(input.status)),
     amount,
     remarks,
@@ -93,6 +102,7 @@ function validateDiscountInput(input: DiscountInput) {
 
 const discountInclude = {
   customer: { select: { id: true, name: true } },
+  transporter: { select: { id: true, name: true } },
 } as const;
 
 const discountOrderBy = [
@@ -100,11 +110,49 @@ const discountOrderBy = [
   { createdAt: "desc" as const },
 ];
 
-function revalidateDiscountPaths() {
+function partyCreateData(party: PaymentParty) {
+  return party.kind === "customer"
+    ? { customer: { connect: { id: party.id } } }
+    : { transporter: { connect: { id: party.id } } };
+}
+
+function partyUpdateData(party: PaymentParty) {
+  return {
+    customer:
+      party.kind === "customer"
+        ? { connect: { id: party.id } }
+        : { disconnect: true },
+    transporter:
+      party.kind === "transporter"
+        ? { connect: { id: party.id } }
+        : { disconnect: true },
+  };
+}
+
+async function assertPartyExists(party: PaymentParty) {
+  if (party.kind === "customer") {
+    const customer = await prisma.customer.findUnique({
+      where: { id: party.id },
+      select: { id: true },
+    });
+    if (!customer) throw new Error("Customer not found");
+    return;
+  }
+  const transporter = await prisma.transporter.findUnique({
+    where: { id: party.id },
+    select: { id: true },
+  });
+  if (!transporter) throw new Error("Transporter not found");
+}
+
+function revalidateDiscountPaths(party?: PaymentParty) {
   revalidatePath("/payments");
   revalidatePath("/customers");
   revalidatePath("/reports/collection");
   revalidatePath("/reports/collection/vendor");
+  if (!party || party.kind === "transporter") {
+    revalidatePath("/transporters");
+  }
 }
 
 export async function listDiscounts(options?: {
@@ -142,12 +190,7 @@ export async function createDiscount(
   input: DiscountInput,
 ): Promise<DiscountRow> {
   const data = validateDiscountInput(input);
-
-  const customer = await prisma.customer.findUnique({
-    where: { id: data.customerId },
-    select: { id: true, name: true },
-  });
-  if (!customer) throw new Error("Customer not found");
+  await assertPartyExists(data.party);
 
   const row = await prisma.$transaction(async (tx) => {
     const created = await tx.discount.create({
@@ -156,21 +199,23 @@ export async function createDiscount(
         status: data.status,
         amount: data.amount,
         remarks: data.remarks,
-        customer: { connect: { id: data.customerId } },
+        ...partyCreateData(data.party),
       },
       include: discountInclude,
     });
 
-    await adjustCustomerDue(
-      tx,
-      data.customerId,
-      discountDueDelta(data.status, data.amount),
-    );
+    if (data.party.kind === "customer") {
+      await adjustCustomerDue(
+        tx,
+        data.party.id,
+        discountDueDelta(data.status, data.amount),
+      );
+    }
 
     return created;
   });
 
-  revalidateDiscountPaths();
+  revalidateDiscountPaths(data.party);
   return toDiscountRow(row);
 }
 
@@ -183,19 +228,16 @@ export async function updateDiscount(
   const existing = await prisma.discount.findUnique({ where: { id } });
   if (!existing) throw new Error("Discount not found");
 
-  const customer = await prisma.customer.findUnique({
-    where: { id: data.customerId },
-    select: { id: true },
-  });
-  if (!customer) throw new Error("Customer not found");
+  await assertPartyExists(data.party);
 
   const row = await prisma.$transaction(async (tx) => {
-    // Reverse the old discount's effect on due.
-    await adjustCustomerDue(
-      tx,
-      existing.customerId,
-      discountDueDelta(existing.status, existing.amount).neg(),
-    );
+    if (existing.customerId) {
+      await adjustCustomerDue(
+        tx,
+        existing.customerId,
+        discountDueDelta(existing.status, existing.amount).neg(),
+      );
+    }
 
     const updated = await tx.discount.update({
       where: { id },
@@ -204,22 +246,23 @@ export async function updateDiscount(
         status: data.status,
         amount: data.amount,
         remarks: data.remarks,
-        customer: { connect: { id: data.customerId } },
+        ...partyUpdateData(data.party),
       },
       include: discountInclude,
     });
 
-    // Apply the new discount's effect.
-    await adjustCustomerDue(
-      tx,
-      data.customerId,
-      discountDueDelta(data.status, data.amount),
-    );
+    if (data.party.kind === "customer") {
+      await adjustCustomerDue(
+        tx,
+        data.party.id,
+        discountDueDelta(data.status, data.amount),
+      );
+    }
 
     return updated;
   });
 
-  revalidateDiscountPaths();
+  revalidateDiscountPaths(data.party);
   return toDiscountRow(row);
 }
 
@@ -228,13 +271,19 @@ export async function deleteDiscount(id: string) {
   if (!existing) throw new Error("Discount not found");
 
   await prisma.$transaction(async (tx) => {
-    await adjustCustomerDue(
-      tx,
-      existing.customerId,
-      discountDueDelta(existing.status, existing.amount).neg(),
-    );
+    if (existing.customerId) {
+      await adjustCustomerDue(
+        tx,
+        existing.customerId,
+        discountDueDelta(existing.status, existing.amount).neg(),
+      );
+    }
     await tx.discount.delete({ where: { id } });
   });
 
-  revalidateDiscountPaths();
+  revalidateDiscountPaths(
+    existing.transporterId
+      ? { kind: "transporter", id: existing.transporterId }
+      : undefined,
+  );
 }

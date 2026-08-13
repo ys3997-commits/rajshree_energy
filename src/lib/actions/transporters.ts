@@ -122,12 +122,19 @@ export async function updateTransporter(id: string, input: TransporterInput) {
 }
 
 export async function deleteTransporter(id: string) {
-  const dispatchCount = await prisma.dispatch.count({
-    where: { transporterId: id },
-  });
+  const [dispatchCount, paymentCount, discountCount] = await Promise.all([
+    prisma.dispatch.count({ where: { transporterId: id } }),
+    prisma.payment.count({ where: { transporterId: id } }),
+    prisma.discount.count({ where: { transporterId: id } }),
+  ]);
   if (dispatchCount > 0) {
     throw new Error(
       "Cannot delete: this transporter is used by one or more dispatches",
+    );
+  }
+  if (paymentCount > 0 || discountCount > 0) {
+    throw new Error(
+      "Cannot delete: this transporter has payment or discount records",
     );
   }
   await prisma.transporter.delete({ where: { id } });
