@@ -152,6 +152,7 @@ function revalidateDiscountPaths(party?: PaymentParty) {
   revalidatePath("/reports/collection/vendor");
   if (!party || party.kind === "transporter") {
     revalidatePath("/transporters");
+    revalidatePath("/reports/transport/due");
   }
 }
 

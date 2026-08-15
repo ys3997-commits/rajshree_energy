@@ -305,6 +305,8 @@ model PurchaseOrder {
 
 model Dispatch {
   id                  String        @id @default(cuid())
+  /// Sequential serial (DN 0001, DN 0002, …), assigned from the first dispatch.
+  dispatchNumber      String?       @unique
   poNumber            String
   purchasePoNumber    String
   vesselId            String

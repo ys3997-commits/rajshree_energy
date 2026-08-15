@@ -26,9 +26,9 @@ export function QualityReportList({
 
   const exportColumns = [
     { key: "quality", header: "Quality class" },
-    { key: "poBalance", header: "PO balance", align: "right" as const },
-    { key: "soBalance", header: "SO balance", align: "right" as const },
-    { key: "unsold", header: "Unsold", align: "right" as const },
+    { key: "poBalance", header: "Stock In Hand", align: "right" as const },
+    { key: "soBalance", header: "Order In Hand", align: "right" as const },
+    { key: "unsold", header: "Unsold Qty", align: "right" as const },
   ];
 
   const exportRows = useMemo(
@@ -71,9 +71,9 @@ export function QualityReportList({
             <thead>
               <tr>
                 <th>Quality class</th>
-                <th className="num">PO balance</th>
-                <th className="num">SO balance</th>
-                <th className="num">Unsold</th>
+                <th className="num">Stock In Hand</th>
+                <th className="num">Order In Hand</th>
+                <th className="num">Unsold Qty</th>
                 <th />
               </tr>
             </thead>

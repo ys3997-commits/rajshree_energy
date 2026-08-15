@@ -9,7 +9,10 @@ import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
-import { suggestNextPoNumber } from "@/lib/actions/dispatch";
+import {
+  suggestNextDispatchNumber,
+  suggestNextPoNumber,
+} from "@/lib/actions/dispatch";
 import { formatRs } from "@/lib/domain/computations";
 import {
   capitalizeName,
@@ -63,22 +66,20 @@ export default async function OrdersPage({
       listQualityClasses(),
     ]);
 
-  const [
-    balanceOrders,
-    balancePurchases,
-    transporters,
-    vessels,
-  ] = await Promise.all([
-    listOrdersWithBalance(),
-    listPurchaseOrdersWithBalance(),
-    listTransporters(),
-    listVessels({ activeOnly: true }),
-  ]);
+  const [balanceOrders, balancePurchases, transporters, vessels] =
+    await Promise.all([
+      listOrdersWithBalance(),
+      listPurchaseOrdersWithBalance(),
+      listTransporters(),
+      listVessels({ activeOnly: true }),
+    ]);
 
-  const [suggestedPo, suggestedPurchasePo] = await Promise.all([
-    suggestNextPoNumber(),
-    suggestNextPurchasePoNumber(),
-  ]);
+  const [suggestedPo, suggestedPurchasePo, suggestedDispatchNumber] =
+    await Promise.all([
+      suggestNextPoNumber(),
+      suggestNextPurchasePoNumber(),
+      suggestNextDispatchNumber(),
+    ]);
 
   const customerOpts = customers.map((c) => ({
     id: c.id,
@@ -177,6 +178,7 @@ export default async function OrdersPage({
             }))}
             suggestedPo={suggestedPo}
             suggestedPurchasePo={suggestedPurchasePo}
+            suggestedDispatchNumber={suggestedDispatchNumber}
           />
         </div>
       </div>

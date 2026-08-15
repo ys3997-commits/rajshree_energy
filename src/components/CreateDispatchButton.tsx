@@ -48,6 +48,7 @@ export function CreateDispatchButton({
   vessels,
   suggestedPo,
   suggestedPurchasePo,
+  suggestedDispatchNumber,
 }: {
   orders: OrderOpt[];
   purchaseOrders: PurchaseOpt[];
@@ -56,6 +57,7 @@ export function CreateDispatchButton({
   vessels: VesselOpt[];
   suggestedPo: string;
   suggestedPurchasePo: string;
+  suggestedDispatchNumber: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -78,6 +80,7 @@ export function CreateDispatchButton({
           vessels={vessels}
           suggestedPo={suggestedPo}
           suggestedPurchasePo={suggestedPurchasePo}
+          suggestedDispatchNumber={suggestedDispatchNumber}
           onCancel={() => setOpen(false)}
           onSuccess={() => setOpen(false)}
         />

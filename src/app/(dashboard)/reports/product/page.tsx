@@ -18,8 +18,8 @@ export default async function QualityReportListPage() {
           </p>
           <h1 className="page-title">Quality Report</h1>
           <p className="page-subtitle">
-            Purchase and sale balances by quality class, with unsold stock
-            (PO balance − SO balance).
+            Stock in hand and order in hand by quality class, with unsold qty
+            (stock in hand − order in hand).
           </p>
         </div>
       </div>

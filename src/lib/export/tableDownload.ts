@@ -95,7 +95,7 @@ export async function buildTablePdfBlob(options: {
         }
         return [
           i,
-          { halign: c.align === "right" ? "right" : "left" },
+          { halign: c.align === "right" ? "right" : c.align === "center" ? "center" : "left" },
         ];
       }),
     ),

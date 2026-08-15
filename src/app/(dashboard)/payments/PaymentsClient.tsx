@@ -18,6 +18,7 @@ import {
   parseAmountInput,
 } from "@/lib/domain/format";
 import { parsePartyKey, partyKey } from "@/lib/domain/paymentParty";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import { PaymentsTabs } from "./PaymentsTabs";
 
 type Opt = {
@@ -80,6 +81,19 @@ export function PaymentsClient({
   const amountDisplay = useMemo(
     () => formatIndianAmountTyping(form.amount),
     [form.amount],
+  );
+
+  const partyOptions = useMemo(
+    () =>
+      parties.map((c) => ({
+        value: partyKey(c.kind, c.id),
+        label:
+          c.kind === "transporter"
+            ? `${c.name} — Transporter`
+            : `${c.name} — ${formatCustomerCategory(c.category)}`,
+        group: c.kind === "transporter" ? "Transporters" : "Customers",
+      })),
+    [parties],
   );
 
   function onAmountChange(value: string) {
@@ -217,42 +231,16 @@ export function PaymentsClient({
                 />
               </td>
               <td>
-                <select
+                <SearchableSelect
                   form="payment-entry-form"
                   required
                   className="field-input"
-                  aria-label="Customer or transporter"
+                  ariaLabel="Customer or transporter"
+                  placeholder="Search customer or transporter"
                   value={form.partyId}
-                  onChange={(e) =>
-                    setForm({ ...form, partyId: e.target.value })
-                  }
-                >
-                  <option value="">Select customer or transporter</option>
-                  <optgroup label="Customers">
-                    {parties
-                      .filter((c) => c.kind === "customer")
-                      .map((c) => (
-                        <option
-                          key={partyKey("customer", c.id)}
-                          value={partyKey("customer", c.id)}
-                        >
-                          {c.name} — {formatCustomerCategory(c.category)}
-                        </option>
-                      ))}
-                  </optgroup>
-                  <optgroup label="Transporters">
-                    {parties
-                      .filter((c) => c.kind === "transporter")
-                      .map((c) => (
-                        <option
-                          key={partyKey("transporter", c.id)}
-                          value={partyKey("transporter", c.id)}
-                        >
-                          {c.name} — Transporter
-                        </option>
-                      ))}
-                  </optgroup>
-                </select>
+                  onChange={(partyId) => setForm({ ...form, partyId })}
+                  options={partyOptions}
+                />
               </td>
               <td>
                 <select

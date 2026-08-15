@@ -18,6 +18,7 @@ export type TransportEngineRow = {
   receivingWeight: string | null;
   diffInWeight: string | null;
   customerName: string | null;
+  portName: string | null;
   transporterName: string | null;
   dispatchTerms: DispatchTerms;
   freightPerTon: string | null;
@@ -55,6 +56,11 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       softCopyStatus: true,
       entryInTally: true,
       transporter: { select: { name: true } },
+      vessel: {
+        select: {
+          port: { select: { name: true } },
+        },
+      },
       order: {
         select: {
           customer: { select: { name: true } },
@@ -83,6 +89,7 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       receivingWeight: receivingWeight?.toString() ?? null,
       diffInWeight: diff?.toString() ?? null,
       customerName: row.order?.customer?.name ?? null,
+      portName: row.vessel?.port?.name ?? null,
       transporterName: row.transporter?.name ?? null,
       dispatchTerms: row.dispatchTerms,
       freightPerTon: freightPerTon?.toString() ?? null,

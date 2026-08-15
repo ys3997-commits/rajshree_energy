@@ -27,6 +27,10 @@ import {
 } from "@/lib/domain/customerDue";
 import { normalizeLorryNumber } from "@/lib/domain/format";
 import {
+  nextDispatchNumber,
+  normalizeDispatchNumber,
+} from "@/lib/domain/dispatchNumbers";
+import {
   nextSaleOrderNumber,
   normalizePurchaseOrderNumber,
   normalizeSaleOrderNumber,
@@ -43,6 +47,8 @@ export type OpenPurchaseForDispatch = {
 
 export type CreateDispatchInput = {
   poNumber: string;
+  /** Sequential serial (DN 0001). Allocated if omitted. */
+  dispatchNumber?: string;
   /** Existing purchase PO — required unless openPurchase is set. */
   purchasePoNumber?: string;
   /** When set, creates an OPEN purchase order then dispatches against it. */
@@ -92,6 +98,8 @@ export type UpdateDispatchInput = {
 
 export type CreateOpenOrderDispatchInput = {
   poNumber: string;
+  /** Sequential serial (DN 0001). Allocated if omitted. */
+  dispatchNumber?: string;
   /** Optional — open sale orders no longer require a deal-by staff. */
   orderById?: string | null;
   customerId: string;
@@ -254,6 +262,74 @@ function revalidateDispatchPaths() {
   revalidatePath("/reconciliation");
   revalidatePath("/customers");
   revalidatePath("/payments");
+  revalidatePath("/reports/transport/due");
+}
+
+/**
+ * Number existing rows from the earliest dispatch (date, then created).
+ * New dispatches continue from the highest serial.
+ */
+export async function ensureDispatchNumbers(): Promise<void> {
+  const missing = await prisma.dispatch.count({
+    where: { dispatchNumber: null },
+  });
+  if (missing === 0) return;
+
+  await prisma.$executeRaw`
+    WITH numbered AS (
+      SELECT
+        id,
+        ROW_NUMBER() OVER (
+          ORDER BY "dispatchDate" ASC, "createdAt" ASC, id ASC
+        ) AS seq
+      FROM "Dispatch"
+      WHERE "dispatchNumber" IS NULL
+    ),
+    max_existing AS (
+      SELECT COALESCE(
+        MAX(
+          CASE
+            WHEN "dispatchNumber" ~* '^DN[[:space:]]*[0-9]+$'
+              THEN CAST(regexp_replace("dispatchNumber", '[^0-9]', '', 'g') AS INTEGER)
+            WHEN "dispatchNumber" ~ '^[0-9]+$'
+              THEN CAST("dispatchNumber" AS INTEGER)
+            ELSE NULL
+          END
+        ),
+        0
+      ) AS max_seq
+      FROM "Dispatch"
+      WHERE "dispatchNumber" IS NOT NULL
+    )
+    UPDATE "Dispatch" AS d
+    SET "dispatchNumber" = 'DN ' || LPAD((n.seq + m.max_seq)::text, 4, '0')
+    FROM numbered AS n, max_existing AS m
+    WHERE d.id = n.id
+  `;
+}
+
+async function allocateDispatchNumber(
+  tx: Prisma.TransactionClient,
+  requested?: string,
+): Promise<string> {
+  const dispatchNumber = requested
+    ? normalizeDispatchNumber(requested)
+    : nextDispatchNumber(
+        (
+          await tx.dispatch.findMany({
+            select: { dispatchNumber: true },
+          })
+        ).map((row) => row.dispatchNumber),
+      );
+
+  const existing = await tx.dispatch.findUnique({
+    where: { dispatchNumber },
+  });
+  if (existing) {
+    throw new Error(`Dispatch number ${dispatchNumber} is already taken`);
+  }
+
+  return dispatchNumber;
 }
 
 async function applyDispatchDelta(
@@ -357,6 +433,15 @@ export async function suggestNextPoNumber(): Promise<string> {
   return nextSaleOrderNumber(rows.map((row) => row.poNumber));
 }
 
+/** Suggest next sequential dispatch number (DN 0001, DN 0002, …). */
+export async function suggestNextDispatchNumber(): Promise<string> {
+  await ensureDispatchNumbers();
+  const rows = await prisma.dispatch.findMany({
+    select: { dispatchNumber: true },
+  });
+  return nextDispatchNumber(rows.map((row) => row.dispatchNumber));
+}
+
 export async function createDispatch(
   input: CreateDispatchInput,
 ): Promise<{ id: string }> {
@@ -366,6 +451,7 @@ export async function createDispatch(
   }
 
   const termsFields = resolveDispatchTermsFields(input);
+  await ensureDispatchNumbers();
 
   const dispatch = await prisma.$transaction(async (tx) => {
     const purchase = await resolvePurchaseForDispatch(tx, input);
@@ -376,8 +462,14 @@ export async function createDispatch(
       qty,
     });
 
+    const dispatchNumber = await allocateDispatchNumber(
+      tx,
+      input.dispatchNumber,
+    );
+
     return tx.dispatch.create({
       data: {
+        dispatchNumber,
         poNumber: input.poNumber,
         purchasePoNumber: purchase.purchasePoNumber,
         vesselId: purchase.vesselId,
@@ -429,6 +521,7 @@ export async function createOpenOrderDispatch(
   }
 
   const termsFields = resolveDispatchTermsFields(input);
+  await ensureDispatchNumbers();
 
   const dispatch = await prisma.$transaction(async (tx) => {
     const purchase = await resolvePurchaseForDispatch(tx, input);
@@ -469,8 +562,14 @@ export async function createOpenOrderDispatch(
       qty,
     });
 
+    const dispatchNumber = await allocateDispatchNumber(
+      tx,
+      input.dispatchNumber,
+    );
+
     return tx.dispatch.create({
       data: {
+        dispatchNumber,
         poNumber,
         purchasePoNumber: purchase.purchasePoNumber,
         vesselId: purchase.vesselId,

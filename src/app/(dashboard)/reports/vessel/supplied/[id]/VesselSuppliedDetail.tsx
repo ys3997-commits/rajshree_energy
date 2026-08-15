@@ -23,6 +23,25 @@ type VesselProfile = {
 };
 
 type CategoryFilter = "" | "industry" | "trader";
+type SortKey = "customerName" | "totalQuantity" | "profit" | "marginPmt";
+type SortDir = "asc" | "desc";
+
+const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
+  "totalQuantity",
+  "profit",
+  "marginPmt",
+]);
+
+function numericValue(value: string | null | undefined): number {
+  if (value == null || value === "") return 0;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function sortIndicator(active: boolean, dir: SortDir): string {
+  if (!active) return "";
+  return dir === "asc" ? " ↑" : " ↓";
+}
 
 function marginPmt(profit: string | null, totalQuantity: string): string | null {
   if (profit == null) return null;
@@ -52,14 +71,38 @@ export function VesselSuppliedDetail({
   customers: VesselSuppliedCustomerRow[];
 }) {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("");
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
 
-  const filtered = useMemo(
-    () =>
-      customers.filter((c) =>
-        matchesCategoryFilter(c.category, categoryFilter),
-      ),
-    [customers, categoryFilter],
-  );
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortKey(key);
+    setSortDir(NUMERIC_SORT_KEYS.has(key) ? "desc" : "asc");
+  }
+
+  const filtered = useMemo(() => {
+    const next = customers.filter((c) =>
+      matchesCategoryFilter(c.category, categoryFilter),
+    );
+    if (!sortKey) return next;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...next].sort((a, b) => {
+      if (sortKey === "customerName") {
+        return a.customerName.localeCompare(b.customerName) * dir;
+      }
+      if (sortKey === "marginPmt") {
+        return (
+          (numericValue(marginPmt(a.profit, a.totalQuantity)) -
+            numericValue(marginPmt(b.profit, b.totalQuantity))) *
+          dir
+        );
+      }
+      return (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir;
+    });
+  }, [customers, categoryFilter, sortKey, sortDir]);
 
   const vesselTotals = useMemo(() => {
     let totalQty = 0;
@@ -185,10 +228,46 @@ export function VesselSuppliedDetail({
           <table className="data report-table">
             <thead>
               <tr>
-                <th>Customer name</th>
-                <th className="num">Total quantities</th>
-                <th className="num">Total margin</th>
-                <th className="num">Margin PMT</th>
+                <th>
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("customerName")}
+                  >
+                    Customer name
+                    {sortIndicator(sortKey === "customerName", sortDir)}
+                  </button>
+                </th>
+                <th className="num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("totalQuantity")}
+                  >
+                    Total quantities
+                    {sortIndicator(sortKey === "totalQuantity", sortDir)}
+                  </button>
+                </th>
+                <th className="num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("profit")}
+                  >
+                    Total margin
+                    {sortIndicator(sortKey === "profit", sortDir)}
+                  </button>
+                </th>
+                <th className="num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("marginPmt")}
+                  >
+                    Margin PMT
+                    {sortIndicator(sortKey === "marginPmt", sortDir)}
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody>

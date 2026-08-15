@@ -58,6 +58,7 @@ export function NewDispatchForm({
   vessels,
   suggestedPo,
   suggestedPurchasePo,
+  suggestedDispatchNumber,
   onCancel,
   onSuccess,
 }: {
@@ -68,6 +69,7 @@ export function NewDispatchForm({
   vessels: VesselOpt[];
   suggestedPo: string;
   suggestedPurchasePo: string;
+  suggestedDispatchNumber: string;
   onCancel?: () => void;
   onSuccess?: () => void;
 }) {
@@ -76,6 +78,7 @@ export function NewDispatchForm({
   const [purchaseMode, setPurchaseMode] = useState<"existing" | "open">(
     "existing",
   );
+  const [dispatchNumber, setDispatchNumber] = useState(suggestedDispatchNumber);
   const [poNumber, setPoNumber] = useState("");
   const [openPoNumber, setOpenPoNumber] = useState(suggestedPo);
   const [customerId, setCustomerId] = useState("");
@@ -170,6 +173,7 @@ export function NewDispatchForm({
       }
 
       const shared = {
+        dispatchNumber,
         purchasePoNumber: existingPurchasePo,
         openPurchase,
         dispatchDate,
@@ -217,6 +221,14 @@ export function NewDispatchForm({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
+        <label>Dispatch no</label>
+        <input
+          required
+          value={dispatchNumber}
+          onChange={(e) => setDispatchNumber(e.target.value.toUpperCase())}
+          placeholder="DN 0001"
+        />
+
         <label>Dispatch date</label>
         <input
           required

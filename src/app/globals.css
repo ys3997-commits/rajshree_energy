@@ -413,63 +413,68 @@ a {
 }
 
 /* Dispatches page: Received/Diff sit under Status (not Dispatch). */
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(8),
-.report-table-dispatches tbody td:nth-child(8) {
-  min-width: 9rem; /* Purchase invoice */
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(1),
+.report-table-dispatches tbody td:nth-child(1) {
+  min-width: 6.5rem; /* Dispatch no */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(9),
 .report-table-dispatches tbody td:nth-child(9) {
-  min-width: 11rem; /* Vendor */
+  min-width: 9rem; /* Purchase invoice */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(10),
 .report-table-dispatches tbody td:nth-child(10) {
-  min-width: 0; /* Basic price (purchase) — override master Vendor width */
+  min-width: 11rem; /* Vendor */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(11),
 .report-table-dispatches tbody td:nth-child(11) {
-  min-width: 0; /* Total price (purchase) */
+  min-width: 0; /* Basic price (purchase) — override master Vendor width */
 }
 
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(13),
-.report-table-dispatches tbody td:nth-child(13) {
-  min-width: 9rem; /* Sale invoice */
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(12),
+.report-table-dispatches tbody td:nth-child(12) {
+  min-width: 0; /* Total price (purchase) */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(14),
 .report-table-dispatches tbody td:nth-child(14) {
-  min-width: 12rem; /* Customer name */
+  min-width: 9rem; /* Sale invoice */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(15),
 .report-table-dispatches tbody td:nth-child(15) {
-  min-width: 0; /* Basic price (sale) — override master Customer width */
+  min-width: 12rem; /* Customer name */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(16),
 .report-table-dispatches tbody td:nth-child(16) {
-  min-width: 0; /* Total price (sale) */
+  min-width: 0; /* Basic price (sale) — override master Customer width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(17),
 .report-table-dispatches tbody td:nth-child(17) {
-  min-width: 7rem; /* Delivery terms */
+  min-width: 0; /* Total price (sale) */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(18),
 .report-table-dispatches tbody td:nth-child(18) {
-  min-width: 11rem; /* Transporter name — override master Sale invoice width */
+  min-width: 7rem; /* Delivery terms */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(19),
 .report-table-dispatches tbody td:nth-child(19) {
-  min-width: 0; /* Freight PMT — override master Transporter width */
+  min-width: 11rem; /* Transporter name — override master Sale invoice width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(20),
 .report-table-dispatches tbody td:nth-child(20) {
+  min-width: 0; /* Freight PMT — override master Transporter width */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(21),
+.report-table-dispatches tbody td:nth-child(21) {
   min-width: 0; /* Freight amount */
 }
 
@@ -500,6 +505,75 @@ a {
 .payments-table th,
 .payments-table td {
   padding: 0.45rem 0.75rem;
+}
+
+.table-wrap:has(.payments-table) {
+  overflow: visible;
+}
+
+.search-select {
+  position: relative;
+  min-width: 12rem;
+}
+
+.search-select-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  min-width: 18rem;
+  max-height: 16rem;
+  overflow: auto;
+  margin: 0;
+  padding: 0.25rem 0;
+  list-style: none;
+  background: var(--surface-solid);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+
+.search-select-menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.search-select-group {
+  padding: 0.4rem 0.7rem 0.2rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.search-select-option {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8125rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.search-select-option:hover,
+.search-select-option-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.search-select-empty {
+  padding: 0.55rem 0.7rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
 }
 
 .collection-table {
@@ -626,6 +700,19 @@ table.data.collection-table th.cell-num button.th-sort {
 .vendor-collection-table td.cell-num {
   white-space: nowrap;
   word-break: normal;
+}
+
+.transport-due-totals {
+  margin-bottom: 1.5rem;
+}
+
+.collection-table tfoot td {
+  font-weight: 600;
+  background: #f8fafb;
+}
+
+.collection-table tfoot td.collection-customer-col {
+  background: #f8fafb;
 }
 
 table.data.sales-engine-table {
@@ -1070,6 +1157,7 @@ table.data td.col-actions {
 
 .detail-stat-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   flex-shrink: 0;
 }
@@ -1192,17 +1280,14 @@ table.data tr.month-divider:hover td {
 }
 
 .transporter-dispatch-table {
-  table-layout: fixed;
-}
-
-.transporter-dispatch-table col {
-  width: calc(100% / 6);
+  table-layout: auto;
 }
 
 .transporter-dispatch-table th,
 .transporter-dispatch-table td {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: nowrap;
 }
 
 .transporter-dispatch-table .cell-date {
@@ -1776,25 +1861,30 @@ table.data tr.month-divider:hover td {
 
 .transport-engine-table th:nth-child(8),
 .transport-engine-table td:nth-child(8) {
-  min-width: 11rem; /* Transporter name */
-}
-
-.transport-engine-table th:nth-child(9),
-.transport-engine-table td:nth-child(9) {
-  min-width: 8rem; /* Freight per ton */
+  min-width: 10rem; /* Port name */
 }
 
 .transport-engine-table th:nth-child(10),
 .transport-engine-table td:nth-child(10) {
-  min-width: 8rem; /* Freight amount */
+  min-width: 11rem; /* Transporter name */
 }
 
 .transport-engine-table th:nth-child(11),
-.transport-engine-table td:nth-child(11),
+.transport-engine-table td:nth-child(11) {
+  min-width: 8rem; /* Freight per ton */
+}
+
 .transport-engine-table th:nth-child(12),
-.transport-engine-table td:nth-child(12),
+.transport-engine-table td:nth-child(12) {
+  min-width: 8rem; /* Freight amount */
+}
+
 .transport-engine-table th:nth-child(13),
-.transport-engine-table td:nth-child(13) {
+.transport-engine-table td:nth-child(13),
+.transport-engine-table th:nth-child(14),
+.transport-engine-table td:nth-child(14),
+.transport-engine-table th:nth-child(15),
+.transport-engine-table td:nth-child(15) {
   min-width: 6.5rem; /* Checklist columns */
 }
 

@@ -7,6 +7,7 @@ import {
   lineProfit,
   toDecimal,
 } from "@/lib/domain/computations";
+import { ensureDispatchNumbers } from "@/lib/actions/dispatch";
 
 const qualityClassInclude = {
   origin: { select: { id: true, name: true } },
@@ -24,6 +25,8 @@ export type DispatchFilters = {
 };
 
 export async function listDispatches(filters: DispatchFilters = {}) {
+  await ensureDispatchNumbers();
+
   const where: Prisma.DispatchWhereInput = {};
   if (filters.receiptStatus) where.receiptStatus = filters.receiptStatus;
   if (filters.poNumber) {
@@ -98,6 +101,7 @@ export async function listDispatches(filters: DispatchFilters = {}) {
 
     return {
       id: row.id,
+      dispatchNumber: row.dispatchNumber,
       dispatchDate: row.dispatchDate,
       lorryNumber: row.lorryNumber,
       dispatchedQuantity: row.dispatchedQuantity,

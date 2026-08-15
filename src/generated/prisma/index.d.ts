@@ -18057,6 +18057,7 @@ export namespace Prisma {
 
   export type DispatchMinAggregateOutputType = {
     id: string | null
+    dispatchNumber: string | null
     poNumber: string | null
     purchasePoNumber: string | null
     vesselId: string | null
@@ -18083,6 +18084,7 @@ export namespace Prisma {
 
   export type DispatchMaxAggregateOutputType = {
     id: string | null
+    dispatchNumber: string | null
     poNumber: string | null
     purchasePoNumber: string | null
     vesselId: string | null
@@ -18109,6 +18111,7 @@ export namespace Prisma {
 
   export type DispatchCountAggregateOutputType = {
     id: number
+    dispatchNumber: number
     poNumber: number
     purchasePoNumber: number
     vesselId: number
@@ -18149,6 +18152,7 @@ export namespace Prisma {
 
   export type DispatchMinAggregateInputType = {
     id?: true
+    dispatchNumber?: true
     poNumber?: true
     purchasePoNumber?: true
     vesselId?: true
@@ -18175,6 +18179,7 @@ export namespace Prisma {
 
   export type DispatchMaxAggregateInputType = {
     id?: true
+    dispatchNumber?: true
     poNumber?: true
     purchasePoNumber?: true
     vesselId?: true
@@ -18201,6 +18206,7 @@ export namespace Prisma {
 
   export type DispatchCountAggregateInputType = {
     id?: true
+    dispatchNumber?: true
     poNumber?: true
     purchasePoNumber?: true
     vesselId?: true
@@ -18314,6 +18320,7 @@ export namespace Prisma {
 
   export type DispatchGroupByOutputType = {
     id: string
+    dispatchNumber: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -18359,6 +18366,7 @@ export namespace Prisma {
 
   export type DispatchSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    dispatchNumber?: boolean
     poNumber?: boolean
     purchasePoNumber?: boolean
     vesselId?: boolean
@@ -18390,6 +18398,7 @@ export namespace Prisma {
 
   export type DispatchSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    dispatchNumber?: boolean
     poNumber?: boolean
     purchasePoNumber?: boolean
     vesselId?: boolean
@@ -18421,6 +18430,7 @@ export namespace Prisma {
 
   export type DispatchSelectScalar = {
     id?: boolean
+    dispatchNumber?: boolean
     poNumber?: boolean
     purchasePoNumber?: boolean
     vesselId?: boolean
@@ -18471,6 +18481,10 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      /**
+       * Sequential serial (DN 0001, DN 0002, …), assigned from the first dispatch.
+       */
+      dispatchNumber: string | null
       poNumber: string
       purchasePoNumber: string
       vesselId: string
@@ -18910,6 +18924,7 @@ export namespace Prisma {
    */ 
   interface DispatchFieldRefs {
     readonly id: FieldRef<"Dispatch", 'String'>
+    readonly dispatchNumber: FieldRef<"Dispatch", 'String'>
     readonly poNumber: FieldRef<"Dispatch", 'String'>
     readonly purchasePoNumber: FieldRef<"Dispatch", 'String'>
     readonly vesselId: FieldRef<"Dispatch", 'String'>
@@ -21618,6 +21633,7 @@ export namespace Prisma {
 
   export const DispatchScalarFieldEnum: {
     id: 'id',
+    dispatchNumber: 'dispatchNumber',
     poNumber: 'poNumber',
     purchasePoNumber: 'purchasePoNumber',
     vesselId: 'vesselId',
@@ -23053,6 +23069,7 @@ export namespace Prisma {
     OR?: DispatchWhereInput[]
     NOT?: DispatchWhereInput | DispatchWhereInput[]
     id?: StringFilter<"Dispatch"> | string
+    dispatchNumber?: StringNullableFilter<"Dispatch"> | string | null
     poNumber?: StringFilter<"Dispatch"> | string
     purchasePoNumber?: StringFilter<"Dispatch"> | string
     vesselId?: StringFilter<"Dispatch"> | string
@@ -23084,6 +23101,7 @@ export namespace Prisma {
 
   export type DispatchOrderByWithRelationInput = {
     id?: SortOrder
+    dispatchNumber?: SortOrderInput | SortOrder
     poNumber?: SortOrder
     purchasePoNumber?: SortOrder
     vesselId?: SortOrder
@@ -23115,6 +23133,7 @@ export namespace Prisma {
 
   export type DispatchWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    dispatchNumber?: string
     AND?: DispatchWhereInput | DispatchWhereInput[]
     OR?: DispatchWhereInput[]
     NOT?: DispatchWhereInput | DispatchWhereInput[]
@@ -23145,10 +23164,11 @@ export namespace Prisma {
     vessel?: XOR<VesselRelationFilter, VesselWhereInput>
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     importer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
-  }, "id">
+  }, "id" | "dispatchNumber">
 
   export type DispatchOrderByWithAggregationInput = {
     id?: SortOrder
+    dispatchNumber?: SortOrderInput | SortOrder
     poNumber?: SortOrder
     purchasePoNumber?: SortOrder
     vesselId?: SortOrder
@@ -23183,6 +23203,7 @@ export namespace Prisma {
     OR?: DispatchScalarWhereWithAggregatesInput[]
     NOT?: DispatchScalarWhereWithAggregatesInput | DispatchScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Dispatch"> | string
+    dispatchNumber?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     poNumber?: StringWithAggregatesFilter<"Dispatch"> | string
     purchasePoNumber?: StringWithAggregatesFilter<"Dispatch"> | string
     vesselId?: StringWithAggregatesFilter<"Dispatch"> | string
@@ -24647,6 +24668,7 @@ export namespace Prisma {
 
   export type DispatchCreateInput = {
     id?: string
+    dispatchNumber?: string | null
     dispatchDate: Date | string
     dispatchedQuantity: Decimal | DecimalJsLike | number | string
     lorryNumber?: string | null
@@ -24673,6 +24695,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedCreateInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -24699,6 +24722,7 @@ export namespace Prisma {
 
   export type DispatchUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24725,6 +24749,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
@@ -24751,6 +24776,7 @@ export namespace Prisma {
 
   export type DispatchCreateManyInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -24777,6 +24803,7 @@ export namespace Prisma {
 
   export type DispatchUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -24798,6 +24825,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
@@ -26011,6 +26039,7 @@ export namespace Prisma {
 
   export type DispatchCountOrderByAggregateInput = {
     id?: SortOrder
+    dispatchNumber?: SortOrder
     poNumber?: SortOrder
     purchasePoNumber?: SortOrder
     vesselId?: SortOrder
@@ -26043,6 +26072,7 @@ export namespace Prisma {
 
   export type DispatchMaxOrderByAggregateInput = {
     id?: SortOrder
+    dispatchNumber?: SortOrder
     poNumber?: SortOrder
     purchasePoNumber?: SortOrder
     vesselId?: SortOrder
@@ -26069,6 +26099,7 @@ export namespace Prisma {
 
   export type DispatchMinOrderByAggregateInput = {
     id?: SortOrder
+    dispatchNumber?: SortOrder
     poNumber?: SortOrder
     purchasePoNumber?: SortOrder
     vesselId?: SortOrder
@@ -28140,6 +28171,7 @@ export namespace Prisma {
 
   export type DispatchCreateWithoutTransporterInput = {
     id?: string
+    dispatchNumber?: string | null
     dispatchDate: Date | string
     dispatchedQuantity: Decimal | DecimalJsLike | number | string
     lorryNumber?: string | null
@@ -28165,6 +28197,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedCreateWithoutTransporterInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -28281,6 +28314,7 @@ export namespace Prisma {
     OR?: DispatchScalarWhereInput[]
     NOT?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
     id?: StringFilter<"Dispatch"> | string
+    dispatchNumber?: StringNullableFilter<"Dispatch"> | string | null
     poNumber?: StringFilter<"Dispatch"> | string
     purchasePoNumber?: StringFilter<"Dispatch"> | string
     vesselId?: StringFilter<"Dispatch"> | string
@@ -29019,6 +29053,7 @@ export namespace Prisma {
 
   export type DispatchCreateWithoutImporterInput = {
     id?: string
+    dispatchNumber?: string | null
     dispatchDate: Date | string
     dispatchedQuantity: Decimal | DecimalJsLike | number | string
     lorryNumber?: string | null
@@ -29044,6 +29079,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedCreateWithoutImporterInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -29346,6 +29382,7 @@ export namespace Prisma {
 
   export type DispatchCreateWithoutVesselInput = {
     id?: string
+    dispatchNumber?: string | null
     dispatchDate: Date | string
     dispatchedQuantity: Decimal | DecimalJsLike | number | string
     lorryNumber?: string | null
@@ -29371,6 +29408,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedCreateWithoutVesselInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     dispatchDate: Date | string
@@ -29656,6 +29694,7 @@ export namespace Prisma {
 
   export type DispatchCreateWithoutOrderInput = {
     id?: string
+    dispatchNumber?: string | null
     dispatchDate: Date | string
     dispatchedQuantity: Decimal | DecimalJsLike | number | string
     lorryNumber?: string | null
@@ -29681,6 +29720,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedCreateWithoutOrderInput = {
     id?: string
+    dispatchNumber?: string | null
     purchasePoNumber: string
     vesselId: string
     dispatchDate: Date | string
@@ -30049,6 +30089,7 @@ export namespace Prisma {
 
   export type DispatchCreateWithoutPurchaseOrderInput = {
     id?: string
+    dispatchNumber?: string | null
     dispatchDate: Date | string
     dispatchedQuantity: Decimal | DecimalJsLike | number | string
     lorryNumber?: string | null
@@ -30074,6 +30115,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedCreateWithoutPurchaseOrderInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     vesselId: string
     dispatchDate: Date | string
@@ -31520,6 +31562,7 @@ export namespace Prisma {
 
   export type DispatchCreateManyTransporterInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -31566,6 +31609,7 @@ export namespace Prisma {
 
   export type DispatchUpdateWithoutTransporterInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31591,6 +31635,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateWithoutTransporterInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
@@ -31616,6 +31661,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateManyWithoutTransporterInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
@@ -32140,6 +32186,7 @@ export namespace Prisma {
 
   export type DispatchCreateManyImporterInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     vesselId: string
@@ -32304,6 +32351,7 @@ export namespace Prisma {
 
   export type DispatchUpdateWithoutImporterInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32329,6 +32377,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateWithoutImporterInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
@@ -32354,6 +32403,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateManyWithoutImporterInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
@@ -32459,6 +32509,7 @@ export namespace Prisma {
 
   export type DispatchCreateManyVesselInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     purchasePoNumber: string
     dispatchDate: Date | string
@@ -32537,6 +32588,7 @@ export namespace Prisma {
 
   export type DispatchUpdateWithoutVesselInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32562,6 +32614,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateWithoutVesselInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32587,6 +32640,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateManyWithoutVesselInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32612,6 +32666,7 @@ export namespace Prisma {
 
   export type DispatchCreateManyOrderInput = {
     id?: string
+    dispatchNumber?: string | null
     purchasePoNumber: string
     vesselId: string
     dispatchDate: Date | string
@@ -32637,6 +32692,7 @@ export namespace Prisma {
 
   export type DispatchUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32662,6 +32718,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32687,6 +32744,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateManyWithoutOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchasePoNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32712,6 +32770,7 @@ export namespace Prisma {
 
   export type DispatchCreateManyPurchaseOrderInput = {
     id?: string
+    dispatchNumber?: string | null
     poNumber: string
     vesselId: string
     dispatchDate: Date | string
@@ -32737,6 +32796,7 @@ export namespace Prisma {
 
   export type DispatchUpdateWithoutPurchaseOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32762,6 +32822,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateWithoutPurchaseOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32787,6 +32848,7 @@ export namespace Prisma {
 
   export type DispatchUncheckedUpdateManyWithoutPurchaseOrderInput = {
     id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
     poNumber?: StringFieldUpdateOperationsInput | string
     vesselId?: StringFieldUpdateOperationsInput | string
     dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string

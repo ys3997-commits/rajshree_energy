@@ -146,6 +146,7 @@ export function TransportEngineClient({
       align: "right" as const,
     },
     { key: "customer", header: "Customer name" },
+    { key: "portName", header: "Port name" },
     { key: "deliveryTerms", header: "Delivery terms" },
     { key: "transporter", header: "Transporter name" },
     {
@@ -176,6 +177,7 @@ export function TransportEngineClient({
         customer: row.customerName
           ? (capitalizeName(row.customerName) ?? row.customerName)
           : "—",
+        portName: row.portName ?? "—",
         deliveryTerms: formatDispatchTerms(row.dispatchTerms),
         transporter: row.transporterName
           ? (capitalizeName(row.transporterName) ?? row.transporterName)
@@ -338,6 +340,7 @@ export function TransportEngineClient({
               <th className="cell-num">Receiving weight (MT)</th>
               <th className="cell-num">Diff in weight (MT)</th>
               <th>Customer name</th>
+              <th>Port name</th>
               <th>Delivery terms</th>
               <th>Transporter name</th>
               <th className="cell-num">Freight per ton</th>
@@ -387,6 +390,9 @@ export function TransportEngineClient({
                     {row.customerName
                       ? (capitalizeName(row.customerName) ?? row.customerName)
                       : "—"}
+                  </td>
+                  <td className={row.portName ? undefined : "cell-center"}>
+                    {row.portName ?? "—"}
                   </td>
                   <td>{formatDispatchTerms(row.dispatchTerms)}</td>
                   <td
@@ -446,7 +452,7 @@ export function TransportEngineClient({
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={16}>
+                <td colSpan={17}>
                   {rows.length === 0
                     ? "No dispatches yet."
                     : "No dispatches match these filters."}

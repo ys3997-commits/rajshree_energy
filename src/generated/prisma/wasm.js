@@ -297,6 +297,7 @@ exports.Prisma.PurchaseOrderScalarFieldEnum = {
 
 exports.Prisma.DispatchScalarFieldEnum = {
   id: 'id',
+  dispatchNumber: 'dispatchNumber',
   poNumber: 'poNumber',
   purchasePoNumber: 'purchasePoNumber',
   vesselId: 'vesselId',

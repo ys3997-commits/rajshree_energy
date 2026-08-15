@@ -143,6 +143,7 @@ function revalidatePaymentPaths(party?: PaymentParty) {
   revalidatePath("/customers");
   if (!party || party.kind === "transporter") {
     revalidatePath("/transporters");
+    revalidatePath("/reports/transport/due");
   }
 }
 

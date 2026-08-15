@@ -79,19 +79,19 @@ export function QualityReportDetail({
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">
-            <span className="detail-stat-label">PO balance</span>
+            <span className="detail-stat-label">Stock In Hand</span>
             <span className="detail-stat-value">
               {formatSaleOrderMt(totals.poBalance)}
             </span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-label">SO balance</span>
+            <span className="detail-stat-label">Order In Hand</span>
             <span className="detail-stat-value">
               {formatSaleOrderMt(totals.soBalance)}
             </span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-label">Unsold</span>
+            <span className="detail-stat-label">Unsold Qty</span>
             <span className="detail-stat-value">
               {formatSaleOrderMt(totals.unsoldQuantity)}
             </span>

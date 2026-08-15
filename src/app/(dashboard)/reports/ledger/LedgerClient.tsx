@@ -73,14 +73,30 @@ function exportFundAmount(
   return exportBlank(formatFundAmount(fundType, amount));
 }
 
+function toAmount(value: string | null | undefined): number {
+  if (value == null || value === "") return 0;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
 export function LedgerClient({
   customers,
   customerId,
+  dateFrom,
+  dateTo,
   rows,
+  openingDue,
+  due,
+  overdue,
 }: {
   customers: LedgerCustomerOption[];
   customerId: string;
+  dateFrom: string;
+  dateTo: string;
   rows: LedgerRow[];
+  openingDue: string | null;
+  due: string | null;
+  overdue: string | null;
 }) {
   const router = useRouter();
 
@@ -104,6 +120,45 @@ export function LedgerClient({
         (row) => row.tcs != null && String(row.tcs).trim() !== "",
       ),
     [dispatchRows],
+  );
+
+  const saleTotal = useMemo(
+    () =>
+      dispatchRows.reduce((sum, row) => {
+        if (row.dispatchType !== "Sale") return sum;
+        return sum + toAmount(row.finalAmount);
+      }, 0),
+    [dispatchRows],
+  );
+
+  const saleQuantity = useMemo(
+    () =>
+      dispatchRows.reduce((sum, row) => {
+        if (row.dispatchType !== "Sale") return sum;
+        return sum + toAmount(row.weight);
+      }, 0),
+    [dispatchRows],
+  );
+
+  const fundTotal = useMemo(
+    () =>
+      fundRows.reduce((sum, row) => {
+        const amount = toAmount(row.fundAmount);
+        if (
+          row.fundType === "Fund paid" ||
+          row.fundType === "Discount received"
+        ) {
+          return sum - amount;
+        }
+        if (
+          row.fundType === "Fund received" ||
+          row.fundType === "Discount paid"
+        ) {
+          return sum + amount;
+        }
+        return sum;
+      }, 0),
+    [fundRows],
   );
 
   const customerLabel = selectedCustomer
@@ -170,6 +225,15 @@ export function LedgerClient({
     return next;
   }, [dispatchRows, fundRows, showTcs]);
 
+  const dateRangeLabel = useMemo(() => {
+    if (dateFrom && dateTo) {
+      return `${formatDateDdMmYyyy(dateFrom)} – ${formatDateDdMmYyyy(dateTo)}`;
+    }
+    if (dateFrom) return `from ${formatDateDdMmYyyy(dateFrom)}`;
+    if (dateTo) return `to ${formatDateDdMmYyyy(dateTo)}`;
+    return "";
+  }, [dateFrom, dateTo]);
+
   const filenameBase = useMemo(() => {
     const slug = customerLabel
       .trim()
@@ -179,12 +243,32 @@ export function LedgerClient({
     return slug ? `ledger-${slug}` : "ledger";
   }, [customerLabel]);
 
+  function ledgerHref(next: {
+    customerId?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }) {
+    const params = new URLSearchParams();
+    const id = next.customerId ?? customerId;
+    const from = next.dateFrom ?? dateFrom;
+    const to = next.dateTo ?? dateTo;
+    if (id) params.set("customerId", id);
+    if (from) params.set("dateFrom", from);
+    if (to) params.set("dateTo", to);
+    const qs = params.toString();
+    return qs ? `/reports/ledger?${qs}` : "/reports/ledger";
+  }
+
   function onCustomerChange(nextId: string) {
-    if (!nextId) {
-      router.push("/reports/ledger");
-      return;
-    }
-    router.push(`/reports/ledger?customerId=${encodeURIComponent(nextId)}`);
+    router.push(ledgerHref({ customerId: nextId }));
+  }
+
+  function onDateFromChange(next: string) {
+    router.push(ledgerHref({ dateFrom: next }));
+  }
+
+  function onDateToChange(next: string) {
+    router.push(ledgerHref({ dateTo: next }));
   }
 
   return (
@@ -203,6 +287,38 @@ export function LedgerClient({
             Customer ledger of dispatches, funds, and discounts.
           </p>
         </div>
+        {customerId ? (
+          <div className="detail-stat-row">
+            <div className="detail-stat">
+              <span className="detail-stat-label">Total quantity</span>
+              <span className="detail-stat-value">
+                {formatDispatchMt(saleQuantity)}
+              </span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Opening balance</span>
+              <span className="detail-stat-value">
+                {formatRs(openingDue)}
+              </span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Sale</span>
+              <span className="detail-stat-value">{formatRs(saleTotal)}</span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Fund</span>
+              <span className="detail-stat-value">{formatRs(fundTotal)}</span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Current due</span>
+              <span className="detail-stat-value">{formatRs(due)}</span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Overdue</span>
+              <span className="detail-stat-value">{formatRs(overdue)}</span>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
@@ -222,9 +338,29 @@ export function LedgerClient({
             ))}
           </select>
         </label>
+        <label>
+          Start date
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => onDateFromChange(e.target.value)}
+            max={dateTo || undefined}
+            aria-label="Start date"
+          />
+        </label>
+        <label>
+          End date
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => onDateToChange(e.target.value)}
+            min={dateFrom || undefined}
+            aria-label="End date"
+          />
+        </label>
         {customerId ? (
           <TableDownloadButtons
-            title={`Ledger — ${customerLabel}`}
+            title={`Ledger — ${customerLabel}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Total quantity ${formatDispatchMt(saleQuantity)} · Opening balance ${formatRs(openingDue)} · Sale ${formatRs(saleTotal)} · Fund ${formatRs(fundTotal)} · Current due ${formatRs(due)} · Overdue ${formatRs(overdue)}`}
             filenameBase={filenameBase}
             columns={exportColumns}
             rows={exportRows}

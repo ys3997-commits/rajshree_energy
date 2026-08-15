@@ -9,7 +9,10 @@ import {
 } from "@/lib/actions/purchaseOrders";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
-import { suggestNextPoNumber } from "@/lib/actions/dispatch";
+import {
+  suggestNextDispatchNumber,
+  suggestNextPoNumber,
+} from "@/lib/actions/dispatch";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { EditDispatchButton } from "@/components/EditDispatchButton";
 import { EditDispatchPurchaseButton } from "@/components/EditDispatchPurchaseButton";
@@ -27,6 +30,7 @@ import {
   parsePurchaseOrderSequence,
   parseSaleOrderSequence,
 } from "@/lib/domain/orderNumbers";
+import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
 
 function displayOrderDigits(
   poNumber: string,
@@ -62,9 +66,6 @@ export default async function DispatchesPage({
     vessels,
     balanceOrders,
     balancePurchases,
-    transporters,
-    suggestedPo,
-    suggestedPurchasePo,
   ] = await Promise.all([
     listDispatches({
       receiptStatus: (sp.receiptStatus as ReceiptStatus) || "",
@@ -79,10 +80,15 @@ export default async function DispatchesPage({
     listVessels(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
-    listTransporters(),
-    suggestNextPoNumber(),
-    suggestNextPurchasePoNumber(),
   ]);
+
+  const [transporters, suggestedPo, suggestedPurchasePo, suggestedDispatchNumber] =
+    await Promise.all([
+      listTransporters(),
+      suggestNextPoNumber(),
+      suggestNextPurchasePoNumber(),
+      suggestNextDispatchNumber(),
+    ]);
 
   const customerOpts = customers.map((c) => ({
     id: c.id,
@@ -92,6 +98,7 @@ export default async function DispatchesPage({
   const activeVessels = vessels.filter((v) => v.active);
 
   const exportColumns = [
+    { key: "dispatchNumber", header: "Dispatch no" },
     { key: "date", header: "Date" },
     { key: "lorryNumber", header: "Lorry no" },
     { key: "weight", header: "Weight (MT)", align: "right" as const },
@@ -145,6 +152,7 @@ export default async function DispatchesPage({
       : row.receivingQuantity;
     const diffQty = isExPort ? 0 : row.diffInQuantity;
     return {
+      dispatchNumber: displayDispatchNumber(row.dispatchNumber),
       date: formatDateDdMmYyyy(
         new Date(row.dispatchDate).toISOString().slice(0, 10),
       ),
@@ -206,6 +214,7 @@ export default async function DispatchesPage({
           }))}
           suggestedPo={suggestedPo}
           suggestedPurchasePo={suggestedPurchasePo}
+          suggestedDispatchNumber={suggestedDispatchNumber}
         />
       </div>
 
@@ -293,7 +302,7 @@ export default async function DispatchesPage({
         <table className="data report-table report-table-dispatches">
           <thead>
             <tr className="report-group-row">
-              <th colSpan={6}>Dispatch</th>
+              <th colSpan={7}>Dispatch</th>
               <th colSpan={5}>Purchase</th>
               <th colSpan={5}>Sale</th>
               <th colSpan={4}>Transport</th>
@@ -302,6 +311,7 @@ export default async function DispatchesPage({
               <th colSpan={1}></th>
             </tr>
             <tr>
+              <th>Dispatch no</th>
               <th>Date</th>
               <th>Lorry no</th>
               <th className="cell-num">Weight (MT)</th>
@@ -338,6 +348,7 @@ export default async function DispatchesPage({
               const diffQty = isExPort ? 0 : row.diffInQuantity;
               return (
               <tr key={row.id}>
+                <td>{displayDispatchNumber(row.dispatchNumber)}</td>
                 <td>
                   {formatDateDdMmYyyy(
                     new Date(row.dispatchDate).toISOString().slice(0, 10),
@@ -496,7 +507,7 @@ export default async function DispatchesPage({
             })}
             {dispatches.length === 0 && (
               <tr>
-                <td colSpan={25}>No dispatches match filters.</td>
+                <td colSpan={26}>No dispatches match filters.</td>
               </tr>
             )}
           </tbody>

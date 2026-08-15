@@ -52,6 +52,7 @@ export function HomeQuickActions({
   qualityClasses,
   suggestedPo,
   suggestedPurchasePo,
+  suggestedDispatchNumber,
 }: {
   customers: CustomerOpt[];
   importers: Option[];
@@ -63,6 +64,7 @@ export function HomeQuickActions({
   qualityClasses: QualityClassOpt[];
   suggestedPo: string;
   suggestedPurchasePo: string;
+  suggestedDispatchNumber: string;
 }) {
   return (
     <div className="home-quick">
@@ -89,6 +91,7 @@ export function HomeQuickActions({
         vessels={vessels}
         suggestedPo={suggestedPo}
         suggestedPurchasePo={suggestedPurchasePo}
+        suggestedDispatchNumber={suggestedDispatchNumber}
       />
       <Link href="/customers" className="btn btn-secondary">
         New customer

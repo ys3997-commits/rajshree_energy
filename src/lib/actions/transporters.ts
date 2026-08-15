@@ -45,7 +45,14 @@ export async function getTransporter(id: string) {
     include: {
       dispatches: {
         include: {
-          order: { select: { id: true, poNumber: true } },
+          order: {
+            select: {
+              id: true,
+              poNumber: true,
+              customer: { select: { name: true } },
+              port: { select: { name: true } },
+            },
+          },
           purchaseOrder: {
             select: {
               id: true,
@@ -54,8 +61,12 @@ export async function getTransporter(id: string) {
               vessel: { select: { vesselName: true } },
             },
           },
+          vessel: { select: { port: { select: { name: true } } } },
         },
         orderBy: [{ dispatchDate: "desc" }, { createdAt: "desc" }],
+      },
+      payments: {
+        select: { direction: true, amount: true },
       },
     },
   });
@@ -108,6 +119,7 @@ export async function createTransporter(input: TransporterInput) {
     data: toTransporterData(input),
   });
   revalidatePath("/transporters");
+  revalidatePath("/reports/transport/due");
   return row;
 }
 
@@ -118,6 +130,7 @@ export async function updateTransporter(id: string, input: TransporterInput) {
   });
   revalidatePath("/transporters");
   revalidatePath(`/transporters/${id}`);
+  revalidatePath("/reports/transport/due");
   return row;
 }
 
@@ -139,4 +152,5 @@ export async function deleteTransporter(id: string) {
   }
   await prisma.transporter.delete({ where: { id } });
   revalidatePath("/transporters");
+  revalidatePath("/reports/transport/due");
 }

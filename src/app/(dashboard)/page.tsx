@@ -8,13 +8,19 @@ import {
   getTopPendingOrdersByCoalOrigin,
 } from "@/lib/actions/dashboard";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
-import { listPurchaseOrdersWithBalance, suggestNextPurchasePoNumber } from "@/lib/actions/purchaseOrders";
+import {
+  listPurchaseOrdersWithBalance,
+  suggestNextPurchasePoNumber,
+} from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
-import { suggestNextPoNumber } from "@/lib/actions/dispatch";
+import {
+  suggestNextDispatchNumber,
+  suggestNextPoNumber,
+} from "@/lib/actions/dispatch";
 import { formatDispatchMt } from "@/lib/domain/format";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
 import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
@@ -33,10 +39,7 @@ export default async function HomePage() {
     qualityStockLists,
     customers,
     ports,
-    balanceOrders,
-    balancePurchases,
     vessels,
-    transporters,
     qualityClasses,
     suggestedPo,
     suggestedPurchasePo,
@@ -49,14 +52,19 @@ export default async function HomePage() {
     getHomeQualityStockLists(),
     listCustomers({ activeOnly: true }),
     listPortOptions(),
-    listOrdersWithBalance(),
-    listPurchaseOrdersWithBalance(),
     listVessels({ activeOnly: true }),
-    listTransporters(),
     listQualityClasses(),
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
   ]);
+
+  const [balanceOrders, balancePurchases, transporters, suggestedDispatchNumber] =
+    await Promise.all([
+      listOrdersWithBalance(),
+      listPurchaseOrdersWithBalance(),
+      listTransporters(),
+      suggestNextDispatchNumber(),
+    ]);
 
   const monthlyDispatches = dispatchCharts.months;
   const dailyDispatches = dispatchCharts.days;
@@ -149,6 +157,7 @@ export default async function HomePage() {
           qualityClasses={qualityClassOpts}
           suggestedPo={suggestedPo}
           suggestedPurchasePo={suggestedPurchasePo}
+          suggestedDispatchNumber={suggestedDispatchNumber}
         />
       </section>
 

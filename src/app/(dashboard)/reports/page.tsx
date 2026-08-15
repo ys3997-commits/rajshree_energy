@@ -48,6 +48,11 @@ const reports = [
     desc: "Dispatch freight, weight diffs, and transport document checklist.",
   },
   {
+    href: "/reports/transport/due",
+    title: "Transport Due",
+    desc: "Outstanding freight balances with transporters.",
+  },
+  {
     href: "/reports/collection/vendor",
     title: "Vendor Collection",
     desc: "Supplier collection balances and outstanding dues.",
