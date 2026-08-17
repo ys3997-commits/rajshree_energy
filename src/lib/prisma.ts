@@ -64,6 +64,12 @@ function createPrismaClient() {
 
 type AppPrisma = ReturnType<typeof createPrismaClient>;
 
+/** Interactive transaction client from `prisma.$transaction` (extended client). */
+export type PrismaTx = Omit<
+  AppPrisma,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$extends" | "$use"
+>;
+
 const globalForPrisma = globalThis as unknown as {
   prisma: AppPrisma | undefined;
   prismaGen: number | undefined;

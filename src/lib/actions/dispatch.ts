@@ -10,7 +10,7 @@ import {
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+import { prisma, type PrismaTx } from "@/lib/prisma";
 import {
   computeOrderStatus,
   computePurchaseFinalRate,
@@ -168,7 +168,7 @@ function resolveDispatchTermsFields(input: {
 }
 
 async function resolvePurchaseForDispatch(
-  tx: Prisma.TransactionClient,
+  tx: PrismaTx,
   input: {
     purchasePoNumber?: string;
     openPurchase?: OpenPurchaseForDispatch;
@@ -309,7 +309,7 @@ export async function ensureDispatchNumbers(): Promise<void> {
 }
 
 async function allocateDispatchNumber(
-  tx: Prisma.TransactionClient,
+  tx: PrismaTx,
   requested?: string,
 ): Promise<string> {
   const dispatchNumber = requested
@@ -333,7 +333,7 @@ async function allocateDispatchNumber(
 }
 
 async function applyDispatchDelta(
-  tx: Prisma.TransactionClient,
+  tx: PrismaTx,
   args: {
     poNumber: string;
     purchasePoNumber: string;

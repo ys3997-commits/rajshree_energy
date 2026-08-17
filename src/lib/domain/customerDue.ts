@@ -5,7 +5,7 @@ import {
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal, type DecimalLike } from "@/lib/domain/computations";
-import { prisma } from "@/lib/prisma";
+import { prisma, type PrismaTx } from "@/lib/prisma";
 
 /**
  * Billed MT for an order: contracted quantity minus closing quantity when set,
@@ -96,15 +96,14 @@ export function discountDueDelta(
 }
 
 export async function adjustCustomerDue(
-  db: object,
+  db: PrismaTx,
   customerId: string,
   delta: DecimalLike,
 ): Promise<void> {
   const d = toDecimal(delta);
   if (d.isZero()) return;
 
-  const client = db as Pick<Prisma.TransactionClient, "customer">;
-  await client.customer.update({
+  await db.customer.update({
     where: { id: customerId },
     data: { due: { increment: d } },
   });
