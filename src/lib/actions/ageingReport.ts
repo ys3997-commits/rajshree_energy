@@ -7,7 +7,10 @@ import {
   unpaidDueByDate,
   type AgeingMovement,
 } from "@/lib/domain/ageing";
-import type { AgeingReportRow } from "@/lib/domain/ageingBuckets";
+import {
+  ageingBuyerCategory,
+  type AgeingReportRow,
+} from "@/lib/domain/ageingBuckets";
 import { toDecimal } from "@/lib/domain/computations";
 import {
   discountDueDelta,
@@ -155,7 +158,7 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
         customer.id,
         customer.name,
         aged,
-        customer.category,
+        ageingBuyerCategory(customer.category),
         customer.sector,
         customer.state,
       ),

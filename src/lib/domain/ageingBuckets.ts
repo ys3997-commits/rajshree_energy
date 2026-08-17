@@ -24,3 +24,10 @@ export type AgeingReportRow = {
   state: string | null;
   totalDue: string;
 } & Record<AgeingBucketKey, string>;
+
+/** Supplier is treated as trader on the ageing report. */
+export function ageingBuyerCategory(
+  category: string,
+): AgeingReportRow["category"] {
+  return category === "INDUSTRY" ? "INDUSTRY" : "TRADER";
+}
