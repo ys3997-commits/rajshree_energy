@@ -36,6 +36,8 @@ type CustomerProfile = {
   email: string | null;
 };
 
+type AnalysisVariant = "customer" | "vendor";
+
 type Props = {
   customer: CustomerProfile;
   saleSide: CustomerSideMetrics;
@@ -44,6 +46,39 @@ type Props = {
   purchaseOrders: CustomerAnalysisOrderRow[];
   dispatches: CustomerAnalysisDispatchRow[];
   filters: { dateFrom: string; dateTo: string };
+  variant?: AnalysisVariant;
+};
+
+const VARIANT_COPY: Record<
+  AnalysisVariant,
+  {
+    listHref: string;
+    listLabel: string;
+    backLabel: string;
+    filenamePrefix: string;
+    masterDispatchParam: "customerId" | "vendorId";
+    tabsAria: string;
+    partyNoun: string;
+  }
+> = {
+  customer: {
+    listHref: "/reports/customer-analysis",
+    listLabel: "Customer analysis",
+    backLabel: "← All customers",
+    filenamePrefix: "customer-analysis",
+    masterDispatchParam: "customerId",
+    tabsAria: "Customer sections",
+    partyNoun: "customer",
+  },
+  vendor: {
+    listHref: "/reports/vendor-analysis",
+    listLabel: "Vendor analysis",
+    backLabel: "← All vendors",
+    filenamePrefix: "vendor-analysis",
+    masterDispatchParam: "vendorId",
+    tabsAria: "Vendor sections",
+    partyNoun: "vendor",
+  },
 };
 
 type Tab = "overview" | "sale-orders" | "purchase-orders" | "dispatches";
@@ -128,15 +163,17 @@ function SideBlock({
 function OrdersTable({
   kind,
   rows,
+  partyNoun,
 }: {
   kind: "sale" | "purchase";
   rows: CustomerAnalysisOrderRow[];
+  partyNoun: string;
 }) {
   if (rows.length === 0) {
     return (
       <div className="table-wrap">
         <p className="empty-state">
-          No {kind === "sale" ? "sale" : "purchase"} orders for this customer.
+          No {kind === "sale" ? "sale" : "purchase"} orders for this {partyNoun}.
         </p>
       </div>
     );
@@ -192,20 +229,22 @@ export function CustomerAnalysisDetail({
   purchaseOrders,
   dispatches,
   filters,
+  variant = "customer",
 }: Props) {
   const [tab, setTab] = useState<Tab>("overview");
+  const copy = VARIANT_COPY[variant];
 
   const displayName = capitalizeName(customer.name) ?? customer.name;
   const location = [customer.city, customer.state].filter(Boolean).join(", ");
-  const filenameBase = `customer-analysis-${displayName.replace(/\s+/g, "-").toLowerCase()}`;
+  const filenameBase = `${copy.filenamePrefix}-${displayName.replace(/\s+/g, "-").toLowerCase()}`;
 
   const masterDispatchHref = useMemo(() => {
     const params = new URLSearchParams();
-    params.set("customerId", customer.id);
+    params.set(copy.masterDispatchParam, customer.id);
     if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
     if (filters.dateTo) params.set("dateTo", filters.dateTo);
     return `/reports/master-dispatch?${params.toString()}`;
-  }, [customer.id, filters.dateFrom, filters.dateTo]);
+  }, [copy.masterDispatchParam, customer.id, filters.dateFrom, filters.dateTo]);
 
   const overviewExport = useMemo(() => {
     const columns = [
@@ -332,8 +371,8 @@ export function CustomerAnalysisDetail({
 
   return (
     <div className="customer-analysis-detail">
-      <Link href="/reports/customer-analysis" className="back-link">
-        ← All customers
+      <Link href={copy.listHref} className="back-link">
+        {copy.backLabel}
       </Link>
 
       <div className="page-header">
@@ -341,7 +380,7 @@ export function CustomerAnalysisDetail({
           <p className="page-eyebrow">
             <Link href="/">Home</Link>
             <span aria-hidden="true"> · </span>
-            <Link href="/reports/customer-analysis">Customer analysis</Link>
+            <Link href={copy.listHref}>{copy.listLabel}</Link>
           </p>
           <h1 className="page-title">{displayName}</h1>
           <p className="page-subtitle">
@@ -368,9 +407,15 @@ export function CustomerAnalysisDetail({
             </span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-label">Sale avg / MT</span>
+            <span className="detail-stat-label">
+              {variant === "vendor" ? "Purchase avg / MT" : "Sale avg / MT"}
+            </span>
             <span className="detail-stat-value">
-              {formatRs(saleSide.avgProfitPerMt)}
+              {formatRs(
+                variant === "vendor"
+                  ? purchaseSide.avgProfitPerMt
+                  : saleSide.avgProfitPerMt,
+              )}
             </span>
           </div>
         </div>
@@ -431,7 +476,7 @@ export function CustomerAnalysisDetail({
         </button>
         {(filters.dateFrom || filters.dateTo) && (
           <Link
-            href={`/reports/customer-analysis/${customer.id}`}
+            href={`${copy.listHref}/${customer.id}`}
             className="btn-link"
           >
             Clear
@@ -449,7 +494,7 @@ export function CustomerAnalysisDetail({
         Balance order is always the current open quantity.
       </p>
 
-      <div className="ca-tabs" role="tablist" aria-label="Customer sections">
+      <div className="ca-tabs" role="tablist" aria-label={copy.tabsAria}>
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -472,12 +517,12 @@ export function CustomerAnalysisDetail({
           <div className="ca-sides">
             <SideBlock
               title="Sale side (buyer)"
-              emptyLabel="No sale orders or dispatches for this customer."
+              emptyLabel={`No sale orders or dispatches for this ${copy.partyNoun}.`}
               metrics={saleSide}
             />
             <SideBlock
               title="Purchase side (vendor)"
-              emptyLabel="No purchase orders or dispatches for this customer."
+              emptyLabel={`No purchase orders or dispatches for this ${copy.partyNoun}.`}
               metrics={purchaseSide}
             />
           </div>
@@ -487,14 +532,18 @@ export function CustomerAnalysisDetail({
       {tab === "sale-orders" && (
         <section className="analysis-section">
           <h2 className="analysis-section-title">Sale orders</h2>
-          <OrdersTable kind="sale" rows={saleOrders} />
+          <OrdersTable kind="sale" rows={saleOrders} partyNoun={copy.partyNoun} />
         </section>
       )}
 
       {tab === "purchase-orders" && (
         <section className="analysis-section">
           <h2 className="analysis-section-title">Purchase orders</h2>
-          <OrdersTable kind="purchase" rows={purchaseOrders} />
+          <OrdersTable
+            kind="purchase"
+            rows={purchaseOrders}
+            partyNoun={copy.partyNoun}
+          />
         </section>
       )}
 

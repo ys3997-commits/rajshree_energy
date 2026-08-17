@@ -193,6 +193,104 @@ export function computeOverdue(
 }
 
 /**
+ * Due movement after {@link dateTo} (exclusive). Subtract from live due to get
+ * due as of that day: liveDue − these deltas. Cheaper than replaying history.
+ */
+export async function dueDeltasAfter(
+  dateTo: string,
+  customerId?: string,
+): Promise<Map<string, Decimal>> {
+  const after = new Date(`${dateTo}T23:59:59.999Z`);
+  const dateWhere = { gt: after };
+
+  const dispatchWhere: Prisma.DispatchWhereInput = {
+    dispatchDate: dateWhere,
+  };
+  if (customerId) {
+    dispatchWhere.OR = [
+      { order: { customerId } },
+      { purchaseOrder: { importerId: customerId } },
+    ];
+  }
+
+  const dispatches = await prisma.dispatch.findMany({
+    where: dispatchWhere,
+    select: {
+      dispatchedQuantity: true,
+      order: { select: { customerId: true, finalRate: true } },
+      purchaseOrder: { select: { importerId: true, finalRate: true } },
+    },
+  });
+  const payments = await prisma.payment.findMany({
+    where: {
+      date: dateWhere,
+      customerId: customerId ?? { not: null },
+    },
+    select: { customerId: true, amount: true, direction: true },
+  });
+  const discounts = await prisma.discount.findMany({
+    where: {
+      date: dateWhere,
+      customerId: customerId ?? { not: null },
+    },
+    select: { customerId: true, amount: true, status: true },
+  });
+
+  const deltas = new Map<string, Decimal>();
+  function addDelta(id: string, delta: Decimal) {
+    if (delta.isZero()) return;
+    const current = deltas.get(id) ?? new Decimal(0);
+    deltas.set(id, current.plus(delta));
+  }
+
+  for (const row of dispatches) {
+    if (row.order) {
+      addDelta(
+        row.order.customerId,
+        saleDispatchDueDelta(row.order.finalRate, row.dispatchedQuantity),
+      );
+    }
+    if (row.purchaseOrder) {
+      addDelta(
+        row.purchaseOrder.importerId,
+        purchaseDispatchDueDelta(
+          row.purchaseOrder.finalRate,
+          row.dispatchedQuantity,
+        ),
+      );
+    }
+  }
+
+  for (const payment of payments) {
+    if (!payment.customerId) continue;
+    addDelta(
+      payment.customerId,
+      paymentDueDelta(payment.direction, payment.amount),
+    );
+  }
+
+  for (const discount of discounts) {
+    if (!discount.customerId) continue;
+    addDelta(
+      discount.customerId,
+      discountDueDelta(discount.status, discount.amount),
+    );
+  }
+
+  return deltas;
+}
+
+export function dueAsOfFromLive(
+  liveDue: DecimalLike,
+  deltasAfter: Decimal | null | undefined,
+): string {
+  return toDecimal(liveDue)
+    .minus(deltasAfter ?? 0)
+    .toDecimalPlaces(2)
+    .toString();
+}
+
+/**
  * Recompute every customer's due from opening due, dispatch-backed sales/purchases, and payments.
  */
 export async function recalculateAllCustomerDues(): Promise<void> {

@@ -172,6 +172,14 @@ export const DiscountStatus: {
 
 export type DiscountStatus = (typeof DiscountStatus)[keyof typeof DiscountStatus]
 
+
+export const CoalOrigin: {
+  DOMESTIC: 'DOMESTIC',
+  IMPORTED: 'IMPORTED'
+};
+
+export type CoalOrigin = (typeof CoalOrigin)[keyof typeof CoalOrigin]
+
 }
 
 export type CustomerCategory = $Enums.CustomerCategory
@@ -205,6 +213,10 @@ export const PaymentDirection: typeof $Enums.PaymentDirection
 export type DiscountStatus = $Enums.DiscountStatus
 
 export const DiscountStatus: typeof $Enums.DiscountStatus
+
+export type CoalOrigin = $Enums.CoalOrigin
+
+export const CoalOrigin: typeof $Enums.CoalOrigin
 
 /**
  * ##  Prisma Client ʲˢ
@@ -20375,6 +20387,7 @@ export namespace Prisma {
     transporterId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
+    coalOrigin: $Enums.CoalOrigin | null
     remarks: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -20387,6 +20400,7 @@ export namespace Prisma {
     transporterId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
+    coalOrigin: $Enums.CoalOrigin | null
     remarks: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -20399,6 +20413,7 @@ export namespace Prisma {
     transporterId: number
     status: number
     amount: number
+    coalOrigin: number
     remarks: number
     createdAt: number
     updatedAt: number
@@ -20421,6 +20436,7 @@ export namespace Prisma {
     transporterId?: true
     status?: true
     amount?: true
+    coalOrigin?: true
     remarks?: true
     createdAt?: true
     updatedAt?: true
@@ -20433,6 +20449,7 @@ export namespace Prisma {
     transporterId?: true
     status?: true
     amount?: true
+    coalOrigin?: true
     remarks?: true
     createdAt?: true
     updatedAt?: true
@@ -20445,6 +20462,7 @@ export namespace Prisma {
     transporterId?: true
     status?: true
     amount?: true
+    coalOrigin?: true
     remarks?: true
     createdAt?: true
     updatedAt?: true
@@ -20544,6 +20562,7 @@ export namespace Prisma {
     transporterId: string | null
     status: $Enums.DiscountStatus
     amount: Decimal
+    coalOrigin: $Enums.CoalOrigin | null
     remarks: string
     createdAt: Date
     updatedAt: Date
@@ -20575,6 +20594,7 @@ export namespace Prisma {
     transporterId?: boolean
     status?: boolean
     amount?: boolean
+    coalOrigin?: boolean
     remarks?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -20589,6 +20609,7 @@ export namespace Prisma {
     transporterId?: boolean
     status?: boolean
     amount?: boolean
+    coalOrigin?: boolean
     remarks?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -20603,6 +20624,7 @@ export namespace Prisma {
     transporterId?: boolean
     status?: boolean
     amount?: boolean
+    coalOrigin?: boolean
     remarks?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -20630,6 +20652,10 @@ export namespace Prisma {
       transporterId: string | null
       status: $Enums.DiscountStatus
       amount: Prisma.Decimal
+      /**
+       * Domestic coal vs imported coal. Null on older rows.
+       */
+      coalOrigin: $Enums.CoalOrigin | null
       remarks: string
       createdAt: Date
       updatedAt: Date
@@ -21034,6 +21060,7 @@ export namespace Prisma {
     readonly transporterId: FieldRef<"Discount", 'String'>
     readonly status: FieldRef<"Discount", 'DiscountStatus'>
     readonly amount: FieldRef<"Discount", 'Decimal'>
+    readonly coalOrigin: FieldRef<"Discount", 'CoalOrigin'>
     readonly remarks: FieldRef<"Discount", 'String'>
     readonly createdAt: FieldRef<"Discount", 'DateTime'>
     readonly updatedAt: FieldRef<"Discount", 'DateTime'>
@@ -21682,6 +21709,7 @@ export namespace Prisma {
     transporterId: 'transporterId',
     status: 'status',
     amount: 'amount',
+    coalOrigin: 'coalOrigin',
     remarks: 'remarks',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -21891,6 +21919,20 @@ export namespace Prisma {
    * Reference to a field of type 'DiscountStatus[]'
    */
   export type ListEnumDiscountStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DiscountStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'CoalOrigin'
+   */
+  export type EnumCoalOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CoalOrigin'>
+    
+
+
+  /**
+   * Reference to a field of type 'CoalOrigin[]'
+   */
+  export type ListEnumCoalOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CoalOrigin[]'>
     
 
 
@@ -23313,6 +23355,7 @@ export namespace Prisma {
     transporterId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
+    coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
     remarks?: StringFilter<"Discount"> | string
     createdAt?: DateTimeFilter<"Discount"> | Date | string
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
@@ -23327,6 +23370,7 @@ export namespace Prisma {
     transporterId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
+    coalOrigin?: SortOrderInput | SortOrder
     remarks?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23344,6 +23388,7 @@ export namespace Prisma {
     transporterId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
+    coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
     remarks?: StringFilter<"Discount"> | string
     createdAt?: DateTimeFilter<"Discount"> | Date | string
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
@@ -23358,6 +23403,7 @@ export namespace Prisma {
     transporterId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
+    coalOrigin?: SortOrderInput | SortOrder
     remarks?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -23378,6 +23424,7 @@ export namespace Prisma {
     transporterId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     status?: EnumDiscountStatusWithAggregatesFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalWithAggregatesFilter<"Discount"> | Decimal | DecimalJsLike | number | string
+    coalOrigin?: EnumCoalOriginNullableWithAggregatesFilter<"Discount"> | $Enums.CoalOrigin | null
     remarks?: StringWithAggregatesFilter<"Discount"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
@@ -24930,6 +24977,7 @@ export namespace Prisma {
     date: Date | string
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24944,6 +24992,7 @@ export namespace Prisma {
     transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24954,6 +25003,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24968,6 +25018,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24980,6 +25031,7 @@ export namespace Prisma {
     transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -24990,6 +25042,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -25002,6 +25055,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26215,6 +26269,13 @@ export namespace Prisma {
     not?: NestedEnumDiscountStatusFilter<$PrismaModel> | $Enums.DiscountStatus
   }
 
+  export type EnumCoalOriginNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.CoalOrigin | EnumCoalOriginFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCoalOriginNullableFilter<$PrismaModel> | $Enums.CoalOrigin | null
+  }
+
   export type DiscountCountOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
@@ -26222,6 +26283,7 @@ export namespace Prisma {
     transporterId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
+    coalOrigin?: SortOrder
     remarks?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26238,6 +26300,7 @@ export namespace Prisma {
     transporterId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
+    coalOrigin?: SortOrder
     remarks?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26250,6 +26313,7 @@ export namespace Prisma {
     transporterId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
+    coalOrigin?: SortOrder
     remarks?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26267,6 +26331,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDiscountStatusFilter<$PrismaModel>
     _max?: NestedEnumDiscountStatusFilter<$PrismaModel>
+  }
+
+  export type EnumCoalOriginNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CoalOrigin | EnumCoalOriginFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCoalOriginNullableWithAggregatesFilter<$PrismaModel> | $Enums.CoalOrigin | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
+    _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
   export type CustomerCreateNestedManyWithoutDealByInput = {
@@ -27531,6 +27605,10 @@ export namespace Prisma {
     set?: $Enums.DiscountStatus
   }
 
+  export type NullableEnumCoalOriginFieldUpdateOperationsInput = {
+    set?: $Enums.CoalOrigin | null
+  }
+
   export type CustomerUpdateOneWithoutDiscountsNestedInput = {
     create?: XOR<CustomerCreateWithoutDiscountsInput, CustomerUncheckedCreateWithoutDiscountsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutDiscountsInput
@@ -27922,6 +28000,13 @@ export namespace Prisma {
     not?: NestedEnumDiscountStatusFilter<$PrismaModel> | $Enums.DiscountStatus
   }
 
+  export type NestedEnumCoalOriginNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.CoalOrigin | EnumCoalOriginFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCoalOriginNullableFilter<$PrismaModel> | $Enums.CoalOrigin | null
+  }
+
   export type NestedEnumDiscountStatusWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.DiscountStatus | EnumDiscountStatusFieldRefInput<$PrismaModel>
     in?: $Enums.DiscountStatus[] | ListEnumDiscountStatusFieldRefInput<$PrismaModel>
@@ -27930,6 +28015,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumDiscountStatusFilter<$PrismaModel>
     _max?: NestedEnumDiscountStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumCoalOriginNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CoalOrigin | EnumCoalOriginFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CoalOrigin[] | ListEnumCoalOriginFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCoalOriginNullableWithAggregatesFilter<$PrismaModel> | $Enums.CoalOrigin | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
+    _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
   export type CustomerCreateWithoutDealByInput = {
@@ -28266,6 +28361,7 @@ export namespace Prisma {
     date: Date | string
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28278,6 +28374,7 @@ export namespace Prisma {
     customerId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28395,6 +28492,7 @@ export namespace Prisma {
     transporterId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
+    coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
     remarks?: StringFilter<"Discount"> | string
     createdAt?: DateTimeFilter<"Discount"> | Date | string
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
@@ -29148,6 +29246,7 @@ export namespace Prisma {
     date: Date | string
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -29160,6 +29259,7 @@ export namespace Prisma {
     transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31602,6 +31702,7 @@ export namespace Prisma {
     customerId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -31720,6 +31821,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31732,6 +31834,7 @@ export namespace Prisma {
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31743,6 +31846,7 @@ export namespace Prisma {
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32226,6 +32330,7 @@ export namespace Prisma {
     transporterId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
     remarks?: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32462,6 +32567,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32474,6 +32580,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32485,6 +32592,7 @@ export namespace Prisma {
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

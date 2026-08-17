@@ -7,7 +7,7 @@ import { listVessels } from "@/lib/actions/vessels";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
   formatDateDdMmYyyy,
-  formatIndianNumber,
+  formatDispatchMt,
   formatLorryNumber,
   formatMt,
   formatQualityClass,
@@ -16,12 +16,6 @@ import {
   parsePurchaseOrderSequence,
   parseSaleOrderSequence,
 } from "@/lib/domain/orderNumbers";
-
-function formatWeightMt(
-  value: { toString(): string } | number | string | null | undefined,
-): string {
-  return formatIndianNumber(value, 2);
-}
 
 function displayOrderDigits(
   poNumber: string,
@@ -120,12 +114,12 @@ export default async function MasterDispatchReportPage({
       new Date(row.dispatchDate).toISOString().slice(0, 10),
     ),
     lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
-    weight: formatWeightMt(row.dispatchedQuantity),
+    weight: formatDispatchMt(row.dispatchedQuantity),
     vesselName: row.vesselName,
     quality: formatQualityClass(row.qualityClass),
     gstState: row.gstState ?? "—",
-    received: formatWeightMt(row.receivingQuantity),
-    diff: formatWeightMt(row.diffInQuantity),
+    received: formatDispatchMt(row.receivingQuantity),
+    diff: formatDispatchMt(row.diffInQuantity),
     purchasePo: displayOrderDigits(row.purchasePoNumber, "purchase"),
     vendor: row.vendorName ?? "—",
     purchaseBasic: formatMt(row.purchaseBasicRate),
@@ -284,7 +278,7 @@ export default async function MasterDispatchReportPage({
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td className="cell-num">{formatWeightMt(row.dispatchedQuantity)}</td>
+                <td className="cell-num">{formatDispatchMt(row.dispatchedQuantity)}</td>
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className={row.gstState ? undefined : "cell-center"}>
@@ -295,14 +289,14 @@ export default async function MasterDispatchReportPage({
                     row.receivingQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
-                  {formatWeightMt(row.receivingQuantity)}
+                  {formatDispatchMt(row.receivingQuantity)}
                 </td>
                 <td
                   className={
                     row.diffInQuantity != null ? "cell-num" : "cell-center"
                   }
                 >
-                  {formatWeightMt(row.diffInQuantity)}
+                  {formatDispatchMt(row.diffInQuantity)}
                 </td>
                 <td>
                   {row.purchaseOrderId ? (

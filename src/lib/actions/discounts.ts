@@ -1,6 +1,6 @@
 "use server";
 
-import { DiscountStatus } from "@/generated/prisma";
+import { CoalOrigin, DiscountStatus } from "@/generated/prisma";
 import { toDecimal } from "@/lib/domain/computations";
 import {
   adjustCustomerDue,
@@ -21,6 +21,7 @@ export type DiscountInput = {
   transporterId?: string | null;
   status: "RECEIVED" | "PAID" | string;
   amount: string | number;
+  coalOrigin: "DOMESTIC" | "IMPORTED" | string;
   remarks: string;
 };
 
@@ -32,6 +33,7 @@ export type DiscountRow = {
   customerName: string;
   status: "RECEIVED" | "PAID";
   amount: string;
+  coalOrigin: "DOMESTIC" | "IMPORTED" | null;
   remarks: string;
 };
 
@@ -48,6 +50,13 @@ function parseStatus(value: string): DiscountStatus {
     return value;
   }
   throw new Error("Select Discount Received or Discount Paid");
+}
+
+function parseCoalOrigin(value: string): CoalOrigin {
+  if (value === CoalOrigin.DOMESTIC || value === CoalOrigin.IMPORTED) {
+    return value;
+  }
+  throw new Error("Select Domestic coal or Imported coal");
 }
 
 function parseDate(value: string): Date {
@@ -67,6 +76,7 @@ function toDiscountRow(row: {
   transporterId: string | null;
   status: DiscountStatus;
   amount: { toString(): string };
+  coalOrigin: CoalOrigin | null;
   remarks: string;
   customer: { name: string } | null;
   transporter: { name: string } | null;
@@ -79,6 +89,7 @@ function toDiscountRow(row: {
     customerName: row.customer?.name ?? row.transporter?.name ?? "—",
     status: row.status,
     amount: row.amount.toString(),
+    coalOrigin: row.coalOrigin,
     remarks: row.remarks,
   };
 }
@@ -96,6 +107,7 @@ function validateDiscountInput(input: DiscountInput) {
     party,
     status: parseStatus(String(input.status)),
     amount,
+    coalOrigin: parseCoalOrigin(String(input.coalOrigin ?? "")),
     remarks,
   };
 }
@@ -146,6 +158,7 @@ async function assertPartyExists(party: PaymentParty) {
 }
 
 function revalidateDiscountPaths(party?: PaymentParty) {
+  revalidatePath("/");
   revalidatePath("/payments");
   revalidatePath("/customers");
   revalidatePath("/reports/collection");
@@ -199,6 +212,7 @@ export async function createDiscount(
         date: data.date,
         status: data.status,
         amount: data.amount,
+        coalOrigin: data.coalOrigin,
         remarks: data.remarks,
         ...partyCreateData(data.party),
       },
@@ -246,6 +260,7 @@ export async function updateDiscount(
         date: data.date,
         status: data.status,
         amount: data.amount,
+        coalOrigin: data.coalOrigin,
         remarks: data.remarks,
         ...partyUpdateData(data.party),
       },

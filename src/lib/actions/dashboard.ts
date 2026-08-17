@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  CoalOrigin,
   CustomerCategory,
   DispatchTerms,
   OrderStatus,
@@ -36,23 +37,104 @@ function addMonths(d: Date, n: number): Date {
   return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
 
-function dayKey(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
 function monthKey(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   return `${y}-${m}`;
 }
 
-function formatDayLabel(d: Date): string {
-  const weekday = d.toLocaleDateString("en-GB", { weekday: "short" });
-  const month = d.toLocaleDateString("en-GB", { month: "short" });
-  return `${weekday}, ${d.getDate()} ${month}`;
+const BUSINESS_TIME_ZONE = "Asia/Kolkata";
+
+/** Calendar day in India, YYYY-MM-DD. Matches how dispatch/payment dates are stored (UTC midnight). */
+function homeBusinessDayKey(d = new Date()): string {
+  return d.toLocaleDateString("en-CA", { timeZone: BUSINESS_TIME_ZONE });
+}
+
+function utcDayRange(isoDay: string): { gte: Date; lte: Date } {
+  return {
+    gte: new Date(`${isoDay}T00:00:00.000Z`),
+    lte: new Date(`${isoDay}T23:59:59.999Z`),
+  };
+}
+
+function utcDayKey(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+function addCalendarDays(isoDay: string, days: number): string {
+  const [y, m, d] = isoDay.split("-").map(Number);
+  const next = new Date(Date.UTC(y, m - 1, d + days));
+  return next.toISOString().slice(0, 10);
+}
+
+export type HomeTodayKpis = {
+  date: string;
+  dispatchedQuantity: string;
+  profit: string;
+  fundReceived: string;
+};
+
+/**
+ * Yesterday's KPIs for the Home strip. "Yesterday" is the previous India
+ * calendar day; dispatch/payment rows use that UTC date (same window as reports).
+ */
+export async function getHomeTodayKpis(): Promise<HomeTodayKpis> {
+  const date = addCalendarDays(homeBusinessDayKey(), -1);
+  const range = utcDayRange(date);
+
+  const [dispatches, fundAgg] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: { dispatchDate: range },
+      select: {
+        dispatchedQuantity: true,
+        dispatchTerms: true,
+        freight: true,
+        order: { select: { rate: true } },
+        purchaseOrder: { select: { rate: true } },
+      },
+    }),
+    prisma.payment.aggregate({
+      where: {
+        direction: "RECEIVED",
+        date: range,
+      },
+      _sum: { amount: true },
+    }),
+  ]);
+
+  let dispatchedQuantity = new Decimal(0);
+  let profit = new Decimal(0);
+  for (const row of dispatches) {
+    dispatchedQuantity = dispatchedQuantity.plus(row.dispatchedQuantity);
+    const line = lineProfit({
+      saleRate: row.order.rate,
+      costRate: row.purchaseOrder.rate,
+      quantity: row.dispatchedQuantity,
+      dispatchTerms: row.dispatchTerms,
+      freight: row.freight,
+    });
+    if (line != null) profit = profit.plus(line);
+  }
+
+  return {
+    date,
+    dispatchedQuantity: dispatchedQuantity.toString(),
+    profit: profit.toDecimalPlaces(2).toString(),
+    fundReceived: (fundAgg._sum.amount ?? new Decimal(0)).toString(),
+  };
+}
+
+function formatUtcDayLabel(isoDay: string): string {
+  const d = new Date(`${isoDay}T00:00:00.000Z`);
+  const weekday = d.toLocaleDateString("en-GB", {
+    weekday: "short",
+    timeZone: "UTC",
+  });
+  const month = d.toLocaleDateString("en-GB", {
+    month: "short",
+    timeZone: "UTC",
+  });
+  return `${weekday}, ${Number(isoDay.slice(8, 10))} ${month}`;
 }
 
 function formatMonthLabel(d: Date): string {
@@ -175,6 +257,7 @@ function buildBuckets(
 /**
  * One query for home charts: last 6 months + last 7 days, each split into
  * domestic / imported for both dispatch volume (MT) and basic-rate profit (Rs).
+ * Profit also includes discounts: received adds, paid subtracts, by coal origin.
  */
 export async function getHomeDispatchCharts(): Promise<{
   months: DispatchSplitBucket[];
@@ -185,9 +268,8 @@ export async function getHomeDispatchCharts(): Promise<{
   const today = startOfLocalDay(new Date());
   const monthStart = startOfMonth(addMonths(today, -5));
   const monthEnd = startOfMonth(addMonths(today, 1));
-  const dayStart = addDays(today, -6);
   const currentMonthKey = monthKey(today);
-  const todayKey = dayKey(today);
+  const todayKey = homeBusinessDayKey();
 
   const rows = await prisma.dispatch.findMany({
     where: {
@@ -197,6 +279,21 @@ export async function getHomeDispatchCharts(): Promise<{
       },
     },
     select: dispatchSplitSelect,
+  });
+  const discounts = await prisma.discount.findMany({
+    where: {
+      date: {
+        gte: monthStart,
+        lt: monthEnd,
+      },
+      coalOrigin: { not: null },
+    },
+    select: {
+      date: true,
+      amount: true,
+      status: true,
+      coalOrigin: true,
+    },
   });
 
   const monthQty = new Map<string, SplitTotals>();
@@ -210,7 +307,7 @@ export async function getHomeDispatchCharts(): Promise<{
   const dayQty = new Map<string, SplitTotals>();
   const dayProfit = new Map<string, SplitTotals>();
   for (let i = 0; i < 7; i++) {
-    const key = dayKey(addDays(dayStart, i));
+    const key = addCalendarDays(todayKey, i - 6);
     dayQty.set(key, emptySplit());
     dayProfit.set(key, emptySplit());
   }
@@ -219,7 +316,7 @@ export async function getHomeDispatchCharts(): Promise<{
     const local = startOfLocalDay(row.dispatchDate);
     const domestic = resolveDomestic(row);
     const mk = monthKey(local);
-    const dk = dayKey(local);
+    const dk = utcDayKey(row.dispatchDate);
 
     addToSplit(monthQty, mk, row.dispatchedQuantity, domestic);
     addToSplit(dayQty, dk, row.dispatchedQuantity, domestic);
@@ -237,6 +334,16 @@ export async function getHomeDispatchCharts(): Promise<{
     }
   }
 
+  for (const discount of discounts) {
+    if (discount.coalOrigin == null) continue;
+    const delta = discountDueDelta(discount.status, discount.amount);
+    if (delta.isZero()) continue;
+    const domestic = discount.coalOrigin === CoalOrigin.DOMESTIC;
+    const local = startOfLocalDay(discount.date);
+    addToSplit(monthProfit, monthKey(local), delta, domestic);
+    addToSplit(dayProfit, utcDayKey(discount.date), delta, domestic);
+  }
+
   const monthKeys = Array.from({ length: 6 }, (_, i) => {
     const month = addMonths(monthStart, i);
     const key = monthKey(month);
@@ -248,11 +355,10 @@ export async function getHomeDispatchCharts(): Promise<{
   });
 
   const dayKeys = Array.from({ length: 7 }, (_, i) => {
-    const day = addDays(dayStart, i);
-    const key = dayKey(day);
+    const key = addCalendarDays(todayKey, i - 6);
     return {
       key,
-      label: formatDayLabel(day),
+      label: formatUtcDayLabel(key),
       isCurrent: key === todayKey,
     };
   });
@@ -272,17 +378,16 @@ export async function getHomeDispatchCharts(): Promise<{
 export async function getHomeFundCharts(): Promise<{
   days: DispatchSplitBucket[];
 }> {
-  const today = startOfLocalDay(new Date());
-  const dayStart = addDays(today, -14);
-  const dayEnd = addDays(today, 1);
-  const todayKey = dayKey(today);
+  const todayKey = homeBusinessDayKey();
+  const dayStartKey = addCalendarDays(todayKey, -14);
+  const dayEndKey = addCalendarDays(todayKey, 1);
 
   const rows = await prisma.payment.findMany({
     where: {
       direction: "RECEIVED",
       date: {
-        gte: dayStart,
-        lt: dayEnd,
+        gte: utcDayRange(dayStartKey).gte,
+        lt: utcDayRange(dayEndKey).gte,
       },
     },
     select: {
@@ -293,20 +398,18 @@ export async function getHomeFundCharts(): Promise<{
 
   const dayTotals = new Map<string, SplitTotals>();
   for (let i = 0; i < 15; i++) {
-    dayTotals.set(dayKey(addDays(dayStart, i)), emptySplit());
+    dayTotals.set(addCalendarDays(dayStartKey, i), emptySplit());
   }
 
   for (const row of rows) {
-    const local = startOfLocalDay(row.date);
-    addToSplit(dayTotals, dayKey(local), row.amount, true);
+    addToSplit(dayTotals, utcDayKey(row.date), row.amount, true);
   }
 
   const days = Array.from({ length: 15 }, (_, i) => {
-    const day = addDays(dayStart, i);
-    const key = dayKey(day);
+    const key = addCalendarDays(dayStartKey, i);
     return toBucket(
       key,
-      formatDayLabel(day),
+      formatUtcDayLabel(key),
       dayTotals.get(key) ?? emptySplit(),
       key === todayKey,
     );
@@ -324,44 +427,41 @@ export async function getHomeFundCharts(): Promise<{
 export async function getHomeOverdueCharts(): Promise<{
   days: DispatchSplitBucket[];
 }> {
-  const today = startOfLocalDay(new Date());
-  const dayStart = addDays(today, -14);
-  const todayKey = dayKey(today);
+  const todayKey = homeBusinessDayKey();
+  const dayStartKey = addCalendarDays(todayKey, -14);
 
-  const [customers, dispatches, payments, discounts] = await Promise.all([
-    prisma.customer.findMany({
-      where: {
-        category: {
-          in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
-        },
+  const customers = await prisma.customer.findMany({
+    where: {
+      category: {
+        in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
       },
-      select: { id: true, openingDue: true, creditDays: true },
-    }),
-    prisma.dispatch.findMany({
-      select: {
-        dispatchDate: true,
-        dispatchedQuantity: true,
-        order: { select: { customerId: true, finalRate: true } },
-        purchaseOrder: { select: { importerId: true, finalRate: true } },
-      },
-    }),
-    prisma.payment.findMany({
-      select: {
-        customerId: true,
-        date: true,
-        amount: true,
-        direction: true,
-      },
-    }),
-    prisma.discount.findMany({
-      select: {
-        customerId: true,
-        date: true,
-        amount: true,
-        status: true,
-      },
-    }),
-  ]);
+    },
+    select: { id: true, openingDue: true, creditDays: true },
+  });
+  const dispatches = await prisma.dispatch.findMany({
+    select: {
+      dispatchDate: true,
+      dispatchedQuantity: true,
+      order: { select: { customerId: true, finalRate: true } },
+      purchaseOrder: { select: { importerId: true, finalRate: true } },
+    },
+  });
+  const payments = await prisma.payment.findMany({
+    select: {
+      customerId: true,
+      date: true,
+      amount: true,
+      direction: true,
+    },
+  });
+  const discounts = await prisma.discount.findMany({
+    select: {
+      customerId: true,
+      date: true,
+      amount: true,
+      status: true,
+    },
+  });
 
   type DueEvent = { day: string; delta: Decimal };
   type SupplyLine = { day: string; amount: Decimal; supplyDate: Date };
@@ -372,7 +472,7 @@ export async function getHomeOverdueCharts(): Promise<{
   function pushDue(customerId: string, date: Date, delta: Decimal) {
     if (delta.isZero()) return;
     const list = dueEventsByCustomer.get(customerId) ?? [];
-    list.push({ day: dayKey(startOfLocalDay(date)), delta });
+    list.push({ day: utcDayKey(date), delta });
     dueEventsByCustomer.set(customerId, list);
   }
 
@@ -386,7 +486,7 @@ export async function getHomeOverdueCharts(): Promise<{
       if (delta.gt(0)) {
         const list = supplyByCustomer.get(row.order.customerId) ?? [];
         list.push({
-          day: dayKey(startOfLocalDay(row.dispatchDate)),
+          day: utcDayKey(row.dispatchDate),
           amount: delta,
           supplyDate: row.dispatchDate,
         });
@@ -429,7 +529,7 @@ export async function getHomeOverdueCharts(): Promise<{
 
   const dayTotals = new Map<string, SplitTotals>();
   for (let i = 0; i < 15; i++) {
-    dayTotals.set(dayKey(addDays(dayStart, i)), emptySplit());
+    dayTotals.set(addCalendarDays(dayStartKey, i), emptySplit());
   }
 
   for (const customer of customers) {
@@ -439,8 +539,7 @@ export async function getHomeOverdueCharts(): Promise<{
     const allSupply = supplyByCustomer.get(customer.id) ?? [];
 
     for (let i = 0; i < 15; i++) {
-      const day = addDays(dayStart, i);
-      const key = dayKey(day);
+      const key = addCalendarDays(dayStartKey, i);
 
       while (eventIdx < events.length && events[eventIdx]!.day <= key) {
         due = due.plus(events[eventIdx]!.delta);
@@ -451,15 +550,7 @@ export async function getHomeOverdueCharts(): Promise<{
         .filter((s) => s.day <= key)
         .map((s) => ({ amount: s.amount, supplyDate: s.supplyDate }));
 
-      const asOf = new Date(
-        day.getFullYear(),
-        day.getMonth(),
-        day.getDate(),
-        23,
-        59,
-        59,
-        999,
-      );
+      const asOf = new Date(`${key}T23:59:59.999Z`);
 
       const inWindow =
         customer.creditDays == null
@@ -479,11 +570,10 @@ export async function getHomeOverdueCharts(): Promise<{
   }
 
   const days = Array.from({ length: 15 }, (_, i) => {
-    const day = addDays(dayStart, i);
-    const key = dayKey(day);
+    const key = addCalendarDays(dayStartKey, i);
     return toBucket(
       key,
-      formatDayLabel(day),
+      formatUtcDayLabel(key),
       dayTotals.get(key) ?? emptySplit(),
       key === todayKey,
     );

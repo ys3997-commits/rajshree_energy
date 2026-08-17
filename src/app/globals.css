@@ -69,7 +69,10 @@ a {
 .app-header {
   position: sticky;
   top: 0;
+  left: 0;
   z-index: 40;
+  width: 100%;
+  box-sizing: border-box;
   backdrop-filter: blur(16px);
   background: rgba(244, 246, 248, 0.78);
   border-bottom: 1px solid var(--line);
@@ -500,6 +503,13 @@ a {
   /* overflow-x:auto on .table-wrap blocks viewport sticky headers */
   overflow: visible;
   max-height: none;
+}
+
+.table-wrap.ageing-table-wrap {
+  overflow: visible;
+  max-height: none;
+  width: max-content;
+  min-width: 100%;
 }
 
 .payments-table th,
@@ -2255,6 +2265,49 @@ table.data tbody tr.customer-row-inactive:hover td {
   color: var(--muted);
 }
 
+.home-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.home-kpi {
+  display: block;
+  min-width: 0;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
+  text-align: right;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+}
+
+.home-kpi:hover {
+  background: rgba(31, 92, 85, 0.06);
+}
+
+.home-kpi-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.home-kpi-value {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
 .home-quick {
   display: flex;
   flex-wrap: wrap;
@@ -2810,6 +2863,10 @@ a.home-quality-row:hover {
 }
 
 @media (max-width: 1100px) {
+  .home-kpi-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .home-dispatch-grid {
     grid-template-columns: 1fr;
   }
@@ -2834,6 +2891,10 @@ a.home-quality-row:hover {
 }
 
 @media (max-width: 640px) {
+  .home-kpi-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .home-panel-head,
   .home-dispatch-head {
     flex-direction: column;
@@ -3237,6 +3298,155 @@ table.data.sale-analysis-table tr.sale-analysis-product-start td {
   margin-top: 0.45rem;
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+.ageing-table {
+  font-size: 0.75rem;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ageing-table th,
+.ageing-table td {
+  padding: 0.28rem 0.45rem;
+  white-space: nowrap;
+}
+
+.ageing-table th {
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  vertical-align: bottom;
+  line-height: 1.2;
+  white-space: normal;
+  min-width: 5.6rem;
+}
+
+.ageing-table th button.th-sort {
+  white-space: normal;
+  line-height: 1.2;
+}
+
+table.data.ageing-table th,
+table.data.ageing-table th.cell-num,
+table.data.ageing-table th button.th-sort,
+table.data.ageing-table th.cell-num button.th-sort {
+  text-align: center;
+}
+
+table.data.ageing-table thead th {
+  position: sticky;
+  top: 4.25rem;
+  z-index: 5;
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+table.data.ageing-table thead tr.ageing-amount-row th {
+  top: 4.25rem;
+  z-index: 5;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+table.data.ageing-table thead tr.ageing-days-row th {
+  top: calc(4.25rem + 2.35rem);
+  z-index: 5;
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+table.data.ageing-table thead tr.ageing-days-row th button.th-sort {
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.ageing-table th.ageing-customer-col,
+.ageing-table td.ageing-customer-col {
+  position: sticky;
+  left: 0;
+  width: 14.375rem;
+  min-width: 14.375rem;
+  max-width: 14.375rem;
+  white-space: normal;
+  box-shadow: 1px 0 0 var(--line);
+}
+
+.ageing-table th.ageing-total-col,
+.ageing-table td.ageing-total-col {
+  position: sticky;
+  left: 14.375rem;
+  min-width: 7.5rem;
+  box-shadow: 1px 0 0 var(--line);
+}
+
+.ageing-table th.ageing-customer-col,
+.ageing-table th.ageing-total-col {
+  z-index: 3;
+  background: #f8fafb;
+}
+
+table.data.ageing-table thead th.ageing-customer-col {
+  top: 4.25rem;
+  z-index: 7;
+  background: #f8fafb;
+  vertical-align: middle;
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+table.data.ageing-table thead th.ageing-customer-col button.th-sort {
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+table.data.ageing-table thead tr.ageing-amount-row th.ageing-total-col {
+  z-index: 6;
+  background: #f8fafb;
+}
+
+table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
+  top: calc(4.25rem + 2.35rem);
+  z-index: 6;
+  background: #f8fafb;
+}
+
+.ageing-table td.ageing-customer-col,
+.ageing-table td.ageing-total-col {
+  z-index: 2;
+  background: var(--surface-solid);
+}
+
+.ageing-table tbody td {
+  background: var(--surface-solid);
+}
+
+.ageing-table tbody td.cell-num {
+  font-size: 0.875rem;
+}
+
+.ageing-table tbody tr:hover td,
+.ageing-table tbody tr:hover td.ageing-customer-col,
+.ageing-table tbody tr:hover td.ageing-total-col {
+  background: #f7faf9;
+}
+
+.ageing-table tfoot td {
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: #f8fafb;
+}
+
+.ageing-table tfoot td.ageing-customer-col,
+.ageing-table tfoot td.ageing-total-col {
+  background: #f8fafb;
 }
 
 @media (max-width: 900px) {

@@ -175,6 +175,14 @@ export function formatQualityClass(
   return `${domestic} · ${qc.origin.name} · ${qc.qualityOption.name}`;
 }
 
+export function formatCoalOrigin(
+  origin: "DOMESTIC" | "IMPORTED" | null | undefined,
+): string {
+  if (origin === "DOMESTIC") return "Domestic coal";
+  if (origin === "IMPORTED") return "Imported coal";
+  return "—";
+}
+
 /** e.g. "Rs 1000.00 + Rs 180.00 + Rs 23.60 = Rs 1203.60" (TCS omitted when null). */
 export function formatRateBreakdownLine(breakdown: {
   base: string;

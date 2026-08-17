@@ -12,6 +12,7 @@ import {
   type DiscountRow,
 } from "@/lib/actions/discounts";
 import {
+  formatCoalOrigin,
   formatCustomerCategory,
   formatIndianAmountTyping,
   formatRs,
@@ -27,6 +28,7 @@ type Opt = {
   category?: CustomerCategory;
 };
 type Status = "RECEIVED" | "PAID" | "";
+type CoalOriginValue = "DOMESTIC" | "IMPORTED" | "";
 
 function todayLocal(): string {
   const d = new Date();
@@ -42,6 +44,7 @@ function emptyForm(partyId = "") {
     partyId,
     status: "" as Status,
     amount: "",
+    coalOrigin: "" as CoalOriginValue,
     remarks: "",
   };
 }
@@ -108,6 +111,7 @@ export function DiscountsClient({
         : partyKey("customer", row.customerId ?? ""),
       status: row.status,
       amount: row.amount,
+      coalOrigin: row.coalOrigin ?? "",
       remarks: row.remarks,
     });
     setError(null);
@@ -134,6 +138,10 @@ export function DiscountsClient({
       setError("Amount must be greater than zero");
       return;
     }
+    if (!form.coalOrigin) {
+      setError("Select Domestic coal or Imported coal");
+      return;
+    }
     if (!form.remarks.trim()) {
       setError("Remarks are required");
       return;
@@ -146,6 +154,7 @@ export function DiscountsClient({
       transporterId: party.kind === "transporter" ? party.id : null,
       status: form.status,
       amount: form.amount,
+      coalOrigin: form.coalOrigin,
       remarks: form.remarks,
     };
 
@@ -205,6 +214,7 @@ export function DiscountsClient({
               <th>Customer</th>
               <th>Status</th>
               <th className="cell-num">Amount</th>
+              <th>Domestic / Imported</th>
               <th>Remarks</th>
               <th />
             </tr>
@@ -295,6 +305,25 @@ export function DiscountsClient({
                 />
               </td>
               <td>
+                <select
+                  form="discount-entry-form"
+                  required
+                  className="field-input"
+                  aria-label="Domestic / Imported"
+                  value={form.coalOrigin}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      coalOrigin: e.target.value as CoalOriginValue,
+                    })
+                  }
+                >
+                  <option value="">Select</option>
+                  <option value="DOMESTIC">Domestic coal</option>
+                  <option value="IMPORTED">Imported coal</option>
+                </select>
+              </td>
+              <td>
                 <input
                   form="discount-entry-form"
                   type="text"
@@ -346,6 +375,7 @@ export function DiscountsClient({
                   </td>
                   <td>{statusLabel(row.status)}</td>
                   <td className="cell-num">{formatRs(row.amount)}</td>
+                  <td>{formatCoalOrigin(row.coalOrigin)}</td>
                   <td>{row.remarks || "—"}</td>
                   <td className="space-x-2 whitespace-nowrap">
                     <button
@@ -371,7 +401,7 @@ export function DiscountsClient({
 
             {rows.length === 0 && (
               <tr>
-                <td colSpan={6}>No discounts yet.</td>
+                <td colSpan={7}>No discounts yet.</td>
               </tr>
             )}
           </tbody>

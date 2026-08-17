@@ -214,63 +214,64 @@ export async function getCustomerLedger(
   });
   if (!customer) return null;
 
-  const [saleDispatches, purchaseDispatches, payments, discounts] =
-    await Promise.all([
-      prisma.dispatch.findMany({
-        where: { order: { customerId } },
-        select: {
-          id: true,
-          dispatchDate: true,
-          lorryNumber: true,
-          dispatchedQuantity: true,
-          createdAt: true,
-          order: {
-            select: {
-              rate: true,
-              finalRate: true,
-              customer: { select: { category: true } },
-            },
+  const [saleDispatches, purchaseDispatches] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: { order: { customerId } },
+      select: {
+        id: true,
+        dispatchDate: true,
+        lorryNumber: true,
+        dispatchedQuantity: true,
+        createdAt: true,
+        order: {
+          select: {
+            rate: true,
+            finalRate: true,
+            customer: { select: { category: true } },
           },
         },
-        orderBy: [{ dispatchDate: "asc" }, { createdAt: "asc" }],
-      }),
-      prisma.dispatch.findMany({
-        where: { purchaseOrder: { importerId: customerId } },
-        select: {
-          id: true,
-          dispatchDate: true,
-          lorryNumber: true,
-          dispatchedQuantity: true,
-          createdAt: true,
-          purchaseOrder: {
-            select: { rate: true, finalRate: true },
-          },
+      },
+      orderBy: [{ dispatchDate: "asc" }, { createdAt: "asc" }],
+    }),
+    prisma.dispatch.findMany({
+      where: { purchaseOrder: { importerId: customerId } },
+      select: {
+        id: true,
+        dispatchDate: true,
+        lorryNumber: true,
+        dispatchedQuantity: true,
+        createdAt: true,
+        purchaseOrder: {
+          select: { rate: true, finalRate: true },
         },
-        orderBy: [{ dispatchDate: "asc" }, { createdAt: "asc" }],
-      }),
-      prisma.payment.findMany({
-        where: { customerId },
-        select: {
-          id: true,
-          date: true,
-          direction: true,
-          amount: true,
-          createdAt: true,
-        },
-        orderBy: [{ date: "asc" }, { createdAt: "asc" }],
-      }),
-      prisma.discount.findMany({
-        where: { customerId },
-        select: {
-          id: true,
-          date: true,
-          status: true,
-          amount: true,
-          createdAt: true,
-        },
-        orderBy: [{ date: "asc" }, { createdAt: "asc" }],
-      }),
-    ]);
+      },
+      orderBy: [{ dispatchDate: "asc" }, { createdAt: "asc" }],
+    }),
+  ]);
+  const [payments, discounts] = await Promise.all([
+    prisma.payment.findMany({
+      where: { customerId },
+      select: {
+        id: true,
+        date: true,
+        direction: true,
+        amount: true,
+        createdAt: true,
+      },
+      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+    }),
+    prisma.discount.findMany({
+      where: { customerId },
+      select: {
+        id: true,
+        date: true,
+        status: true,
+        amount: true,
+        createdAt: true,
+      },
+      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+    }),
+  ]);
 
   const rows: LedgerRow[] = [];
   const seenDispatchIds = new Set<string>();

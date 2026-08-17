@@ -3,6 +3,11 @@ import Link from "next/link";
 /** Sorted alphabetically by title. */
 const reports = [
   {
+    href: "/reports/ageing-report",
+    title: "Ageing Report",
+    desc: "Customer outstanding split by 10-day due buckets.",
+  },
+  {
     href: "/reports/collection",
     title: "Collection",
     desc: "Buyer collection balances and planned calls.",
@@ -13,9 +18,19 @@ const reports = [
     desc: "Customer-level orders, payments, and balance analysis.",
   },
   {
+    href: "/reports/vendor-analysis",
+    title: "Vendor Analysis",
+    desc: "Vendor-level purchase volume, due, and margin analysis.",
+  },
+  {
     href: "/reports/analysis",
     title: "Sale Analysis",
     desc: "Sale-side dispatched quantity by product, state, and city.",
+  },
+  {
+    href: "/reports/profit-analysis",
+    title: "Profit Analysis",
+    desc: "Day-wise domestic and imported quantity and profit.",
   },
   {
     href: "/reports/ledger",

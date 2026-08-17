@@ -54,6 +54,11 @@ enum DiscountStatus {
   PAID
 }
 
+enum CoalOrigin {
+  DOMESTIC
+  IMPORTED
+}
+
 model Staff {
   id        String   @id @default(cuid())
   name      String
@@ -374,6 +379,8 @@ model Discount {
   transporterId String?
   status        DiscountStatus
   amount        Decimal        @db.Decimal(18, 2)
+  /// Domestic coal vs imported coal. Null on older rows.
+  coalOrigin    CoalOrigin?
   remarks       String         @default("")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

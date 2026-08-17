@@ -340,6 +340,7 @@ exports.Prisma.DiscountScalarFieldEnum = {
   transporterId: 'transporterId',
   status: 'status',
   amount: 'amount',
+  coalOrigin: 'coalOrigin',
   remarks: 'remarks',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -398,6 +399,11 @@ exports.PaymentDirection = exports.$Enums.PaymentDirection = {
 exports.DiscountStatus = exports.$Enums.DiscountStatus = {
   RECEIVED: 'RECEIVED',
   PAID: 'PAID'
+};
+
+exports.CoalOrigin = exports.$Enums.CoalOrigin = {
+  DOMESTIC: 'DOMESTIC',
+  IMPORTED: 'IMPORTED'
 };
 
 exports.Prisma.ModelName = {

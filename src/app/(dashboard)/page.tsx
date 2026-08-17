@@ -4,6 +4,7 @@ import {
   getHomeFundCharts,
   getHomeOverdueCharts,
   getHomeQualityStockLists,
+  getHomeTodayKpis,
   getTopCustomersByCoalOrigin,
   getTopPendingOrdersByCoalOrigin,
 } from "@/lib/actions/dashboard";
@@ -24,47 +25,66 @@ import {
 import { formatDispatchMt } from "@/lib/domain/format";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
 import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
+import { HomeKpiStrip } from "@/components/HomeKpiStrip";
 
 function formatQty(value: string): string {
   return formatDispatchMt(value);
 }
 
+function bucketTotalForDay(
+  buckets: { key: string; isCurrent: boolean; total: string }[],
+  date: string,
+): string {
+  return (
+    buckets.find((b) => b.key === date)?.total ??
+    buckets.find((b) => b.isCurrent)?.total ??
+    "0"
+  );
+}
+
+function sumUnsoldQty(
+  rows: { unsoldQty: string }[],
+): string {
+  let total = 0;
+  for (const row of rows) {
+    total += Number(row.unsoldQty) || 0;
+  }
+  return total.toString();
+}
+
 export default async function HomePage() {
-  const [
-    dispatchCharts,
-    fundCharts,
-    overdueCharts,
-    pendingOrdersByCoal,
-    topCustomersByCoal,
-    qualityStockLists,
-    customers,
-    ports,
-    vessels,
-    qualityClasses,
-    suggestedPo,
-    suggestedPurchasePo,
-  ] = await Promise.all([
-    getHomeDispatchCharts(),
-    getHomeFundCharts(),
-    getHomeOverdueCharts(),
-    getTopPendingOrdersByCoalOrigin(10),
-    getTopCustomersByCoalOrigin(7),
-    getHomeQualityStockLists(),
+  const overdueCharts = await getHomeOverdueCharts();
+  const dispatchCharts = await getHomeDispatchCharts();
+  const qualityStockLists = await getHomeQualityStockLists();
+
+  const [todayKpis, fundCharts, pendingOrdersByCoal, topCustomersByCoal] =
+    await Promise.all([
+      getHomeTodayKpis(),
+      getHomeFundCharts(),
+      getTopPendingOrdersByCoalOrigin(10),
+      getTopCustomersByCoalOrigin(7),
+    ]);
+
+  const [customers, ports, vessels, qualityClasses] = await Promise.all([
     listCustomers({ activeOnly: true }),
     listPortOptions(),
     listVessels({ activeOnly: true }),
     listQualityClasses(),
+  ]);
+
+  const [suggestedPo, suggestedPurchasePo] = await Promise.all([
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
   ]);
 
-  const [balanceOrders, balancePurchases, transporters, suggestedDispatchNumber] =
-    await Promise.all([
-      listOrdersWithBalance(),
-      listPurchaseOrdersWithBalance(),
-      listTransporters(),
-      suggestNextDispatchNumber(),
-    ]);
+  const [balanceOrders, balancePurchases] = await Promise.all([
+    listOrdersWithBalance(),
+    listPurchaseOrdersWithBalance(),
+  ]);
+  const [transporters, suggestedDispatchNumber] = await Promise.all([
+    listTransporters(),
+    suggestNextDispatchNumber(),
+  ]);
 
   const monthlyDispatches = dispatchCharts.months;
   const dailyDispatches = dispatchCharts.days;
@@ -123,6 +143,18 @@ export default async function HomePage() {
           </p>
         </div>
       </div>
+
+      <HomeKpiStrip
+        date={todayKpis.date}
+        dispatchedQuantity={todayKpis.dispatchedQuantity}
+        profit={todayKpis.profit}
+        fundReceived={todayKpis.fundReceived}
+        overdue={bucketTotalForDay(dailyOverdue, todayKpis.date)}
+        unsoldQuantity={sumUnsoldQty([
+          ...domesticQualityStock,
+          ...importedQualityStock,
+        ])}
+      />
 
       <section className="home-section">
         <div className="home-section-head">

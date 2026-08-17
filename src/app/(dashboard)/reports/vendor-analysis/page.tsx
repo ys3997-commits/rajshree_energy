@@ -1,12 +1,12 @@
-import { listCustomerAnalysisReport } from "@/lib/actions/reports";
-import { CustomerAnalysisList } from "./CustomerAnalysisList";
+import { listVendorAnalysisReport } from "@/lib/actions/reports";
+import { VendorAnalysisList } from "./VendorAnalysisList";
 
 type SearchParams = Promise<{
   dateFrom?: string;
   dateTo?: string;
 }>;
 
-export default async function CustomerAnalysisListPage({
+export default async function VendorAnalysisListPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -15,14 +15,14 @@ export default async function CustomerAnalysisListPage({
   const dateFrom = sp.dateFrom?.trim() || "";
   const dateTo = sp.dateTo?.trim() || "";
 
-  const customers = await listCustomerAnalysisReport({
+  const vendors = await listVendorAnalysisReport({
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
   });
 
   return (
-    <CustomerAnalysisList
-      customers={customers}
+    <VendorAnalysisList
+      vendors={vendors}
       dateFrom={dateFrom}
       dateTo={dateTo}
     />

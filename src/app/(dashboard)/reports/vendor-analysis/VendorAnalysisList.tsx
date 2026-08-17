@@ -3,26 +3,13 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
-import { CustomerCategory } from "@/generated/prisma";
 import type { CustomerAnalysisListRow } from "@/lib/actions/reports";
-import {
-  formatCustomerCategory,
-  formatRs,
-  formatSaleOrderMt,
-} from "@/lib/domain/format";
+import { formatRs, formatSaleOrderMt } from "@/lib/domain/format";
 
-type CategoryFilter = "" | "industry" | "trader";
-type SortKey =
-  | "name"
-  | "openingDue"
-  | "totalQuantity"
-  | "due"
-  | "totalProfit"
-  | "marginPmt";
+type SortKey = "name" | "totalQuantity" | "due" | "totalProfit" | "marginPmt";
 type SortDir = "asc" | "desc";
 
 const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
-  "openingDue",
   "totalQuantity",
   "due",
   "totalProfit",
@@ -40,7 +27,7 @@ function sortIndicator(active: boolean, dir: SortDir): string {
   return dir === "asc" ? " ↑" : " ↓";
 }
 
-function customerDetailHref(
+function vendorDetailHref(
   id: string,
   dateFrom: string,
   dateTo: string,
@@ -49,19 +36,18 @@ function customerDetailHref(
   if (dateFrom) params.set("dateFrom", dateFrom);
   if (dateTo) params.set("dateTo", dateTo);
   const qs = params.toString();
-  return `/reports/customer-analysis/${id}${qs ? `?${qs}` : ""}`;
+  return `/reports/vendor-analysis/${id}${qs ? `?${qs}` : ""}`;
 }
 
-export function CustomerAnalysisList({
-  customers,
+export function VendorAnalysisList({
+  vendors,
   dateFrom,
   dateTo,
 }: {
-  customers: CustomerAnalysisListRow[];
+  vendors: CustomerAnalysisListRow[];
   dateFrom: string;
   dateTo: string;
 }) {
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("");
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -74,25 +60,15 @@ export function CustomerAnalysisList({
     setSortDir(NUMERIC_SORT_KEYS.has(key) ? "desc" : "asc");
   }
 
-  const categoryFiltered = useMemo(() => {
-    if (categoryFilter === "industry") {
-      return customers.filter((c) => c.category === CustomerCategory.INDUSTRY);
-    }
-    if (categoryFilter === "trader") {
-      return customers.filter((c) => c.category === CustomerCategory.TRADER);
-    }
-    return customers;
-  }, [customers, categoryFilter]);
-
   const summary = useMemo(() => {
     let totalQty = 0;
     let totalDue = 0;
     let totalMargin: number | null = null;
-    for (const c of categoryFiltered) {
-      totalQty += numericValue(c.totalQuantity);
-      totalDue += numericValue(c.due);
-      if (c.totalProfit != null) {
-        const p = numericValue(c.totalProfit);
+    for (const v of vendors) {
+      totalQty += numericValue(v.totalQuantity);
+      totalDue += numericValue(v.due);
+      if (v.totalProfit != null) {
+        const p = numericValue(v.totalProfit);
         totalMargin = totalMargin == null ? p : totalMargin + p;
       }
     }
@@ -106,23 +82,21 @@ export function CustomerAnalysisList({
       totalMargin: totalMargin?.toFixed(2) ?? null,
       marginPmt,
     };
-  }, [categoryFiltered]);
+  }, [vendors]);
 
   const filtered = useMemo(() => {
-    if (!sortKey) return categoryFiltered;
+    if (!sortKey) return vendors;
     const dir = sortDir === "asc" ? 1 : -1;
-    return [...categoryFiltered].sort((a, b) => {
+    return [...vendors].sort((a, b) => {
       if (sortKey === "name") {
         return a.name.localeCompare(b.name) * dir;
       }
       return (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir;
     });
-  }, [categoryFiltered, sortKey, sortDir]);
+  }, [vendors, sortKey, sortDir]);
 
   const exportColumns = [
-    { key: "customer", header: "Customer" },
-    { key: "openingDue", header: "Opening due", align: "right" as const },
-    { key: "category", header: "Category" },
+    { key: "vendor", header: "Vendor" },
     {
       key: "totalQuantity",
       header: "Total quantities",
@@ -135,14 +109,12 @@ export function CustomerAnalysisList({
 
   const exportRows = useMemo(
     () =>
-      filtered.map((c) => ({
-        customer: c.name,
-        openingDue: formatRs(c.openingDue),
-        category: formatCustomerCategory(c.category),
-        totalQuantity: formatSaleOrderMt(c.totalQuantity),
-        totalDue: formatRs(c.due),
-        totalMargin: formatRs(c.totalProfit),
-        marginPmt: formatRs(c.marginPmt),
+      filtered.map((v) => ({
+        vendor: v.name,
+        totalQuantity: formatSaleOrderMt(v.totalQuantity),
+        totalDue: formatRs(v.due),
+        totalMargin: formatRs(v.totalProfit),
+        marginPmt: formatRs(v.marginPmt),
       })),
     [filtered],
   );
@@ -156,10 +128,9 @@ export function CustomerAnalysisList({
             <span aria-hidden="true"> · </span>
             Reports
           </p>
-          <h1 className="page-title">Customer analysis</h1>
+          <h1 className="page-title">Vendor analysis</h1>
           <p className="page-subtitle">
-            Pick a customer to see buy-side and sell-side volume, balance, and
-            margin.
+            Pick a vendor to see purchase-side volume, balance, and margin.
           </p>
         </div>
         <div className="detail-stat-row">
@@ -191,19 +162,6 @@ export function CustomerAnalysisList({
       </div>
 
       <div className="filters">
-        <label>
-          Category
-          <select
-            value={categoryFilter}
-            onChange={(e) =>
-              setCategoryFilter(e.target.value as CategoryFilter)
-            }
-          >
-            <option value="">All</option>
-            <option value="industry">Industry</option>
-            <option value="trader">Trader</option>
-          </select>
-        </label>
         <form className="sale-analysis-date-form" method="get">
           <label>
             Start date
@@ -227,14 +185,14 @@ export function CustomerAnalysisList({
             Apply dates
           </button>
           {(dateFrom || dateTo) && (
-            <Link href="/reports/customer-analysis" className="btn-link">
+            <Link href="/reports/vendor-analysis" className="btn-link">
               Clear
             </Link>
           )}
         </form>
         <TableDownloadButtons
-          title="Customer analysis"
-          filenameBase="customer-analysis"
+          title="Vendor analysis"
+          filenameBase="vendor-analysis"
           columns={exportColumns}
           rows={exportRows}
         />
@@ -242,12 +200,12 @@ export function CustomerAnalysisList({
       <p className="filter-hint">
         Dates filter total quantities, total margin, and margin PMT. Total
         margin is dispatch profit plus discount received minus discount paid.
-        Opening due is the carry-forward balance. Total due is as of the end
-        date when set, otherwise the current outstanding.
+        Total due is as of the end date when set, otherwise the current
+        outstanding.
       </p>
 
       {filtered.length === 0 ? (
-        <p className="home-empty">No customers match your filter.</p>
+        <p className="home-empty">No vendors found.</p>
       ) : (
         <div className="table-wrap">
           <table className="data">
@@ -259,21 +217,10 @@ export function CustomerAnalysisList({
                     className="th-sort"
                     onClick={() => toggleSort("name")}
                   >
-                    Customer
+                    Vendor
                     {sortIndicator(sortKey === "name", sortDir)}
                   </button>
                 </th>
-                <th className="num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("openingDue")}
-                  >
-                    Opening due
-                    {sortIndicator(sortKey === "openingDue", sortDir)}
-                  </button>
-                </th>
-                <th>Category</th>
                 <th className="num">
                   <button
                     type="button"
@@ -317,29 +264,27 @@ export function CustomerAnalysisList({
               </tr>
             </thead>
             <tbody>
-              {filtered.map((c) => (
+              {filtered.map((v) => (
                 <tr
-                  key={c.id}
+                  key={v.id}
                   className={
-                    c.active
+                    v.active
                       ? "ca-list-row"
                       : "ca-list-row customer-row-inactive"
                   }
                 >
                   <td>
                     <Link
-                      href={customerDetailHref(c.id, dateFrom, dateTo)}
+                      href={vendorDetailHref(v.id, dateFrom, dateTo)}
                       className="ca-list-link"
                     >
-                      {c.name}
+                      {v.name}
                     </Link>
                   </td>
-                  <td className="num">{formatRs(c.openingDue)}</td>
-                  <td>{formatCustomerCategory(c.category)}</td>
-                  <td className="num">{formatSaleOrderMt(c.totalQuantity)}</td>
-                  <td className="num">{formatRs(c.due)}</td>
-                  <td className="num">{formatRs(c.totalProfit)}</td>
-                  <td className="num">{formatRs(c.marginPmt)}</td>
+                  <td className="num">{formatSaleOrderMt(v.totalQuantity)}</td>
+                  <td className="num">{formatRs(v.due)}</td>
+                  <td className="num">{formatRs(v.totalProfit)}</td>
+                  <td className="num">{formatRs(v.marginPmt)}</td>
                 </tr>
               ))}
             </tbody>

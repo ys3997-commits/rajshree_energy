@@ -12,6 +12,11 @@ import {
   lineProfit,
   toDecimal,
 } from "@/lib/domain/computations";
+import {
+  dueDeltasAfter,
+  dueAsOfFromLive,
+  discountDueDelta,
+} from "@/lib/domain/customerDue";
 
 const qualityClassInclude = {
   origin: { select: { id: true, name: true } },
@@ -161,13 +166,15 @@ export type CustomerAnalysisListRow = {
   city: string | null;
   state: string | null;
   totalQuantity: string;
+  openingDue: string;
+  due: string;
   totalProfit: string | null;
   marginPmt: string | null;
 };
 
-export async function listCustomerAnalysisReport(): Promise<
-  CustomerAnalysisListRow[]
-> {
+export async function listCustomerAnalysisReport(
+  filters: CustomerAnalysisFilters = {},
+): Promise<CustomerAnalysisListRow[]> {
   const customers = await prisma.customer.findMany({
     where: {
       category: {
@@ -182,29 +189,44 @@ export async function listCustomerAnalysisReport(): Promise<
       active: true,
       city: true,
       state: true,
+      openingDue: true,
+      due: true,
     },
   });
 
-  const dispatches = await prisma.dispatch.findMany({
-    select: {
-      dispatchedQuantity: true,
-      dispatchTerms: true,
-      freight: true,
-      order: {
-        select: {
-          customerId: true,
-          rate: true,
-          finalRate: true,
+  const dateFilter = dispatchDateWhere(filters);
+  const [dispatches, discounts] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: dateFilter ? { dispatchDate: dateFilter } : undefined,
+      select: {
+        dispatchedQuantity: true,
+        dispatchTerms: true,
+        freight: true,
+        order: {
+          select: {
+            customerId: true,
+            rate: true,
+            finalRate: true,
+          },
+        },
+        purchaseOrder: {
+          select: {
+            rate: true,
+            finalRate: true,
+          },
         },
       },
-      purchaseOrder: {
-        select: {
-          rate: true,
-          finalRate: true,
-        },
-      },
-    },
-  });
+    }),
+    prisma.discount.findMany({
+      where: customerDiscountWhere(filters),
+      select: { customerId: true, status: true, amount: true },
+    }),
+  ]);
+  const dueDeltas = filters.dateTo
+    ? await dueDeltasAfter(filters.dateTo)
+    : null;
+
+  const discountNet = discountNetByCustomer(discounts);
 
   const byCustomer = new Map<
     string,
@@ -234,12 +256,12 @@ export async function listCustomerAnalysisReport(): Promise<
 
   return customers.map((c) => {
     const agg = byCustomer.get(c.id);
-    const totalQuantity = (agg?.volume ?? new Decimal(0)).toString();
-    const totalProfit = agg?.profit?.toDecimalPlaces(2).toString() ?? null;
-    const marginPmt =
-      agg?.profit != null && agg.volume.gt(0)
-        ? agg.profit.div(agg.volume).toDecimalPlaces(2).toString()
-        : null;
+    const volume = agg?.volume ?? new Decimal(0);
+    const { totalProfit, marginPmt } = withDiscountMargin(
+      agg?.profit ?? null,
+      discountNet.get(c.id),
+      volume,
+    );
 
     return {
       id: c.id,
@@ -248,7 +270,117 @@ export async function listCustomerAnalysisReport(): Promise<
       active: c.active,
       city: c.city,
       state: c.state,
-      totalQuantity,
+      totalQuantity: volume.toString(),
+      openingDue: c.openingDue.toString(),
+      due: dueDeltas
+        ? dueAsOfFromLive(c.due, dueDeltas.get(c.id))
+        : c.due.toString(),
+      totalProfit,
+      marginPmt,
+    };
+  });
+}
+
+export async function listVendorAnalysisReport(
+  filters: CustomerAnalysisFilters = {},
+): Promise<CustomerAnalysisListRow[]> {
+  const vendors = await prisma.customer.findMany({
+    where: { category: CustomerCategory.SUPPLIER },
+    orderBy: { name: "asc" },
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      active: true,
+      city: true,
+      state: true,
+      openingDue: true,
+      due: true,
+    },
+  });
+
+  const dateFilter = dispatchDateWhere(filters);
+  const [dispatches, discounts] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: dateFilter ? { dispatchDate: dateFilter } : undefined,
+      select: {
+        dispatchedQuantity: true,
+        dispatchTerms: true,
+        freight: true,
+        order: {
+          select: {
+            rate: true,
+            finalRate: true,
+          },
+        },
+        purchaseOrder: {
+          select: {
+            importerId: true,
+            rate: true,
+            finalRate: true,
+          },
+        },
+      },
+    }),
+    prisma.discount.findMany({
+      where: customerDiscountWhere(filters),
+      select: { customerId: true, status: true, amount: true },
+    }),
+  ]);
+  const dueDeltas = filters.dateTo
+    ? await dueDeltasAfter(filters.dateTo)
+    : null;
+
+  const discountNet = discountNetByCustomer(discounts);
+
+  const byVendor = new Map<
+    string,
+    { volume: Decimal; profit: Decimal | null }
+  >();
+
+  for (const d of dispatches) {
+    const vendorId = d.purchaseOrder?.importerId;
+    if (!vendorId) continue;
+    let agg = byVendor.get(vendorId);
+    if (!agg) {
+      agg = { volume: new Decimal(0), profit: null };
+      byVendor.set(vendorId, agg);
+    }
+    agg.volume = agg.volume.plus(d.dispatchedQuantity);
+
+    const profit = lineProfit({
+      saleRate: d.order.rate,
+      costRate: d.purchaseOrder?.rate ?? null,
+      quantity: d.dispatchedQuantity,
+      dispatchTerms: d.dispatchTerms,
+      freight: d.freight,
+    });
+    if (profit != null) {
+      agg.profit = agg.profit == null ? profit : agg.profit.plus(profit);
+    }
+  }
+
+  return vendors.map((c) => {
+    const agg = byVendor.get(c.id);
+    const volume = agg?.volume ?? new Decimal(0);
+    const { totalProfit, marginPmt } = withDiscountMargin(
+      agg?.profit ?? null,
+      discountNet.get(c.id),
+      volume,
+    );
+
+    return {
+      id: c.id,
+      name: c.name,
+      category: c.category,
+      active: c.active,
+      city: c.city,
+      state: c.state,
+      totalQuantity: volume.toString(),
+      openingDue: c.openingDue.toString(),
+      due: dueDeltas
+        ? dueAsOfFromLive(c.due, dueDeltas.get(c.id))
+        : c.due.toString(),
       totalProfit,
       marginPmt,
     };
@@ -316,9 +448,58 @@ function dispatchDateWhere(
   return range;
 }
 
+function discountNetByCustomer(
+  rows: {
+    customerId: string | null;
+    status: "RECEIVED" | "PAID";
+    amount: Decimal;
+  }[],
+): Map<string, Decimal> {
+  const byCustomer = new Map<string, Decimal>();
+  for (const row of rows) {
+    if (!row.customerId) continue;
+    const delta = discountDueDelta(row.status, row.amount);
+    if (delta.isZero()) continue;
+    const current = byCustomer.get(row.customerId) ?? new Decimal(0);
+    byCustomer.set(row.customerId, current.plus(delta));
+  }
+  return byCustomer;
+}
+
+/** Dispatch profit + discount received − discount paid. */
+function withDiscountMargin(
+  dispatchProfit: Decimal | null,
+  discountNet: Decimal | undefined,
+  volume: Decimal,
+): { totalProfit: string | null; marginPmt: string | null } {
+  const profit =
+    discountNet != null && !discountNet.isZero()
+      ? (dispatchProfit ?? new Decimal(0)).plus(discountNet)
+      : dispatchProfit;
+  return {
+    totalProfit: profit?.toDecimalPlaces(2).toString() ?? null,
+    marginPmt:
+      profit != null && volume.gt(0)
+        ? profit.div(volume).toDecimalPlaces(2).toString()
+        : null,
+  };
+}
+
+function customerDiscountWhere(
+  filters: CustomerAnalysisFilters,
+  customerId?: string,
+): Prisma.DiscountWhereInput {
+  const dateFilter = dispatchDateWhere(filters);
+  return {
+    customerId: customerId ?? { not: null },
+    ...(dateFilter ? { date: dateFilter } : {}),
+  };
+}
+
 function aggregateSide(args: {
   orderCount: number;
   balance: Decimal | null;
+  extraProfit?: Decimal | null;
   dispatches: {
     dispatchedQuantity: Decimal;
     dispatchDate: Date;
@@ -376,6 +557,10 @@ function aggregateSide(args: {
     }
   }
 
+  if (args.extraProfit != null && !args.extraProfit.isZero()) {
+    profitTotal = (profitTotal ?? new Decimal(0)).plus(args.extraProfit);
+  }
+
   const avgProfitPerMt =
     profitTotal != null && volume.gt(0) ? profitTotal.div(volume) : null;
   const marginPercent =
@@ -426,50 +611,65 @@ export async function getCustomerAnalysis(
   const dateFilter = dispatchDateWhere(filters);
   const dateWhere = dateFilter ? { dispatchDate: dateFilter } : {};
 
-  const [saleOrders, purchaseOrders, saleDispatches, purchaseDispatches] =
-    await Promise.all([
-      prisma.order.findMany({
-        where: { customerId },
-        orderBy: [{ createdAt: "desc" }],
-        select: {
-          id: true,
-          poNumber: true,
-          orderType: true,
-          quantity: true,
-          dispatchedOrder: true,
-        },
-      }),
-      prisma.purchaseOrder.findMany({
-        where: { importerId: customerId },
-        orderBy: [{ createdAt: "desc" }],
-        select: {
-          id: true,
-          poNumber: true,
-          quantity: true,
-          dispatchedOrder: true,
-        },
-      }),
-      prisma.dispatch.findMany({
-        where: { order: { customerId }, ...dateWhere },
-        include: dispatchInclude,
-        orderBy: [{ dispatchDate: "desc" }, { createdAt: "desc" }],
-      }),
-      prisma.dispatch.findMany({
-        where: { purchaseOrder: { importerId: customerId }, ...dateWhere },
-        include: dispatchInclude,
-        orderBy: [{ dispatchDate: "desc" }, { createdAt: "desc" }],
-      }),
-    ]);
+  const [saleOrders, purchaseOrders] = await Promise.all([
+    prisma.order.findMany({
+      where: { customerId },
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        poNumber: true,
+        orderType: true,
+        quantity: true,
+        dispatchedOrder: true,
+      },
+    }),
+    prisma.purchaseOrder.findMany({
+      where: { importerId: customerId },
+      orderBy: [{ createdAt: "desc" }],
+      select: {
+        id: true,
+        poNumber: true,
+        quantity: true,
+        dispatchedOrder: true,
+      },
+    }),
+  ]);
+
+  const [saleDispatches, purchaseDispatches, discounts] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: { order: { customerId }, ...dateWhere },
+      include: dispatchInclude,
+      orderBy: [{ dispatchDate: "desc" }, { createdAt: "desc" }],
+    }),
+    prisma.dispatch.findMany({
+      where: { purchaseOrder: { importerId: customerId }, ...dateWhere },
+      include: dispatchInclude,
+      orderBy: [{ dispatchDate: "desc" }, { createdAt: "desc" }],
+    }),
+    prisma.discount.findMany({
+      where: customerDiscountWhere(filters, customerId),
+      select: { customerId: true, status: true, amount: true },
+    }),
+  ]);
+
+  const dueDeltas = filters.dateTo
+    ? await dueDeltasAfter(filters.dateTo, customerId)
+    : null;
+
+  const extraProfit = discountNetByCustomer(discounts).get(customerId) ?? null;
+  const isVendor = customer.category === CustomerCategory.SUPPLIER;
 
   const saleSide = aggregateSide({
     orderCount: saleOrders.length,
     balance: sumOpenBalances(saleOrders),
+    extraProfit: isVendor ? null : extraProfit,
     dispatches: saleDispatches,
   });
 
   const purchaseSide = aggregateSide({
     orderCount: purchaseOrders.length,
     balance: sumOpenBalances(purchaseOrders),
+    extraProfit: isVendor ? extraProfit : null,
     dispatches: purchaseDispatches,
   });
 
@@ -517,7 +717,9 @@ export async function getCustomerAnalysis(
       name: customer.name,
       category: customer.category,
       active: customer.active,
-      due: customer.due.toString(),
+      due: dueDeltas
+        ? dueAsOfFromLive(customer.due, dueDeltas.get(customer.id))
+        : customer.due.toString(),
       city: customer.city,
       state: customer.state,
       creditDays: customer.creditDays,
@@ -1268,3 +1470,125 @@ export async function listSaleGeoAnalysisReport(
     cityProducts,
   };
 }
+
+export type ProfitAnalysisRow = {
+  date: string;
+  domesticQuantity: string;
+  domesticProfit: string;
+  importedQuantity: string;
+  importedProfit: string;
+  totalQuantity: string;
+  totalProfit: string;
+};
+
+function isoLocalDay(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function isDomesticDispatch(row: {
+  purchaseOrder: { qualityClass: { domestic: boolean } | null } | null;
+  vessel: { qualityClass: { domestic: boolean } | null };
+  order: { qualityClass: { domestic: boolean } | null } | null;
+}): boolean {
+  const qc =
+    row.purchaseOrder?.qualityClass ??
+    row.vessel.qualityClass ??
+    row.order?.qualityClass ??
+    null;
+  return qc?.domestic === true;
+}
+
+export async function listProfitAnalysisReport(
+  filters: CustomerAnalysisFilters = {},
+): Promise<ProfitAnalysisRow[]> {
+  const dateFilter = dispatchDateWhere(filters);
+  const dispatches = await prisma.dispatch.findMany({
+    where: dateFilter ? { dispatchDate: dateFilter } : undefined,
+    select: {
+      dispatchDate: true,
+      dispatchedQuantity: true,
+      dispatchTerms: true,
+      freight: true,
+      purchaseOrder: {
+        select: {
+          rate: true,
+          qualityClass: { select: { domestic: true } },
+        },
+      },
+      vessel: {
+        select: { qualityClass: { select: { domestic: true } } },
+      },
+      order: {
+        select: {
+          rate: true,
+          qualityClass: { select: { domestic: true } },
+        },
+      },
+    },
+  });
+
+  const byDate = new Map<
+    string,
+    {
+      domesticQty: Decimal;
+      importedQty: Decimal;
+      domesticProfit: Decimal;
+      importedProfit: Decimal;
+    }
+  >();
+
+  for (const d of dispatches) {
+    const date = isoLocalDay(d.dispatchDate);
+    let agg = byDate.get(date);
+    if (!agg) {
+      agg = {
+        domesticQty: new Decimal(0),
+        importedQty: new Decimal(0),
+        domesticProfit: new Decimal(0),
+        importedProfit: new Decimal(0),
+      };
+      byDate.set(date, agg);
+    }
+
+    const domestic = isDomesticDispatch(d);
+    if (domestic) {
+      agg.domesticQty = agg.domesticQty.plus(d.dispatchedQuantity);
+    } else {
+      agg.importedQty = agg.importedQty.plus(d.dispatchedQuantity);
+    }
+
+    const profit = lineProfit({
+      saleRate: d.order.rate,
+      costRate: d.purchaseOrder?.rate ?? null,
+      quantity: d.dispatchedQuantity,
+      dispatchTerms: d.dispatchTerms,
+      freight: d.freight,
+    });
+    if (profit != null) {
+      if (domestic) {
+        agg.domesticProfit = agg.domesticProfit.plus(profit);
+      } else {
+        agg.importedProfit = agg.importedProfit.plus(profit);
+      }
+    }
+  }
+
+  return [...byDate.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([date, agg]) => ({
+      date,
+      domesticQuantity: agg.domesticQty.toString(),
+      domesticProfit: agg.domesticProfit.toDecimalPlaces(2).toString(),
+      importedQuantity: agg.importedQty.toString(),
+      importedProfit: agg.importedProfit.toDecimalPlaces(2).toString(),
+      totalQuantity: agg.domesticQty.plus(agg.importedQty).toString(),
+      totalProfit: agg.domesticProfit
+        .plus(agg.importedProfit)
+        .toDecimalPlaces(2)
+        .toString(),
+    }));
+}
+

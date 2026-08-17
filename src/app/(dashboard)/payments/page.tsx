@@ -25,10 +25,11 @@ export default async function PaymentsPage({
   const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
   const isDiscount = sp.tab === "discount";
 
-  const partiesPromise = Promise.all([
+  const [customers, transporters] = await Promise.all([
     listCustomers({ activeOnly: true }),
     listTransporters(),
-  ]).then(([customers, transporters]) => [
+  ]);
+  const parties = [
     ...customers.map((c) => ({
       id: c.id,
       name: c.name,
@@ -40,21 +41,13 @@ export default async function PaymentsPage({
       name: t.name,
       kind: "transporter" as const,
     })),
-  ]);
+  ];
 
   if (isDiscount) {
-    const [discounts, parties] = await Promise.all([
-      listDiscounts({ page }),
-      partiesPromise,
-    ]);
-
+    const discounts = await listDiscounts({ page });
     return <DiscountsClient initial={discounts} parties={parties} />;
   }
 
-  const [payments, parties] = await Promise.all([
-    listPayments({ page }),
-    partiesPromise,
-  ]);
-
+  const payments = await listPayments({ page });
   return <PaymentsClient initial={payments} parties={parties} />;
 }

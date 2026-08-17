@@ -40,8 +40,11 @@ const reportLinks: ReportItem[] = [
   {
     label: "Analysis",
     children: [
+      { href: "/reports/ageing-report", label: "Ageing Report" },
       { href: "/reports/customer-analysis", label: "Customer Analysis" },
+      { href: "/reports/profit-analysis", label: "Profit Analysis" },
       { href: "/reports/analysis", label: "Sale Analysis" },
+      { href: "/reports/vendor-analysis", label: "Vendor Analysis" },
     ],
   },
   {
