@@ -31,17 +31,12 @@ import {
   deletePortOption,
   updatePortOption,
 } from "@/lib/actions/ports";
-import {
-  createStaff,
-  deleteStaff,
-  updateStaff,
-} from "@/lib/actions/staff";
 import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
+import { PeopleManager, type PeopleRow } from "./PeopleManager";
 
 type Opt = { id: string; name: string };
 type PortOpt = Opt & { state: string };
-type PeopleOpt = { id: string; name: string; role: string | null };
 
 type CategoryId =
   | "origins"
@@ -105,7 +100,7 @@ const CATEGORIES: {
   {
     id: "people",
     label: "People",
-    description: "People who deal and operate on the desk.",
+    description: "Desk people, login passwords, and page access.",
     placeholder: "New person",
   },
   {
@@ -146,7 +141,7 @@ export function OptionsClient({
   cities: Opt[];
   states: Opt[];
   sectors: Opt[];
-  people: PeopleOpt[];
+  people: PeopleRow[];
   dealingCompanies: Opt[];
 }) {
   const [items, setItems] = useState<ItemMap>({
@@ -163,24 +158,12 @@ export function OptionsClient({
   const [activeId, setActiveId] = useState<CategoryId>("origins");
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
-  const [roleDraft, setRoleDraft] = useState("");
   const [stateDraft, setStateDraft] = useState("");
-  const [editing, setEditing] = useState<Opt | PortOpt | PeopleOpt | null>(null);
+  const [editing, setEditing] = useState<Opt | PortOpt | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const active = CATEGORIES.find((c) => c.id === activeId) ?? CATEGORIES[0];
-
-  const filteredPeople = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    const sorted = [...peopleItems].sort((a, b) => a.name.localeCompare(b.name));
-    if (!q) return sorted;
-    return sorted.filter(
-      (item) =>
-        item.name.toLowerCase().includes(q) ||
-        (item.role?.toLowerCase().includes(q) ?? false),
-    );
-  }, [peopleItems, query]);
 
   const filteredOptions = useMemo(() => {
     if (activeId === "people") return [];
@@ -201,7 +184,6 @@ export function OptionsClient({
     setActiveId(id);
     setQuery("");
     setDraft("");
-    setRoleDraft("");
     setStateDraft("");
     setEditing(null);
     setError(null);
@@ -233,10 +215,8 @@ export function OptionsClient({
         return createSectorOption(name);
       case "dealingCompanies":
         return createDealingCompanyOption(name);
-      case "people": {
-        const row = await createStaff({ name, role: role || null });
-        return { id: row.id };
-      }
+      case "people":
+        throw new Error("Use Add person");
     }
   }
 
@@ -260,8 +240,7 @@ export function OptionsClient({
       case "dealingCompanies":
         return updateDealingCompanyOption(id, name);
       case "people":
-        await updateStaff(id, { name, role: role || null });
-        return { id };
+        throw new Error("Use Edit on the person row");
     }
   }
 
@@ -284,7 +263,7 @@ export function OptionsClient({
       case "dealingCompanies":
         return deleteDealingCompanyOption(id);
       case "people":
-        return deleteStaff(id);
+        throw new Error("Use Delete on the person row");
     }
   }
 
@@ -293,7 +272,6 @@ export function OptionsClient({
     setError(null);
     const name = capitalizeName(draft);
     if (!name) return;
-    const role = capitalizeName(roleDraft);
     const state = capitalizeName(stateDraft);
     if (activeId === "ports" && !state) {
       setError("Port state is required");
@@ -303,18 +281,8 @@ export function OptionsClient({
     startTransition(async () => {
       try {
         if (editing) {
-          await updateItem(editing.id, name, role ?? undefined, state ?? undefined);
-          if (activeId === "people") {
-            setPeopleItems(
-              peopleItems
-                .map((item) =>
-                  item.id === editing.id
-                    ? { ...item, name, role }
-                    : item,
-                )
-                .sort((a, b) => a.name.localeCompare(b.name)),
-            );
-          } else if (activeId === "ports") {
+          await updateItem(editing.id, name, undefined, state ?? undefined);
+          if (activeId === "ports") {
             setCategoryItems(
               "ports",
               items.ports
@@ -333,14 +301,8 @@ export function OptionsClient({
           }
           setEditing(null);
         } else {
-          const { id } = await createItem(name, role ?? undefined, state ?? undefined);
-          if (activeId === "people") {
-            setPeopleItems(
-              [...peopleItems, { id, name, role }].sort((a, b) =>
-                a.name.localeCompare(b.name),
-              ),
-            );
-          } else if (activeId === "ports") {
+          const { id } = await createItem(name, undefined, state ?? undefined);
+          if (activeId === "ports") {
             setCategoryItems(
               "ports",
               [...items.ports, { id, name, state: state! }].sort((a, b) =>
@@ -357,7 +319,6 @@ export function OptionsClient({
           }
         }
         setDraft("");
-        setRoleDraft("");
         setStateDraft("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
@@ -365,24 +326,19 @@ export function OptionsClient({
     });
   }
 
-  async function onDelete(item: Opt | PeopleOpt) {
+  async function onDelete(item: Opt) {
     if (!confirm(`Delete "${item.name}"?`)) return;
     setError(null);
     startTransition(async () => {
       try {
         await deleteItem(item.id);
-        if (activeId === "people") {
-          setPeopleItems(peopleItems.filter((row) => row.id !== item.id));
-        } else {
-          setCategoryItems(
-            activeId as SimpleCategoryId,
-            items[activeId as SimpleCategoryId].filter((row) => row.id !== item.id),
-          );
-        }
+        setCategoryItems(
+          activeId as SimpleCategoryId,
+          items[activeId as SimpleCategoryId].filter((row) => row.id !== item.id),
+        );
         if (editing?.id === item.id) {
           setEditing(null);
           setDraft("");
-          setRoleDraft("");
           setStateDraft("");
         }
       } catch (err) {
@@ -447,6 +403,14 @@ export function OptionsClient({
           </label>
         </div>
 
+        {activeId === "people" ? (
+          <PeopleManager
+            people={peopleItems}
+            query={query}
+            onChange={setPeopleItems}
+          />
+        ) : (
+          <>
         <form onSubmit={onSubmit} className="options-toolbar">
           <input
             required
@@ -458,19 +422,6 @@ export function OptionsClient({
               if (draft.trim()) setDraft(capitalizeName(draft) ?? draft);
             }}
           />
-          {activeId === "people" && (
-            <input
-              className="field-input"
-              placeholder="Role (optional)"
-              value={roleDraft}
-              onChange={(e) => setRoleDraft(e.target.value)}
-              onBlur={() => {
-                if (roleDraft.trim()) {
-                  setRoleDraft(capitalizeName(roleDraft) ?? roleDraft);
-                }
-              }}
-            />
-          )}
           {activeId === "ports" && (
             <select
               required
@@ -496,7 +447,6 @@ export function OptionsClient({
               onClick={() => {
                 setEditing(null);
                 setDraft("");
-                setRoleDraft("");
                 setStateDraft("");
               }}
             >
@@ -510,42 +460,12 @@ export function OptionsClient({
             <thead>
               <tr>
                 <th>Name</th>
-                {activeId === "people" && <th>Role</th>}
                 {activeId === "ports" && <th>GST state</th>}
                 <th className="options-actions-col" />
               </tr>
             </thead>
             <tbody>
-              {activeId === "people"
-                ? filteredPeople.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.name}</td>
-                      <td>{item.role ?? "—"}</td>
-                      <td className="space-x-2 whitespace-nowrap">
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          onClick={() => {
-                            setEditing(item);
-                            setDraft(item.name);
-                            setRoleDraft(item.role ?? "");
-                            setStateDraft("");
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger"
-                          onClick={() => onDelete(item)}
-                          disabled={pending}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : activeId === "ports"
+              {activeId === "ports"
                   ? (filteredOptions as PortOpt[]).map((item) => (
                       <tr key={item.id}>
                         <td>{item.name}</td>
@@ -558,7 +478,6 @@ export function OptionsClient({
                               setEditing(item);
                               setDraft(item.name);
                               setStateDraft(item.state);
-                              setRoleDraft("");
                             }}
                           >
                             Edit
@@ -584,7 +503,6 @@ export function OptionsClient({
                           onClick={() => {
                             setEditing(item);
                             setDraft(item.name);
-                            setRoleDraft("");
                             setStateDraft("");
                           }}
                         >
@@ -601,10 +519,9 @@ export function OptionsClient({
                       </td>
                     </tr>
                   ))}
-              {(activeId === "people" ? filteredPeople : filteredOptions).length ===
-                0 && (
+              {filteredOptions.length === 0 && (
                 <tr>
-                  <td colSpan={activeId === "people" ? 3 : 2} className="options-empty">
+                  <td colSpan={activeId === "ports" ? 3 : 2} className="options-empty">
                     {query.trim()
                       ? "No matches for your search."
                       : `No ${active.label.toLowerCase()} yet. Add one above.`}
@@ -614,6 +531,8 @@ export function OptionsClient({
             </tbody>
           </table>
         </div>
+          </>
+        )}
       </section>
     </div>
   );

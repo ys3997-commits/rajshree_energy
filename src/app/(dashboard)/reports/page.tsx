@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { LockedLink } from "@/components/LockedLink";
+import { getCurrentAccess } from "@/lib/auth/access";
+import { canAccessPath } from "@/lib/auth/pages";
 
 /** Sorted alphabetically by title. */
 const reports = [
@@ -84,7 +86,9 @@ const reports = [
   },
 ].sort((a, b) => a.title.localeCompare(b.title));
 
-export default function ReportsPage() {
+export default async function ReportsPage() {
+  const access = await getCurrentAccess();
+  const keys = access.kind === "none" ? [] : access.pageKeys;
   return (
     <div className="page-stack">
       <div className="page-header">
@@ -93,11 +97,18 @@ export default function ReportsPage() {
 
       <div className="home-report-grid">
         {reports.map((report) => (
-          <Link key={report.href} href={report.href} className="home-report-card">
+          <LockedLink
+            key={report.href}
+            href={report.href}
+            allowed={canAccessPath(keys, report.href)}
+            className="home-report-card"
+          >
             <h3 className="home-report-card-title">{report.title}</h3>
             <p className="home-report-card-desc">{report.desc}</p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
+            <span className="home-report-card-cta">
+              {canAccessPath(keys, report.href) ? "Open report" : "No access"}
+            </span>
+          </LockedLink>
         ))}
       </div>
     </div>

@@ -1501,55 +1501,62 @@ function isDomesticDispatch(row: {
   return qc?.domestic === true;
 }
 
+function emptyProfitDay() {
+  return {
+    domesticQty: new Decimal(0),
+    importedQty: new Decimal(0),
+    domesticProfit: new Decimal(0),
+    importedProfit: new Decimal(0),
+  };
+}
+
 export async function listProfitAnalysisReport(
   filters: CustomerAnalysisFilters = {},
 ): Promise<ProfitAnalysisRow[]> {
   const dateFilter = dispatchDateWhere(filters);
-  const dispatches = await prisma.dispatch.findMany({
-    where: dateFilter ? { dispatchDate: dateFilter } : undefined,
-    select: {
-      dispatchDate: true,
-      dispatchedQuantity: true,
-      dispatchTerms: true,
-      freight: true,
-      purchaseOrder: {
-        select: {
-          rate: true,
-          qualityClass: { select: { domestic: true } },
+  const [dispatches, discounts] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: dateFilter ? { dispatchDate: dateFilter } : undefined,
+      select: {
+        dispatchDate: true,
+        dispatchedQuantity: true,
+        dispatchTerms: true,
+        freight: true,
+        purchaseOrder: {
+          select: {
+            rate: true,
+            qualityClass: { select: { domestic: true } },
+          },
+        },
+        vessel: {
+          select: { qualityClass: { select: { domestic: true } } },
+        },
+        order: {
+          select: {
+            rate: true,
+            qualityClass: { select: { domestic: true } },
+          },
         },
       },
-      vessel: {
-        select: { qualityClass: { select: { domestic: true } } },
+    }),
+    prisma.discount.findMany({
+      where: dateFilter ? { date: dateFilter } : undefined,
+      select: {
+        date: true,
+        status: true,
+        amount: true,
+        coalOrigin: true,
       },
-      order: {
-        select: {
-          rate: true,
-          qualityClass: { select: { domestic: true } },
-        },
-      },
-    },
-  });
+    }),
+  ]);
 
-  const byDate = new Map<
-    string,
-    {
-      domesticQty: Decimal;
-      importedQty: Decimal;
-      domesticProfit: Decimal;
-      importedProfit: Decimal;
-    }
-  >();
+  const byDate = new Map<string, ReturnType<typeof emptyProfitDay>>();
 
   for (const d of dispatches) {
     const date = isoLocalDay(d.dispatchDate);
     let agg = byDate.get(date);
     if (!agg) {
-      agg = {
-        domesticQty: new Decimal(0),
-        importedQty: new Decimal(0),
-        domesticProfit: new Decimal(0),
-        importedProfit: new Decimal(0),
-      };
+      agg = emptyProfitDay();
       byDate.set(date, agg);
     }
 
@@ -1573,6 +1580,24 @@ export async function listProfitAnalysisReport(
       } else {
         agg.importedProfit = agg.importedProfit.plus(profit);
       }
+    }
+  }
+
+  for (const row of discounts) {
+    const delta = discountDueDelta(row.status, row.amount);
+    if (delta.isZero()) continue;
+
+    const date = isoLocalDay(row.date);
+    let agg = byDate.get(date);
+    if (!agg) {
+      agg = emptyProfitDay();
+      byDate.set(date, agg);
+    }
+
+    if (row.coalOrigin === "DOMESTIC") {
+      agg.domesticProfit = agg.domesticProfit.plus(delta);
+    } else if (row.coalOrigin === "IMPORTED") {
+      agg.importedProfit = agg.importedProfit.plus(delta);
     }
   }
 

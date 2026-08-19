@@ -4,9 +4,9 @@ import {
   getHomeFundCharts,
   getHomeOverdueCharts,
   getHomeQualityStockLists,
+  getHomeLatestActivity,
   getHomeTodayKpis,
   getTopCustomersByCoalOrigin,
-  getTopPendingOrdersByCoalOrigin,
 } from "@/lib/actions/dashboard";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
 import {
@@ -23,9 +23,13 @@ import {
   suggestNextPoNumber,
 } from "@/lib/actions/dispatch";
 import { formatDispatchMt } from "@/lib/domain/format";
+import { getCurrentAccess } from "@/lib/auth/access";
+import { canAccessPath } from "@/lib/auth/pages";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
+import { LockedLink } from "@/components/LockedLink";
 import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
 import { HomeKpiStrip } from "@/components/HomeKpiStrip";
+import { HomeLatestActivityStrip } from "@/components/HomeLatestActivityStrip";
 
 function formatQty(value: string): string {
   return formatDispatchMt(value);
@@ -53,17 +57,25 @@ function sumUnsoldQty(
 }
 
 export default async function HomePage() {
+  const access = await getCurrentAccess();
+  const canOpen = (href: string) =>
+    canAccessPath(access.kind === "none" ? [] : access.pageKeys, href);
+
   const overdueCharts = await getHomeOverdueCharts();
   const dispatchCharts = await getHomeDispatchCharts();
   const qualityStockLists = await getHomeQualityStockLists();
 
-  const [todayKpis, fundCharts, pendingOrdersByCoal, topCustomersByCoal] =
-    await Promise.all([
-      getHomeTodayKpis(),
-      getHomeFundCharts(),
-      getTopPendingOrdersByCoalOrigin(10),
-      getTopCustomersByCoalOrigin(7),
-    ]);
+  const [
+    todayKpis,
+    latestActivity,
+    fundCharts,
+    topCustomersByCoal,
+  ] = await Promise.all([
+    getHomeTodayKpis(),
+    getHomeLatestActivity(),
+    getHomeFundCharts(),
+    getTopCustomersByCoalOrigin(7),
+  ]);
 
   const [customers, ports, vessels, qualityClasses] = await Promise.all([
     listCustomers({ activeOnly: true }),
@@ -92,12 +104,8 @@ export default async function HomePage() {
   const dailyProfit = dispatchCharts.profitDays;
   const dailyFundsReceived = fundCharts.days;
   const dailyOverdue = overdueCharts.days;
-  const pendingDomesticOrders = pendingOrdersByCoal.domestic;
-  const pendingImportedOrders = pendingOrdersByCoal.imported;
   const topDomesticCustomers = topCustomersByCoal.last30.domestic;
   const topImportedCustomers = topCustomersByCoal.last30.imported;
-  const topDomesticTotal = topCustomersByCoal.total.domestic;
-  const topImportedTotal = topCustomersByCoal.total.imported;
   const domesticQualityStock = qualityStockLists.domestic;
   const importedQualityStock = qualityStockLists.imported;
 
@@ -107,14 +115,6 @@ export default async function HomePage() {
   );
   const maxImported = Math.max(
     ...topImportedCustomers.map((c) => Number(c.volume) || 0),
-    0,
-  );
-  const maxDomesticTotal = Math.max(
-    ...topDomesticTotal.map((c) => Number(c.volume) || 0),
-    0,
-  );
-  const maxImportedTotal = Math.max(
-    ...topImportedTotal.map((c) => Number(c.volume) || 0),
     0,
   );
 
@@ -144,12 +144,18 @@ export default async function HomePage() {
         </div>
       </div>
 
+      <HomeLatestActivityStrip
+        purchaseSalesDate={latestActivity.purchaseSalesDate}
+        paymentDate={latestActivity.paymentDate}
+        discountDate={latestActivity.discountDate}
+      />
+
       <HomeKpiStrip
         date={todayKpis.date}
         dispatchedQuantity={todayKpis.dispatchedQuantity}
         profit={todayKpis.profit}
         fundReceived={todayKpis.fundReceived}
-        overdue={bucketTotalForDay(dailyOverdue, todayKpis.date)}
+        overdue={bucketTotalForDay(dailyOverdue, todayKpis.todayDate)}
         unsoldQuantity={sumUnsoldQty([
           ...domesticQualityStock,
           ...importedQualityStock,
@@ -161,6 +167,15 @@ export default async function HomePage() {
           <h2 className="home-section-title">Quick links</h2>
         </div>
         <HomeQuickActions
+          allowed={{
+            orders: canOpen("/orders"),
+            purchaseOrders: canOpen("/purchase-orders"),
+            dispatches: canOpen("/dispatches"),
+            customers: canOpen("/customers"),
+            vessels: canOpen("/vessels"),
+            qualities: canOpen("/qualities"),
+            transporters: canOpen("/transporters"),
+          }}
           customers={customerOpts}
           importers={importerOpts}
           ports={portOpts}
@@ -343,98 +358,6 @@ export default async function HomePage() {
         <section className="home-panel">
           <div className="home-panel-head">
             <div>
-              <p className="home-eyebrow">All time · total volume</p>
-              <h2 className="home-panel-title">Top Domestic Coal Buyer</h2>
-            </div>
-            <Link href="/customers" className="home-panel-link">
-              Customers
-            </Link>
-          </div>
-
-          {topDomesticTotal.length === 0 ? (
-            <p className="home-empty">No domestic dispatches yet.</p>
-          ) : (
-            <ul className="home-rank-list">
-              {topDomesticTotal.map((customer, index) => {
-                const volume = Number(customer.volume) || 0;
-                const width =
-                  maxDomesticTotal > 0 ? (volume / maxDomesticTotal) * 100 : 0;
-                return (
-                  <li key={customer.id}>
-                    <div className="home-rank-row home-rank-row-static">
-                      <span className="home-rank-index">{index + 1}</span>
-                      <span className="home-rank-main">
-                        <span className="home-rank-title">{customer.name}</span>
-                        <span className="home-inline-bar" aria-hidden="true">
-                          <span style={{ width: `${width}%` }} />
-                        </span>
-                      </span>
-                      <span className="home-rank-metric">
-                        <span className="home-rank-metric-value">
-                          {formatQty(customer.volume)}
-                        </span>
-                        <span className="home-rank-metric-label">
-                          total volume
-                        </span>
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-
-        <section className="home-panel">
-          <div className="home-panel-head">
-            <div>
-              <p className="home-eyebrow">All time · total volume</p>
-              <h2 className="home-panel-title">Top Imported Coal Buyer</h2>
-            </div>
-            <Link href="/customers" className="home-panel-link">
-              Customers
-            </Link>
-          </div>
-
-          {topImportedTotal.length === 0 ? (
-            <p className="home-empty">No imported dispatches yet.</p>
-          ) : (
-            <ul className="home-rank-list">
-              {topImportedTotal.map((customer, index) => {
-                const volume = Number(customer.volume) || 0;
-                const width =
-                  maxImportedTotal > 0 ? (volume / maxImportedTotal) * 100 : 0;
-                return (
-                  <li key={customer.id}>
-                    <div className="home-rank-row home-rank-row-static">
-                      <span className="home-rank-index">{index + 1}</span>
-                      <span className="home-rank-main">
-                        <span className="home-rank-title">{customer.name}</span>
-                        <span className="home-inline-bar" aria-hidden="true">
-                          <span style={{ width: `${width}%` }} />
-                        </span>
-                      </span>
-                      <span className="home-rank-metric">
-                        <span className="home-rank-metric-value">
-                          {formatQty(customer.volume)}
-                        </span>
-                        <span className="home-rank-metric-label">
-                          total volume
-                        </span>
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-      </div>
-
-      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
-        <section className="home-panel">
-          <div className="home-panel-head">
-            <div>
               <p className="home-eyebrow">PO − SO balances</p>
               <h2 className="home-panel-title">Domestic Coal Stock</h2>
             </div>
@@ -556,143 +479,75 @@ export default async function HomePage() {
           <h2 className="home-section-title">Reports</h2>
         </div>
         <div className="home-report-grid">
-          <Link href="/reports/master-dispatch" className="home-report-card">
-            <p className="home-eyebrow">Dispatches</p>
-            <h3 className="home-report-card-title">Master dispatch report</h3>
-            <p className="home-report-card-desc">
-              Purchase, sale, freight, and basic-rate profit for every
-              dispatch.
-            </p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
-          <Link href="/reports/customer-analysis" className="home-report-card">
-            <p className="home-eyebrow">Customers</p>
-            <h3 className="home-report-card-title">Customer analysis</h3>
-            <p className="home-report-card-desc">
-              Buy and sell metrics, balance, margin, and dispatch profit per
-              customer.
-            </p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
-          <Link href="/reports/sales" className="home-report-card">
-            <p className="home-eyebrow">Sales</p>
-            <h3 className="home-report-card-title">Sales Engine Report</h3>
-            <p className="home-report-card-desc">
-              Purchaser contacts, order in hand, sold volume, and planned sales
-              calls.
-            </p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
-          <Link href="/reports/transport" className="home-report-card">
-            <p className="home-eyebrow">Transport</p>
-            <h3 className="home-report-card-title">Transport Engine Report</h3>
-            <p className="home-report-card-desc">
-              Dispatch freight, weight diffs, and transport document checklist.
-            </p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
-          <Link href="/reports/vessel" className="home-report-card">
-            <p className="home-eyebrow">Vessel</p>
-            <h3 className="home-report-card-title">Vessel Report</h3>
-            <p className="home-report-card-desc">
-              Order, dispatch, closing, and balance quantities by vessel, with
-              linked purchase orders.
-            </p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
-          <Link href="/reports/product" className="home-report-card">
-            <p className="home-eyebrow">Product</p>
-            <h3 className="home-report-card-title">Quality Report</h3>
-            <p className="home-report-card-desc">
-              PO and SO balances by quality class, with unsold stock and vessel
-              breakdown.
-            </p>
-            <span className="home-report-card-cta">Open report</span>
-          </Link>
+          <HomeReportCard
+            href="/reports/master-dispatch"
+            allowed={canOpen("/reports/master-dispatch")}
+            eyebrow="Dispatches"
+            title="Master dispatch report"
+            desc="Purchase, sale, freight, and basic-rate profit for every dispatch."
+          />
+          <HomeReportCard
+            href="/reports/customer-analysis"
+            allowed={canOpen("/reports/customer-analysis")}
+            eyebrow="Customers"
+            title="Customer analysis"
+            desc="Buy and sell metrics, balance, margin, and dispatch profit per customer."
+          />
+          <HomeReportCard
+            href="/reports/sales"
+            allowed={canOpen("/reports/sales")}
+            eyebrow="Sales"
+            title="Sales Engine Report"
+            desc="Purchaser contacts, order in hand, sold volume, and planned sales calls."
+          />
+          <HomeReportCard
+            href="/reports/transport"
+            allowed={canOpen("/reports/transport")}
+            eyebrow="Transport"
+            title="Transport Engine Report"
+            desc="Dispatch freight, weight diffs, and transport document checklist."
+          />
+          <HomeReportCard
+            href="/reports/vessel"
+            allowed={canOpen("/reports/vessel")}
+            eyebrow="Vessel"
+            title="Vessel Report"
+            desc="Order, dispatch, closing, and balance quantities by vessel, with linked purchase orders."
+          />
+          <HomeReportCard
+            href="/reports/product"
+            allowed={canOpen("/reports/product")}
+            eyebrow="Product"
+            title="Quality Report"
+            desc="PO and SO balances by quality class, with unsold stock and vessel breakdown."
+          />
         </div>
       </section>
-
-      <div className="home-grid">
-        <section className="home-panel">
-          <div className="home-panel-head">
-            <div>
-              <p className="home-eyebrow">Largest balance first · top 10</p>
-              <h2 className="home-panel-title">Top Domestic Coal</h2>
-            </div>
-            <Link href="/orders?status=RUNNING" className="home-panel-link">
-              View all
-            </Link>
-          </div>
-
-          {pendingDomesticOrders.length === 0 ? (
-            <p className="home-empty">No pending domestic orders right now.</p>
-          ) : (
-            <ul className="home-rank-list">
-              {pendingDomesticOrders.map((order, index) => (
-                <li key={order.id}>
-                  <Link href={`/orders/${order.id}`} className="home-rank-row">
-                    <span className="home-rank-index">{index + 1}</span>
-                    <span className="home-rank-main">
-                      <span className="home-rank-title">{order.customerName}</span>
-                      <span className="home-rank-meta">
-                        {order.poNumber}
-                        <span className="home-dot" />
-                        Running
-                      </span>
-                    </span>
-                    <span className="home-rank-metric">
-                      <span className="home-rank-metric-value">
-                        {formatQty(order.balance)}
-                      </span>
-                      <span className="home-rank-metric-label">balance</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="home-panel">
-          <div className="home-panel-head">
-            <div>
-              <p className="home-eyebrow">Largest balance first · top 10</p>
-              <h2 className="home-panel-title">Top Imported Coal</h2>
-            </div>
-            <Link href="/orders?status=RUNNING" className="home-panel-link">
-              View all
-            </Link>
-          </div>
-
-          {pendingImportedOrders.length === 0 ? (
-            <p className="home-empty">No pending imported orders right now.</p>
-          ) : (
-            <ul className="home-rank-list">
-              {pendingImportedOrders.map((order, index) => (
-                <li key={order.id}>
-                  <Link href={`/orders/${order.id}`} className="home-rank-row">
-                    <span className="home-rank-index">{index + 1}</span>
-                    <span className="home-rank-main">
-                      <span className="home-rank-title">{order.customerName}</span>
-                      <span className="home-rank-meta">
-                        {order.poNumber}
-                        <span className="home-dot" />
-                        Running
-                      </span>
-                    </span>
-                    <span className="home-rank-metric">
-                      <span className="home-rank-metric-value">
-                        {formatQty(order.balance)}
-                      </span>
-                      <span className="home-rank-metric-label">balance</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
     </div>
+  );
+}
+
+function HomeReportCard({
+  href,
+  allowed,
+  eyebrow,
+  title,
+  desc,
+}: {
+  href: string;
+  allowed: boolean;
+  eyebrow: string;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <LockedLink href={href} allowed={allowed} className="home-report-card">
+      <p className="home-eyebrow">{eyebrow}</p>
+      <h3 className="home-report-card-title">{title}</h3>
+      <p className="home-report-card-desc">{desc}</p>
+      <span className="home-report-card-cta">
+        {allowed ? "Open report" : "No access"}
+      </span>
+    </LockedLink>
   );
 }

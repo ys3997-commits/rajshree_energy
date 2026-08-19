@@ -126,6 +126,8 @@ exports.Prisma.StaffScalarFieldEnum = {
   id: 'id',
   name: 'name',
   role: 'role',
+  passwordHash: 'passwordHash',
+  pageKeys: 'pageKeys',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

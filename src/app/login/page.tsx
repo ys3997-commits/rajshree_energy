@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { signInWithStaffPassword, signOutStaff } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -23,15 +24,30 @@ export default function LoginPage() {
       password,
     });
 
-    setLoading(false);
-
-    if (signInError) {
-      setError(signInError.message);
+    if (!signInError) {
+      await signOutStaff();
+      setLoading(false);
+      router.push("/");
+      router.refresh();
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    const staff = await signInWithStaffPassword(password);
+    setLoading(false);
+
+    if (staff.ok) {
+      await supabase.auth.signOut();
+      router.push(staff.href);
+      router.refresh();
+      return;
+    }
+
+    if ("reason" in staff && staff.reason === "no-pages") {
+      setError("This login has no pages assigned. Ask the owner to grant access.");
+      return;
+    }
+
+    setError("Invalid email or password");
   }
 
   return (
@@ -48,7 +64,7 @@ export default function LoginPage() {
             style={{ height: 48, maxWidth: 220 }}
           />
         </div>
-        <p className="lede">Trading desk access for the team.</p>
+        <p className="lede">Sign in with your email and password.</p>
 
         {error && <div className="error-box">{error}</div>}
 

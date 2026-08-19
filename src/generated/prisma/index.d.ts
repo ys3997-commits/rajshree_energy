@@ -2841,6 +2841,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     role: string | null
+    passwordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2849,6 +2850,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     role: string | null
+    passwordHash: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -2857,6 +2859,8 @@ export namespace Prisma {
     id: number
     name: number
     role: number
+    passwordHash: number
+    pageKeys: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -2867,6 +2871,7 @@ export namespace Prisma {
     id?: true
     name?: true
     role?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2875,6 +2880,7 @@ export namespace Prisma {
     id?: true
     name?: true
     role?: true
+    passwordHash?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -2883,6 +2889,8 @@ export namespace Prisma {
     id?: true
     name?: true
     role?: true
+    passwordHash?: true
+    pageKeys?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2964,6 +2972,8 @@ export namespace Prisma {
     id: string
     name: string
     role: string | null
+    passwordHash: string | null
+    pageKeys: string[]
     createdAt: Date
     updatedAt: Date
     _count: StaffCountAggregateOutputType | null
@@ -2989,6 +2999,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     role?: boolean
+    passwordHash?: boolean
+    pageKeys?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
@@ -3000,6 +3012,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     role?: boolean
+    passwordHash?: boolean
+    pageKeys?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["staff"]>
@@ -3008,6 +3022,8 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     role?: boolean
+    passwordHash?: boolean
+    pageKeys?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -3029,6 +3045,14 @@ export namespace Prisma {
       id: string
       name: string
       role: string | null
+      /**
+       * Set when this person may log in. Owner uses Supabase instead.
+       */
+      passwordHash: string | null
+      /**
+       * Page keys this person may open. Ignored for the owner account.
+       */
+      pageKeys: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["staff"]>
@@ -3429,6 +3453,8 @@ export namespace Prisma {
     readonly id: FieldRef<"Staff", 'String'>
     readonly name: FieldRef<"Staff", 'String'>
     readonly role: FieldRef<"Staff", 'String'>
+    readonly passwordHash: FieldRef<"Staff", 'String'>
+    readonly pageKeys: FieldRef<"Staff", 'String[]'>
     readonly createdAt: FieldRef<"Staff", 'DateTime'>
     readonly updatedAt: FieldRef<"Staff", 'DateTime'>
   }
@@ -21444,6 +21470,8 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     role: 'role',
+    passwordHash: 'passwordHash',
+    pageKeys: 'pageKeys',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -21960,6 +21988,8 @@ export namespace Prisma {
     id?: StringFilter<"Staff"> | string
     name?: StringFilter<"Staff"> | string
     role?: StringNullableFilter<"Staff"> | string | null
+    passwordHash?: StringNullableFilter<"Staff"> | string | null
+    pageKeys?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
@@ -21970,6 +22000,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     role?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
+    pageKeys?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealByCustomers?: CustomerOrderByRelationAggregateInput
@@ -21983,6 +22015,8 @@ export namespace Prisma {
     NOT?: StaffWhereInput | StaffWhereInput[]
     name?: StringFilter<"Staff"> | string
     role?: StringNullableFilter<"Staff"> | string | null
+    passwordHash?: StringNullableFilter<"Staff"> | string | null
+    pageKeys?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
@@ -21993,6 +22027,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     role?: SortOrderInput | SortOrder
+    passwordHash?: SortOrderInput | SortOrder
+    pageKeys?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: StaffCountOrderByAggregateInput
@@ -22007,6 +22043,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Staff"> | string
     name?: StringWithAggregatesFilter<"Staff"> | string
     role?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    passwordHash?: StringNullableWithAggregatesFilter<"Staff"> | string | null
+    pageKeys?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
   }
@@ -23434,6 +23472,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -23444,6 +23484,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -23454,6 +23496,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -23464,6 +23508,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -23474,6 +23520,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -23482,6 +23530,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -23490,6 +23540,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25091,6 +25143,14 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type StringNullableListFilter<$PrismaModel = never> = {
+    equals?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    has?: string | StringFieldRefInput<$PrismaModel> | null
+    hasEvery?: string[] | ListStringFieldRefInput<$PrismaModel>
+    hasSome?: string[] | ListStringFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
@@ -25131,6 +25191,8 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     role?: SortOrder
+    passwordHash?: SortOrder
+    pageKeys?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25139,6 +25201,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     role?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25147,6 +25210,7 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     role?: SortOrder
+    passwordHash?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -26343,6 +26407,10 @@ export namespace Prisma {
     _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
+  export type StaffCreatepageKeysInput = {
+    set: string[]
+  }
+
   export type CustomerCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -26377,6 +26445,11 @@ export namespace Prisma {
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type StaffUpdatepageKeysInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -29030,6 +29103,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutOrderByInput
@@ -29039,6 +29114,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
@@ -29290,6 +29367,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutOrderByNestedInput
@@ -29299,6 +29378,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
@@ -29723,6 +29804,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -29732,6 +29815,8 @@ export namespace Prisma {
     id?: string
     name: string
     role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -29958,6 +30043,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -29967,6 +30054,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput

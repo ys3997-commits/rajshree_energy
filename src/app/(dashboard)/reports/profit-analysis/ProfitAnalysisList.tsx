@@ -143,8 +143,9 @@ export function ProfitAnalysisList({
           </p>
           <h1 className="page-title">Profit analysis</h1>
           <p className="page-subtitle">
-            Day-wise dispatched quantity and basic-rate profit, split by
-            domestic and imported quality.
+            Day-wise dispatched quantity and profit, split by domestic and
+            imported quality. Discounts received add to profit; discounts paid
+            subtract.
           </p>
         </div>
         <div className="detail-stat-row">
@@ -224,13 +225,17 @@ export function ProfitAnalysisList({
         />
       </div>
       <p className="filter-hint">
-        Dates group dispatches by day. Profit uses basic sale minus basic
-        purchase (FOR subtracts freight). Domestic / imported follows quality
-        class (purchase, then vessel, then sale order).
+        Dates group dispatches and payment discounts by day. Profit uses basic
+        sale minus basic purchase (FOR subtracts freight), plus discount
+        received minus discount paid. Domestic / imported follows quality class
+        for dispatches (purchase, then vessel, then sale order) and coal origin
+        for discounts.
       </p>
 
       {filtered.length === 0 ? (
-        <p className="home-empty">No dispatches match your filter.</p>
+        <p className="home-empty">
+          No dispatches or discounts match your filter.
+        </p>
       ) : (
         <div className="table-wrap">
           <table className="data">

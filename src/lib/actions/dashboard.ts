@@ -4,11 +4,10 @@ import {
   CoalOrigin,
   CustomerCategory,
   DispatchTerms,
-  OrderStatus,
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
-import { lineProfit, withOrderComputed } from "@/lib/domain/computations";
+import { lineProfit } from "@/lib/domain/computations";
 import {
   computeOverdue,
   discountDueDelta,
@@ -69,6 +68,7 @@ function addCalendarDays(isoDay: string, days: number): string {
 
 export type HomeTodayKpis = {
   date: string;
+  todayDate: string;
   dispatchedQuantity: string;
   profit: string;
   fundReceived: string;
@@ -77,9 +77,11 @@ export type HomeTodayKpis = {
 /**
  * Yesterday's KPIs for the Home strip. "Yesterday" is the previous India
  * calendar day; dispatch/payment rows use that UTC date (same window as reports).
+ * `todayDate` is India today (used for the overdue tile).
  */
 export async function getHomeTodayKpis(): Promise<HomeTodayKpis> {
-  const date = addCalendarDays(homeBusinessDayKey(), -1);
+  const todayDate = homeBusinessDayKey();
+  const date = addCalendarDays(todayDate, -1);
   const range = utcDayRange(date);
 
   const [dispatches, fundAgg] = await Promise.all([
@@ -118,9 +120,35 @@ export async function getHomeTodayKpis(): Promise<HomeTodayKpis> {
 
   return {
     date,
+    todayDate,
     dispatchedQuantity: dispatchedQuantity.toString(),
     profit: profit.toDecimalPlaces(2).toString(),
     fundReceived: (fundAgg._sum.amount ?? new Decimal(0)).toString(),
+  };
+}
+
+export type HomeLatestActivity = {
+  purchaseSalesDate: string | null;
+  paymentDate: string | null;
+  discountDate: string | null;
+};
+
+/** Latest calendar dates entered for dispatch, bank, and discount. */
+export async function getHomeLatestActivity(): Promise<HomeLatestActivity> {
+  const [dispatchAgg, paymentAgg, discountAgg] = await Promise.all([
+    prisma.dispatch.aggregate({ _max: { dispatchDate: true } }),
+    prisma.payment.aggregate({ _max: { date: true } }),
+    prisma.discount.aggregate({ _max: { date: true } }),
+  ]);
+
+  return {
+    purchaseSalesDate: dispatchAgg._max.dispatchDate
+      ? utcDayKey(dispatchAgg._max.dispatchDate)
+      : null,
+    paymentDate: paymentAgg._max.date ? utcDayKey(paymentAgg._max.date) : null,
+    discountDate: discountAgg._max.date
+      ? utcDayKey(discountAgg._max.date)
+      : null,
   };
 }
 
@@ -582,73 +610,6 @@ export async function getHomeOverdueCharts(): Promise<{
   return { days };
 }
 
-export type PendingOrderRank = {
-  id: string;
-  poNumber: string;
-  customerName: string;
-  balance: string;
-  quantity: string;
-  dispatched: string;
-  orderStatus: OrderStatus;
-};
-
-/**
- * Top pending sale orders by remaining balance, split by domestic vs imported
- * quality on the order.
- */
-export async function getTopPendingOrdersByCoalOrigin(limit = 10): Promise<{
-  domestic: PendingOrderRank[];
-  imported: PendingOrderRank[];
-}> {
-  const rows = await prisma.order.findMany({
-    where: {
-      orderStatus: OrderStatus.RUNNING,
-      quantity: { not: null },
-    },
-    include: {
-      customer: { select: { id: true, name: true } },
-      qualityClass: { select: { domestic: true } },
-    },
-  });
-
-  const mapped = rows
-    .map((o) => {
-      const computed = withOrderComputed(o);
-      return {
-        id: o.id,
-        poNumber: o.poNumber,
-        customerName: o.customer.name,
-        balance: computed.balanceOrder,
-        quantity: o.quantity!,
-        dispatched: o.dispatchedOrder,
-        orderStatus: o.orderStatus,
-        domestic: o.qualityClass?.domestic === true,
-      };
-    })
-    .filter((o) => o.balance != null && o.balance.gt(0));
-
-  function toTop(domestic: boolean): PendingOrderRank[] {
-    return mapped
-      .filter((o) => o.domestic === domestic)
-      .sort((a, b) => b.balance!.comparedTo(a.balance!))
-      .slice(0, limit)
-      .map((o) => ({
-        id: o.id,
-        poNumber: o.poNumber,
-        customerName: o.customerName,
-        balance: o.balance!.toString(),
-        quantity: o.quantity.toString(),
-        dispatched: o.dispatched.toString(),
-        orderStatus: o.orderStatus,
-      }));
-  }
-
-  return {
-    domestic: toTop(true),
-    imported: toTop(false),
-  };
-}
-
 export type TopCustomerVolume = {
   id: string;
   name: string;
@@ -689,18 +650,17 @@ function addCustomerVolume(
 }
 
 /**
- * Top customers by dispatch volume, split by domestic vs imported quality.
- * Returns last-30-day rankings and all-time (total) rankings.
+ * Top customers by dispatch volume in the last 30 days, split by domestic vs
+ * imported quality.
  */
 export async function getTopCustomersByCoalOrigin(limit = 7): Promise<{
   last30: { domestic: TopCustomerVolume[]; imported: TopCustomerVolume[] };
-  total: { domestic: TopCustomerVolume[]; imported: TopCustomerVolume[] };
 }> {
   const since30 = addDays(startOfLocalDay(new Date()), -30);
 
   const rows = await prisma.dispatch.findMany({
+    where: { dispatchDate: { gte: since30 } },
     select: {
-      dispatchDate: true,
       dispatchedQuantity: true,
       purchaseOrder: {
         select: { qualityClass: { select: { domestic: true } } },
@@ -719,8 +679,6 @@ export async function getTopCustomersByCoalOrigin(limit = 7): Promise<{
 
   const last30Domestic = new Map<string, CustomerVolumeAgg>();
   const last30Imported = new Map<string, CustomerVolumeAgg>();
-  const totalDomestic = new Map<string, CustomerVolumeAgg>();
-  const totalImported = new Map<string, CustomerVolumeAgg>();
 
   for (const row of rows) {
     const customer = row.order.customer;
@@ -729,23 +687,14 @@ export async function getTopCustomersByCoalOrigin(limit = 7): Promise<{
       row.vessel.qualityClass,
       row.order.qualityClass,
     );
-    const totalMap = isDomestic ? totalDomestic : totalImported;
-    addCustomerVolume(totalMap, customer, row.dispatchedQuantity);
-
-    if (startOfLocalDay(row.dispatchDate) >= since30) {
-      const last30Map = isDomestic ? last30Domestic : last30Imported;
-      addCustomerVolume(last30Map, customer, row.dispatchedQuantity);
-    }
+    const last30Map = isDomestic ? last30Domestic : last30Imported;
+    addCustomerVolume(last30Map, customer, row.dispatchedQuantity);
   }
 
   return {
     last30: {
       domestic: toTopCustomerVolumes(last30Domestic, limit),
       imported: toTopCustomerVolumes(last30Imported, limit),
-    },
-    total: {
-      domestic: toTopCustomerVolumes(totalDomestic, limit),
-      imported: toTopCustomerVolumes(totalImported, limit),
     },
   };
 }

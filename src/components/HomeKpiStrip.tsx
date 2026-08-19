@@ -20,36 +20,36 @@ export function HomeKpiStrip({
 }: Props) {
   const tiles = [
     {
-      label: "Dispatched MT",
+      label: "Yesterday's dispatched MT",
       value: formatDispatchMt(dispatchedQuantity),
       href: `/reports/master-dispatch?dateFrom=${date}&dateTo=${date}`,
     },
     {
-      label: "Profit",
+      label: "Yesterday's profit",
       value: formatRs(profit),
       href: `/reports/profit-analysis?dateFrom=${date}&dateTo=${date}`,
     },
     {
-      label: "Fund received",
+      label: "Yesterday's fund received",
       value: formatRs(fundReceived),
       href: "/payments",
     },
     {
-      label: "Overdue",
+      label: "Today's overdue",
       value: formatRs(overdue),
       href: "/reports/collection",
     },
     {
-      label: "Unsold stock",
+      label: "Today's unsold stock",
       value: formatDispatchMt(unsoldQuantity),
       href: "/reports/product",
     },
   ];
 
   return (
-    <section className="home-section" aria-label="Yesterday">
+    <section className="home-section" aria-label="Key Information">
       <div className="home-section-head">
-        <h2 className="home-section-title">Yesterday</h2>
+        <h2 className="home-section-title">Key Information</h2>
       </div>
       <div className="home-kpi-row">
         {tiles.map((tile) => (

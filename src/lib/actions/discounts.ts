@@ -163,6 +163,7 @@ function revalidateDiscountPaths(party?: PaymentParty) {
   revalidatePath("/customers");
   revalidatePath("/reports/collection");
   revalidatePath("/reports/collection/vendor");
+  revalidatePath("/reports/profit-analysis");
   if (!party || party.kind === "transporter") {
     revalidatePath("/transporters");
     revalidatePath("/reports/transport/due");

@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import type { Access } from "@/lib/auth/types";
+import { canAccessPath } from "@/lib/auth/pages";
+import { LockedLink } from "@/components/LockedLink";
 import { LogoutButton } from "@/components/LogoutButton";
 
 const links = [
@@ -99,7 +101,7 @@ function needsExactChildMatch(group: ReportGroup, href: string) {
   );
 }
 
-export function AppNav() {
+export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }) {
   const pathname = usePathname();
   const [reportOpen, setReportOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
@@ -107,6 +109,7 @@ export function AppNav() {
   const reportRef = useRef<HTMLDivElement>(null);
   const reportActive =
     pathname === "/reports" || pathname.startsWith("/reports/");
+  const allowed = (href: string) => canAccessPath(access.pageKeys, href);
 
   useEffect(() => {
     setReportOpen(false);
@@ -156,13 +159,14 @@ export function AppNav() {
             {beforeOptions.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
-                <Link
+                <LockedLink
                   key={link.href}
                   href={link.href}
+                  allowed={allowed(link.href)}
                   className={active ? "active" : undefined}
                 >
                   {link.label}
-                </Link>
+                </LockedLink>
               );
             })}
 
@@ -227,9 +231,10 @@ export function AppNav() {
                               needsExactChildMatch(item, child.href),
                             );
                             return (
-                              <Link
+                              <LockedLink
                                 key={child.href}
                                 href={child.href}
+                                allowed={allowed(child.href)}
                                 role="menuitem"
                                 className={active ? "active" : undefined}
                                 onClick={() => {
@@ -238,7 +243,7 @@ export function AppNav() {
                                 }}
                               >
                                 {child.label}
-                              </Link>
+                              </LockedLink>
                             );
                           })}
                         </div>
@@ -248,9 +253,10 @@ export function AppNav() {
 
                   const active = isActivePath(pathname, item.href);
                   return (
-                    <Link
+                    <LockedLink
                       key={item.href}
                       href={item.href}
+                      allowed={allowed(item.href)}
                       role="menuitem"
                       className={active ? "active" : undefined}
                       onClick={() => {
@@ -260,7 +266,7 @@ export function AppNav() {
                       onMouseEnter={() => setOpenSubmenu(null)}
                     >
                       {item.label}
-                    </Link>
+                    </LockedLink>
                   );
                 })}
               </div>
@@ -269,18 +275,22 @@ export function AppNav() {
             {afterReport.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
-                <Link
+                <LockedLink
                   key={link.href}
                   href={link.href}
+                  allowed={allowed(link.href)}
                   className={active ? "active" : undefined}
                 >
                   {link.label}
-                </Link>
+                </LockedLink>
               );
             })}
           </nav>
         </div>
-        <LogoutButton />
+        <div className="app-header-user">
+          <span className="app-header-who">{access.name}</span>
+          <LogoutButton />
+        </div>
       </div>
     </header>
   );

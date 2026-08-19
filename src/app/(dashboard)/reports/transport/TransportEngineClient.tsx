@@ -329,7 +329,7 @@ export function TransportEngineClient({
         />
       </form>
 
-      <div className="table-wrap table-wrap-scroll">
+      <div className="table-wrap transport-engine-table-wrap">
         <table className="data payments-table transport-engine-table">
           <thead>
             <tr>

@@ -45,7 +45,13 @@ export default async function OptionsPage() {
       cities={cities}
       states={states}
       sectors={sectors}
-      people={people}
+      people={people.map((row) => ({
+        id: row.id,
+        name: row.name,
+        role: row.role,
+        hasLogin: row.hasLogin,
+        pageKeys: row.pageKeys,
+      }))}
       dealingCompanies={dealingCompanies}
     />
   );
