@@ -103,6 +103,11 @@ export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
  * Discount received from or paid to a customer or transporter.
  */
 export type Discount = $Result.DefaultSelection<Prisma.$DiscountPayload>
+/**
+ * Model Bill
+ * Staff-uploaded bill awaiting owner approval.
+ */
+export type Bill = $Result.DefaultSelection<Prisma.$BillPayload>
 
 /**
  * Enums
@@ -180,6 +185,15 @@ export const CoalOrigin: {
 
 export type CoalOrigin = (typeof CoalOrigin)[keyof typeof CoalOrigin]
 
+
+export const BillStatus: {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus]
+
 }
 
 export type CustomerCategory = $Enums.CustomerCategory
@@ -217,6 +231,10 @@ export const DiscountStatus: typeof $Enums.DiscountStatus
 export type CoalOrigin = $Enums.CoalOrigin
 
 export const CoalOrigin: typeof $Enums.CoalOrigin
+
+export type BillStatus = $Enums.BillStatus
+
+export const BillStatus: typeof $Enums.BillStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -520,6 +538,16 @@ export class PrismaClient<
     * ```
     */
   get discount(): Prisma.DiscountDelegate<ExtArgs>;
+
+  /**
+   * `prisma.bill`: Exposes CRUD operations for the **Bill** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Bills
+    * const bills = await prisma.bill.findMany()
+    * ```
+    */
+  get bill(): Prisma.BillDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -978,7 +1006,8 @@ export namespace Prisma {
     PurchaseOrder: 'PurchaseOrder',
     Dispatch: 'Dispatch',
     Payment: 'Payment',
-    Discount: 'Discount'
+    Discount: 'Discount',
+    Bill: 'Bill'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -994,7 +1023,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "bill"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2258,6 +2287,76 @@ export namespace Prisma {
           }
         }
       }
+      Bill: {
+        payload: Prisma.$BillPayload<ExtArgs>
+        fields: Prisma.BillFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BillFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BillFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>
+          }
+          findFirst: {
+            args: Prisma.BillFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BillFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>
+          }
+          findMany: {
+            args: Prisma.BillFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>[]
+          }
+          create: {
+            args: Prisma.BillCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>
+          }
+          createMany: {
+            args: Prisma.BillCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BillCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>[]
+          }
+          delete: {
+            args: Prisma.BillDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>
+          }
+          update: {
+            args: Prisma.BillUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>
+          }
+          deleteMany: {
+            args: Prisma.BillDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BillUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BillUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillPayload>
+          }
+          aggregate: {
+            args: Prisma.BillAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBill>
+          }
+          groupBy: {
+            args: Prisma.BillGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BillGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BillCountArgs<ExtArgs>
+            result: $Utils.Optional<BillCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2421,11 +2520,13 @@ export namespace Prisma {
   export type StaffCountOutputType = {
     dealByCustomers: number
     orders: number
+    bills: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealByCustomers?: boolean | StaffCountOutputTypeCountDealByCustomersArgs
     orders?: boolean | StaffCountOutputTypeCountOrdersArgs
+    bills?: boolean | StaffCountOutputTypeCountBillsArgs
   }
 
   // Custom InputTypes
@@ -2451,6 +2552,13 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountBillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillWhereInput
   }
 
 
@@ -3005,6 +3113,7 @@ export namespace Prisma {
     updatedAt?: boolean
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
     orders?: boolean | Staff$ordersArgs<ExtArgs>
+    bills?: boolean | Staff$billsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -3031,6 +3140,7 @@ export namespace Prisma {
   export type StaffInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
     orders?: boolean | Staff$ordersArgs<ExtArgs>
+    bills?: boolean | Staff$billsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StaffIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3040,6 +3150,7 @@ export namespace Prisma {
     objects: {
       dealByCustomers: Prisma.$CustomerPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      bills: Prisma.$BillPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3421,6 +3532,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     dealByCustomers<T extends Staff$dealByCustomersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$dealByCustomersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany"> | Null>
     orders<T extends Staff$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany"> | Null>
+    bills<T extends Staff$billsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3808,6 +3920,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.bills
+   */
+  export type Staff$billsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    where?: BillWhereInput
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    cursor?: BillWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
   }
 
   /**
@@ -21453,6 +21585,1029 @@ export namespace Prisma {
 
 
   /**
+   * Model Bill
+   */
+
+  export type AggregateBill = {
+    _count: BillCountAggregateOutputType | null
+    _min: BillMinAggregateOutputType | null
+    _max: BillMaxAggregateOutputType | null
+  }
+
+  export type BillMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    remark: string | null
+    fileName: string | null
+    fileMime: string | null
+    fileData: Buffer | null
+    status: $Enums.BillStatus | null
+    reviewRemark: string | null
+    reviewedAt: Date | null
+    staffId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BillMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    remark: string | null
+    fileName: string | null
+    fileMime: string | null
+    fileData: Buffer | null
+    status: $Enums.BillStatus | null
+    reviewRemark: string | null
+    reviewedAt: Date | null
+    staffId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BillCountAggregateOutputType = {
+    id: number
+    date: number
+    remark: number
+    fileName: number
+    fileMime: number
+    fileData: number
+    status: number
+    reviewRemark: number
+    reviewedAt: number
+    staffId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BillMinAggregateInputType = {
+    id?: true
+    date?: true
+    remark?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    status?: true
+    reviewRemark?: true
+    reviewedAt?: true
+    staffId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BillMaxAggregateInputType = {
+    id?: true
+    date?: true
+    remark?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    status?: true
+    reviewRemark?: true
+    reviewedAt?: true
+    staffId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BillCountAggregateInputType = {
+    id?: true
+    date?: true
+    remark?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    status?: true
+    reviewRemark?: true
+    reviewedAt?: true
+    staffId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BillAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Bill to aggregate.
+     */
+    where?: BillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bills to fetch.
+     */
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bills.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Bills
+    **/
+    _count?: true | BillCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BillMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BillMaxAggregateInputType
+  }
+
+  export type GetBillAggregateType<T extends BillAggregateArgs> = {
+        [P in keyof T & keyof AggregateBill]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBill[P]>
+      : GetScalarType<T[P], AggregateBill[P]>
+  }
+
+
+
+
+  export type BillGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillWhereInput
+    orderBy?: BillOrderByWithAggregationInput | BillOrderByWithAggregationInput[]
+    by: BillScalarFieldEnum[] | BillScalarFieldEnum
+    having?: BillScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BillCountAggregateInputType | true
+    _min?: BillMinAggregateInputType
+    _max?: BillMaxAggregateInputType
+  }
+
+  export type BillGroupByOutputType = {
+    id: string
+    date: Date
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status: $Enums.BillStatus
+    reviewRemark: string
+    reviewedAt: Date | null
+    staffId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: BillCountAggregateOutputType | null
+    _min: BillMinAggregateOutputType | null
+    _max: BillMaxAggregateOutputType | null
+  }
+
+  type GetBillGroupByPayload<T extends BillGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BillGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BillGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BillGroupByOutputType[P]>
+            : GetScalarType<T[P], BillGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    remark?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    status?: boolean
+    reviewRemark?: boolean
+    reviewedAt?: boolean
+    staffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    staff?: boolean | StaffDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bill"]>
+
+  export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    remark?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    status?: boolean
+    reviewRemark?: boolean
+    reviewedAt?: boolean
+    staffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    staff?: boolean | StaffDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bill"]>
+
+  export type BillSelectScalar = {
+    id?: boolean
+    date?: boolean
+    remark?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    status?: boolean
+    reviewRemark?: boolean
+    reviewedAt?: boolean
+    staffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    staff?: boolean | StaffDefaultArgs<ExtArgs>
+  }
+  export type BillIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    staff?: boolean | StaffDefaultArgs<ExtArgs>
+  }
+
+  export type $BillPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Bill"
+    objects: {
+      staff: Prisma.$StaffPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      /**
+       * Staff remark written at upload.
+       */
+      remark: string
+      fileName: string
+      fileMime: string
+      fileData: Buffer
+      status: $Enums.BillStatus
+      /**
+       * Owner remark written when approving or rejecting.
+       */
+      reviewRemark: string
+      reviewedAt: Date | null
+      staffId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["bill"]>
+    composites: {}
+  }
+
+  type BillGetPayload<S extends boolean | null | undefined | BillDefaultArgs> = $Result.GetResult<Prisma.$BillPayload, S>
+
+  type BillCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BillFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BillCountAggregateInputType | true
+    }
+
+  export interface BillDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Bill'], meta: { name: 'Bill' } }
+    /**
+     * Find zero or one Bill that matches the filter.
+     * @param {BillFindUniqueArgs} args - Arguments to find a Bill
+     * @example
+     * // Get one Bill
+     * const bill = await prisma.bill.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BillFindUniqueArgs>(args: SelectSubset<T, BillFindUniqueArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Bill that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BillFindUniqueOrThrowArgs} args - Arguments to find a Bill
+     * @example
+     * // Get one Bill
+     * const bill = await prisma.bill.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BillFindUniqueOrThrowArgs>(args: SelectSubset<T, BillFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Bill that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFindFirstArgs} args - Arguments to find a Bill
+     * @example
+     * // Get one Bill
+     * const bill = await prisma.bill.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BillFindFirstArgs>(args?: SelectSubset<T, BillFindFirstArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Bill that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFindFirstOrThrowArgs} args - Arguments to find a Bill
+     * @example
+     * // Get one Bill
+     * const bill = await prisma.bill.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BillFindFirstOrThrowArgs>(args?: SelectSubset<T, BillFindFirstOrThrowArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Bills that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Bills
+     * const bills = await prisma.bill.findMany()
+     * 
+     * // Get first 10 Bills
+     * const bills = await prisma.bill.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const billWithIdOnly = await prisma.bill.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BillFindManyArgs>(args?: SelectSubset<T, BillFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Bill.
+     * @param {BillCreateArgs} args - Arguments to create a Bill.
+     * @example
+     * // Create one Bill
+     * const Bill = await prisma.bill.create({
+     *   data: {
+     *     // ... data to create a Bill
+     *   }
+     * })
+     * 
+     */
+    create<T extends BillCreateArgs>(args: SelectSubset<T, BillCreateArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Bills.
+     * @param {BillCreateManyArgs} args - Arguments to create many Bills.
+     * @example
+     * // Create many Bills
+     * const bill = await prisma.bill.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BillCreateManyArgs>(args?: SelectSubset<T, BillCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Bills and returns the data saved in the database.
+     * @param {BillCreateManyAndReturnArgs} args - Arguments to create many Bills.
+     * @example
+     * // Create many Bills
+     * const bill = await prisma.bill.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Bills and only return the `id`
+     * const billWithIdOnly = await prisma.bill.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BillCreateManyAndReturnArgs>(args?: SelectSubset<T, BillCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Bill.
+     * @param {BillDeleteArgs} args - Arguments to delete one Bill.
+     * @example
+     * // Delete one Bill
+     * const Bill = await prisma.bill.delete({
+     *   where: {
+     *     // ... filter to delete one Bill
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BillDeleteArgs>(args: SelectSubset<T, BillDeleteArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Bill.
+     * @param {BillUpdateArgs} args - Arguments to update one Bill.
+     * @example
+     * // Update one Bill
+     * const bill = await prisma.bill.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BillUpdateArgs>(args: SelectSubset<T, BillUpdateArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Bills.
+     * @param {BillDeleteManyArgs} args - Arguments to filter Bills to delete.
+     * @example
+     * // Delete a few Bills
+     * const { count } = await prisma.bill.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BillDeleteManyArgs>(args?: SelectSubset<T, BillDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Bills.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Bills
+     * const bill = await prisma.bill.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BillUpdateManyArgs>(args: SelectSubset<T, BillUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Bill.
+     * @param {BillUpsertArgs} args - Arguments to update or create a Bill.
+     * @example
+     * // Update or create a Bill
+     * const bill = await prisma.bill.upsert({
+     *   create: {
+     *     // ... data to create a Bill
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Bill we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BillUpsertArgs>(args: SelectSubset<T, BillUpsertArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Bills.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillCountArgs} args - Arguments to filter Bills to count.
+     * @example
+     * // Count the number of Bills
+     * const count = await prisma.bill.count({
+     *   where: {
+     *     // ... the filter for the Bills we want to count
+     *   }
+     * })
+    **/
+    count<T extends BillCountArgs>(
+      args?: Subset<T, BillCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BillCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Bill.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BillAggregateArgs>(args: Subset<T, BillAggregateArgs>): Prisma.PrismaPromise<GetBillAggregateType<T>>
+
+    /**
+     * Group by Bill.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BillGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BillGroupByArgs['orderBy'] }
+        : { orderBy?: BillGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BillGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBillGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Bill model
+   */
+  readonly fields: BillFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Bill.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    staff<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Bill model
+   */ 
+  interface BillFieldRefs {
+    readonly id: FieldRef<"Bill", 'String'>
+    readonly date: FieldRef<"Bill", 'DateTime'>
+    readonly remark: FieldRef<"Bill", 'String'>
+    readonly fileName: FieldRef<"Bill", 'String'>
+    readonly fileMime: FieldRef<"Bill", 'String'>
+    readonly fileData: FieldRef<"Bill", 'Bytes'>
+    readonly status: FieldRef<"Bill", 'BillStatus'>
+    readonly reviewRemark: FieldRef<"Bill", 'String'>
+    readonly reviewedAt: FieldRef<"Bill", 'DateTime'>
+    readonly staffId: FieldRef<"Bill", 'String'>
+    readonly createdAt: FieldRef<"Bill", 'DateTime'>
+    readonly updatedAt: FieldRef<"Bill", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Bill findUnique
+   */
+  export type BillFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * Filter, which Bill to fetch.
+     */
+    where: BillWhereUniqueInput
+  }
+
+  /**
+   * Bill findUniqueOrThrow
+   */
+  export type BillFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * Filter, which Bill to fetch.
+     */
+    where: BillWhereUniqueInput
+  }
+
+  /**
+   * Bill findFirst
+   */
+  export type BillFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * Filter, which Bill to fetch.
+     */
+    where?: BillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bills to fetch.
+     */
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Bills.
+     */
+    cursor?: BillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bills.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bills.
+     */
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
+   * Bill findFirstOrThrow
+   */
+  export type BillFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * Filter, which Bill to fetch.
+     */
+    where?: BillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bills to fetch.
+     */
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Bills.
+     */
+    cursor?: BillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bills.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Bills.
+     */
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
+   * Bill findMany
+   */
+  export type BillFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * Filter, which Bills to fetch.
+     */
+    where?: BillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Bills to fetch.
+     */
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Bills.
+     */
+    cursor?: BillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Bills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Bills.
+     */
+    skip?: number
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
+   * Bill create
+   */
+  export type BillCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Bill.
+     */
+    data: XOR<BillCreateInput, BillUncheckedCreateInput>
+  }
+
+  /**
+   * Bill createMany
+   */
+  export type BillCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Bills.
+     */
+    data: BillCreateManyInput | BillCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Bill createManyAndReturn
+   */
+  export type BillCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Bills.
+     */
+    data: BillCreateManyInput | BillCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Bill update
+   */
+  export type BillUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Bill.
+     */
+    data: XOR<BillUpdateInput, BillUncheckedUpdateInput>
+    /**
+     * Choose, which Bill to update.
+     */
+    where: BillWhereUniqueInput
+  }
+
+  /**
+   * Bill updateMany
+   */
+  export type BillUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Bills.
+     */
+    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyInput>
+    /**
+     * Filter which Bills to update
+     */
+    where?: BillWhereInput
+  }
+
+  /**
+   * Bill upsert
+   */
+  export type BillUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Bill to update in case it exists.
+     */
+    where: BillWhereUniqueInput
+    /**
+     * In case the Bill found by the `where` argument doesn't exist, create a new Bill with this data.
+     */
+    create: XOR<BillCreateInput, BillUncheckedCreateInput>
+    /**
+     * In case the Bill was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BillUpdateInput, BillUncheckedUpdateInput>
+  }
+
+  /**
+   * Bill delete
+   */
+  export type BillDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    /**
+     * Filter which Bill to delete.
+     */
+    where: BillWhereUniqueInput
+  }
+
+  /**
+   * Bill deleteMany
+   */
+  export type BillDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Bills to delete
+     */
+    where?: BillWhereInput
+  }
+
+  /**
+   * Bill without action
+   */
+  export type BillDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -21746,6 +22901,24 @@ export namespace Prisma {
   export type DiscountScalarFieldEnum = (typeof DiscountScalarFieldEnum)[keyof typeof DiscountScalarFieldEnum]
 
 
+  export const BillScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    remark: 'remark',
+    fileName: 'fileName',
+    fileMime: 'fileMime',
+    fileData: 'fileData',
+    status: 'status',
+    reviewRemark: 'reviewRemark',
+    reviewedAt: 'reviewedAt',
+    staffId: 'staffId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -21965,6 +23138,34 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillStatus'
+   */
+  export type EnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BillStatus[]'
+   */
+  export type ListEnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillStatus[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -21994,6 +23195,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
     orders?: OrderListRelationFilter
+    bills?: BillListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -22006,6 +23208,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     dealByCustomers?: CustomerOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
+    bills?: BillOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -22021,6 +23224,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
     orders?: OrderListRelationFilter
+    bills?: BillListRelationFilter
   }, "id">
 
   export type StaffOrderByWithAggregationInput = {
@@ -23468,6 +24672,96 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
   }
 
+  export type BillWhereInput = {
+    AND?: BillWhereInput | BillWhereInput[]
+    OR?: BillWhereInput[]
+    NOT?: BillWhereInput | BillWhereInput[]
+    id?: StringFilter<"Bill"> | string
+    date?: DateTimeFilter<"Bill"> | Date | string
+    remark?: StringFilter<"Bill"> | string
+    fileName?: StringFilter<"Bill"> | string
+    fileMime?: StringFilter<"Bill"> | string
+    fileData?: BytesFilter<"Bill"> | Buffer
+    status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
+    reviewRemark?: StringFilter<"Bill"> | string
+    reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    staffId?: StringFilter<"Bill"> | string
+    createdAt?: DateTimeFilter<"Bill"> | Date | string
+    updatedAt?: DateTimeFilter<"Bill"> | Date | string
+    staff?: XOR<StaffRelationFilter, StaffWhereInput>
+  }
+
+  export type BillOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    remark?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    status?: SortOrder
+    reviewRemark?: SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    staffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    staff?: StaffOrderByWithRelationInput
+  }
+
+  export type BillWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BillWhereInput | BillWhereInput[]
+    OR?: BillWhereInput[]
+    NOT?: BillWhereInput | BillWhereInput[]
+    date?: DateTimeFilter<"Bill"> | Date | string
+    remark?: StringFilter<"Bill"> | string
+    fileName?: StringFilter<"Bill"> | string
+    fileMime?: StringFilter<"Bill"> | string
+    fileData?: BytesFilter<"Bill"> | Buffer
+    status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
+    reviewRemark?: StringFilter<"Bill"> | string
+    reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    staffId?: StringFilter<"Bill"> | string
+    createdAt?: DateTimeFilter<"Bill"> | Date | string
+    updatedAt?: DateTimeFilter<"Bill"> | Date | string
+    staff?: XOR<StaffRelationFilter, StaffWhereInput>
+  }, "id">
+
+  export type BillOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    remark?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    status?: SortOrder
+    reviewRemark?: SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
+    staffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BillCountOrderByAggregateInput
+    _max?: BillMaxOrderByAggregateInput
+    _min?: BillMinOrderByAggregateInput
+  }
+
+  export type BillScalarWhereWithAggregatesInput = {
+    AND?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
+    OR?: BillScalarWhereWithAggregatesInput[]
+    NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Bill"> | string
+    date?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
+    remark?: StringWithAggregatesFilter<"Bill"> | string
+    fileName?: StringWithAggregatesFilter<"Bill"> | string
+    fileMime?: StringWithAggregatesFilter<"Bill"> | string
+    fileData?: BytesWithAggregatesFilter<"Bill"> | Buffer
+    status?: EnumBillStatusWithAggregatesFilter<"Bill"> | $Enums.BillStatus
+    reviewRemark?: StringWithAggregatesFilter<"Bill"> | string
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
+    staffId?: StringWithAggregatesFilter<"Bill"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
+  }
+
   export type StaffCreateInput = {
     id?: string
     name: string
@@ -23478,6 +24772,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
     orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -23490,6 +24785,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
   }
 
   export type StaffUpdateInput = {
@@ -23502,6 +24798,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
     orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -23514,6 +24811,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -25113,6 +26411,110 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BillCreateInput = {
+    id?: string
+    date: Date | string
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    staff: StaffCreateNestedOneWithoutBillsInput
+  }
+
+  export type BillUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    staffId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    staff?: StaffUpdateOneRequiredWithoutBillsNestedInput
+  }
+
+  export type BillUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillCreateManyInput = {
+    id?: string
+    date: Date | string
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    staffId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -25174,6 +26576,12 @@ export namespace Prisma {
     none?: OrderWhereInput
   }
 
+  export type BillListRelationFilter = {
+    every?: BillWhereInput
+    some?: BillWhereInput
+    none?: BillWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -25184,6 +26592,10 @@ export namespace Prisma {
   }
 
   export type OrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BillOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26407,6 +27819,90 @@ export namespace Prisma {
     _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
+  export type BytesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Buffer
+  }
+
+  export type EnumBillStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillStatusFilter<$PrismaModel> | $Enums.BillStatus
+  }
+
+  export type StaffRelationFilter = {
+    is?: StaffWhereInput
+    isNot?: StaffWhereInput
+  }
+
+  export type BillCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    remark?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    status?: SortOrder
+    reviewRemark?: SortOrder
+    reviewedAt?: SortOrder
+    staffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    remark?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    status?: SortOrder
+    reviewRemark?: SortOrder
+    reviewedAt?: SortOrder
+    staffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BillMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    remark?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    status?: SortOrder
+    reviewRemark?: SortOrder
+    reviewedAt?: SortOrder
+    staffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Buffer
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
+  }
+
+  export type EnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillStatusFilter<$PrismaModel>
+    _max?: NestedEnumBillStatusFilter<$PrismaModel>
+  }
+
   export type StaffCreatepageKeysInput = {
     set: string[]
   }
@@ -26425,6 +27921,13 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type BillCreateNestedManyWithoutStaffInput = {
+    create?: XOR<BillCreateWithoutStaffInput, BillUncheckedCreateWithoutStaffInput> | BillCreateWithoutStaffInput[] | BillUncheckedCreateWithoutStaffInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutStaffInput | BillCreateOrConnectWithoutStaffInput[]
+    createMany?: BillCreateManyStaffInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
   export type CustomerUncheckedCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -26437,6 +27940,13 @@ export namespace Prisma {
     connectOrCreate?: OrderCreateOrConnectWithoutOrderByInput | OrderCreateOrConnectWithoutOrderByInput[]
     createMany?: OrderCreateManyOrderByInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type BillUncheckedCreateNestedManyWithoutStaffInput = {
+    create?: XOR<BillCreateWithoutStaffInput, BillUncheckedCreateWithoutStaffInput> | BillCreateWithoutStaffInput[] | BillUncheckedCreateWithoutStaffInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutStaffInput | BillCreateOrConnectWithoutStaffInput[]
+    createMany?: BillCreateManyStaffInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -26484,6 +27994,20 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type BillUpdateManyWithoutStaffNestedInput = {
+    create?: XOR<BillCreateWithoutStaffInput, BillUncheckedCreateWithoutStaffInput> | BillCreateWithoutStaffInput[] | BillUncheckedCreateWithoutStaffInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutStaffInput | BillCreateOrConnectWithoutStaffInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutStaffInput | BillUpsertWithWhereUniqueWithoutStaffInput[]
+    createMany?: BillCreateManyStaffInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutStaffInput | BillUpdateWithWhereUniqueWithoutStaffInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutStaffInput | BillUpdateManyWithWhereWithoutStaffInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
   export type CustomerUncheckedUpdateManyWithoutDealByNestedInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -26510,6 +28034,20 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutOrderByInput | OrderUpdateWithWhereUniqueWithoutOrderByInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutOrderByInput | OrderUpdateManyWithWhereWithoutOrderByInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type BillUncheckedUpdateManyWithoutStaffNestedInput = {
+    create?: XOR<BillCreateWithoutStaffInput, BillUncheckedCreateWithoutStaffInput> | BillCreateWithoutStaffInput[] | BillUncheckedCreateWithoutStaffInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutStaffInput | BillCreateOrConnectWithoutStaffInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutStaffInput | BillUpsertWithWhereUniqueWithoutStaffInput[]
+    createMany?: BillCreateManyStaffInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutStaffInput | BillUpdateWithWhereUniqueWithoutStaffInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutStaffInput | BillUpdateManyWithWhereWithoutStaffInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
   }
 
   export type DispatchCreateNestedManyWithoutTransporterInput = {
@@ -27702,6 +29240,28 @@ export namespace Prisma {
     update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutDiscountsInput, TransporterUpdateWithoutDiscountsInput>, TransporterUncheckedUpdateWithoutDiscountsInput>
   }
 
+  export type StaffCreateNestedOneWithoutBillsInput = {
+    create?: XOR<StaffCreateWithoutBillsInput, StaffUncheckedCreateWithoutBillsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutBillsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type BytesFieldUpdateOperationsInput = {
+    set?: Buffer
+  }
+
+  export type EnumBillStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BillStatus
+  }
+
+  export type StaffUpdateOneRequiredWithoutBillsNestedInput = {
+    create?: XOR<StaffCreateWithoutBillsInput, StaffUncheckedCreateWithoutBillsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutBillsInput
+    upsert?: StaffUpsertWithoutBillsInput
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutBillsInput, StaffUpdateWithoutBillsInput>, StaffUncheckedUpdateWithoutBillsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -28100,6 +29660,40 @@ export namespace Prisma {
     _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
+  export type NestedBytesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Buffer
+  }
+
+  export type NestedEnumBillStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillStatusFilter<$PrismaModel> | $Enums.BillStatus
+  }
+
+  export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Buffer
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillStatusFilter<$PrismaModel>
+    _max?: NestedEnumBillStatusFilter<$PrismaModel>
+  }
+
   export type CustomerCreateWithoutDealByInput = {
     id?: string
     name: string
@@ -28242,6 +29836,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BillCreateWithoutStaffInput = {
+    id?: string
+    date: Date | string
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillUncheckedCreateWithoutStaffInput = {
+    id?: string
+    date: Date | string
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillCreateOrConnectWithoutStaffInput = {
+    where: BillWhereUniqueInput
+    create: XOR<BillCreateWithoutStaffInput, BillUncheckedCreateWithoutStaffInput>
+  }
+
+  export type BillCreateManyStaffInputEnvelope = {
+    data: BillCreateManyStaffInput | BillCreateManyStaffInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithWhereUniqueWithoutDealByInput = {
     where: CustomerWhereUniqueInput
     update: XOR<CustomerUpdateWithoutDealByInput, CustomerUncheckedUpdateWithoutDealByInput>
@@ -28335,6 +29967,40 @@ export namespace Prisma {
     orderStatus?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+  }
+
+  export type BillUpsertWithWhereUniqueWithoutStaffInput = {
+    where: BillWhereUniqueInput
+    update: XOR<BillUpdateWithoutStaffInput, BillUncheckedUpdateWithoutStaffInput>
+    create: XOR<BillCreateWithoutStaffInput, BillUncheckedCreateWithoutStaffInput>
+  }
+
+  export type BillUpdateWithWhereUniqueWithoutStaffInput = {
+    where: BillWhereUniqueInput
+    data: XOR<BillUpdateWithoutStaffInput, BillUncheckedUpdateWithoutStaffInput>
+  }
+
+  export type BillUpdateManyWithWhereWithoutStaffInput = {
+    where: BillScalarWhereInput
+    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutStaffInput>
+  }
+
+  export type BillScalarWhereInput = {
+    AND?: BillScalarWhereInput | BillScalarWhereInput[]
+    OR?: BillScalarWhereInput[]
+    NOT?: BillScalarWhereInput | BillScalarWhereInput[]
+    id?: StringFilter<"Bill"> | string
+    date?: DateTimeFilter<"Bill"> | Date | string
+    remark?: StringFilter<"Bill"> | string
+    fileName?: StringFilter<"Bill"> | string
+    fileMime?: StringFilter<"Bill"> | string
+    fileData?: BytesFilter<"Bill"> | Buffer
+    status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
+    reviewRemark?: StringFilter<"Bill"> | string
+    reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
+    staffId?: StringFilter<"Bill"> | string
+    createdAt?: DateTimeFilter<"Bill"> | Date | string
+    updatedAt?: DateTimeFilter<"Bill"> | Date | string
   }
 
   export type DispatchCreateWithoutTransporterInput = {
@@ -29108,6 +30774,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
   }
 
   export type StaffUncheckedCreateWithoutDealByCustomersInput = {
@@ -29119,6 +30786,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
   }
 
   export type StaffCreateOrConnectWithoutDealByCustomersInput = {
@@ -29372,6 +31040,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDealByCustomersInput = {
@@ -29383,6 +31052,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -29809,6 +31479,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
   }
 
   export type StaffUncheckedCreateWithoutOrdersInput = {
@@ -29820,6 +31491,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
   }
 
   export type StaffCreateOrConnectWithoutOrdersInput = {
@@ -30048,6 +31720,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutOrdersInput = {
@@ -30059,6 +31732,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
   }
 
   export type PortOptionUpsertWithoutOrdersInput = {
@@ -31517,6 +33191,70 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
+  export type StaffCreateWithoutBillsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+  }
+
+  export type StaffUncheckedCreateWithoutBillsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+  }
+
+  export type StaffCreateOrConnectWithoutBillsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutBillsInput, StaffUncheckedCreateWithoutBillsInput>
+  }
+
+  export type StaffUpsertWithoutBillsInput = {
+    update: XOR<StaffUpdateWithoutBillsInput, StaffUncheckedUpdateWithoutBillsInput>
+    create: XOR<StaffCreateWithoutBillsInput, StaffUncheckedCreateWithoutBillsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutBillsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutBillsInput, StaffUncheckedUpdateWithoutBillsInput>
+  }
+
+  export type StaffUpdateWithoutBillsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutBillsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+  }
+
   export type CustomerCreateManyDealByInput = {
     id?: string
     name: string
@@ -31568,6 +33306,20 @@ export namespace Prisma {
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
     orderStatus?: $Enums.OrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillCreateManyStaffInput = {
+    id?: string
+    date: Date | string
+    remark: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -31745,6 +33497,48 @@ export namespace Prisma {
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     orderStatus?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillUpdateWithoutStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillUncheckedUpdateWithoutStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillUncheckedUpdateManyWithoutStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    remark?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -33186,6 +34980,10 @@ export namespace Prisma {
      * @deprecated Use DiscountDefaultArgs instead
      */
     export type DiscountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DiscountDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BillDefaultArgs instead
+     */
+    export type BillArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

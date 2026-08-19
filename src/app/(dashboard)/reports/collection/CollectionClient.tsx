@@ -492,7 +492,7 @@ export function CollectionClient({
                 <br />
                 period
               </th>
-              <th>
+              <th className="collection-date-col">
                 Planned
                 <br />
                 call date
@@ -547,7 +547,7 @@ export function CollectionClient({
                   <td className="cell-num">
                     {formatCreditPeriod(row.creditDays)}
                   </td>
-                  <td>
+                  <td className="collection-date-col">
                     <input
                       type="date"
                       lang="en-GB"

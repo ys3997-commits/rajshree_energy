@@ -16,8 +16,9 @@ async function main() {
   await prisma.cityOption.deleteMany();
   await prisma.stateOption.deleteMany();
   await prisma.sectorOption.deleteMany();
-  await prisma.customer.deleteMany();
+.await prisma.customer.deleteMany();
   await prisma.transporter.deleteMany();
+  await prisma.bill.deleteMany();
   await prisma.staff.deleteMany();
 
   const ports = await Promise.all(

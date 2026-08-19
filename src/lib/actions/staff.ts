@@ -7,7 +7,14 @@ import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-const STAFF_PATHS = ["/options", "/", "/customers", "/orders", "/dispatches"] as const;
+const STAFF_PATHS = [
+  "/options",
+  "/",
+  "/customers",
+  "/orders",
+  "/dispatches",
+  "/bills",
+] as const;
 const GRANTABLE_KEYS = new Set(GRANTABLE_PAGES.map((page) => page.key));
 
 function revalidateStaffPaths() {

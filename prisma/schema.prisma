@@ -59,6 +59,12 @@ enum CoalOrigin {
   IMPORTED
 }
 
+enum BillStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Staff {
   id           String   @id @default(cuid())
   name         String
@@ -72,6 +78,7 @@ model Staff {
 
   dealByCustomers Customer[] @relation("DealBy")
   orders          Order[]
+  bills           Bill[]
 }
 
 model Transporter {
@@ -394,5 +401,29 @@ model Discount {
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([date])
+}
+
+/// Staff-uploaded bill awaiting owner approval.
+model Bill {
+  id           String     @id @default(cuid())
+  date         DateTime
+  /// Staff remark written at upload.
+  remark       String
+  fileName     String
+  fileMime     String
+  fileData     Bytes
+  status       BillStatus @default(PENDING)
+  /// Owner remark written when approving or rejecting.
+  reviewRemark String     @default("")
+  reviewedAt   DateTime?
+  staffId      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([staffId])
+  @@index([status])
   @@index([date])
 }

@@ -15,6 +15,7 @@ export const APP_PAGES: AppPage[] = [
   { key: "purchase-orders", href: "/purchase-orders", label: "Purchase orders", group: "Pages" },
   { key: "dispatches", href: "/dispatches", label: "Dispatches", group: "Pages" },
   { key: "payments", href: "/payments", label: "Payments", group: "Pages" },
+  { key: "bills", href: "/bills", label: "Bills", group: "Pages" },
   { key: "vessels", href: "/vessels", label: "Vessels", group: "Pages" },
   { key: "qualities", href: "/qualities", label: "Qualities", group: "Pages" },
   { key: "customers", href: "/customers", label: "Customers", group: "Pages" },
@@ -165,8 +166,9 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
 
 export function firstAllowedPath(pageKeys: string[] | "all"): string {
   if (pageKeys === "all") return "/";
-  const page = GRANTABLE_PAGES.find((item) => pageKeys.includes(item.key));
-  return page?.href ?? "/login";
+  const granted = GRANTABLE_PAGES.filter((item) => pageKeys.includes(item.key));
+  const preferred = granted.find((item) => item.key !== "bills");
+  return preferred?.href ?? granted[0]?.href ?? "/login";
 }
 
 export const PAGE_GROUPS: PageGroup[] = ["Pages", "Reports"];

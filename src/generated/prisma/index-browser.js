@@ -348,6 +348,21 @@ exports.Prisma.DiscountScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BillScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  remark: 'remark',
+  fileName: 'fileName',
+  fileMime: 'fileMime',
+  fileData: 'fileData',
+  status: 'status',
+  reviewRemark: 'reviewRemark',
+  reviewedAt: 'reviewedAt',
+  staffId: 'staffId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -408,6 +423,12 @@ exports.CoalOrigin = exports.$Enums.CoalOrigin = {
   IMPORTED: 'IMPORTED'
 };
 
+exports.BillStatus = exports.$Enums.BillStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
 exports.Prisma.ModelName = {
   Staff: 'Staff',
   Transporter: 'Transporter',
@@ -426,7 +447,8 @@ exports.Prisma.ModelName = {
   PurchaseOrder: 'PurchaseOrder',
   Dispatch: 'Dispatch',
   Payment: 'Payment',
-  Discount: 'Discount'
+  Discount: 'Discount',
+  Bill: 'Bill'
 };
 
 /**

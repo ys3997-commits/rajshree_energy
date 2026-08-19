@@ -54,17 +54,31 @@ enum DiscountStatus {
   PAID
 }
 
+enum CoalOrigin {
+  DOMESTIC
+  IMPORTED
+}
+
+enum BillStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Staff {
   id           String   @id @default(cuid())
   name         String
   role         String?
+  /// Set when this person may log in. Owner uses Supabase instead.
   passwordHash String?
+  /// Page keys this person may open. Ignored for the owner account.
   pageKeys     String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   dealByCustomers Customer[] @relation("DealBy")
   orders          Order[]
+  bills           Bill[]
 }
 
 model Transporter {
@@ -179,50 +193,50 @@ model QualityClass {
 }
 
 model Customer {
-  id                       String           @id @default(cuid())
-  name                     String
-  category                 CustomerCategory
-  active                   Boolean          @default(true)
-  ownerName                String?
-  ownerContact             String?
-  purchaserName            String?
-  purchaserContact         String?
-  purchaserRole            String?
-  paymentInChargeName      String?
-  paymentInChargeContact   String?
-  paymentInChargeRole      String?
-  accountantName           String?
-  accountantContact        String?
-  factoryContactName       String?
-  factoryContactContact    String?
-  factoryContactRole       String?
-  email                    String?
-  city                     String?
-  state                    String?
-  creditDays               Int?
-  sector                   String?
-  saleExecutive            String?
-  dealById                 String?
-  approachForFunds         String?
+  id                        String           @id @default(cuid())
+  name                      String
+  category                  CustomerCategory
+  active                    Boolean          @default(true)
+  ownerName                 String?
+  ownerContact              String?
+  purchaserName             String?
+  purchaserContact          String?
+  purchaserRole             String?
+  paymentInChargeName       String?
+  paymentInChargeContact    String?
+  paymentInChargeRole       String?
+  accountantName            String?
+  accountantContact         String?
+  factoryContactName        String?
+  factoryContactContact     String?
+  factoryContactRole        String?
+  email                     String?
+  city                      String?
+  state                     String?
+  creditDays                Int?
+  sector                    String?
+  saleExecutive             String?
+  dealById                  String?
+  approachForFunds          String?
   /// Suggested dealing company name (from Options list; stored as text).
-  dealingCompany           String?
+  dealingCompany            String?
   /// Carry-forward balance from before this system (manual). Included in `due`.
-  openingDue               Decimal          @default(0) @db.Decimal(18, 2)
+  openingDue                Decimal          @default(0) @db.Decimal(18, 2)
   /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent − discount paid + discount received).
-  due                      Decimal          @default(0) @db.Decimal(18, 2)
+  due                       Decimal          @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?
   /// Next planned sales call date (calendar day) — separate from collection.
-  plannedSaleCallDate      DateTime?
-  createdAt                DateTime         @default(now())
-  updatedAt                DateTime         @updatedAt
+  plannedSaleCallDate       DateTime?
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
 
-  dealBy           Staff?          @relation("DealBy", fields: [dealById], references: [id])
-  orders           Order[]
-  purchaseOrders   PurchaseOrder[]
-  dispatches       Dispatch[]      @relation("DispatchImporter")
-  payments         Payment[]
-  discounts        Discount[]
+  dealBy         Staff?          @relation("DealBy", fields: [dealById], references: [id])
+  orders         Order[]
+  purchaseOrders PurchaseOrder[]
+  dispatches     Dispatch[]      @relation("DispatchImporter")
+  payments       Payment[]
+  discounts      Discount[]
 }
 
 model Vessel {
@@ -234,40 +248,40 @@ model Vessel {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  qualityClass   QualityClass?    @relation(fields: [qualityClassId], references: [id])
-  port           PortOption?      @relation(fields: [portId], references: [id])
+  qualityClass   QualityClass?   @relation(fields: [qualityClassId], references: [id])
+  port           PortOption?     @relation(fields: [portId], references: [id])
   purchaseOrders PurchaseOrder[]
   dispatches     Dispatch[]
 }
 
 /// Sale order (customer PO / selling side).
 model Order {
-  id             String      @id @default(cuid())
-  poNumber       String      @unique
-  orderType      OrderType   @default(REGULAR)
-  customerId     String
-  orderDate      DateTime?
-  portId         String?
-  creditDays     Int?
-  qualityClassId String?
+  id              String         @id @default(cuid())
+  poNumber        String         @unique
+  orderType       OrderType      @default(REGULAR)
+  customerId      String
+  orderDate       DateTime?
+  portId          String?
+  creditDays      Int?
+  qualityClassId  String?
   /// Base sale rate entered by user (Rs/MT), before GST/TCS.
-  rate           Decimal?    @db.Decimal(18, 3)
+  rate            Decimal?       @db.Decimal(18, 3)
   /// All-in sale rate: rate + GST(18%); traders also add TCS(2% of rate+GST).
-  finalRate      Decimal?    @db.Decimal(18, 3)
+  finalRate       Decimal?       @db.Decimal(18, 3)
   /// Null for open orders until completeOpenOrder fills it in.
-  quantity       Decimal?    @db.Decimal(18, 3)
+  quantity        Decimal?       @db.Decimal(18, 3)
   /// Optional planned lorry count entered at order creation.
   numberOfLorries Int?
   /// Sale delivery terms (FOR / Ex-Port). Independent of dispatch terms. Null until set.
-  deliveryTerms  DispatchTerms?
-  orderById      String?
+  deliveryTerms   DispatchTerms?
+  orderById       String?
   /// Accumulated by dispatch transactions only — never write from forms.
-  dispatchedOrder Decimal    @default(0) @db.Decimal(18, 3)
+  dispatchedOrder Decimal        @default(0) @db.Decimal(18, 3)
   /// Undispatchable remainder written off via "close quantity"; zeros balance.
-  closingQuantity Decimal?   @db.Decimal(18, 3)
-  orderStatus    OrderStatus @default(RUNNING)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  closingQuantity Decimal?       @db.Decimal(18, 3)
+  orderStatus     OrderStatus    @default(RUNNING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   customer     Customer      @relation(fields: [customerId], references: [id])
   orderBy      Staff?        @relation(fields: [orderById], references: [id])
@@ -278,26 +292,26 @@ model Order {
 
 /// Purchase order (vendor / costing side). Linked to a vessel.
 model PurchaseOrder {
-  id         String      @id @default(cuid())
-  poNumber   String      @unique
-  orderType  OrderType   @default(REGULAR)
-  importerId String
-  vesselId   String
-  orderDate      DateTime?
-  qualityClassId String?
+  id              String              @id @default(cuid())
+  poNumber        String              @unique
+  orderType       OrderType           @default(REGULAR)
+  importerId      String
+  vesselId        String
+  orderDate       DateTime?
+  qualityClassId  String?
   /// Base cost rate entered by user (Rs/MT), before GST/TCS.
-  rate           Decimal?    @db.Decimal(18, 3)
+  rate            Decimal?            @db.Decimal(18, 3)
   /// All-in cost: rate + GST(18%) + TCS(2% of rate+GST).
-  finalRate      Decimal?    @db.Decimal(18, 3)
+  finalRate       Decimal?            @db.Decimal(18, 3)
   /// Null for open purchase orders until completed.
-  quantity       Decimal?    @db.Decimal(18, 3)
+  quantity        Decimal?            @db.Decimal(18, 3)
   /// Accumulated by dispatch transactions only — never write from forms.
-  dispatchedOrder Decimal     @default(0) @db.Decimal(18, 3)
+  dispatchedOrder Decimal             @default(0) @db.Decimal(18, 3)
   /// Undispatchable remainder written off via "close quantity"; zeros balance.
-  closingQuantity Decimal?    @db.Decimal(18, 3)
+  closingQuantity Decimal?            @db.Decimal(18, 3)
   orderStatus     PurchaseOrderStatus @default(RUNNING)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 
   importer     Customer      @relation(fields: [importerId], references: [id])
   vessel       Vessel        @relation(fields: [vesselId], references: [id])
@@ -306,37 +320,37 @@ model PurchaseOrder {
 }
 
 model Dispatch {
-  id                  String        @id @default(cuid())
+  id                    String        @id @default(cuid())
   /// Sequential serial (DN 0001, DN 0002, …), assigned from the first dispatch.
-  dispatchNumber      String?       @unique
-  poNumber            String
-  purchasePoNumber    String
-  vesselId            String
-  dispatchDate        DateTime
-  dispatchedQuantity  Decimal       @db.Decimal(18, 3)
-  lorryNumber         String?
-  dispatchTerms       DispatchTerms @default(EX_PORT)
+  dispatchNumber        String?       @unique
+  poNumber              String
+  purchasePoNumber      String
+  vesselId              String
+  dispatchDate          DateTime
+  dispatchedQuantity    Decimal       @db.Decimal(18, 3)
+  lorryNumber           String?
+  dispatchTerms         DispatchTerms @default(EX_PORT)
   /// Freight per MT (Rs/MT) — required for FOR; stripped from sale rate for profit.
-  freight             Decimal?      @db.Decimal(18, 3)
-  transporterId       String?
-  importerId          String?
-  receivingQuantity   Decimal?      @db.Decimal(18, 3)
-  receiptDate         DateTime?
-  receiptStatus       ReceiptStatus @default(PENDING)
-  softCopyStatus      Boolean       @default(false)
-  entryInTally        Boolean       @default(false)
+  freight               Decimal?      @db.Decimal(18, 3)
+  transporterId         String?
+  importerId            String?
+  receivingQuantity     Decimal?      @db.Decimal(18, 3)
+  receiptDate           DateTime?
+  receiptStatus         ReceiptStatus @default(PENDING)
+  softCopyStatus        Boolean       @default(false)
+  entryInTally          Boolean       @default(false)
   /// Transport checklist — bilty (goods receipt) hard copy received.
-  biltyHardCopy       Boolean       @default(false)
+  biltyHardCopy         Boolean       @default(false)
   /// Transport checklist — transporter invoice number.
-  transportInvoiceNo  String?
+  transportInvoiceNo    String?
   /// Transport checklist — sale/transport invoice hard copy received.
-  invoiceHardCopy     Boolean       @default(false)
+  invoiceHardCopy       Boolean       @default(false)
   /// Sale (customer) invoice number — often filled after dispatch.
   saleInvoiceNumber     String?
   /// Purchase (supplier) invoice number — often filled after dispatch.
   purchaseInvoiceNumber String?
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
   order         Order         @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
   purchaseOrder PurchaseOrder @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
@@ -376,6 +390,8 @@ model Discount {
   transporterId String?
   status        DiscountStatus
   amount        Decimal        @db.Decimal(18, 2)
+  /// Domestic coal vs imported coal. Null on older rows.
+  coalOrigin    CoalOrigin?
   remarks       String         @default("")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
@@ -385,5 +401,29 @@ model Discount {
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([date])
+}
+
+/// Staff-uploaded bill awaiting owner approval.
+model Bill {
+  id           String     @id @default(cuid())
+  date         DateTime
+  /// Staff remark written at upload.
+  remark       String
+  fileName     String
+  fileMime     String
+  fileData     Bytes
+  status       BillStatus @default(PENDING)
+  /// Owner remark written when approving or rejecting.
+  reviewRemark String     @default("")
+  reviewedAt   DateTime?
+  staffId      String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  staff Staff @relation(fields: [staffId], references: [id], onDelete: Cascade)
+
+  @@index([staffId])
+  @@index([status])
   @@index([date])
 }

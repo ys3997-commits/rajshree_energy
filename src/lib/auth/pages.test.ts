@@ -39,6 +39,8 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["payments"], "/options")).toBe(false);
     expect(canAccessPath(["payments"], "/receipts/pending")).toBe(false);
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
+    expect(canAccessPath(["bills"], "/bills")).toBe(true);
+    expect(canAccessPath(["payments"], "/bills")).toBe(false);
     expect(canAccessPath(["payments"], "/")).toBe(false);
   });
 
@@ -54,5 +56,17 @@ describe("firstAllowedPath", () => {
     expect(firstAllowedPath(["payments"])).toBe("/payments");
     expect(firstAllowedPath(["home", "payments"])).toBe("/");
     expect(firstAllowedPath([])).toBe("/login");
+  });
+
+  it("does not land on Bills when another page is granted", () => {
+    expect(
+      firstAllowedPath([
+        "bills",
+        "reports-collection",
+        "reports-collection-vendor",
+      ]),
+    ).toBe("/reports/collection");
+    expect(firstAllowedPath(["bills", "payments"])).toBe("/payments");
+    expect(firstAllowedPath(["bills"])).toBe("/bills");
   });
 });
