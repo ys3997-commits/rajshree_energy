@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 
 type OptionSelectProps = {
+  id?: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
@@ -11,6 +12,7 @@ type OptionSelectProps = {
 };
 
 export function OptionSelect({
+  id,
   value,
   onChange,
   options,
@@ -27,6 +29,7 @@ export function OptionSelect({
 
   return (
     <select
+      id={id}
       required={required}
       value={value}
       onChange={(e) => onChange(e.target.value)}

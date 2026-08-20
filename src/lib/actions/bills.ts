@@ -6,15 +6,20 @@ import {
   requireOwner,
   requireSignedIn,
 } from "@/lib/auth/access";
+import { toDecimal } from "@/lib/domain/computations";
 import {
   canReviewBill,
   canUploadBill,
   canViewBill,
   parseBillStatusFilter,
-  validateBillFile,
+  validateApproverName,
+  validateBillFiles,
   validateBillRemark,
+  validateInvoiceAmount,
+  validateInvoiceIssuedBy,
   type BillStatus as BillStatusName,
 } from "@/lib/domain/bills";
+import { capitalizeName } from "@/lib/domain/format";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -23,23 +28,36 @@ const BILLS_PAGE_SIZE = 20;
 const billSelect = {
   id: true,
   date: true,
+  invoiceIssuedBy: true,
+  invoiceAmount: true,
+  approverName: true,
   remark: true,
-  fileName: true,
-  fileMime: true,
   status: true,
   reviewRemark: true,
   reviewedAt: true,
   staffId: true,
   createdAt: true,
   staff: { select: { id: true, name: true } },
+  files: {
+    select: { id: true, fileName: true, fileMime: true, sortOrder: true },
+    orderBy: { sortOrder: "asc" as const },
+  },
 } as const;
+
+export type BillFileRow = {
+  id: string;
+  fileName: string;
+  fileMime: string;
+};
 
 export type BillRow = {
   id: string;
   date: string;
+  invoiceIssuedBy: string;
+  invoiceAmount: string | null;
+  approverName: string;
   remark: string;
-  fileName: string;
-  fileMime: string;
+  files: BillFileRow[];
   status: BillStatusName;
   reviewRemark: string;
   reviewedAt: string | null;
@@ -71,21 +89,29 @@ function parseDate(value: string): Date {
 function toBillRow(row: {
   id: string;
   date: Date;
+  invoiceIssuedBy: string;
+  invoiceAmount: { toString(): string } | null;
+  approverName: string;
   remark: string;
-  fileName: string;
-  fileMime: string;
   status: BillStatus;
   reviewRemark: string;
   reviewedAt: Date | null;
   staffId: string;
   staff: { name: string };
+  files: { id: string; fileName: string; fileMime: string }[];
 }): BillRow {
   return {
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
+    invoiceIssuedBy: row.invoiceIssuedBy,
+    invoiceAmount: row.invoiceAmount?.toString() ?? null,
+    approverName: row.approverName,
     remark: row.remark,
-    fileName: row.fileName,
-    fileMime: row.fileMime,
+    files: row.files.map((file) => ({
+      id: file.id,
+      fileName: file.fileName,
+      fileMime: file.fileMime,
+    })),
     status: row.status,
     reviewRemark: row.reviewRemark,
     reviewedAt: row.reviewedAt?.toISOString() ?? null,
@@ -105,6 +131,18 @@ async function requireBillsAccess() {
 
 function staffScope(access: Awaited<ReturnType<typeof requireBillsAccess>>) {
   return access.kind === "staff" ? { staffId: access.id } : {};
+}
+
+function formFiles(formData: FormData): File[] {
+  const fromList = formData.getAll("files").filter((item): item is File => {
+    return item instanceof File && (item.size > 0 || item.name.trim() !== "");
+  });
+  if (fromList.length > 0) return fromList;
+  const single = formData.get("file");
+  if (single instanceof File && (single.size > 0 || single.name.trim() !== "")) {
+    return [single];
+  }
+  return [];
 }
 
 export async function listBills(options?: {
@@ -158,25 +196,46 @@ export async function createBill(formData: FormData): Promise<BillRow> {
   }
 
   const date = parseDate(String(formData.get("date") ?? ""));
-  const remark = validateBillRemark(String(formData.get("remark") ?? ""), "Remark");
-  const file = formData.get("file");
-  if (!(file instanceof File)) throw new Error("File is required");
-
-  const meta = validateBillFile({
-    name: file.name,
-    type: file.type,
-    size: file.size,
+  const invoiceIssuedBy =
+    capitalizeName(validateInvoiceIssuedBy(String(formData.get("invoiceIssuedBy") ?? ""))) ??
+    "";
+  const invoiceAmount = toDecimal(
+    validateInvoiceAmount(String(formData.get("invoiceAmount") ?? "")),
+  );
+  const approverName = validateApproverName(
+    String(formData.get("approverName") ?? ""),
+  );
+  const ownerMatch = await prisma.ownerOption.findFirst({
+    where: { name: approverName },
+    select: { id: true },
   });
-  const fileData = Buffer.from(await file.arrayBuffer());
+  if (!ownerMatch) {
+    throw new Error("Approver name must be an owner from Options");
+  }
+  const remark = validateBillRemark(String(formData.get("remark") ?? ""), "Remark");
+  const files = formFiles(formData);
+  const meta = validateBillFiles(
+    files.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+  );
 
   const row = await prisma.bill.create({
     data: {
       date,
+      invoiceIssuedBy,
+      invoiceAmount,
+      approverName,
       remark,
-      fileName: meta.fileName,
-      fileMime: meta.mime,
-      fileData,
       staffId: access.id,
+      files: {
+        create: await Promise.all(
+          files.map(async (file, index) => ({
+            fileName: meta[index].fileName,
+            fileMime: meta[index].mime,
+            fileData: Buffer.from(await file.arrayBuffer()),
+            sortOrder: index,
+          })),
+        ),
+      },
     },
     select: billSelect,
   });
@@ -225,21 +284,44 @@ export async function getBillFile(id: string): Promise<{
   fileData: Uint8Array;
 }> {
   const access = await requireBillsAccess();
-  const row = await prisma.bill.findUnique({
+  const row = await prisma.billFile.findUnique({
     where: { id },
     select: {
-      staffId: true,
       fileName: true,
       fileMime: true,
       fileData: true,
+      bill: { select: { staffId: true } },
     },
   });
-  if (!row || !canViewBill(access, row.staffId)) {
+  if (row) {
+    if (!canViewBill(access, row.bill.staffId)) {
+      throw new AccessDeniedError();
+    }
+    return {
+      fileName: row.fileName,
+      fileMime: row.fileMime,
+      fileData: row.fileData,
+    };
+  }
+
+  const bill = await prisma.bill.findUnique({
+    where: { id },
+    select: {
+      staffId: true,
+      files: {
+        select: { fileName: true, fileMime: true, fileData: true },
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+      },
+    },
+  });
+  const first = bill?.files[0];
+  if (!bill || !first || !canViewBill(access, bill.staffId)) {
     throw new AccessDeniedError();
   }
   return {
-    fileName: row.fileName,
-    fileMime: row.fileMime,
-    fileData: row.fileData,
+    fileName: first.fileName,
+    fileMime: first.fileMime,
+    fileData: first.fileData,
   };
 }

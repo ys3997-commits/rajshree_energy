@@ -5,7 +5,11 @@ import {
   canViewBill,
   parseBillStatusFilter,
   validateBillFile,
+  validateBillFiles,
   validateBillRemark,
+  validateApproverName,
+  validateInvoiceAmount,
+  validateInvoiceIssuedBy,
 } from "./bills";
 
 describe("parseBillStatusFilter", () => {
@@ -31,6 +35,16 @@ describe("bill remarks and files", () => {
     expect(validateBillRemark(" Need payment ", "Remark")).toBe("Need payment");
   });
 
+  it("requires invoice issuer and a positive amount", () => {
+    expect(() => validateInvoiceIssuedBy("  ")).toThrow("Invoice issued by is required");
+    expect(validateInvoiceIssuedBy(" acme logistics ")).toBe("acme logistics");
+    expect(() => validateInvoiceAmount("")).toThrow("Invoice amount is required");
+    expect(() => validateInvoiceAmount("0")).toThrow(/greater than zero/);
+    expect(validateInvoiceAmount("1,250.50")).toBe("1250.50");
+    expect(() => validateApproverName("  ")).toThrow("Approver name is required");
+    expect(validateApproverName(" raj ")).toBe("raj");
+  });
+
   it("accepts a small PDF and rejects oversize or unknown types", () => {
     expect(
       validateBillFile({ name: "taxi.pdf", type: "application/pdf", size: 1200 }),
@@ -47,6 +61,25 @@ describe("bill remarks and files", () => {
         size: 5 * 1024 * 1024,
       }),
     ).toThrow(/4 MB/);
+  });
+
+  it("accepts several files and rejects too many", () => {
+    expect(
+      validateBillFiles([
+        { name: "a.pdf", type: "application/pdf", size: 100 },
+        { name: "b.jpg", type: "image/jpeg", size: 200 },
+      ]),
+    ).toHaveLength(2);
+
+    expect(() =>
+      validateBillFiles(
+        Array.from({ length: 11 }, (_, i) => ({
+          name: `${i}.pdf`,
+          type: "application/pdf",
+          size: 10,
+        })),
+      ),
+    ).toThrow(/at most 10 documents/);
   });
 });
 
