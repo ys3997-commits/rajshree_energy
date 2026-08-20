@@ -2,6 +2,7 @@ import { listPortOptions } from "@/lib/actions/ports";
 import {
   listCityOptions,
   listDealingCompanyOptions,
+  listOwnerOptions,
   listSaleExecutiveOptions,
   listSectorOptions,
   listStateOptions,
@@ -23,6 +24,7 @@ export default async function OptionsPage() {
     states,
     sectors,
     people,
+    owners,
     dealingCompanies,
   ] = await Promise.all([
     listOriginOptions(),
@@ -33,6 +35,7 @@ export default async function OptionsPage() {
     listStateOptions(),
     listSectorOptions(),
     listStaff(),
+    listOwnerOptions(),
     listDealingCompanyOptions(),
   ]);
 
@@ -52,6 +55,7 @@ export default async function OptionsPage() {
         hasLogin: row.hasLogin,
         pageKeys: row.pageKeys,
       }))}
+      owners={owners}
       dealingCompanies={dealingCompanies}
     />
   );

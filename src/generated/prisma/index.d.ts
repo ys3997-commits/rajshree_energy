@@ -64,6 +64,11 @@ export type SectorOption = $Result.DefaultSelection<Prisma.$SectorOptionPayload>
  */
 export type DealingCompanyOption = $Result.DefaultSelection<Prisma.$DealingCompanyOptionPayload>
 /**
+ * Model OwnerOption
+ * Managed list of owner names (suggested on customers and transporters; stored as text).
+ */
+export type OwnerOption = $Result.DefaultSelection<Prisma.$OwnerOptionPayload>
+/**
  * Model QualityClass
  * A coal quality class: origin + domestic flag + quality grade.
  */
@@ -108,6 +113,11 @@ export type Discount = $Result.DefaultSelection<Prisma.$DiscountPayload>
  * Staff-uploaded bill awaiting owner approval.
  */
 export type Bill = $Result.DefaultSelection<Prisma.$BillPayload>
+/**
+ * Model BillFile
+ * 
+ */
+export type BillFile = $Result.DefaultSelection<Prisma.$BillFilePayload>
 
 /**
  * Enums
@@ -460,6 +470,16 @@ export class PrismaClient<
   get dealingCompanyOption(): Prisma.DealingCompanyOptionDelegate<ExtArgs>;
 
   /**
+   * `prisma.ownerOption`: Exposes CRUD operations for the **OwnerOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more OwnerOptions
+    * const ownerOptions = await prisma.ownerOption.findMany()
+    * ```
+    */
+  get ownerOption(): Prisma.OwnerOptionDelegate<ExtArgs>;
+
+  /**
    * `prisma.qualityClass`: Exposes CRUD operations for the **QualityClass** model.
     * Example usage:
     * ```ts
@@ -548,6 +568,16 @@ export class PrismaClient<
     * ```
     */
   get bill(): Prisma.BillDelegate<ExtArgs>;
+
+  /**
+   * `prisma.billFile`: Exposes CRUD operations for the **BillFile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BillFiles
+    * const billFiles = await prisma.billFile.findMany()
+    * ```
+    */
+  get billFile(): Prisma.BillFileDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -999,6 +1029,7 @@ export namespace Prisma {
     StateOption: 'StateOption',
     SectorOption: 'SectorOption',
     DealingCompanyOption: 'DealingCompanyOption',
+    OwnerOption: 'OwnerOption',
     QualityClass: 'QualityClass',
     Customer: 'Customer',
     Vessel: 'Vessel',
@@ -1007,7 +1038,8 @@ export namespace Prisma {
     Dispatch: 'Dispatch',
     Payment: 'Payment',
     Discount: 'Discount',
-    Bill: 'Bill'
+    Bill: 'Bill',
+    BillFile: 'BillFile'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1023,7 +1055,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "bill"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "ownerOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "bill" | "billFile"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1727,6 +1759,76 @@ export namespace Prisma {
           }
         }
       }
+      OwnerOption: {
+        payload: Prisma.$OwnerOptionPayload<ExtArgs>
+        fields: Prisma.OwnerOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.OwnerOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.OwnerOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.OwnerOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.OwnerOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>
+          }
+          findMany: {
+            args: Prisma.OwnerOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>[]
+          }
+          create: {
+            args: Prisma.OwnerOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>
+          }
+          createMany: {
+            args: Prisma.OwnerOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.OwnerOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.OwnerOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>
+          }
+          update: {
+            args: Prisma.OwnerOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.OwnerOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.OwnerOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.OwnerOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$OwnerOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.OwnerOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateOwnerOption>
+          }
+          groupBy: {
+            args: Prisma.OwnerOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<OwnerOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.OwnerOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<OwnerOptionCountAggregateOutputType> | number
+          }
+        }
+      }
       QualityClass: {
         payload: Prisma.$QualityClassPayload<ExtArgs>
         fields: Prisma.QualityClassFieldRefs
@@ -2357,6 +2459,76 @@ export namespace Prisma {
           }
         }
       }
+      BillFile: {
+        payload: Prisma.$BillFilePayload<ExtArgs>
+        fields: Prisma.BillFileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BillFileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BillFileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>
+          }
+          findFirst: {
+            args: Prisma.BillFileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BillFileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>
+          }
+          findMany: {
+            args: Prisma.BillFileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>[]
+          }
+          create: {
+            args: Prisma.BillFileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>
+          }
+          createMany: {
+            args: Prisma.BillFileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BillFileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>[]
+          }
+          delete: {
+            args: Prisma.BillFileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>
+          }
+          update: {
+            args: Prisma.BillFileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>
+          }
+          deleteMany: {
+            args: Prisma.BillFileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BillFileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BillFileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BillFilePayload>
+          }
+          aggregate: {
+            args: Prisma.BillFileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBillFile>
+          }
+          groupBy: {
+            args: Prisma.BillFileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BillFileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BillFileCountArgs<ExtArgs>
+            result: $Utils.Optional<BillFileCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2928,6 +3100,37 @@ export namespace Prisma {
    */
   export type PurchaseOrderCountOutputTypeCountDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DispatchWhereInput
+  }
+
+
+  /**
+   * Count Type BillCountOutputType
+   */
+
+  export type BillCountOutputType = {
+    files: number
+  }
+
+  export type BillCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    files?: boolean | BillCountOutputTypeCountFilesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BillCountOutputType without action
+   */
+  export type BillCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillCountOutputType
+     */
+    select?: BillCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BillCountOutputType without action
+   */
+  export type BillCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillFileWhereInput
   }
 
 
@@ -12239,6 +12442,872 @@ export namespace Prisma {
      * Select specific fields to fetch from the DealingCompanyOption
      */
     select?: DealingCompanyOptionSelect<ExtArgs> | null
+  }
+
+
+  /**
+   * Model OwnerOption
+   */
+
+  export type AggregateOwnerOption = {
+    _count: OwnerOptionCountAggregateOutputType | null
+    _min: OwnerOptionMinAggregateOutputType | null
+    _max: OwnerOptionMaxAggregateOutputType | null
+  }
+
+  export type OwnerOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OwnerOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type OwnerOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type OwnerOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OwnerOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type OwnerOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type OwnerOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OwnerOption to aggregate.
+     */
+    where?: OwnerOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OwnerOptions to fetch.
+     */
+    orderBy?: OwnerOptionOrderByWithRelationInput | OwnerOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: OwnerOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OwnerOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OwnerOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned OwnerOptions
+    **/
+    _count?: true | OwnerOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: OwnerOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: OwnerOptionMaxAggregateInputType
+  }
+
+  export type GetOwnerOptionAggregateType<T extends OwnerOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateOwnerOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateOwnerOption[P]>
+      : GetScalarType<T[P], AggregateOwnerOption[P]>
+  }
+
+
+
+
+  export type OwnerOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OwnerOptionWhereInput
+    orderBy?: OwnerOptionOrderByWithAggregationInput | OwnerOptionOrderByWithAggregationInput[]
+    by: OwnerOptionScalarFieldEnum[] | OwnerOptionScalarFieldEnum
+    having?: OwnerOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: OwnerOptionCountAggregateInputType | true
+    _min?: OwnerOptionMinAggregateInputType
+    _max?: OwnerOptionMaxAggregateInputType
+  }
+
+  export type OwnerOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: OwnerOptionCountAggregateOutputType | null
+    _min: OwnerOptionMinAggregateOutputType | null
+    _max: OwnerOptionMaxAggregateOutputType | null
+  }
+
+  type GetOwnerOptionGroupByPayload<T extends OwnerOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<OwnerOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof OwnerOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], OwnerOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], OwnerOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type OwnerOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["ownerOption"]>
+
+  export type OwnerOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["ownerOption"]>
+
+  export type OwnerOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+
+  export type $OwnerOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "OwnerOption"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["ownerOption"]>
+    composites: {}
+  }
+
+  type OwnerOptionGetPayload<S extends boolean | null | undefined | OwnerOptionDefaultArgs> = $Result.GetResult<Prisma.$OwnerOptionPayload, S>
+
+  type OwnerOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<OwnerOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: OwnerOptionCountAggregateInputType | true
+    }
+
+  export interface OwnerOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['OwnerOption'], meta: { name: 'OwnerOption' } }
+    /**
+     * Find zero or one OwnerOption that matches the filter.
+     * @param {OwnerOptionFindUniqueArgs} args - Arguments to find a OwnerOption
+     * @example
+     * // Get one OwnerOption
+     * const ownerOption = await prisma.ownerOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends OwnerOptionFindUniqueArgs>(args: SelectSubset<T, OwnerOptionFindUniqueArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one OwnerOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {OwnerOptionFindUniqueOrThrowArgs} args - Arguments to find a OwnerOption
+     * @example
+     * // Get one OwnerOption
+     * const ownerOption = await prisma.ownerOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends OwnerOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, OwnerOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first OwnerOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionFindFirstArgs} args - Arguments to find a OwnerOption
+     * @example
+     * // Get one OwnerOption
+     * const ownerOption = await prisma.ownerOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends OwnerOptionFindFirstArgs>(args?: SelectSubset<T, OwnerOptionFindFirstArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first OwnerOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionFindFirstOrThrowArgs} args - Arguments to find a OwnerOption
+     * @example
+     * // Get one OwnerOption
+     * const ownerOption = await prisma.ownerOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends OwnerOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, OwnerOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more OwnerOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all OwnerOptions
+     * const ownerOptions = await prisma.ownerOption.findMany()
+     * 
+     * // Get first 10 OwnerOptions
+     * const ownerOptions = await prisma.ownerOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const ownerOptionWithIdOnly = await prisma.ownerOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends OwnerOptionFindManyArgs>(args?: SelectSubset<T, OwnerOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a OwnerOption.
+     * @param {OwnerOptionCreateArgs} args - Arguments to create a OwnerOption.
+     * @example
+     * // Create one OwnerOption
+     * const OwnerOption = await prisma.ownerOption.create({
+     *   data: {
+     *     // ... data to create a OwnerOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends OwnerOptionCreateArgs>(args: SelectSubset<T, OwnerOptionCreateArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many OwnerOptions.
+     * @param {OwnerOptionCreateManyArgs} args - Arguments to create many OwnerOptions.
+     * @example
+     * // Create many OwnerOptions
+     * const ownerOption = await prisma.ownerOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends OwnerOptionCreateManyArgs>(args?: SelectSubset<T, OwnerOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many OwnerOptions and returns the data saved in the database.
+     * @param {OwnerOptionCreateManyAndReturnArgs} args - Arguments to create many OwnerOptions.
+     * @example
+     * // Create many OwnerOptions
+     * const ownerOption = await prisma.ownerOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many OwnerOptions and only return the `id`
+     * const ownerOptionWithIdOnly = await prisma.ownerOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends OwnerOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, OwnerOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a OwnerOption.
+     * @param {OwnerOptionDeleteArgs} args - Arguments to delete one OwnerOption.
+     * @example
+     * // Delete one OwnerOption
+     * const OwnerOption = await prisma.ownerOption.delete({
+     *   where: {
+     *     // ... filter to delete one OwnerOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends OwnerOptionDeleteArgs>(args: SelectSubset<T, OwnerOptionDeleteArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one OwnerOption.
+     * @param {OwnerOptionUpdateArgs} args - Arguments to update one OwnerOption.
+     * @example
+     * // Update one OwnerOption
+     * const ownerOption = await prisma.ownerOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends OwnerOptionUpdateArgs>(args: SelectSubset<T, OwnerOptionUpdateArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more OwnerOptions.
+     * @param {OwnerOptionDeleteManyArgs} args - Arguments to filter OwnerOptions to delete.
+     * @example
+     * // Delete a few OwnerOptions
+     * const { count } = await prisma.ownerOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends OwnerOptionDeleteManyArgs>(args?: SelectSubset<T, OwnerOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more OwnerOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many OwnerOptions
+     * const ownerOption = await prisma.ownerOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends OwnerOptionUpdateManyArgs>(args: SelectSubset<T, OwnerOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one OwnerOption.
+     * @param {OwnerOptionUpsertArgs} args - Arguments to update or create a OwnerOption.
+     * @example
+     * // Update or create a OwnerOption
+     * const ownerOption = await prisma.ownerOption.upsert({
+     *   create: {
+     *     // ... data to create a OwnerOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the OwnerOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends OwnerOptionUpsertArgs>(args: SelectSubset<T, OwnerOptionUpsertArgs<ExtArgs>>): Prisma__OwnerOptionClient<$Result.GetResult<Prisma.$OwnerOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of OwnerOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionCountArgs} args - Arguments to filter OwnerOptions to count.
+     * @example
+     * // Count the number of OwnerOptions
+     * const count = await prisma.ownerOption.count({
+     *   where: {
+     *     // ... the filter for the OwnerOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends OwnerOptionCountArgs>(
+      args?: Subset<T, OwnerOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], OwnerOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a OwnerOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends OwnerOptionAggregateArgs>(args: Subset<T, OwnerOptionAggregateArgs>): Prisma.PrismaPromise<GetOwnerOptionAggregateType<T>>
+
+    /**
+     * Group by OwnerOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {OwnerOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends OwnerOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: OwnerOptionGroupByArgs['orderBy'] }
+        : { orderBy?: OwnerOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, OwnerOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetOwnerOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the OwnerOption model
+   */
+  readonly fields: OwnerOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for OwnerOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__OwnerOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the OwnerOption model
+   */ 
+  interface OwnerOptionFieldRefs {
+    readonly id: FieldRef<"OwnerOption", 'String'>
+    readonly name: FieldRef<"OwnerOption", 'String'>
+    readonly createdAt: FieldRef<"OwnerOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"OwnerOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * OwnerOption findUnique
+   */
+  export type OwnerOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which OwnerOption to fetch.
+     */
+    where: OwnerOptionWhereUniqueInput
+  }
+
+  /**
+   * OwnerOption findUniqueOrThrow
+   */
+  export type OwnerOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which OwnerOption to fetch.
+     */
+    where: OwnerOptionWhereUniqueInput
+  }
+
+  /**
+   * OwnerOption findFirst
+   */
+  export type OwnerOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which OwnerOption to fetch.
+     */
+    where?: OwnerOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OwnerOptions to fetch.
+     */
+    orderBy?: OwnerOptionOrderByWithRelationInput | OwnerOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OwnerOptions.
+     */
+    cursor?: OwnerOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OwnerOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OwnerOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OwnerOptions.
+     */
+    distinct?: OwnerOptionScalarFieldEnum | OwnerOptionScalarFieldEnum[]
+  }
+
+  /**
+   * OwnerOption findFirstOrThrow
+   */
+  export type OwnerOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which OwnerOption to fetch.
+     */
+    where?: OwnerOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OwnerOptions to fetch.
+     */
+    orderBy?: OwnerOptionOrderByWithRelationInput | OwnerOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for OwnerOptions.
+     */
+    cursor?: OwnerOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OwnerOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OwnerOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of OwnerOptions.
+     */
+    distinct?: OwnerOptionScalarFieldEnum | OwnerOptionScalarFieldEnum[]
+  }
+
+  /**
+   * OwnerOption findMany
+   */
+  export type OwnerOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * Filter, which OwnerOptions to fetch.
+     */
+    where?: OwnerOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of OwnerOptions to fetch.
+     */
+    orderBy?: OwnerOptionOrderByWithRelationInput | OwnerOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing OwnerOptions.
+     */
+    cursor?: OwnerOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` OwnerOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` OwnerOptions.
+     */
+    skip?: number
+    distinct?: OwnerOptionScalarFieldEnum | OwnerOptionScalarFieldEnum[]
+  }
+
+  /**
+   * OwnerOption create
+   */
+  export type OwnerOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to create a OwnerOption.
+     */
+    data: XOR<OwnerOptionCreateInput, OwnerOptionUncheckedCreateInput>
+  }
+
+  /**
+   * OwnerOption createMany
+   */
+  export type OwnerOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many OwnerOptions.
+     */
+    data: OwnerOptionCreateManyInput | OwnerOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OwnerOption createManyAndReturn
+   */
+  export type OwnerOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many OwnerOptions.
+     */
+    data: OwnerOptionCreateManyInput | OwnerOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * OwnerOption update
+   */
+  export type OwnerOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * The data needed to update a OwnerOption.
+     */
+    data: XOR<OwnerOptionUpdateInput, OwnerOptionUncheckedUpdateInput>
+    /**
+     * Choose, which OwnerOption to update.
+     */
+    where: OwnerOptionWhereUniqueInput
+  }
+
+  /**
+   * OwnerOption updateMany
+   */
+  export type OwnerOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update OwnerOptions.
+     */
+    data: XOR<OwnerOptionUpdateManyMutationInput, OwnerOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which OwnerOptions to update
+     */
+    where?: OwnerOptionWhereInput
+  }
+
+  /**
+   * OwnerOption upsert
+   */
+  export type OwnerOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * The filter to search for the OwnerOption to update in case it exists.
+     */
+    where: OwnerOptionWhereUniqueInput
+    /**
+     * In case the OwnerOption found by the `where` argument doesn't exist, create a new OwnerOption with this data.
+     */
+    create: XOR<OwnerOptionCreateInput, OwnerOptionUncheckedCreateInput>
+    /**
+     * In case the OwnerOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<OwnerOptionUpdateInput, OwnerOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * OwnerOption delete
+   */
+  export type OwnerOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
+    /**
+     * Filter which OwnerOption to delete.
+     */
+    where: OwnerOptionWhereUniqueInput
+  }
+
+  /**
+   * OwnerOption deleteMany
+   */
+  export type OwnerOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which OwnerOptions to delete
+     */
+    where?: OwnerOptionWhereInput
+  }
+
+  /**
+   * OwnerOption without action
+   */
+  export type OwnerOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OwnerOption
+     */
+    select?: OwnerOptionSelect<ExtArgs> | null
   }
 
 
@@ -21590,17 +22659,27 @@ export namespace Prisma {
 
   export type AggregateBill = {
     _count: BillCountAggregateOutputType | null
+    _avg: BillAvgAggregateOutputType | null
+    _sum: BillSumAggregateOutputType | null
     _min: BillMinAggregateOutputType | null
     _max: BillMaxAggregateOutputType | null
+  }
+
+  export type BillAvgAggregateOutputType = {
+    invoiceAmount: Decimal | null
+  }
+
+  export type BillSumAggregateOutputType = {
+    invoiceAmount: Decimal | null
   }
 
   export type BillMinAggregateOutputType = {
     id: string | null
     date: Date | null
+    invoiceIssuedBy: string | null
+    invoiceAmount: Decimal | null
+    approverName: string | null
     remark: string | null
-    fileName: string | null
-    fileMime: string | null
-    fileData: Buffer | null
     status: $Enums.BillStatus | null
     reviewRemark: string | null
     reviewedAt: Date | null
@@ -21612,10 +22691,10 @@ export namespace Prisma {
   export type BillMaxAggregateOutputType = {
     id: string | null
     date: Date | null
+    invoiceIssuedBy: string | null
+    invoiceAmount: Decimal | null
+    approverName: string | null
     remark: string | null
-    fileName: string | null
-    fileMime: string | null
-    fileData: Buffer | null
     status: $Enums.BillStatus | null
     reviewRemark: string | null
     reviewedAt: Date | null
@@ -21627,10 +22706,10 @@ export namespace Prisma {
   export type BillCountAggregateOutputType = {
     id: number
     date: number
+    invoiceIssuedBy: number
+    invoiceAmount: number
+    approverName: number
     remark: number
-    fileName: number
-    fileMime: number
-    fileData: number
     status: number
     reviewRemark: number
     reviewedAt: number
@@ -21641,13 +22720,21 @@ export namespace Prisma {
   }
 
 
+  export type BillAvgAggregateInputType = {
+    invoiceAmount?: true
+  }
+
+  export type BillSumAggregateInputType = {
+    invoiceAmount?: true
+  }
+
   export type BillMinAggregateInputType = {
     id?: true
     date?: true
+    invoiceIssuedBy?: true
+    invoiceAmount?: true
+    approverName?: true
     remark?: true
-    fileName?: true
-    fileMime?: true
-    fileData?: true
     status?: true
     reviewRemark?: true
     reviewedAt?: true
@@ -21659,10 +22746,10 @@ export namespace Prisma {
   export type BillMaxAggregateInputType = {
     id?: true
     date?: true
+    invoiceIssuedBy?: true
+    invoiceAmount?: true
+    approverName?: true
     remark?: true
-    fileName?: true
-    fileMime?: true
-    fileData?: true
     status?: true
     reviewRemark?: true
     reviewedAt?: true
@@ -21674,10 +22761,10 @@ export namespace Prisma {
   export type BillCountAggregateInputType = {
     id?: true
     date?: true
+    invoiceIssuedBy?: true
+    invoiceAmount?: true
+    approverName?: true
     remark?: true
-    fileName?: true
-    fileMime?: true
-    fileData?: true
     status?: true
     reviewRemark?: true
     reviewedAt?: true
@@ -21725,6 +22812,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: BillAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BillSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: BillMinAggregateInputType
@@ -21755,6 +22854,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: BillCountAggregateInputType | true
+    _avg?: BillAvgAggregateInputType
+    _sum?: BillSumAggregateInputType
     _min?: BillMinAggregateInputType
     _max?: BillMaxAggregateInputType
   }
@@ -21762,10 +22863,10 @@ export namespace Prisma {
   export type BillGroupByOutputType = {
     id: string
     date: Date
+    invoiceIssuedBy: string
+    invoiceAmount: Decimal | null
+    approverName: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status: $Enums.BillStatus
     reviewRemark: string
     reviewedAt: Date | null
@@ -21773,6 +22874,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     _count: BillCountAggregateOutputType | null
+    _avg: BillAvgAggregateOutputType | null
+    _sum: BillSumAggregateOutputType | null
     _min: BillMinAggregateOutputType | null
     _max: BillMaxAggregateOutputType | null
   }
@@ -21794,10 +22897,10 @@ export namespace Prisma {
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     date?: boolean
+    invoiceIssuedBy?: boolean
+    invoiceAmount?: boolean
+    approverName?: boolean
     remark?: boolean
-    fileName?: boolean
-    fileMime?: boolean
-    fileData?: boolean
     status?: boolean
     reviewRemark?: boolean
     reviewedAt?: boolean
@@ -21805,15 +22908,17 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     staff?: boolean | StaffDefaultArgs<ExtArgs>
+    files?: boolean | Bill$filesArgs<ExtArgs>
+    _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bill"]>
 
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     date?: boolean
+    invoiceIssuedBy?: boolean
+    invoiceAmount?: boolean
+    approverName?: boolean
     remark?: boolean
-    fileName?: boolean
-    fileMime?: boolean
-    fileData?: boolean
     status?: boolean
     reviewRemark?: boolean
     reviewedAt?: boolean
@@ -21826,10 +22931,10 @@ export namespace Prisma {
   export type BillSelectScalar = {
     id?: boolean
     date?: boolean
+    invoiceIssuedBy?: boolean
+    invoiceAmount?: boolean
+    approverName?: boolean
     remark?: boolean
-    fileName?: boolean
-    fileMime?: boolean
-    fileData?: boolean
     status?: boolean
     reviewRemark?: boolean
     reviewedAt?: boolean
@@ -21840,6 +22945,8 @@ export namespace Prisma {
 
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     staff?: boolean | StaffDefaultArgs<ExtArgs>
+    files?: boolean | Bill$filesArgs<ExtArgs>
+    _count?: boolean | BillCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BillIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     staff?: boolean | StaffDefaultArgs<ExtArgs>
@@ -21849,17 +22956,27 @@ export namespace Prisma {
     name: "Bill"
     objects: {
       staff: Prisma.$StaffPayload<ExtArgs>
+      files: Prisma.$BillFilePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       date: Date
       /**
+       * Who issued the invoice (vendor / party name).
+       */
+      invoiceIssuedBy: string
+      /**
+       * Invoice total in rupees.
+       */
+      invoiceAmount: Prisma.Decimal | null
+      /**
+       * Owner option name selected as the bill approver.
+       */
+      approverName: string
+      /**
        * Staff remark written at upload.
        */
       remark: string
-      fileName: string
-      fileMime: string
-      fileData: Buffer
       status: $Enums.BillStatus
       /**
        * Owner remark written when approving or rejecting.
@@ -22234,6 +23351,7 @@ export namespace Prisma {
   export interface Prisma__BillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     staff<T extends StaffDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StaffDefaultArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    files<T extends Bill$filesArgs<ExtArgs> = {}>(args?: Subset<T, Bill$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22265,10 +23383,10 @@ export namespace Prisma {
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'String'>
     readonly date: FieldRef<"Bill", 'DateTime'>
+    readonly invoiceIssuedBy: FieldRef<"Bill", 'String'>
+    readonly invoiceAmount: FieldRef<"Bill", 'Decimal'>
+    readonly approverName: FieldRef<"Bill", 'String'>
     readonly remark: FieldRef<"Bill", 'String'>
-    readonly fileName: FieldRef<"Bill", 'String'>
-    readonly fileMime: FieldRef<"Bill", 'String'>
-    readonly fileData: FieldRef<"Bill", 'Bytes'>
     readonly status: FieldRef<"Bill", 'BillStatus'>
     readonly reviewRemark: FieldRef<"Bill", 'String'>
     readonly reviewedAt: FieldRef<"Bill", 'DateTime'>
@@ -22593,6 +23711,26 @@ export namespace Prisma {
   }
 
   /**
+   * Bill.files
+   */
+  export type Bill$filesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    where?: BillFileWhereInput
+    orderBy?: BillFileOrderByWithRelationInput | BillFileOrderByWithRelationInput[]
+    cursor?: BillFileWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BillFileScalarFieldEnum | BillFileScalarFieldEnum[]
+  }
+
+  /**
    * Bill without action
    */
   export type BillDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -22604,6 +23742,997 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BillInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BillFile
+   */
+
+  export type AggregateBillFile = {
+    _count: BillFileCountAggregateOutputType | null
+    _avg: BillFileAvgAggregateOutputType | null
+    _sum: BillFileSumAggregateOutputType | null
+    _min: BillFileMinAggregateOutputType | null
+    _max: BillFileMaxAggregateOutputType | null
+  }
+
+  export type BillFileAvgAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type BillFileSumAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type BillFileMinAggregateOutputType = {
+    id: string | null
+    billId: string | null
+    fileName: string | null
+    fileMime: string | null
+    fileData: Buffer | null
+    sortOrder: number | null
+    createdAt: Date | null
+  }
+
+  export type BillFileMaxAggregateOutputType = {
+    id: string | null
+    billId: string | null
+    fileName: string | null
+    fileMime: string | null
+    fileData: Buffer | null
+    sortOrder: number | null
+    createdAt: Date | null
+  }
+
+  export type BillFileCountAggregateOutputType = {
+    id: number
+    billId: number
+    fileName: number
+    fileMime: number
+    fileData: number
+    sortOrder: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type BillFileAvgAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type BillFileSumAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type BillFileMinAggregateInputType = {
+    id?: true
+    billId?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    sortOrder?: true
+    createdAt?: true
+  }
+
+  export type BillFileMaxAggregateInputType = {
+    id?: true
+    billId?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    sortOrder?: true
+    createdAt?: true
+  }
+
+  export type BillFileCountAggregateInputType = {
+    id?: true
+    billId?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    sortOrder?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type BillFileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BillFile to aggregate.
+     */
+    where?: BillFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillFiles to fetch.
+     */
+    orderBy?: BillFileOrderByWithRelationInput | BillFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BillFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BillFiles
+    **/
+    _count?: true | BillFileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BillFileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BillFileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BillFileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BillFileMaxAggregateInputType
+  }
+
+  export type GetBillFileAggregateType<T extends BillFileAggregateArgs> = {
+        [P in keyof T & keyof AggregateBillFile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBillFile[P]>
+      : GetScalarType<T[P], AggregateBillFile[P]>
+  }
+
+
+
+
+  export type BillFileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillFileWhereInput
+    orderBy?: BillFileOrderByWithAggregationInput | BillFileOrderByWithAggregationInput[]
+    by: BillFileScalarFieldEnum[] | BillFileScalarFieldEnum
+    having?: BillFileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BillFileCountAggregateInputType | true
+    _avg?: BillFileAvgAggregateInputType
+    _sum?: BillFileSumAggregateInputType
+    _min?: BillFileMinAggregateInputType
+    _max?: BillFileMaxAggregateInputType
+  }
+
+  export type BillFileGroupByOutputType = {
+    id: string
+    billId: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder: number
+    createdAt: Date
+    _count: BillFileCountAggregateOutputType | null
+    _avg: BillFileAvgAggregateOutputType | null
+    _sum: BillFileSumAggregateOutputType | null
+    _min: BillFileMinAggregateOutputType | null
+    _max: BillFileMaxAggregateOutputType | null
+  }
+
+  type GetBillFileGroupByPayload<T extends BillFileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BillFileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BillFileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BillFileGroupByOutputType[P]>
+            : GetScalarType<T[P], BillFileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BillFileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    billId?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    bill?: boolean | BillDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["billFile"]>
+
+  export type BillFileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    billId?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    bill?: boolean | BillDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["billFile"]>
+
+  export type BillFileSelectScalar = {
+    id?: boolean
+    billId?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+  }
+
+  export type BillFileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bill?: boolean | BillDefaultArgs<ExtArgs>
+  }
+  export type BillFileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bill?: boolean | BillDefaultArgs<ExtArgs>
+  }
+
+  export type $BillFilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BillFile"
+    objects: {
+      bill: Prisma.$BillPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      billId: string
+      fileName: string
+      fileMime: string
+      fileData: Buffer
+      sortOrder: number
+      createdAt: Date
+    }, ExtArgs["result"]["billFile"]>
+    composites: {}
+  }
+
+  type BillFileGetPayload<S extends boolean | null | undefined | BillFileDefaultArgs> = $Result.GetResult<Prisma.$BillFilePayload, S>
+
+  type BillFileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BillFileFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BillFileCountAggregateInputType | true
+    }
+
+  export interface BillFileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BillFile'], meta: { name: 'BillFile' } }
+    /**
+     * Find zero or one BillFile that matches the filter.
+     * @param {BillFileFindUniqueArgs} args - Arguments to find a BillFile
+     * @example
+     * // Get one BillFile
+     * const billFile = await prisma.billFile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BillFileFindUniqueArgs>(args: SelectSubset<T, BillFileFindUniqueArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BillFile that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BillFileFindUniqueOrThrowArgs} args - Arguments to find a BillFile
+     * @example
+     * // Get one BillFile
+     * const billFile = await prisma.billFile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BillFileFindUniqueOrThrowArgs>(args: SelectSubset<T, BillFileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BillFile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileFindFirstArgs} args - Arguments to find a BillFile
+     * @example
+     * // Get one BillFile
+     * const billFile = await prisma.billFile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BillFileFindFirstArgs>(args?: SelectSubset<T, BillFileFindFirstArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BillFile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileFindFirstOrThrowArgs} args - Arguments to find a BillFile
+     * @example
+     * // Get one BillFile
+     * const billFile = await prisma.billFile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BillFileFindFirstOrThrowArgs>(args?: SelectSubset<T, BillFileFindFirstOrThrowArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BillFiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BillFiles
+     * const billFiles = await prisma.billFile.findMany()
+     * 
+     * // Get first 10 BillFiles
+     * const billFiles = await prisma.billFile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const billFileWithIdOnly = await prisma.billFile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BillFileFindManyArgs>(args?: SelectSubset<T, BillFileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BillFile.
+     * @param {BillFileCreateArgs} args - Arguments to create a BillFile.
+     * @example
+     * // Create one BillFile
+     * const BillFile = await prisma.billFile.create({
+     *   data: {
+     *     // ... data to create a BillFile
+     *   }
+     * })
+     * 
+     */
+    create<T extends BillFileCreateArgs>(args: SelectSubset<T, BillFileCreateArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BillFiles.
+     * @param {BillFileCreateManyArgs} args - Arguments to create many BillFiles.
+     * @example
+     * // Create many BillFiles
+     * const billFile = await prisma.billFile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BillFileCreateManyArgs>(args?: SelectSubset<T, BillFileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BillFiles and returns the data saved in the database.
+     * @param {BillFileCreateManyAndReturnArgs} args - Arguments to create many BillFiles.
+     * @example
+     * // Create many BillFiles
+     * const billFile = await prisma.billFile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BillFiles and only return the `id`
+     * const billFileWithIdOnly = await prisma.billFile.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BillFileCreateManyAndReturnArgs>(args?: SelectSubset<T, BillFileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BillFile.
+     * @param {BillFileDeleteArgs} args - Arguments to delete one BillFile.
+     * @example
+     * // Delete one BillFile
+     * const BillFile = await prisma.billFile.delete({
+     *   where: {
+     *     // ... filter to delete one BillFile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BillFileDeleteArgs>(args: SelectSubset<T, BillFileDeleteArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BillFile.
+     * @param {BillFileUpdateArgs} args - Arguments to update one BillFile.
+     * @example
+     * // Update one BillFile
+     * const billFile = await prisma.billFile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BillFileUpdateArgs>(args: SelectSubset<T, BillFileUpdateArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BillFiles.
+     * @param {BillFileDeleteManyArgs} args - Arguments to filter BillFiles to delete.
+     * @example
+     * // Delete a few BillFiles
+     * const { count } = await prisma.billFile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BillFileDeleteManyArgs>(args?: SelectSubset<T, BillFileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BillFiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BillFiles
+     * const billFile = await prisma.billFile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BillFileUpdateManyArgs>(args: SelectSubset<T, BillFileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BillFile.
+     * @param {BillFileUpsertArgs} args - Arguments to update or create a BillFile.
+     * @example
+     * // Update or create a BillFile
+     * const billFile = await prisma.billFile.upsert({
+     *   create: {
+     *     // ... data to create a BillFile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BillFile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BillFileUpsertArgs>(args: SelectSubset<T, BillFileUpsertArgs<ExtArgs>>): Prisma__BillFileClient<$Result.GetResult<Prisma.$BillFilePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BillFiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileCountArgs} args - Arguments to filter BillFiles to count.
+     * @example
+     * // Count the number of BillFiles
+     * const count = await prisma.billFile.count({
+     *   where: {
+     *     // ... the filter for the BillFiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends BillFileCountArgs>(
+      args?: Subset<T, BillFileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BillFileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BillFile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BillFileAggregateArgs>(args: Subset<T, BillFileAggregateArgs>): Prisma.PrismaPromise<GetBillFileAggregateType<T>>
+
+    /**
+     * Group by BillFile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BillFileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BillFileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BillFileGroupByArgs['orderBy'] }
+        : { orderBy?: BillFileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BillFileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBillFileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BillFile model
+   */
+  readonly fields: BillFileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BillFile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BillFileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bill<T extends BillDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BillDefaultArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BillFile model
+   */ 
+  interface BillFileFieldRefs {
+    readonly id: FieldRef<"BillFile", 'String'>
+    readonly billId: FieldRef<"BillFile", 'String'>
+    readonly fileName: FieldRef<"BillFile", 'String'>
+    readonly fileMime: FieldRef<"BillFile", 'String'>
+    readonly fileData: FieldRef<"BillFile", 'Bytes'>
+    readonly sortOrder: FieldRef<"BillFile", 'Int'>
+    readonly createdAt: FieldRef<"BillFile", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BillFile findUnique
+   */
+  export type BillFileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * Filter, which BillFile to fetch.
+     */
+    where: BillFileWhereUniqueInput
+  }
+
+  /**
+   * BillFile findUniqueOrThrow
+   */
+  export type BillFileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * Filter, which BillFile to fetch.
+     */
+    where: BillFileWhereUniqueInput
+  }
+
+  /**
+   * BillFile findFirst
+   */
+  export type BillFileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * Filter, which BillFile to fetch.
+     */
+    where?: BillFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillFiles to fetch.
+     */
+    orderBy?: BillFileOrderByWithRelationInput | BillFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BillFiles.
+     */
+    cursor?: BillFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BillFiles.
+     */
+    distinct?: BillFileScalarFieldEnum | BillFileScalarFieldEnum[]
+  }
+
+  /**
+   * BillFile findFirstOrThrow
+   */
+  export type BillFileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * Filter, which BillFile to fetch.
+     */
+    where?: BillFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillFiles to fetch.
+     */
+    orderBy?: BillFileOrderByWithRelationInput | BillFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BillFiles.
+     */
+    cursor?: BillFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillFiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BillFiles.
+     */
+    distinct?: BillFileScalarFieldEnum | BillFileScalarFieldEnum[]
+  }
+
+  /**
+   * BillFile findMany
+   */
+  export type BillFileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * Filter, which BillFiles to fetch.
+     */
+    where?: BillFileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BillFiles to fetch.
+     */
+    orderBy?: BillFileOrderByWithRelationInput | BillFileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BillFiles.
+     */
+    cursor?: BillFileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BillFiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BillFiles.
+     */
+    skip?: number
+    distinct?: BillFileScalarFieldEnum | BillFileScalarFieldEnum[]
+  }
+
+  /**
+   * BillFile create
+   */
+  export type BillFileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BillFile.
+     */
+    data: XOR<BillFileCreateInput, BillFileUncheckedCreateInput>
+  }
+
+  /**
+   * BillFile createMany
+   */
+  export type BillFileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BillFiles.
+     */
+    data: BillFileCreateManyInput | BillFileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BillFile createManyAndReturn
+   */
+  export type BillFileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BillFiles.
+     */
+    data: BillFileCreateManyInput | BillFileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BillFile update
+   */
+  export type BillFileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BillFile.
+     */
+    data: XOR<BillFileUpdateInput, BillFileUncheckedUpdateInput>
+    /**
+     * Choose, which BillFile to update.
+     */
+    where: BillFileWhereUniqueInput
+  }
+
+  /**
+   * BillFile updateMany
+   */
+  export type BillFileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BillFiles.
+     */
+    data: XOR<BillFileUpdateManyMutationInput, BillFileUncheckedUpdateManyInput>
+    /**
+     * Filter which BillFiles to update
+     */
+    where?: BillFileWhereInput
+  }
+
+  /**
+   * BillFile upsert
+   */
+  export type BillFileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BillFile to update in case it exists.
+     */
+    where: BillFileWhereUniqueInput
+    /**
+     * In case the BillFile found by the `where` argument doesn't exist, create a new BillFile with this data.
+     */
+    create: XOR<BillFileCreateInput, BillFileUncheckedCreateInput>
+    /**
+     * In case the BillFile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BillFileUpdateInput, BillFileUncheckedUpdateInput>
+  }
+
+  /**
+   * BillFile delete
+   */
+  export type BillFileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
+    /**
+     * Filter which BillFile to delete.
+     */
+    where: BillFileWhereUniqueInput
+  }
+
+  /**
+   * BillFile deleteMany
+   */
+  export type BillFileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BillFiles to delete
+     */
+    where?: BillFileWhereInput
+  }
+
+  /**
+   * BillFile without action
+   */
+  export type BillFileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillFile
+     */
+    select?: BillFileSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillFileInclude<ExtArgs> | null
   }
 
 
@@ -22730,6 +24859,16 @@ export namespace Prisma {
   };
 
   export type DealingCompanyOptionScalarFieldEnum = (typeof DealingCompanyOptionScalarFieldEnum)[keyof typeof DealingCompanyOptionScalarFieldEnum]
+
+
+  export const OwnerOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type OwnerOptionScalarFieldEnum = (typeof OwnerOptionScalarFieldEnum)[keyof typeof OwnerOptionScalarFieldEnum]
 
 
   export const QualityClassScalarFieldEnum: {
@@ -22904,10 +25043,10 @@ export namespace Prisma {
   export const BillScalarFieldEnum: {
     id: 'id',
     date: 'date',
+    invoiceIssuedBy: 'invoiceIssuedBy',
+    invoiceAmount: 'invoiceAmount',
+    approverName: 'approverName',
     remark: 'remark',
-    fileName: 'fileName',
-    fileMime: 'fileMime',
-    fileData: 'fileData',
     status: 'status',
     reviewRemark: 'reviewRemark',
     reviewedAt: 'reviewedAt',
@@ -22917,6 +25056,19 @@ export namespace Prisma {
   };
 
   export type BillScalarFieldEnum = (typeof BillScalarFieldEnum)[keyof typeof BillScalarFieldEnum]
+
+
+  export const BillFileScalarFieldEnum: {
+    id: 'id',
+    billId: 'billId',
+    fileName: 'fileName',
+    fileMime: 'fileMime',
+    fileData: 'fileData',
+    sortOrder: 'sortOrder',
+    createdAt: 'createdAt'
+  };
+
+  export type BillFileScalarFieldEnum = (typeof BillFileScalarFieldEnum)[keyof typeof BillFileScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -23138,20 +25290,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Bytes'
-   */
-  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes[]'
-   */
-  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
-    
-
-
-  /**
    * Reference to a field of type 'BillStatus'
    */
   export type EnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillStatus'>
@@ -23162,6 +25300,20 @@ export namespace Prisma {
    * Reference to a field of type 'BillStatus[]'
    */
   export type ListEnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -23737,6 +25889,53 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"DealingCompanyOption"> | string
     createdAt?: DateTimeWithAggregatesFilter<"DealingCompanyOption"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"DealingCompanyOption"> | Date | string
+  }
+
+  export type OwnerOptionWhereInput = {
+    AND?: OwnerOptionWhereInput | OwnerOptionWhereInput[]
+    OR?: OwnerOptionWhereInput[]
+    NOT?: OwnerOptionWhereInput | OwnerOptionWhereInput[]
+    id?: StringFilter<"OwnerOption"> | string
+    name?: StringFilter<"OwnerOption"> | string
+    createdAt?: DateTimeFilter<"OwnerOption"> | Date | string
+    updatedAt?: DateTimeFilter<"OwnerOption"> | Date | string
+  }
+
+  export type OwnerOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OwnerOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: OwnerOptionWhereInput | OwnerOptionWhereInput[]
+    OR?: OwnerOptionWhereInput[]
+    NOT?: OwnerOptionWhereInput | OwnerOptionWhereInput[]
+    createdAt?: DateTimeFilter<"OwnerOption"> | Date | string
+    updatedAt?: DateTimeFilter<"OwnerOption"> | Date | string
+  }, "id" | "name">
+
+  export type OwnerOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: OwnerOptionCountOrderByAggregateInput
+    _max?: OwnerOptionMaxOrderByAggregateInput
+    _min?: OwnerOptionMinOrderByAggregateInput
+  }
+
+  export type OwnerOptionScalarWhereWithAggregatesInput = {
+    AND?: OwnerOptionScalarWhereWithAggregatesInput | OwnerOptionScalarWhereWithAggregatesInput[]
+    OR?: OwnerOptionScalarWhereWithAggregatesInput[]
+    NOT?: OwnerOptionScalarWhereWithAggregatesInput | OwnerOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"OwnerOption"> | string
+    name?: StringWithAggregatesFilter<"OwnerOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"OwnerOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"OwnerOption"> | Date | string
   }
 
   export type QualityClassWhereInput = {
@@ -24678,10 +26877,10 @@ export namespace Prisma {
     NOT?: BillWhereInput | BillWhereInput[]
     id?: StringFilter<"Bill"> | string
     date?: DateTimeFilter<"Bill"> | Date | string
+    invoiceIssuedBy?: StringFilter<"Bill"> | string
+    invoiceAmount?: DecimalNullableFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFilter<"Bill"> | string
     remark?: StringFilter<"Bill"> | string
-    fileName?: StringFilter<"Bill"> | string
-    fileMime?: StringFilter<"Bill"> | string
-    fileData?: BytesFilter<"Bill"> | Buffer
     status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
@@ -24689,15 +26888,16 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     staff?: XOR<StaffRelationFilter, StaffWhereInput>
+    files?: BillFileListRelationFilter
   }
 
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
     date?: SortOrder
+    invoiceIssuedBy?: SortOrder
+    invoiceAmount?: SortOrderInput | SortOrder
+    approverName?: SortOrder
     remark?: SortOrder
-    fileName?: SortOrder
-    fileMime?: SortOrder
-    fileData?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
     reviewedAt?: SortOrderInput | SortOrder
@@ -24705,6 +26905,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     staff?: StaffOrderByWithRelationInput
+    files?: BillFileOrderByRelationAggregateInput
   }
 
   export type BillWhereUniqueInput = Prisma.AtLeast<{
@@ -24713,10 +26914,10 @@ export namespace Prisma {
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     date?: DateTimeFilter<"Bill"> | Date | string
+    invoiceIssuedBy?: StringFilter<"Bill"> | string
+    invoiceAmount?: DecimalNullableFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFilter<"Bill"> | string
     remark?: StringFilter<"Bill"> | string
-    fileName?: StringFilter<"Bill"> | string
-    fileMime?: StringFilter<"Bill"> | string
-    fileData?: BytesFilter<"Bill"> | Buffer
     status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
@@ -24724,15 +26925,16 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     staff?: XOR<StaffRelationFilter, StaffWhereInput>
+    files?: BillFileListRelationFilter
   }, "id">
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
     date?: SortOrder
+    invoiceIssuedBy?: SortOrder
+    invoiceAmount?: SortOrderInput | SortOrder
+    approverName?: SortOrder
     remark?: SortOrder
-    fileName?: SortOrder
-    fileMime?: SortOrder
-    fileData?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
     reviewedAt?: SortOrderInput | SortOrder
@@ -24740,8 +26942,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BillCountOrderByAggregateInput
+    _avg?: BillAvgOrderByAggregateInput
     _max?: BillMaxOrderByAggregateInput
     _min?: BillMinOrderByAggregateInput
+    _sum?: BillSumOrderByAggregateInput
   }
 
   export type BillScalarWhereWithAggregatesInput = {
@@ -24750,16 +26954,83 @@ export namespace Prisma {
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Bill"> | string
     date?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
+    invoiceIssuedBy?: StringWithAggregatesFilter<"Bill"> | string
+    invoiceAmount?: DecimalNullableWithAggregatesFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringWithAggregatesFilter<"Bill"> | string
     remark?: StringWithAggregatesFilter<"Bill"> | string
-    fileName?: StringWithAggregatesFilter<"Bill"> | string
-    fileMime?: StringWithAggregatesFilter<"Bill"> | string
-    fileData?: BytesWithAggregatesFilter<"Bill"> | Buffer
     status?: EnumBillStatusWithAggregatesFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringWithAggregatesFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
     staffId?: StringWithAggregatesFilter<"Bill"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
+  }
+
+  export type BillFileWhereInput = {
+    AND?: BillFileWhereInput | BillFileWhereInput[]
+    OR?: BillFileWhereInput[]
+    NOT?: BillFileWhereInput | BillFileWhereInput[]
+    id?: StringFilter<"BillFile"> | string
+    billId?: StringFilter<"BillFile"> | string
+    fileName?: StringFilter<"BillFile"> | string
+    fileMime?: StringFilter<"BillFile"> | string
+    fileData?: BytesFilter<"BillFile"> | Buffer
+    sortOrder?: IntFilter<"BillFile"> | number
+    createdAt?: DateTimeFilter<"BillFile"> | Date | string
+    bill?: XOR<BillRelationFilter, BillWhereInput>
+  }
+
+  export type BillFileOrderByWithRelationInput = {
+    id?: SortOrder
+    billId?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    bill?: BillOrderByWithRelationInput
+  }
+
+  export type BillFileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BillFileWhereInput | BillFileWhereInput[]
+    OR?: BillFileWhereInput[]
+    NOT?: BillFileWhereInput | BillFileWhereInput[]
+    billId?: StringFilter<"BillFile"> | string
+    fileName?: StringFilter<"BillFile"> | string
+    fileMime?: StringFilter<"BillFile"> | string
+    fileData?: BytesFilter<"BillFile"> | Buffer
+    sortOrder?: IntFilter<"BillFile"> | number
+    createdAt?: DateTimeFilter<"BillFile"> | Date | string
+    bill?: XOR<BillRelationFilter, BillWhereInput>
+  }, "id">
+
+  export type BillFileOrderByWithAggregationInput = {
+    id?: SortOrder
+    billId?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    _count?: BillFileCountOrderByAggregateInput
+    _avg?: BillFileAvgOrderByAggregateInput
+    _max?: BillFileMaxOrderByAggregateInput
+    _min?: BillFileMinOrderByAggregateInput
+    _sum?: BillFileSumOrderByAggregateInput
+  }
+
+  export type BillFileScalarWhereWithAggregatesInput = {
+    AND?: BillFileScalarWhereWithAggregatesInput | BillFileScalarWhereWithAggregatesInput[]
+    OR?: BillFileScalarWhereWithAggregatesInput[]
+    NOT?: BillFileScalarWhereWithAggregatesInput | BillFileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BillFile"> | string
+    billId?: StringWithAggregatesFilter<"BillFile"> | string
+    fileName?: StringWithAggregatesFilter<"BillFile"> | string
+    fileMime?: StringWithAggregatesFilter<"BillFile"> | string
+    fileData?: BytesWithAggregatesFilter<"BillFile"> | Buffer
+    sortOrder?: IntWithAggregatesFilter<"BillFile"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"BillFile"> | Date | string
   }
 
   export type StaffCreateInput = {
@@ -25363,6 +27634,55 @@ export namespace Prisma {
   }
 
   export type DealingCompanyOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OwnerOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OwnerOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OwnerOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OwnerOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OwnerOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OwnerOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OwnerOptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26414,70 +28734,74 @@ export namespace Prisma {
   export type BillCreateInput = {
     id?: string
     date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status?: $Enums.BillStatus
     reviewRemark?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     staff: StaffCreateNestedOneWithoutBillsInput
+    files?: BillFileCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateInput = {
     id?: string
     date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status?: $Enums.BillStatus
     reviewRemark?: string
     reviewedAt?: Date | string | null
     staffId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    files?: BillFileUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     staff?: StaffUpdateOneRequiredWithoutBillsNestedInput
+    files?: BillFileUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     staffId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: BillFileUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillCreateManyInput = {
     id?: string
     date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status?: $Enums.BillStatus
     reviewRemark?: string
     reviewedAt?: Date | string | null
@@ -26489,10 +28813,10 @@ export namespace Prisma {
   export type BillUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -26503,16 +28827,85 @@ export namespace Prisma {
   export type BillUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     staffId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillFileCreateInput = {
+    id?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder?: number
+    createdAt?: Date | string
+    bill: BillCreateNestedOneWithoutFilesInput
+  }
+
+  export type BillFileUncheckedCreateInput = {
+    id?: string
+    billId: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BillFileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bill?: BillUpdateOneRequiredWithoutFilesNestedInput
+  }
+
+  export type BillFileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billId?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillFileCreateManyInput = {
+    id?: string
+    billId: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BillFileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillFileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    billId?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -26969,6 +29362,27 @@ export namespace Prisma {
   }
 
   export type DealingCompanyOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OwnerOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OwnerOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type OwnerOptionMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
@@ -27819,13 +30233,6 @@ export namespace Prisma {
     _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
-  export type BytesFilter<$PrismaModel = never> = {
-    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
-    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesFilter<$PrismaModel> | Buffer
-  }
-
   export type EnumBillStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
     in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
@@ -27838,13 +30245,23 @@ export namespace Prisma {
     isNot?: StaffWhereInput
   }
 
+  export type BillFileListRelationFilter = {
+    every?: BillFileWhereInput
+    some?: BillFileWhereInput
+    none?: BillFileWhereInput
+  }
+
+  export type BillFileOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
+    invoiceIssuedBy?: SortOrder
+    invoiceAmount?: SortOrder
+    approverName?: SortOrder
     remark?: SortOrder
-    fileName?: SortOrder
-    fileMime?: SortOrder
-    fileData?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
     reviewedAt?: SortOrder
@@ -27853,13 +30270,17 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type BillAvgOrderByAggregateInput = {
+    invoiceAmount?: SortOrder
+  }
+
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
+    invoiceIssuedBy?: SortOrder
+    invoiceAmount?: SortOrder
+    approverName?: SortOrder
     remark?: SortOrder
-    fileName?: SortOrder
-    fileMime?: SortOrder
-    fileData?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
     reviewedAt?: SortOrder
@@ -27871,16 +30292,91 @@ export namespace Prisma {
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
+    invoiceIssuedBy?: SortOrder
+    invoiceAmount?: SortOrder
+    approverName?: SortOrder
     remark?: SortOrder
-    fileName?: SortOrder
-    fileMime?: SortOrder
-    fileData?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
     reviewedAt?: SortOrder
     staffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type BillSumOrderByAggregateInput = {
+    invoiceAmount?: SortOrder
+  }
+
+  export type EnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillStatusFilter<$PrismaModel>
+    _max?: NestedEnumBillStatusFilter<$PrismaModel>
+  }
+
+  export type BytesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Buffer
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type BillRelationFilter = {
+    is?: BillWhereInput
+    isNot?: BillWhereInput
+  }
+
+  export type BillFileCountOrderByAggregateInput = {
+    id?: SortOrder
+    billId?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BillFileAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type BillFileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    billId?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BillFileMinOrderByAggregateInput = {
+    id?: SortOrder
+    billId?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type BillFileSumOrderByAggregateInput = {
+    sortOrder?: SortOrder
   }
 
   export type BytesWithAggregatesFilter<$PrismaModel = never> = {
@@ -27893,14 +30389,20 @@ export namespace Prisma {
     _max?: NestedBytesFilter<$PrismaModel>
   }
 
-  export type EnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumBillStatusFilter<$PrismaModel>
-    _max?: NestedEnumBillStatusFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type StaffCreatepageKeysInput = {
@@ -29246,8 +31748,18 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput
   }
 
-  export type BytesFieldUpdateOperationsInput = {
-    set?: Buffer
+  export type BillFileCreateNestedManyWithoutBillInput = {
+    create?: XOR<BillFileCreateWithoutBillInput, BillFileUncheckedCreateWithoutBillInput> | BillFileCreateWithoutBillInput[] | BillFileUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: BillFileCreateOrConnectWithoutBillInput | BillFileCreateOrConnectWithoutBillInput[]
+    createMany?: BillFileCreateManyBillInputEnvelope
+    connect?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+  }
+
+  export type BillFileUncheckedCreateNestedManyWithoutBillInput = {
+    create?: XOR<BillFileCreateWithoutBillInput, BillFileUncheckedCreateWithoutBillInput> | BillFileCreateWithoutBillInput[] | BillFileUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: BillFileCreateOrConnectWithoutBillInput | BillFileCreateOrConnectWithoutBillInput[]
+    createMany?: BillFileCreateManyBillInputEnvelope
+    connect?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
   }
 
   export type EnumBillStatusFieldUpdateOperationsInput = {
@@ -29260,6 +31772,60 @@ export namespace Prisma {
     upsert?: StaffUpsertWithoutBillsInput
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutBillsInput, StaffUpdateWithoutBillsInput>, StaffUncheckedUpdateWithoutBillsInput>
+  }
+
+  export type BillFileUpdateManyWithoutBillNestedInput = {
+    create?: XOR<BillFileCreateWithoutBillInput, BillFileUncheckedCreateWithoutBillInput> | BillFileCreateWithoutBillInput[] | BillFileUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: BillFileCreateOrConnectWithoutBillInput | BillFileCreateOrConnectWithoutBillInput[]
+    upsert?: BillFileUpsertWithWhereUniqueWithoutBillInput | BillFileUpsertWithWhereUniqueWithoutBillInput[]
+    createMany?: BillFileCreateManyBillInputEnvelope
+    set?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    disconnect?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    delete?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    connect?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    update?: BillFileUpdateWithWhereUniqueWithoutBillInput | BillFileUpdateWithWhereUniqueWithoutBillInput[]
+    updateMany?: BillFileUpdateManyWithWhereWithoutBillInput | BillFileUpdateManyWithWhereWithoutBillInput[]
+    deleteMany?: BillFileScalarWhereInput | BillFileScalarWhereInput[]
+  }
+
+  export type BillFileUncheckedUpdateManyWithoutBillNestedInput = {
+    create?: XOR<BillFileCreateWithoutBillInput, BillFileUncheckedCreateWithoutBillInput> | BillFileCreateWithoutBillInput[] | BillFileUncheckedCreateWithoutBillInput[]
+    connectOrCreate?: BillFileCreateOrConnectWithoutBillInput | BillFileCreateOrConnectWithoutBillInput[]
+    upsert?: BillFileUpsertWithWhereUniqueWithoutBillInput | BillFileUpsertWithWhereUniqueWithoutBillInput[]
+    createMany?: BillFileCreateManyBillInputEnvelope
+    set?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    disconnect?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    delete?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    connect?: BillFileWhereUniqueInput | BillFileWhereUniqueInput[]
+    update?: BillFileUpdateWithWhereUniqueWithoutBillInput | BillFileUpdateWithWhereUniqueWithoutBillInput[]
+    updateMany?: BillFileUpdateManyWithWhereWithoutBillInput | BillFileUpdateManyWithWhereWithoutBillInput[]
+    deleteMany?: BillFileScalarWhereInput | BillFileScalarWhereInput[]
+  }
+
+  export type BillCreateNestedOneWithoutFilesInput = {
+    create?: XOR<BillCreateWithoutFilesInput, BillUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: BillCreateOrConnectWithoutFilesInput
+    connect?: BillWhereUniqueInput
+  }
+
+  export type BytesFieldUpdateOperationsInput = {
+    set?: Buffer
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type BillUpdateOneRequiredWithoutFilesNestedInput = {
+    create?: XOR<BillCreateWithoutFilesInput, BillUncheckedCreateWithoutFilesInput>
+    connectOrCreate?: BillCreateOrConnectWithoutFilesInput
+    upsert?: BillUpsertWithoutFilesInput
+    connect?: BillWhereUniqueInput
+    update?: XOR<XOR<BillUpdateToOneWithWhereWithoutFilesInput, BillUpdateWithoutFilesInput>, BillUncheckedUpdateWithoutFilesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -29660,18 +32226,28 @@ export namespace Prisma {
     _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
-  export type NestedBytesFilter<$PrismaModel = never> = {
-    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
-    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesFilter<$PrismaModel> | Buffer
-  }
-
   export type NestedEnumBillStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
     in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumBillStatusFilter<$PrismaModel> | $Enums.BillStatus
+  }
+
+  export type NestedEnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBillStatusFilter<$PrismaModel>
+    _max?: NestedEnumBillStatusFilter<$PrismaModel>
+  }
+
+  export type NestedBytesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Buffer
   }
 
   export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
@@ -29684,14 +32260,31 @@ export namespace Prisma {
     _max?: NestedBytesFilter<$PrismaModel>
   }
 
-  export type NestedEnumBillStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumBillStatusWithAggregatesFilter<$PrismaModel> | $Enums.BillStatus
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumBillStatusFilter<$PrismaModel>
-    _max?: NestedEnumBillStatusFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type CustomerCreateWithoutDealByInput = {
@@ -29839,29 +32432,31 @@ export namespace Prisma {
   export type BillCreateWithoutStaffInput = {
     id?: string
     date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status?: $Enums.BillStatus
     reviewRemark?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    files?: BillFileCreateNestedManyWithoutBillInput
   }
 
   export type BillUncheckedCreateWithoutStaffInput = {
     id?: string
     date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status?: $Enums.BillStatus
     reviewRemark?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    files?: BillFileUncheckedCreateNestedManyWithoutBillInput
   }
 
   export type BillCreateOrConnectWithoutStaffInput = {
@@ -29991,10 +32586,10 @@ export namespace Prisma {
     NOT?: BillScalarWhereInput | BillScalarWhereInput[]
     id?: StringFilter<"Bill"> | string
     date?: DateTimeFilter<"Bill"> | Date | string
+    invoiceIssuedBy?: StringFilter<"Bill"> | string
+    invoiceAmount?: DecimalNullableFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFilter<"Bill"> | string
     remark?: StringFilter<"Bill"> | string
-    fileName?: StringFilter<"Bill"> | string
-    fileMime?: StringFilter<"Bill"> | string
-    fileData?: BytesFilter<"Bill"> | Buffer
     status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
@@ -33220,6 +35815,34 @@ export namespace Prisma {
     create: XOR<StaffCreateWithoutBillsInput, StaffUncheckedCreateWithoutBillsInput>
   }
 
+  export type BillFileCreateWithoutBillInput = {
+    id?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BillFileUncheckedCreateWithoutBillInput = {
+    id?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BillFileCreateOrConnectWithoutBillInput = {
+    where: BillFileWhereUniqueInput
+    create: XOR<BillFileCreateWithoutBillInput, BillFileUncheckedCreateWithoutBillInput>
+  }
+
+  export type BillFileCreateManyBillInputEnvelope = {
+    data: BillFileCreateManyBillInput | BillFileCreateManyBillInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StaffUpsertWithoutBillsInput = {
     update: XOR<StaffUpdateWithoutBillsInput, StaffUncheckedUpdateWithoutBillsInput>
     create: XOR<StaffCreateWithoutBillsInput, StaffUncheckedCreateWithoutBillsInput>
@@ -33253,6 +35876,111 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+  }
+
+  export type BillFileUpsertWithWhereUniqueWithoutBillInput = {
+    where: BillFileWhereUniqueInput
+    update: XOR<BillFileUpdateWithoutBillInput, BillFileUncheckedUpdateWithoutBillInput>
+    create: XOR<BillFileCreateWithoutBillInput, BillFileUncheckedCreateWithoutBillInput>
+  }
+
+  export type BillFileUpdateWithWhereUniqueWithoutBillInput = {
+    where: BillFileWhereUniqueInput
+    data: XOR<BillFileUpdateWithoutBillInput, BillFileUncheckedUpdateWithoutBillInput>
+  }
+
+  export type BillFileUpdateManyWithWhereWithoutBillInput = {
+    where: BillFileScalarWhereInput
+    data: XOR<BillFileUpdateManyMutationInput, BillFileUncheckedUpdateManyWithoutBillInput>
+  }
+
+  export type BillFileScalarWhereInput = {
+    AND?: BillFileScalarWhereInput | BillFileScalarWhereInput[]
+    OR?: BillFileScalarWhereInput[]
+    NOT?: BillFileScalarWhereInput | BillFileScalarWhereInput[]
+    id?: StringFilter<"BillFile"> | string
+    billId?: StringFilter<"BillFile"> | string
+    fileName?: StringFilter<"BillFile"> | string
+    fileMime?: StringFilter<"BillFile"> | string
+    fileData?: BytesFilter<"BillFile"> | Buffer
+    sortOrder?: IntFilter<"BillFile"> | number
+    createdAt?: DateTimeFilter<"BillFile"> | Date | string
+  }
+
+  export type BillCreateWithoutFilesInput = {
+    id?: string
+    date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
+    remark: string
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    staff: StaffCreateNestedOneWithoutBillsInput
+  }
+
+  export type BillUncheckedCreateWithoutFilesInput = {
+    id?: string
+    date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
+    remark: string
+    status?: $Enums.BillStatus
+    reviewRemark?: string
+    reviewedAt?: Date | string | null
+    staffId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillCreateOrConnectWithoutFilesInput = {
+    where: BillWhereUniqueInput
+    create: XOR<BillCreateWithoutFilesInput, BillUncheckedCreateWithoutFilesInput>
+  }
+
+  export type BillUpsertWithoutFilesInput = {
+    update: XOR<BillUpdateWithoutFilesInput, BillUncheckedUpdateWithoutFilesInput>
+    create: XOR<BillCreateWithoutFilesInput, BillUncheckedCreateWithoutFilesInput>
+    where?: BillWhereInput
+  }
+
+  export type BillUpdateToOneWithWhereWithoutFilesInput = {
+    where?: BillWhereInput
+    data: XOR<BillUpdateWithoutFilesInput, BillUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type BillUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
+    remark?: StringFieldUpdateOperationsInput | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    staff?: StaffUpdateOneRequiredWithoutBillsNestedInput
+  }
+
+  export type BillUncheckedUpdateWithoutFilesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
+    remark?: StringFieldUpdateOperationsInput | string
+    status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
+    reviewRemark?: StringFieldUpdateOperationsInput | string
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    staffId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CustomerCreateManyDealByInput = {
@@ -33313,10 +36041,10 @@ export namespace Prisma {
   export type BillCreateManyStaffInput = {
     id?: string
     date: Date | string
+    invoiceIssuedBy?: string
+    invoiceAmount?: Decimal | DecimalJsLike | number | string | null
+    approverName?: string
     remark: string
-    fileName: string
-    fileMime: string
-    fileData: Buffer
     status?: $Enums.BillStatus
     reviewRemark?: string
     reviewedAt?: Date | string | null
@@ -33504,38 +36232,40 @@ export namespace Prisma {
   export type BillUpdateWithoutStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: BillFileUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateWithoutStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    files?: BillFileUncheckedUpdateManyWithoutBillNestedInput
   }
 
   export type BillUncheckedUpdateManyWithoutStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
+    invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    approverName?: StringFieldUpdateOperationsInput | string
     remark?: StringFieldUpdateOperationsInput | string
-    fileName?: StringFieldUpdateOperationsInput | string
-    fileMime?: StringFieldUpdateOperationsInput | string
-    fileData?: BytesFieldUpdateOperationsInput | Buffer
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -34863,6 +37593,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BillFileCreateManyBillInput = {
+    id?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    sortOrder?: number
+    createdAt?: Date | string
+  }
+
+  export type BillFileUpdateWithoutBillInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillFileUncheckedUpdateWithoutBillInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillFileUncheckedUpdateManyWithoutBillInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -34909,6 +37675,10 @@ export namespace Prisma {
      */
     export type PurchaseOrderCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseOrderCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use BillCountOutputTypeDefaultArgs instead
+     */
+    export type BillCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use StaffDefaultArgs instead
      */
     export type StaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = StaffDefaultArgs<ExtArgs>
@@ -34949,6 +37719,10 @@ export namespace Prisma {
      */
     export type DealingCompanyOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DealingCompanyOptionDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use OwnerOptionDefaultArgs instead
+     */
+    export type OwnerOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = OwnerOptionDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use QualityClassDefaultArgs instead
      */
     export type QualityClassArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = QualityClassDefaultArgs<ExtArgs>
@@ -34984,6 +37758,10 @@ export namespace Prisma {
      * @deprecated Use BillDefaultArgs instead
      */
     export type BillArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BillFileDefaultArgs instead
+     */
+    export type BillFileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillFileDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

@@ -4,7 +4,7 @@ import path from "path";
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: "5mb",
+      bodySizeLimit: "15mb",
     },
   },
   turbopack: {
