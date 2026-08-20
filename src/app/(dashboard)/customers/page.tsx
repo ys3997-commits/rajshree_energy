@@ -2,7 +2,6 @@ import { listCustomers, listCustomersPage } from "@/lib/actions/customers";
 import {
   listCityOptions,
   listDealingCompanyOptions,
-  listOwnerOptions,
   listSaleExecutiveOptions,
   listSectorOptions,
   listStateOptions,
@@ -33,7 +32,6 @@ export default async function CustomersPage({
     sectors,
     saleExecutives,
     dealingCompanies,
-    owners,
   ] = await Promise.all([
     listCustomersPage({ page, customerId, category }),
     listCustomers(),
@@ -42,7 +40,6 @@ export default async function CustomersPage({
     listSectorOptions(),
     listSaleExecutiveOptions(),
     listDealingCompanyOptions(),
-    listOwnerOptions(),
   ]);
 
   return (
@@ -58,7 +55,6 @@ export default async function CustomersPage({
       sectors={sectors.map((o) => o.name)}
       saleExecutives={saleExecutives.map((o) => o.name)}
       dealingCompanies={dealingCompanies.map((o) => o.name)}
-      owners={owners.map((o) => o.name)}
     />
   );
 }

@@ -3683,67 +3683,9 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   text-underline-offset: 0.15em;
 }
 
-.bill-file-list,
-.bill-file-picker {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.bill-file-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.bill-file-picker {
-  margin-top: 0.55rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.bill-file-picker li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.35rem 0.55rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: #f8fafb;
-  font-size: 0.8125rem;
-}
-
-.bill-file-hint {
-  margin: 0.45rem 0 0;
-  color: var(--muted);
-  font-size: 0.8125rem;
-}
-
 .bill-review-meta {
   grid-column: 1 / -1;
   margin: 0 0 0.25rem;
   color: var(--muted);
   font-size: 0.875rem;
-}
-
-.form-grid .bill-amount-input {
-  text-align: right;
-}
-
-.form-grid label .req {
-  color: var(--danger);
-}
-
-.form-grid input.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-  box-shadow: none;
 }

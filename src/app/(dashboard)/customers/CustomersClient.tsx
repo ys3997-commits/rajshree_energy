@@ -117,7 +117,6 @@ export function CustomersClient({
   sectors,
   saleExecutives,
   dealingCompanies,
-  owners,
 }: {
   initial: CustomerListResult;
   customerOptions: CustomerOpt[];
@@ -126,7 +125,6 @@ export function CustomersClient({
   sectors: string[];
   saleExecutives: string[];
   dealingCompanies: string[];
-  owners: string[];
 }) {
   const router = useRouter();
   const {
@@ -323,11 +321,11 @@ export function CustomersClient({
 
         <label>Owner</label>
         <div className="role-fields">
-          <OptionSelect
-            emptyLabel="Name"
+          <input
+            placeholder="Name"
             value={form.ownerName}
-            onChange={(ownerName) => setForm({ ...form, ownerName })}
-            options={owners}
+            onChange={(e) => setNameField("ownerName", e.target.value)}
+            onBlur={() => blurNameField("ownerName")}
           />
           <input
             placeholder="Phone"

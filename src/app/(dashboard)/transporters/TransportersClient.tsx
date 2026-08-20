@@ -44,12 +44,10 @@ export function TransportersClient({
   initial,
   cities,
   states,
-  owners,
 }: {
   initial: TransporterListRow[];
   cities: string[];
   states: string[];
-  owners: string[];
 }) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState(empty);
@@ -118,11 +116,10 @@ export function TransportersClient({
           onBlur={() => blurNameField("name")}
         />
         <label>Owner name</label>
-        <OptionSelect
-          emptyLabel="Select owner"
+        <input
           value={form.ownerName}
-          onChange={(ownerName) => setForm({ ...form, ownerName })}
-          options={owners}
+          onChange={(e) => setNameField("ownerName", e.target.value)}
+          onBlur={() => blurNameField("ownerName")}
         />
         <label>Owner contact 1</label>
         <input

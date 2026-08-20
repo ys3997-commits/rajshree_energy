@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useMemo, useRef, useState, useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
 import {
   createBill,
   reviewBill,
@@ -10,14 +10,7 @@ import {
   type BillRow,
 } from "@/lib/actions/bills";
 import { BILL_STATUS_LABEL, type BillStatus } from "@/lib/domain/bills";
-import {
-  capitalizeName,
-  formatIndianAmountTyping,
-  formatRs,
-  parseAmountInput,
-} from "@/lib/domain/format";
 import { Modal } from "@/components/Modal";
-import { OptionSelect } from "@/components/OptionSelect";
 
 type ReviewAction = "APPROVED" | "REJECTED";
 
@@ -39,13 +32,7 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 }
 
 function emptyForm() {
-  return {
-    date: todayLocal(),
-    invoiceIssuedBy: "",
-    invoiceAmount: "",
-    approverName: "",
-    remark: "",
-  };
+  return { date: todayLocal(), remark: "" };
 }
 
 function pageHref(page: number, status: string): string {
@@ -59,11 +46,9 @@ function pageHref(page: number, status: string): string {
 export function BillsClient({
   initial,
   statusFilter,
-  owners,
 }: {
   initial: BillListResult;
   statusFilter: string;
-  owners: string[];
 }) {
   const router = useRouter();
   const { rows, total, page, pageSize, totalPages, counts, canUpload, isOwner } =
@@ -71,9 +56,8 @@ export function BillsClient({
   const activeStatus = statusFilter || "all";
 
   const [form, setForm] = useState(emptyForm);
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [fileKey, setFileKey] = useState(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [reviewing, setReviewing] = useState<{
@@ -81,11 +65,6 @@ export function BillsClient({
     action: ReviewAction;
   } | null>(null);
   const [reviewRemark, setReviewRemark] = useState("");
-
-  const amountDisplay = useMemo(
-    () => formatIndianAmountTyping(form.invoiceAmount),
-    [form.invoiceAmount],
-  );
 
   function goTo(targetPage: number, status = activeStatus) {
     router.push(pageHref(targetPage, status));
@@ -95,36 +74,21 @@ export function BillsClient({
   function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!form.invoiceIssuedBy.trim()) {
-      setError("Invoice issued by is required");
-      return;
-    }
-    if (!form.invoiceAmount || Number(form.invoiceAmount) <= 0) {
-      setError("Invoice amount is required");
-      return;
-    }
-    if (!form.approverName.trim()) {
-      setError("Approver name is required");
-      return;
-    }
-    if (files.length === 0) {
-      setError("Documents are required");
+    if (!file) {
+      setError("File is required");
       return;
     }
 
     const data = new FormData();
     data.set("date", form.date);
-    data.set("invoiceIssuedBy", form.invoiceIssuedBy);
-    data.set("invoiceAmount", form.invoiceAmount);
-    data.set("approverName", form.approverName);
     data.set("remark", form.remark);
-    for (const next of files) data.append("files", next);
+    data.set("file", file);
 
     startTransition(async () => {
       try {
         await createBill(data);
         setForm(emptyForm());
-        setFiles([]);
+        setFile(null);
         setFileKey((key) => key + 1);
         goTo(1, "pending");
       } catch (err) {
@@ -187,122 +151,15 @@ export function BillsClient({
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}
           />
-          <label htmlFor="bill-issued-by">
-            Invoice issued by <span className="req" aria-hidden="true">*</span>
-          </label>
+          <label htmlFor="bill-file">File</label>
           <input
-            id="bill-issued-by"
+            id="bill-file"
+            key={fileKey}
+            type="file"
             required
-            value={form.invoiceIssuedBy}
-            aria-required="true"
-            onChange={(e) =>
-              setForm({ ...form, invoiceIssuedBy: e.target.value })
-            }
-            onBlur={() => {
-              const next = capitalizeName(form.invoiceIssuedBy);
-              if (next) setForm({ ...form, invoiceIssuedBy: next });
-            }}
+            accept="application/pdf,image/jpeg,image/png,image/webp,image/gif,.pdf,.jpg,.jpeg,.png,.webp,.gif"
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
-          <label htmlFor="bill-amount">
-            Invoice amount <span className="req" aria-hidden="true">*</span>
-          </label>
-          <div className="field-with-unit field-with-prefix">
-            <span className="field-unit">Rs</span>
-            <input
-              id="bill-amount"
-              type="text"
-              inputMode="decimal"
-              required
-              className="bill-amount-input"
-              aria-required="true"
-              placeholder="0.00"
-              value={amountDisplay}
-              onChange={(e) => {
-                const raw = parseAmountInput(e.target.value).replace(
-                  /[^\d.]/g,
-                  "",
-                );
-                if (raw === "") {
-                  setForm({ ...form, invoiceAmount: "" });
-                  return;
-                }
-                if (!/^\d*\.?\d{0,2}$/.test(raw)) return;
-                setForm({ ...form, invoiceAmount: raw });
-              }}
-            />
-          </div>
-          <label htmlFor="bill-approver">
-            Approver Name <span className="req" aria-hidden="true">*</span>
-          </label>
-          <OptionSelect
-            id="bill-approver"
-            required
-            emptyLabel="Select owner"
-            value={form.approverName}
-            onChange={(approverName) => setForm({ ...form, approverName })}
-            options={owners}
-          />
-          <label htmlFor="bill-file">
-            Documents <span className="req" aria-hidden="true">*</span>
-          </label>
-          <div>
-            <input
-              id="bill-file"
-              ref={fileInputRef}
-              key={fileKey}
-              className="sr-only"
-              type="file"
-              multiple
-              required={files.length === 0}
-              aria-required="true"
-              accept="application/pdf,image/jpeg,image/png,image/webp,image/gif,.pdf,.jpg,.jpeg,.png,.webp,.gif"
-              onChange={(e) => {
-                const added = Array.from(e.target.files ?? []);
-                if (added.length === 0) return;
-                setFiles((current) => {
-                  const seen = new Set(
-                    current.map((file) => `${file.name}:${file.size}:${file.lastModified}`),
-                  );
-                  const next = [...current];
-                  for (const file of added) {
-                    const key = `${file.name}:${file.size}:${file.lastModified}`;
-                    if (seen.has(key)) continue;
-                    seen.add(key);
-                    next.push(file);
-                  }
-                  return next;
-                });
-                e.target.value = "";
-              }}
-            />
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Choose Files
-            </button>
-            {files.length > 0 ? (
-              <ul className="bill-file-picker">
-                {files.map((file, index) => (
-                  <li key={`${file.name}-${file.size}-${file.lastModified}`}>
-                    <span>{file.name}</span>
-                    <button
-                      type="button"
-                      className="btn-link"
-                      onClick={() =>
-                        setFiles((current) => current.filter((_, i) => i !== index))
-                      }
-                    >
-                      Remove
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="bill-file-hint">Required. You can select more than one PDF or image.</p>
-            )}
-          </div>
           <label htmlFor="bill-remark">Remark</label>
           <textarea
             id="bill-remark"
@@ -343,11 +200,8 @@ export function BillsClient({
           <thead>
             <tr>
               <th>Date</th>
-              <th>Invoice issued by</th>
-              <th className="cell-num">Invoice amount</th>
-              <th>Approver Name</th>
               <th>Sent by</th>
-              <th>Documents</th>
+              <th>File</th>
               <th>Remark</th>
               <th>Status</th>
               <th>Owner remark</th>
@@ -358,35 +212,16 @@ export function BillsClient({
             {rows.map((row) => (
               <tr key={row.id}>
                 <td>{formatDateDdMmYyyy(row.date)}</td>
-                <td>{row.invoiceIssuedBy || "—"}</td>
-                <td className="cell-num">
-                  {row.invoiceAmount ? formatRs(row.invoiceAmount) : "—"}
-                </td>
-                <td>
-                  {row.approverName
-                    ? (capitalizeName(row.approverName) ?? row.approverName)
-                    : "—"}
-                </td>
                 <td>{row.staffName}</td>
                 <td>
-                  {row.files.length === 0 ? (
-                    "—"
-                  ) : (
-                    <ul className="bill-file-list">
-                      {row.files.map((file) => (
-                        <li key={file.id}>
-                          <a
-                            href={`/api/bills/${file.id}/file`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="bill-file-link"
-                          >
-                            {file.fileName}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <a
+                    href={`/api/bills/${row.id}/file`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bill-file-link"
+                  >
+                    {row.fileName}
+                  </a>
                 </td>
                 <td>{row.remark}</td>
                 <td>
@@ -425,7 +260,7 @@ export function BillsClient({
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={isOwner ? 10 : 9}>No bills yet.</td>
+                <td colSpan={isOwner ? 7 : 6}>No bills yet.</td>
               </tr>
             )}
           </tbody>
@@ -475,11 +310,7 @@ export function BillsClient({
         {reviewing ? (
           <form onSubmit={onReview} className="form-grid form-grid-plain">
             <p className="bill-review-meta">
-              {reviewing.row.invoiceIssuedBy || "—"} ·{" "}
-              {reviewing.row.invoiceAmount
-                ? formatRs(reviewing.row.invoiceAmount)
-                : "—"}{" "}
-              · {reviewing.row.approverName || "—"} · {reviewing.row.staffName} ·{" "}
+              {reviewing.row.fileName} · {reviewing.row.staffName} ·{" "}
               {formatDateDdMmYyyy(reviewing.row.date)}
             </p>
             <label htmlFor="bill-review-remark">

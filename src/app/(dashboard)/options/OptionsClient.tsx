@@ -4,19 +4,16 @@ import { FormEvent, useMemo, useState, useTransition } from "react";
 import {
   createCityOption,
   createDealingCompanyOption,
-  createOwnerOption,
   createSaleExecutiveOption,
   createSectorOption,
   createStateOption,
   deleteCityOption,
   deleteDealingCompanyOption,
-  deleteOwnerOption,
   deleteSaleExecutiveOption,
   deleteSectorOption,
   deleteStateOption,
   updateCityOption,
   updateDealingCompanyOption,
-  updateOwnerOption,
   updateSaleExecutiveOption,
   updateSectorOption,
   updateStateOption,
@@ -50,7 +47,6 @@ type CategoryId =
   | "states"
   | "sectors"
   | "people"
-  | "owners"
   | "dealingCompanies";
 
 const CATEGORIES: {
@@ -108,12 +104,6 @@ const CATEGORIES: {
     placeholder: "New person",
   },
   {
-    id: "owners",
-    label: "Owner",
-    description: "Suggested owner names on customers and transporters.",
-    placeholder: "New owner",
-  },
-  {
     id: "dealingCompanies",
     label: "Dealing company",
     description: "Companies you deal with, suggested across the app.",
@@ -130,7 +120,6 @@ type ItemMap = {
   cities: Opt[];
   states: Opt[];
   sectors: Opt[];
-  owners: Opt[];
   dealingCompanies: Opt[];
 };
 
@@ -143,7 +132,6 @@ export function OptionsClient({
   states,
   sectors,
   people,
-  owners,
   dealingCompanies,
 }: {
   origins: Opt[];
@@ -154,7 +142,6 @@ export function OptionsClient({
   states: Opt[];
   sectors: Opt[];
   people: PeopleRow[];
-  owners: Opt[];
   dealingCompanies: Opt[];
 }) {
   const [items, setItems] = useState<ItemMap>({
@@ -165,7 +152,6 @@ export function OptionsClient({
     cities,
     states,
     sectors,
-    owners,
     dealingCompanies,
   });
   const [peopleItems, setPeopleItems] = useState(people);
@@ -227,8 +213,6 @@ export function OptionsClient({
         return createStateOption(name);
       case "sectors":
         return createSectorOption(name);
-      case "owners":
-        return createOwnerOption(name);
       case "dealingCompanies":
         return createDealingCompanyOption(name);
       case "people":
@@ -253,8 +237,6 @@ export function OptionsClient({
         return updateStateOption(id, name);
       case "sectors":
         return updateSectorOption(id, name);
-      case "owners":
-        return updateOwnerOption(id, name);
       case "dealingCompanies":
         return updateDealingCompanyOption(id, name);
       case "people":
@@ -278,8 +260,6 @@ export function OptionsClient({
         return deleteStateOption(id);
       case "sectors":
         return deleteSectorOption(id);
-      case "owners":
-        return deleteOwnerOption(id);
       case "dealingCompanies":
         return deleteDealingCompanyOption(id);
       case "people":
@@ -368,7 +348,7 @@ export function OptionsClient({
   }
 
   function tabCount(id: CategoryId) {
-    return id === "people" ? peopleItems.length : (items[id]?.length ?? 0);
+    return id === "people" ? peopleItems.length : items[id].length;
   }
 
   return (

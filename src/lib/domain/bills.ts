@@ -8,8 +8,6 @@ export const BILL_STATUS_LABEL: Record<BillStatus, string> = {
 };
 
 export const MAX_BILL_FILE_BYTES = 4 * 1024 * 1024;
-export const MAX_BILL_FILES = 10;
-export const MAX_BILL_TOTAL_BYTES = 12 * 1024 * 1024;
 
 const ALLOWED_BILL_MIME = new Set([
   "application/pdf",
@@ -46,31 +44,6 @@ export function validateBillRemark(value: string, label: string): string {
   return remark;
 }
 
-export function validateInvoiceIssuedBy(value: string): string {
-  const name = value.trim();
-  if (!name) throw new Error("Invoice issued by is required");
-  return name;
-}
-
-export function validateApproverName(value: string): string {
-  const name = value.trim();
-  if (!name) throw new Error("Approver name is required");
-  return name;
-}
-
-export function validateInvoiceAmount(value: string): string {
-  const raw = value.trim().replace(/,/g, "");
-  if (!raw) throw new Error("Invoice amount is required");
-  if (!/^\d+(\.\d{1,2})?$/.test(raw)) {
-    throw new Error("Invoice amount is invalid");
-  }
-  const amount = Number(raw);
-  if (!Number.isFinite(amount) || amount <= 0) {
-    throw new Error("Invoice amount must be greater than zero");
-  }
-  return raw;
-}
-
 export function mimeFromFileName(fileName: string): string | null {
   const ext = fileName.split(".").pop()?.trim().toLowerCase() ?? "";
   return MIME_FROM_EXTENSION[ext] ?? null;
@@ -82,7 +55,7 @@ export function validateBillFile(file: {
   size: number;
 }): { fileName: string; mime: string } {
   const fileName = file.name.trim() || "bill";
-  if (!file.size) throw new Error("Document is required");
+  if (!file.size) throw new Error("File is required");
   if (file.size > MAX_BILL_FILE_BYTES) {
     throw new Error("File must be 4 MB or smaller");
   }
@@ -91,25 +64,6 @@ export function validateBillFile(file: {
     throw new Error("Upload a PDF or image (JPG, PNG, WebP, GIF)");
   }
   return { fileName, mime };
-}
-
-export function validateBillFiles(
-  files: { name: string; type: string; size: number }[],
-): { fileName: string; mime: string }[] {
-  const uploaded = files.filter((file) => file.size > 0 || file.name.trim());
-  if (uploaded.length === 0) throw new Error("Documents are required");
-  if (uploaded.length > MAX_BILL_FILES) {
-    throw new Error(`Upload at most ${MAX_BILL_FILES} documents`);
-  }
-  let total = 0;
-  const meta = uploaded.map((file) => {
-    total += file.size;
-    return validateBillFile(file);
-  });
-  if (total > MAX_BILL_TOTAL_BYTES) {
-    throw new Error("Documents together must be 12 MB or smaller");
-  }
-  return meta;
 }
 
 export function canViewBill(

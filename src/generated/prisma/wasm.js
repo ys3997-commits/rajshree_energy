@@ -203,13 +203,6 @@ exports.Prisma.DealingCompanyOptionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.OwnerOptionScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.QualityClassScalarFieldEnum = {
   id: 'id',
   originId: 'originId',
@@ -358,26 +351,16 @@ exports.Prisma.DiscountScalarFieldEnum = {
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
   date: 'date',
-  invoiceIssuedBy: 'invoiceIssuedBy',
-  invoiceAmount: 'invoiceAmount',
-  approverName: 'approverName',
   remark: 'remark',
+  fileName: 'fileName',
+  fileMime: 'fileMime',
+  fileData: 'fileData',
   status: 'status',
   reviewRemark: 'reviewRemark',
   reviewedAt: 'reviewedAt',
   staffId: 'staffId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.BillFileScalarFieldEnum = {
-  id: 'id',
-  billId: 'billId',
-  fileName: 'fileName',
-  fileMime: 'fileMime',
-  fileData: 'fileData',
-  sortOrder: 'sortOrder',
-  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -457,7 +440,6 @@ exports.Prisma.ModelName = {
   StateOption: 'StateOption',
   SectorOption: 'SectorOption',
   DealingCompanyOption: 'DealingCompanyOption',
-  OwnerOption: 'OwnerOption',
   QualityClass: 'QualityClass',
   Customer: 'Customer',
   Vessel: 'Vessel',
@@ -466,8 +448,7 @@ exports.Prisma.ModelName = {
   Dispatch: 'Dispatch',
   Payment: 'Payment',
   Discount: 'Discount',
-  Bill: 'Bill',
-  BillFile: 'BillFile'
+  Bill: 'Bill'
 };
 
 /**
