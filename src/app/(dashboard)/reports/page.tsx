@@ -11,13 +11,18 @@ const reports = [
   },
   {
     href: "/reports/collection",
-    title: "Collection",
+    title: "Collection Engine",
     desc: "Buyer collection balances and planned calls.",
   },
   {
     href: "/reports/customer-analysis",
     title: "Customer Analysis",
     desc: "Customer-level orders, payments, and balance analysis.",
+  },
+  {
+    href: "/reports/dispatch-analysis",
+    title: "Dispatch Analysis",
+    desc: "Purchase, sale, freight, and basic-rate profit for every dispatch.",
   },
   {
     href: "/reports/vendor-analysis",
@@ -41,7 +46,7 @@ const reports = [
   },
   {
     href: "/reports/master-dispatch",
-    title: "Dispatch",
+    title: "Dispatch Register",
     desc: "Purchase, sale, freight, and basic-rate profit for every dispatch.",
   },
   {

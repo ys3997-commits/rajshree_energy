@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { closeOrderQuantity } from "@/lib/actions/orders";
 import { closePurchaseOrderQuantity } from "@/lib/actions/purchaseOrders";
+import { formatMt } from "@/lib/domain/format";
 
 export function CloseQuantityButton({
   orderId,
@@ -20,7 +21,7 @@ export function CloseQuantityButton({
   async function onClick() {
     if (
       !confirm(
-        `Close remaining balance of ${balanceMt} MT? This sets closing quantity to ${balanceMt} MT and balance to 0.`,
+        `Close remaining balance of ${formatMt(balanceMt)}? This sets closing quantity to ${formatMt(balanceMt)} and balance to 0.`,
       )
     ) {
       return;

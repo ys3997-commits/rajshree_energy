@@ -14,6 +14,7 @@ export default async function VesselSuppliedDetailPage({
   return (
     <VesselSuppliedDetail
       vessel={report.vessel}
+      totals={report.totals}
       customers={report.customers}
     />
   );

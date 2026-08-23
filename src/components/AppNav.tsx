@@ -12,7 +12,7 @@ const links = [
   { href: "/orders", label: "Sale orders" },
   { href: "/purchase-orders", label: "Purchase orders" },
   { href: "/dispatches", label: "Dispatches" },
-  { href: "/payments", label: "Payments" },
+  { href: "/payments", label: "Bank" },
   { href: "/bills", label: "Bills" },
   // { href: "/receipts/pending", label: "Receipts" },
   // { href: "/reconciliation", label: "Reconciliation" },
@@ -84,6 +84,12 @@ const reportLinks: ReportItem[] = [
   },
 ].sort((a, b) => a.label.localeCompare(b.label));
 
+const updateLinks: ReportLeaf[] = [
+  { href: "/update/purchase", label: "Purchase" },
+  { href: "/update/sale", label: "Sale" },
+  { href: "/update/transport", label: "Transport" },
+];
+
 function isActivePath(pathname: string, href: string, exact = false) {
   if (href === "/") return pathname === "/";
   if (exact) return pathname === href;
@@ -105,17 +111,49 @@ function needsExactChildMatch(group: ReportGroup, href: string) {
 export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }) {
   const pathname = usePathname();
   const [reportOpen, setReportOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const reportMenuId = useId();
+  const updateMenuId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
+  const updateRef = useRef<HTMLDivElement>(null);
   const reportActive =
     pathname === "/reports" || pathname.startsWith("/reports/");
+  const updateActive =
+    pathname === "/update" || pathname.startsWith("/update/");
   const allowed = (href: string) => canAccessPath(access.pageKeys, href);
 
   useEffect(() => {
     setReportOpen(false);
+    setUpdateOpen(false);
     setOpenSubmenu(null);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!updateOpen) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (
+        updateRef.current &&
+        !updateRef.current.contains(event.target as Node)
+      ) {
+        setUpdateOpen(false);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setUpdateOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [updateOpen]);
 
   useEffect(() => {
     if (!reportOpen) return;
@@ -149,7 +187,9 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   }, [reportOpen, openSubmenu]);
 
   const optionsIndex = links.findIndex((link) => link.href === "/options");
-  const beforeOptions = links.slice(0, optionsIndex);
+  const bankIndex = links.findIndex((link) => link.href === "/payments");
+  const beforeUpdate = links.slice(0, bankIndex);
+  const afterUpdateBeforeReport = links.slice(bankIndex, optionsIndex);
   const afterReport = links.slice(optionsIndex);
 
   return (
@@ -157,7 +197,60 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
       <div className="app-header-inner">
         <div className="flex min-w-0 flex-1 items-center gap-8">
           <nav className="app-nav">
-            {beforeOptions.map((link) => {
+            {beforeUpdate.map((link) => {
+              const active = isActivePath(pathname, link.href);
+              return (
+                <LockedLink
+                  key={link.href}
+                  href={link.href}
+                  allowed={allowed(link.href)}
+                  className={active ? "active" : undefined}
+                >
+                  {link.label}
+                </LockedLink>
+              );
+            })}
+
+            <div
+              className={`nav-dropdown${updateOpen ? " open" : ""}${updateActive ? " active" : ""}`}
+              ref={updateRef}
+            >
+              <button
+                type="button"
+                className={`nav-dropdown-trigger${updateActive ? " active" : ""}`}
+                aria-expanded={updateOpen}
+                aria-controls={updateMenuId}
+                aria-haspopup="menu"
+                onClick={() => setUpdateOpen((open) => !open)}
+              >
+                Update
+                <span className="nav-dropdown-caret" aria-hidden="true" />
+              </button>
+              <div
+                id={updateMenuId}
+                className="nav-dropdown-menu"
+                role="menu"
+                hidden={!updateOpen}
+              >
+                {updateLinks.map((item) => {
+                  const active = isActivePath(pathname, item.href);
+                  return (
+                    <LockedLink
+                      key={item.href}
+                      href={item.href}
+                      allowed={allowed(item.href)}
+                      role="menuitem"
+                      className={active ? "active" : undefined}
+                      onClick={() => setUpdateOpen(false)}
+                    >
+                      {item.label}
+                    </LockedLink>
+                  );
+                })}
+              </div>
+            </div>
+
+            {afterUpdateBeforeReport.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
                 <LockedLink

@@ -37,3 +37,13 @@ export function parsePartyKey(value: string): PaymentParty {
   }
   throw new Error("Customer or transporter is required");
 }
+
+export function tryParsePartyKey(value?: string | null): PaymentParty | null {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) return null;
+  try {
+    return parsePartyKey(trimmed);
+  } catch {
+    return null;
+  }
+}

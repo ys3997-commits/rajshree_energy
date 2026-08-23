@@ -8,10 +8,13 @@ import {
 } from "@/lib/auth/access";
 import { toDecimal } from "@/lib/domain/computations";
 import {
+  billDateRange,
   canReviewBill,
   canUploadBill,
   canViewBill,
   parseBillStatusFilter,
+  parseBillTextFilter,
+  parseIsoDay,
   validateApproverName,
   validateBillFiles,
   validateBillRemark,
@@ -65,6 +68,11 @@ export type BillRow = {
   staffName: string;
 };
 
+export type BillSenderOption = {
+  id: string;
+  name: string;
+};
+
 export type BillListResult = {
   rows: BillRow[];
   total: number;
@@ -72,6 +80,7 @@ export type BillListResult = {
   pageSize: number;
   totalPages: number;
   counts: { all: number; pending: number; approved: number; rejected: number };
+  senders: BillSenderOption[];
   canUpload: boolean;
   isOwner: boolean;
 };
@@ -148,21 +157,42 @@ function formFiles(formData: FormData): File[] {
 export async function listBills(options?: {
   page?: number;
   status?: string | null;
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  approver?: string | null;
+  sentBy?: string | null;
 }): Promise<BillListResult> {
   const access = await requireBillsAccess();
   const pageSize = BILLS_PAGE_SIZE;
   const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
   const status = parseBillStatusFilter(options?.status);
+  const dateFrom = parseIsoDay(options?.dateFrom);
+  const dateTo = parseIsoDay(options?.dateTo);
+  const approver = parseBillTextFilter(options?.approver);
+  const sentBy =
+    access.kind === "owner" ? parseBillTextFilter(options?.sentBy) : null;
   const scope = staffScope(access);
+  const extra = {
+    ...(approver ? { approverName: approver } : {}),
+    ...(sentBy ? { staffId: sentBy } : {}),
+    ...billDateRange(dateFrom, dateTo),
+  };
+  const filterWhere = { ...scope, ...extra };
+  const listWhere = { ...filterWhere, ...(status ? { status } : {}) };
 
-  const [all, pending, approved, rejected, total] = await Promise.all([
-    prisma.bill.count({ where: scope }),
-    prisma.bill.count({ where: { ...scope, status: "PENDING" } }),
-    prisma.bill.count({ where: { ...scope, status: "APPROVED" } }),
-    prisma.bill.count({ where: { ...scope, status: "REJECTED" } }),
-    prisma.bill.count({
-      where: { ...scope, ...(status ? { status } : {}) },
-    }),
+  const [all, pending, approved, rejected, total, senders] = await Promise.all([
+    prisma.bill.count({ where: filterWhere }),
+    prisma.bill.count({ where: { ...filterWhere, status: "PENDING" } }),
+    prisma.bill.count({ where: { ...filterWhere, status: "APPROVED" } }),
+    prisma.bill.count({ where: { ...filterWhere, status: "REJECTED" } }),
+    prisma.bill.count({ where: listWhere }),
+    access.kind === "owner"
+      ? prisma.staff.findMany({
+          where: { bills: { some: {} } },
+          select: { id: true, name: true },
+          orderBy: { name: "asc" },
+        })
+      : Promise.resolve([]),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -170,7 +200,7 @@ export async function listBills(options?: {
   const skip = (page - 1) * pageSize;
 
   const rows = await prisma.bill.findMany({
-    where: { ...scope, ...(status ? { status } : {}) },
+    where: listWhere,
     select: billSelect,
     orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     skip,
@@ -184,6 +214,7 @@ export async function listBills(options?: {
     pageSize,
     totalPages,
     counts: { all, pending, approved, rejected },
+    senders,
     canUpload: canUploadBill(access),
     isOwner: access.kind === "owner",
   };

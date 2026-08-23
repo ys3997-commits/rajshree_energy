@@ -12,11 +12,11 @@ export default async function CollectionReportPage() {
           <p className="page-eyebrow">
             <Link href="/reports">Report</Link>
             <span aria-hidden="true"> · </span>
-            Collection
+            Collection Engine
             <span aria-hidden="true"> · </span>
-            Collection
+            Collection Engine
           </p>
-          <h1 className="page-title">Collection</h1>
+          <h1 className="page-title">Collection Engine</h1>
           <p className="page-subtitle">
             Buyer collection balances and planned calls.
           </p>

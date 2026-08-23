@@ -140,7 +140,10 @@ export async function updateTransportChecklist(
   });
 
   revalidatePath("/reports/transport");
+  revalidatePath("/update/transport");
   revalidatePath("/dispatches");
+  revalidatePath("/update/purchase");
+  revalidatePath("/update/sale");
   revalidatePath("/");
 
   return {

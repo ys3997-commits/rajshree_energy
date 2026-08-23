@@ -1,4 +1,7 @@
-import type { DispatchSplitBucket } from "@/lib/actions/dashboard";
+import type {
+  DispatchSplitBucket,
+  ProfitDiscountSplit,
+} from "@/lib/actions/dashboard";
 
 export type HomeSplitValueKind = "mt" | "rupees";
 
@@ -27,6 +30,11 @@ type Props = {
   totalMode?: "sum" | "net" | "left";
   /** Hide the header stats row (totals). */
   hideTotals?: boolean;
+  /**
+   * When set, profit headers show dispatch profit, net discount (+/−),
+   * then net profit — instead of folding discount into the bars.
+   */
+  discountSplit?: ProfitDiscountSplit;
 };
 
 const DEFAULT_SERIES: SeriesLabels = {
@@ -48,10 +56,10 @@ function barHeight(value: number, max: number): number {
   return Math.max((abs / max) * 100, 8);
 }
 
-/** Whole MT for dispatch chart labels — unchanged from original. */
+/** MT for dispatch chart labels. */
 function formatChartQty(value: number): string {
   if (!Number.isFinite(value)) return "—";
-  return String(Math.round(value));
+  return value.toFixed(2);
 }
 
 /** Rupee chart labels always in lakhs: 0.75L, 3.55L, 0.03L */
@@ -77,6 +85,88 @@ function hasBarValue(value: number, kind: HomeSplitValueKind): boolean {
   return kind === "rupees" ? value !== 0 : value > 0;
 }
 
+function formatSignedRs(value: number): string {
+  if (!Number.isFinite(value) || value === 0) return `Rs ${formatChartRs(0)}`;
+  if (value > 0) return `+ Rs ${formatChartRs(value)}`;
+  return `− Rs ${formatChartRs(Math.abs(value))}`;
+}
+
+function discountTone(value: number): string {
+  if (value > 0) return " is-plus";
+  if (value < 0) return " is-minus";
+  return "";
+}
+
+function ProfitStatTable({
+  domesticProfit,
+  importedProfit,
+  totalProfit,
+  domesticDiscount,
+  importedDiscount,
+}: {
+  domesticProfit: number;
+  importedProfit: number;
+  totalProfit: number;
+  domesticDiscount: number;
+  importedDiscount: number;
+}) {
+  const totalDiscount = domesticDiscount + importedDiscount;
+  return (
+    <div className="home-profit-table-wrap">
+      <table className="home-profit-table">
+      <thead>
+        <tr>
+          <th scope="col" className="home-profit-table-stub">
+            <span className="sr-only">Metric</span>
+          </th>
+          <th scope="col" className="home-stat-domestic">
+            Domestic
+          </th>
+          <th scope="col" className="home-stat-imported">
+            Imported
+          </th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Profit</th>
+          <td className="home-stat-domestic">
+            {formatStat(domesticProfit, "rupees")}
+          </td>
+          <td className="home-stat-imported">
+            {formatStat(importedProfit, "rupees")}
+          </td>
+          <td>{formatStat(totalProfit, "rupees")}</td>
+        </tr>
+        <tr>
+          <th scope="row">Discount</th>
+          <td className={`home-profit-discount${discountTone(domesticDiscount)}`}>
+            {formatSignedRs(domesticDiscount)}
+          </td>
+          <td className={`home-profit-discount${discountTone(importedDiscount)}`}>
+            {formatSignedRs(importedDiscount)}
+          </td>
+          <td className={`home-profit-discount${discountTone(totalDiscount)}`}>
+            {formatSignedRs(totalDiscount)}
+          </td>
+        </tr>
+        <tr className="is-net">
+          <th scope="row">Net profit</th>
+          <td className="home-stat-domestic">
+            {formatStat(domesticProfit + domesticDiscount, "rupees")}
+          </td>
+          <td className="home-stat-imported">
+            {formatStat(importedProfit + importedDiscount, "rupees")}
+          </td>
+          <td>{formatStat(totalProfit + totalDiscount, "rupees")}</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  );
+}
+
 export function HomeDispatchSplitChart({
   eyebrow,
   title,
@@ -86,6 +176,7 @@ export function HomeDispatchSplitChart({
   seriesLabels,
   totalMode = "sum",
   hideTotals = false,
+  discountSplit,
 }: Props) {
   const labels: SeriesLabels = {
     ...DEFAULT_SERIES,
@@ -115,38 +206,55 @@ export function HomeDispatchSplitChart({
     0,
   );
 
+  const domesticDiscount = Number(discountSplit?.domestic) || 0;
+  const importedDiscount = Number(discountSplit?.imported) || 0;
+
   return (
     <section className="home-panel home-panel-dispatch">
-      <div className="home-panel-head home-dispatch-head">
+      <div
+        className={`home-panel-head home-dispatch-head${
+          discountSplit && !hideTotals ? " is-profit-table" : ""
+        }`}
+      >
         <div>
           <p className="home-eyebrow">{eyebrow}</p>
           <h2 className="home-panel-title">{title}</h2>
         </div>
         {!hideTotals ? (
-          <div className="home-dispatch-stats">
-            <div className="home-stat">
-              <span className="home-stat-label">{labels.total ?? "Total"}</span>
-              <span className="home-stat-value">
-                {formatStat(headerTotal, valueKind)}
-              </span>
+          discountSplit ? (
+            <ProfitStatTable
+              domesticProfit={leftTotal}
+              importedProfit={rightTotal}
+              totalProfit={headerTotal}
+              domesticDiscount={domesticDiscount}
+              importedDiscount={importedDiscount}
+            />
+          ) : (
+            <div className="home-dispatch-stats">
+              <div className="home-stat">
+                <span className="home-stat-label">{labels.total ?? "Total"}</span>
+                <span className="home-stat-value">
+                  {formatStat(headerTotal, valueKind)}
+                </span>
+              </div>
+              {!singleSeries ? (
+                <>
+                  <div className="home-stat home-stat-split">
+                    <span className="home-stat-label">{labels.left}</span>
+                    <span className="home-stat-value home-stat-domestic">
+                      {formatValue(leftTotal, valueKind)}
+                    </span>
+                  </div>
+                  <div className="home-stat home-stat-split">
+                    <span className="home-stat-label">{labels.right}</span>
+                    <span className="home-stat-value home-stat-imported">
+                      {formatValue(rightTotal, valueKind)}
+                    </span>
+                  </div>
+                </>
+              ) : null}
             </div>
-            {!singleSeries ? (
-              <>
-                <div className="home-stat home-stat-split">
-                  <span className="home-stat-label">{labels.left}</span>
-                  <span className="home-stat-value home-stat-domestic">
-                    {formatValue(leftTotal, valueKind)}
-                  </span>
-                </div>
-                <div className="home-stat home-stat-split">
-                  <span className="home-stat-label">{labels.right}</span>
-                  <span className="home-stat-value home-stat-imported">
-                    {formatValue(rightTotal, valueKind)}
-                  </span>
-                </div>
-              </>
-            ) : null}
-          </div>
+          )
         ) : null}
       </div>
 

@@ -7,6 +7,7 @@ import type { ProfitAnalysisRow } from "@/lib/actions/reports";
 import {
   formatDateDdMmYyyy,
   formatDispatchMt,
+  formatIndianNumber,
   formatRs,
 } from "@/lib/domain/format";
 
@@ -17,7 +18,8 @@ type SortKey =
   | "importedQuantity"
   | "importedProfit"
   | "totalQuantity"
-  | "totalProfit";
+  | "totalProfit"
+  | "truckCount";
 type SortDir = "asc" | "desc";
 
 function numericValue(value: string | null | undefined): number {
@@ -116,6 +118,7 @@ export function ProfitAnalysisList({
       header: "Imported profit",
       align: "right" as const,
     },
+    { key: "truckCount", header: "Trucks", align: "right" as const },
   ];
 
   const exportRows = useMemo(
@@ -126,6 +129,7 @@ export function ProfitAnalysisList({
         domesticProfit: formatRs(row.domesticProfit),
         importedQuantity: formatDispatchMt(row.importedQuantity),
         importedProfit: formatRs(row.importedProfit),
+        truckCount: formatIndianNumber(row.truckCount),
         totalQuantity: formatDispatchMt(row.totalQuantity),
         totalProfit: formatRs(row.totalProfit),
       })),
@@ -137,16 +141,15 @@ export function ProfitAnalysisList({
       <div className="page-header">
         <div>
           <p className="page-eyebrow">
-            <Link href="/">Home</Link>
+            <Link href="/reports">Report</Link>
             <span aria-hidden="true"> · </span>
-            Reports
+            Analysis
+            <span aria-hidden="true"> · </span>
+            Dispatch Analysis
+            <span aria-hidden="true"> · </span>
+            Profit Analysis
           </p>
           <h1 className="page-title">Profit analysis</h1>
-          <p className="page-subtitle">
-            Day-wise dispatched quantity and profit, split by domestic and
-            imported quality. Discounts received add to profit; discounts paid
-            subtract.
-          </p>
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">
@@ -224,13 +227,6 @@ export function ProfitAnalysisList({
           rows={exportRows}
         />
       </div>
-      <p className="filter-hint">
-        Dates group dispatches and payment discounts by day. Profit uses basic
-        sale minus basic purchase (FOR subtracts freight), plus discount
-        received minus discount paid. Domestic / imported follows quality class
-        for dispatches (purchase, then vessel, then sale order) and coal origin
-        for discounts.
-      </p>
 
       {filtered.length === 0 ? (
         <p className="home-empty">
@@ -311,6 +307,16 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "importedProfit", sortDir)}
                   </button>
                 </th>
+                <th className="num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("truckCount")}
+                  >
+                    Trucks
+                    {sortIndicator(sortKey === "truckCount", sortDir)}
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -329,6 +335,7 @@ export function ProfitAnalysisList({
                     {formatDispatchMt(row.importedQuantity)}
                   </td>
                   <td className="num">{formatRs(row.importedProfit)}</td>
+                  <td className="num">{formatIndianNumber(row.truckCount)}</td>
                 </tr>
               ))}
             </tbody>

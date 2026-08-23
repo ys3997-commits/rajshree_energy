@@ -253,7 +253,7 @@ export default async function OrdersPage({
         />
       </form>
 
-      <div className="table-wrap table-wrap-scroll">
+      <div className="table-wrap table-wrap-scroll orders-table-wrap">
         <table className="data orders-table">
           <thead>
             <tr>

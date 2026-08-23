@@ -5,6 +5,7 @@ import { listQualityClasses } from "@/lib/actions/qualities";
 import { listTransporters } from "@/lib/actions/transporters";
 import { listVessels } from "@/lib/actions/vessels";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
+import { toDecimal, type DecimalLike } from "@/lib/domain/computations";
 import {
   formatDateDdMmYyyy,
   formatDispatchMt,
@@ -12,21 +13,38 @@ import {
   formatQualityClass,
   formatRs,
 } from "@/lib/domain/format";
-import {
-  parsePurchaseOrderSequence,
-  parseSaleOrderSequence,
-} from "@/lib/domain/orderNumbers";
 
-function displayOrderDigits(
-  poNumber: string,
-  kind: "sale" | "purchase",
+function profitPmtValue(
+  profit: DecimalLike | null | undefined,
+  weight: DecimalLike | null | undefined,
+) {
+  if (profit == null || weight == null) return null;
+  const qty = toDecimal(weight);
+  if (qty.eq(0)) return null;
+  return toDecimal(profit).div(qty);
+}
+
+function formatProfitPmt(
+  profit: DecimalLike | null | undefined,
+  weight: DecimalLike | null | undefined,
 ): string {
-  const seq =
-    kind === "sale"
-      ? parseSaleOrderSequence(poNumber)
-      : parsePurchaseOrderSequence(poNumber);
-  if (seq != null) return String(seq).padStart(4, "0");
-  return poNumber.replace(/^(SO|PO)\s+/i, "").trim() || poNumber;
+  const pmt = profitPmtValue(profit, weight);
+  return pmt == null ? "—" : formatRs(pmt);
+}
+
+function formatProfitPercent(
+  profit: DecimalLike | null | undefined,
+  weight: DecimalLike | null | undefined,
+  purchaseBasic: DecimalLike | null | undefined,
+  freightPmt: DecimalLike | null | undefined,
+): string {
+  const pmt = profitPmtValue(profit, weight);
+  if (pmt == null || purchaseBasic == null) return "—";
+  const cost = toDecimal(purchaseBasic).plus(
+    freightPmt == null ? 0 : toDecimal(freightPmt),
+  );
+  if (cost.eq(0)) return "—";
+  return `${pmt.mul(100).div(cost).toFixed(2)}%`;
 }
 
 type SearchParams = Promise<{
@@ -67,38 +85,22 @@ export default async function MasterDispatchReportPage({
   const exportColumns = [
     { key: "date", header: "Date" },
     { key: "lorryNumber", header: "Lorry no" },
-    { key: "weight", header: "Weight", align: "right" as const },
+    { key: "weight", header: "Weight (MT)", align: "right" as const },
     { key: "vesselName", header: "Vessel name" },
     { key: "quality", header: "Quality" },
     { key: "gstState", header: "GST state" },
-    { key: "received", header: "Received", align: "right" as const },
-    { key: "diff", header: "Diff", align: "right" as const },
-    { key: "purchasePo", header: "PO no" },
     { key: "vendor", header: "Vendor" },
     {
       key: "purchaseBasic",
       header: "Purchase basic price",
       align: "right" as const,
     },
-    {
-      key: "purchaseTotal",
-      header: "Purchase total price",
-      align: "right" as const,
-    },
-    { key: "purchaseInvoice", header: "Purchase invoice" },
-    { key: "salePo", header: "SO no" },
     { key: "customer", header: "Customer name" },
     {
       key: "saleBasic",
       header: "Sale basic price",
       align: "right" as const,
     },
-    {
-      key: "saleTotal",
-      header: "Sale total price",
-      align: "right" as const,
-    },
-    { key: "saleInvoice", header: "Sale invoice" },
     { key: "transporter", header: "Transporter name" },
     { key: "freightPmt", header: "Freight PMT", align: "right" as const },
     {
@@ -106,6 +108,9 @@ export default async function MasterDispatchReportPage({
       header: "Freight amount",
       align: "right" as const,
     },
+    { key: "profit", header: "Profit", align: "right" as const },
+    { key: "profitPmt", header: "Profit PMT", align: "right" as const },
+    { key: "profitPercent", header: "Profit %", align: "right" as const },
   ];
 
   const exportRows = rows.map((row) => ({
@@ -117,21 +122,21 @@ export default async function MasterDispatchReportPage({
     vesselName: row.vesselName,
     quality: formatQualityClass(row.qualityClass),
     gstState: row.gstState ?? "—",
-    received: formatDispatchMt(row.receivingQuantity),
-    diff: formatDispatchMt(row.diffInQuantity),
-    purchasePo: displayOrderDigits(row.purchasePoNumber, "purchase"),
     vendor: row.vendorName ?? "—",
     purchaseBasic: formatRs(row.purchaseBasicRate),
-    purchaseTotal: formatRs(row.purchaseTotalRate),
-    purchaseInvoice: row.purchaseInvoiceNumber ?? "—",
-    salePo: displayOrderDigits(row.salePoNumber, "sale"),
     customer: row.customerName ?? "—",
     saleBasic: formatRs(row.saleBasicRate),
-    saleTotal: formatRs(row.saleTotalRate),
-    saleInvoice: row.saleInvoiceNumber ?? "—",
     transporter: row.transporterName ?? "—",
     freightPmt: formatRs(row.freight),
     freightAmount: formatRs(row.freightAmount),
+    profit: formatRs(row.lineProfit),
+    profitPmt: formatProfitPmt(row.lineProfit, row.dispatchedQuantity),
+    profitPercent: formatProfitPercent(
+      row.lineProfit,
+      row.dispatchedQuantity,
+      row.purchaseBasicRate,
+      row.freight,
+    ),
   }));
 
   return (
@@ -141,13 +146,14 @@ export default async function MasterDispatchReportPage({
           <p className="page-eyebrow">
             <Link href="/reports">Report</Link>
             <span aria-hidden="true"> · </span>
-            Dispatch
+            Analysis
             <span aria-hidden="true"> · </span>
-            Dispatch Register
+            Dispatch Analysis
           </p>
-          <h1 className="page-title">Dispatch Register</h1>
+          <h1 className="page-title">Dispatch Analysis</h1>
           <p className="page-subtitle">
-            One row per dispatch — purchase, sale, and freight.
+            One row per dispatch — purchase, sale, freight, and profit on basic
+            rates.
           </p>
         </div>
       </div>
@@ -224,44 +230,40 @@ export default async function MasterDispatchReportPage({
           Filter
         </button>
         <TableDownloadButtons
-          title="Dispatch Register"
+          title="Dispatch Analysis"
           filenameBase="master-dispatch-report"
           columns={exportColumns}
           rows={exportRows}
         />
       </form>
 
-      <div className="table-wrap table-wrap-scroll dispatch-register-table-wrap">
-        <table className="data report-table dispatch-register-table">
+      <div className="table-wrap table-wrap-scroll dispatch-analysis-table-wrap">
+        <table className="data report-table dispatch-analysis-table">
           <thead>
             <tr className="report-group-row">
-              <th colSpan={8}>Dispatch</th>
-              <th colSpan={5}>Purchase</th>
-              <th colSpan={5}>Sale</th>
+              <th colSpan={6}>Dispatch</th>
+              <th colSpan={2}>Purchase</th>
+              <th colSpan={2}>Sale</th>
               <th colSpan={3}>Transport</th>
+              <th colSpan={3}>Margin</th>
             </tr>
             <tr>
               <th>Date</th>
               <th>Lorry no</th>
-              <th className="cell-num">Weight</th>
+              <th className="cell-num">Weight (MT)</th>
               <th>Vessel name</th>
               <th>Quality</th>
               <th>GST state</th>
-              <th className="cell-num">Received</th>
-              <th className="cell-num">Diff</th>
-              <th>PO no</th>
               <th>Vendor</th>
               <th className="cell-num">Basic price</th>
-              <th className="cell-num">Total price</th>
-              <th>Purchase invoice</th>
-              <th>SO no</th>
               <th>Customer name</th>
               <th className="cell-num">Basic price</th>
-              <th className="cell-num">Total price</th>
-              <th>Sale invoice</th>
               <th>Transporter name</th>
               <th className="cell-num">Freight PMT</th>
               <th className="cell-num">Freight amount</th>
+              <th className="cell-num">Profit</th>
+              <th className="cell-num">Profit PMT</th>
+              <th className="cell-num">Profit %</th>
             </tr>
           </thead>
           <tbody>
@@ -281,66 +283,14 @@ export default async function MasterDispatchReportPage({
                 <td className={row.gstState ? undefined : "cell-center"}>
                   {row.gstState ?? "—"}
                 </td>
-                <td
-                  className={
-                    row.receivingQuantity != null ? "cell-num" : "cell-center"
-                  }
-                >
-                  {formatDispatchMt(row.receivingQuantity)}
-                </td>
-                <td
-                  className={
-                    row.diffInQuantity != null ? "cell-num" : "cell-center"
-                  }
-                >
-                  {formatDispatchMt(row.diffInQuantity)}
-                </td>
-                <td>
-                  {row.purchaseOrderId ? (
-                    <Link
-                      href={`/purchase-orders/${row.purchaseOrderId}`}
-                      className="font-medium"
-                    >
-                      {displayOrderDigits(row.purchasePoNumber, "purchase")}
-                    </Link>
-                  ) : (
-                    displayOrderDigits(row.purchasePoNumber, "purchase")
-                  )}
-                </td>
                 <td className={row.vendorName ? undefined : "cell-center"}>
                   {row.vendorName ?? "—"}
                 </td>
                 <td className="cell-num">{formatRs(row.purchaseBasicRate)}</td>
-                <td className="cell-num">{formatRs(row.purchaseTotalRate)}</td>
-                <td
-                  className={
-                    row.purchaseInvoiceNumber ? undefined : "cell-center"
-                  }
-                >
-                  {row.purchaseInvoiceNumber ?? "—"}
-                </td>
-                <td>
-                  {row.orderId ? (
-                    <Link
-                      href={`/orders/${row.orderId}`}
-                      className="font-medium"
-                    >
-                      {displayOrderDigits(row.salePoNumber, "sale")}
-                    </Link>
-                  ) : (
-                    displayOrderDigits(row.salePoNumber, "sale")
-                  )}
-                </td>
                 <td className={row.customerName ? undefined : "cell-center"}>
                   {row.customerName ?? "—"}
                 </td>
                 <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
-                <td className="cell-num">{formatRs(row.saleTotalRate)}</td>
-                <td
-                  className={row.saleInvoiceNumber ? undefined : "cell-center"}
-                >
-                  {row.saleInvoiceNumber ?? "—"}
-                </td>
                 <td
                   className={row.transporterName ? undefined : "cell-center"}
                 >
@@ -348,11 +298,23 @@ export default async function MasterDispatchReportPage({
                 </td>
                 <td className="cell-num">{formatRs(row.freight)}</td>
                 <td className="cell-num">{formatRs(row.freightAmount)}</td>
+                <td className="cell-num">{formatRs(row.lineProfit)}</td>
+                <td className="cell-num">
+                  {formatProfitPmt(row.lineProfit, row.dispatchedQuantity)}
+                </td>
+                <td className="cell-num">
+                  {formatProfitPercent(
+                    row.lineProfit,
+                    row.dispatchedQuantity,
+                    row.purchaseBasicRate,
+                    row.freight,
+                  )}
+                </td>
               </tr>
             ))}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={21}>No dispatches match filters.</td>
+                <td colSpan={16}>No dispatches match filters.</td>
               </tr>
             )}
           </tbody>

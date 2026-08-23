@@ -48,8 +48,12 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
 
 export function TransportEngineClient({
   initialRows,
+  exportTitle = "Transport Engine Report",
+  exportFilenameBase = "transport-engine",
 }: {
   initialRows: TransportEngineRow[];
+  exportTitle?: string;
+  exportFilenameBase?: string;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
@@ -322,8 +326,8 @@ export function TransportEngineClient({
           </button>
         )}
         <TableDownloadButtons
-          title="Transport Engine Report"
-          filenameBase="transport-engine"
+          title={exportTitle}
+          filenameBase={exportFilenameBase}
           columns={exportColumns}
           rows={exportRows}
         />

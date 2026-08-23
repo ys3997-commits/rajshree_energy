@@ -40,6 +40,31 @@ export function parseBillStatusFilter(
   return isBillStatus(status) ? status : null;
 }
 
+export function parseIsoDay(value: string | null | undefined): string | null {
+  const trimmed = value?.trim() ?? "";
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return null;
+  if (Number.isNaN(new Date(`${trimmed}T00:00:00.000Z`).getTime())) return null;
+  return trimmed;
+}
+
+export function parseBillTextFilter(
+  value: string | null | undefined,
+): string | null {
+  const trimmed = value?.trim() ?? "";
+  return trimmed || null;
+}
+
+export function billDateRange(
+  dateFrom: string | null,
+  dateTo: string | null,
+): { date: { gte?: Date; lte?: Date } } | Record<string, never> {
+  if (!dateFrom && !dateTo) return {};
+  const date: { gte?: Date; lte?: Date } = {};
+  if (dateFrom) date.gte = new Date(`${dateFrom}T00:00:00.000Z`);
+  if (dateTo) date.lte = new Date(`${dateTo}T23:59:59.999Z`);
+  return { date };
+}
+
 export function validateBillRemark(value: string, label: string): string {
   const remark = value.trim();
   if (!remark) throw new Error(`${label} is required`);

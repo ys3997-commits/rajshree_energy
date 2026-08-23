@@ -167,9 +167,6 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
             Ageing Report
           </p>
           <h1 className="page-title">Ageing report</h1>
-          <p className="page-subtitle">
-            Customer outstanding split by how long the amount has been due.
-          </p>
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">
@@ -260,15 +257,11 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
           <table className="data ageing-table">
             <thead>
               <tr className="ageing-amount-row">
-                <th rowSpan={2} className="ageing-customer-col">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("name")}
-                  >
-                    Customer name
-                    {sortIndicator(sortKey === "name", sortDir)}
-                  </button>
+                <th
+                  className="ageing-customer-col ageing-customer-col-continued"
+                  aria-hidden="true"
+                >
+                  &nbsp;
                 </th>
                 <th className="cell-num ageing-total-col">
                   {formatRs(totals.totalDue.toFixed(2))}
@@ -280,6 +273,16 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
                 ))}
               </tr>
               <tr className="ageing-days-row">
+                <th className="ageing-customer-col">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("name")}
+                  >
+                    Customer name
+                    {sortIndicator(sortKey === "name", sortDir)}
+                  </button>
+                </th>
                 <th className="cell-num ageing-total-col">
                   <button
                     type="button"

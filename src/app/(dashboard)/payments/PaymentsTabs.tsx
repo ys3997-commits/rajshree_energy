@@ -1,14 +1,24 @@
 import Link from "next/link";
+import { paymentsHref } from "./paymentsHref";
 
 export function PaymentsTabs({
   active,
+  dateFrom = "",
+  dateTo = "",
+  party = "",
+  type = "",
 }: {
   active: "payment" | "discount";
+  dateFrom?: string;
+  dateTo?: string;
+  party?: string;
+  type?: string;
 }) {
+  const filters = { dateFrom, dateTo, party, type };
   return (
-    <div className="ca-tabs" role="tablist" aria-label="Payments sections">
+    <div className="ca-tabs" role="tablist" aria-label="Fund Flow sections">
       <Link
-        href="/payments"
+        href={paymentsHref({ tab: "payment", ...filters })}
         role="tab"
         aria-selected={active === "payment"}
         className={
@@ -16,10 +26,10 @@ export function PaymentsTabs({
         }
         prefetch={false}
       >
-        Payment
+        Transactions
       </Link>
       <Link
-        href="/payments?tab=discount"
+        href={paymentsHref({ tab: "discount", ...filters })}
         role="tab"
         aria-selected={active === "discount"}
         className={

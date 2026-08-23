@@ -44,9 +44,12 @@ describe("formatIndianAmountTyping", () => {
 });
 
 describe("formatMt / formatRs", () => {
-  it("formats as rounded integers with Indian grouping", () => {
-    expect(formatMt(100000)).toBe("1,00,000");
-    expect(formatMt(1234.6)).toBe("1,235");
+  it("formats weights with two decimals and MT", () => {
+    expect(formatMt(38.18)).toBe("38.18 MT");
+    expect(formatMt(12.5)).toBe("12.50 MT");
+    expect(formatMt(1234.567)).toBe("1234.57 MT");
+    expect(formatMt(100000)).toBe("100000.00 MT");
+    expect(formatMt(null)).toBe("—");
     expect(formatRs(100000)).toBe("Rs 1,00,000");
     expect(formatRs(99.4)).toBe("Rs 99");
   });

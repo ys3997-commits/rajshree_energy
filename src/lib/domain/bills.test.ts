@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  billDateRange,
   canReviewBill,
   canUploadBill,
   canViewBill,
   parseBillStatusFilter,
+  parseBillTextFilter,
+  parseIsoDay,
   validateBillFile,
   validateBillFiles,
   validateBillRemark,
@@ -26,6 +29,30 @@ describe("parseBillStatusFilter", () => {
 
   it("ignores unknown values", () => {
     expect(parseBillStatusFilter("completed")).toBeNull();
+  });
+});
+
+describe("bill list filters", () => {
+  it("parses ISO days and ignores junk", () => {
+    expect(parseIsoDay("2026-08-20")).toBe("2026-08-20");
+    expect(parseIsoDay(" 2026-08-20 ")).toBe("2026-08-20");
+    expect(parseIsoDay("20/08/2026")).toBeNull();
+    expect(parseIsoDay("")).toBeNull();
+  });
+
+  it("trims optional text filters", () => {
+    expect(parseBillTextFilter(" Raj ")).toBe("Raj");
+    expect(parseBillTextFilter("  ")).toBeNull();
+  });
+
+  it("builds an inclusive date range", () => {
+    expect(billDateRange(null, null)).toEqual({});
+    expect(billDateRange("2026-08-01", "2026-08-20")).toEqual({
+      date: {
+        gte: new Date("2026-08-01T00:00:00.000Z"),
+        lte: new Date("2026-08-20T23:59:59.999Z"),
+      },
+    });
   });
 });
 

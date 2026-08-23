@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
-import { formatMt } from "@/lib/domain/format";
+import { formatMtNumber } from "@/lib/domain/format";
 
 function isSaleComplete(input: {
   saleInvoiceNumber: string | null;
@@ -156,7 +156,7 @@ export function EditDispatchSaleButton({
               id={`diff-qty-${dispatchId}`}
               type="text"
               readOnly
-              value={diffQty == null ? "—" : formatMt(diffQty)}
+              value={diffQty == null ? "—" : formatMtNumber(diffQty)}
               tabIndex={-1}
             />
             <span className="field-unit">MT</span>

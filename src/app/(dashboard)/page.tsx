@@ -5,6 +5,7 @@ import {
   getHomeOverdueCharts,
   getHomeQualityStockLists,
   getHomeLatestActivity,
+  getHomePendingBillsByOwner,
   getHomeTodayKpis,
   getTopCustomersByCoalOrigin,
 } from "@/lib/actions/dashboard";
@@ -30,6 +31,7 @@ import { LockedLink } from "@/components/LockedLink";
 import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
 import { HomeKpiStrip } from "@/components/HomeKpiStrip";
 import { HomeLatestActivityStrip } from "@/components/HomeLatestActivityStrip";
+import { HomePendingBillsStrip } from "@/components/HomePendingBillsStrip";
 
 function formatQty(value: string): string {
   return formatDispatchMt(value);
@@ -46,12 +48,13 @@ function bucketTotalForDay(
   );
 }
 
-function sumUnsoldQty(
-  rows: { unsoldQty: string }[],
+function sumQtyField(
+  rows: { unsoldQty: string; stockInHand: string }[],
+  field: "unsoldQty" | "stockInHand",
 ): string {
   let total = 0;
   for (const row of rows) {
-    total += Number(row.unsoldQty) || 0;
+    total += Number(row[field]) || 0;
   }
   return total.toString();
 }
@@ -70,11 +73,13 @@ export default async function HomePage() {
     latestActivity,
     fundCharts,
     topCustomersByCoal,
+    pendingBillsByOwner,
   ] = await Promise.all([
     getHomeTodayKpis(),
     getHomeLatestActivity(),
     getHomeFundCharts(),
     getTopCustomersByCoalOrigin(7),
+    getHomePendingBillsByOwner(access.kind === "staff" ? access.id : undefined),
   ]);
 
   const [customers, ports, vessels, qualityClasses] = await Promise.all([
@@ -102,6 +107,8 @@ export default async function HomePage() {
   const dailyDispatches = dispatchCharts.days;
   const monthlyProfit = dispatchCharts.profitMonths;
   const dailyProfit = dispatchCharts.profitDays;
+  const monthlyProfitDiscount = dispatchCharts.profitMonthDiscount;
+  const dailyProfitDiscount = dispatchCharts.profitDayDiscount;
   const dailyFundsReceived = fundCharts.days;
   const dailyOverdue = overdueCharts.days;
   const topDomesticCustomers = topCustomersByCoal.last30.domestic;
@@ -135,15 +142,6 @@ export default async function HomePage() {
 
   return (
     <div className="home">
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Home</h1>
-          <p className="page-subtitle">
-            Dispatch, profit, and fund pulse, pending balances, and top movers.
-          </p>
-        </div>
-      </div>
-
       <HomeLatestActivityStrip
         purchaseSalesDate={latestActivity.purchaseSalesDate}
         paymentDate={latestActivity.paymentDate}
@@ -156,11 +154,19 @@ export default async function HomePage() {
         profit={todayKpis.profit}
         fundReceived={todayKpis.fundReceived}
         overdue={bucketTotalForDay(dailyOverdue, todayKpis.todayDate)}
-        unsoldQuantity={sumUnsoldQty([
-          ...domesticQualityStock,
-          ...importedQualityStock,
-        ])}
+        stockInHand={sumQtyField(
+          [...domesticQualityStock, ...importedQualityStock],
+          "stockInHand",
+        )}
+        unsoldQuantity={sumQtyField(
+          [...domesticQualityStock, ...importedQualityStock],
+          "unsoldQty",
+        )}
       />
+
+      {canOpen("/bills") ? (
+        <HomePendingBillsStrip owners={pendingBillsByOwner} />
+      ) : null}
 
       <section className="home-section">
         <div className="home-section-head">
@@ -229,6 +235,7 @@ export default async function HomePage() {
           title="Monthly Profit"
           buckets={monthlyProfit}
           valueKind="rupees"
+          discountSplit={monthlyProfitDiscount}
           ariaLabel="Month-wise domestic and imported profit totals"
         />
         <HomeDispatchSplitChart
@@ -236,6 +243,7 @@ export default async function HomePage() {
           title="Daily Profit"
           buckets={dailyProfit}
           valueKind="rupees"
+          discountSplit={dailyProfitDiscount}
           ariaLabel="Day-wise domestic and imported profit totals"
         />
       </div>
@@ -483,7 +491,7 @@ export default async function HomePage() {
             href="/reports/master-dispatch"
             allowed={canOpen("/reports/master-dispatch")}
             eyebrow="Dispatches"
-            title="Master dispatch report"
+            title="Dispatch Register"
             desc="Purchase, sale, freight, and basic-rate profit for every dispatch."
           />
           <HomeReportCard

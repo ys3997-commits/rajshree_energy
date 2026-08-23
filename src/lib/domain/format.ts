@@ -82,43 +82,42 @@ export function formatDispatchTerms(
 }
 
 /**
- * Format a quantity for display (integer, Indian grouping).
- * Unit (MT) belongs in the column header / label, not on every cell value.
+ * Format a weight as two decimals without a unit (for inputs that already show MT).
+ */
+export function formatMtNumber(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  if (value == null || value === "") return "—";
+  const s = typeof value === "string" ? value : value.toString();
+  if (s === "—") return "—";
+  const n = Number(s);
+  if (!Number.isFinite(n)) return s;
+  return n.toFixed(2);
+}
+
+/**
+ * Format a weight for display: two decimals and a trailing " MT".
+ * Example: 38.18 MT
  */
 export function formatMt(
   value: { toString(): string } | number | string | null | undefined,
 ): string {
-  if (value == null || value === "") return "—";
-  const s = typeof value === "string" ? value : value.toString();
-  if (s === "—") return "—";
-  const n = Number(s);
-  if (!Number.isFinite(n)) return s;
-  return formatIndianNumber(Math.round(n));
+  const amount = formatMtNumber(value);
+  return amount === "—" ? "—" : `${amount} MT`;
 }
 
-function formatWeightMtValue(
-  value: { toString(): string } | number | string | null | undefined,
-): string {
-  if (value == null || value === "") return "—";
-  const s = typeof value === "string" ? value : value.toString();
-  if (s === "—") return "—";
-  const n = Number(s);
-  if (!Number.isFinite(n)) return s;
-  return `${n.toFixed(2)} MT`;
-}
-
-/** Sale order quantity cells: 2 decimals, no grouping, trailing " MT". */
+/** Sale order quantity cells: 2 decimals, trailing " MT". */
 export function formatSaleOrderMt(
   value: { toString(): string } | number | string | null | undefined,
 ): string {
-  return formatWeightMtValue(value);
+  return formatMt(value);
 }
 
-/** Dispatch sheet MT cells: 2 decimals, no grouping, trailing " MT". */
+/** Dispatch sheet MT cells: 2 decimals, trailing " MT". */
 export function formatDispatchMt(
   value: { toString(): string } | number | string | null | undefined,
 ): string {
-  return formatWeightMtValue(value);
+  return formatMt(value);
 }
 
 /**

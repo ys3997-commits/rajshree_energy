@@ -7,6 +7,7 @@ import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
 import {
   formatMt,
+  formatMtNumber,
   formatQualityClass,
   formatRateBreakdownLine,
   normalizeLorryNumber,
@@ -440,7 +441,7 @@ export function EditDispatchButton({
                     {p.poNumber} — {p.importer?.name ?? "?"} —{" "}
                     {p.vessel?.vesselName ?? "?"}
                     {p.balanceOrder != null
-                      ? ` (bal ${p.balanceOrder} MT)`
+                      ? ` (bal ${formatMt(p.balanceOrder)})`
                       : ""}
                   </option>
                 ))}
@@ -450,7 +451,7 @@ export function EditDispatchButton({
                   <label>Purchase balance</label>
                   <div className="text-sm">
                     {selectedPurchase.balanceOrder != null
-                      ? `${selectedPurchase.balanceOrder} MT`
+                      ? formatMt(selectedPurchase.balanceOrder)
                       : "—"}
                   </div>
                   <label>Vessel</label>
@@ -588,7 +589,7 @@ export function EditDispatchButton({
                   <option key={o.poNumber} value={o.poNumber}>
                     {o.poNumber} — {o.customer?.name ?? "?"}
                     {o.balanceOrder != null
-                      ? ` (bal ${o.balanceOrder} MT)`
+                      ? ` (bal ${formatMt(o.balanceOrder)})`
                       : ""}
                   </option>
                 ))}
@@ -598,7 +599,7 @@ export function EditDispatchButton({
                   <label>Sale balance</label>
                   <div className="text-sm">
                     {selectedOrder.balanceOrder != null
-                      ? `${selectedOrder.balanceOrder} MT`
+                      ? formatMt(selectedOrder.balanceOrder)
                       : "—"}
                   </div>
                   <label>Rate breakdown</label>
@@ -792,7 +793,7 @@ export function EditDispatchButton({
               id={`edit-diff-${dispatchId}`}
               type="text"
               readOnly
-              value={diffQty == null ? "—" : formatMt(diffQty)}
+              value={diffQty == null ? "—" : formatMtNumber(diffQty)}
               tabIndex={-1}
             />
             <span className="field-unit">MT</span>

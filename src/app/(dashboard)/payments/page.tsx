@@ -5,8 +5,16 @@ import { listTransporters } from "@/lib/actions/transporters";
 import { redirect } from "next/navigation";
 import { DiscountsClient } from "./DiscountsClient";
 import { PaymentsClient } from "./PaymentsClient";
+import { parseFundFlowType } from "./paymentsHref";
 
-type SearchParams = Promise<{ page?: string; tab?: string }>;
+type SearchParams = Promise<{
+  page?: string;
+  tab?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  party?: string;
+  type?: string;
+}>;
 
 export default async function PaymentsPage({
   searchParams,
@@ -23,7 +31,17 @@ export default async function PaymentsPage({
   }
 
   const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
+  const dateFrom = sp.dateFrom?.trim() || "";
+  const dateTo = sp.dateTo?.trim() || "";
+  const party = sp.party?.trim() || "";
+  const type = parseFundFlowType(sp.type);
   const isDiscount = sp.tab === "discount";
+  const listFilter = {
+    dateFrom: dateFrom || undefined,
+    dateTo: dateTo || undefined,
+    party: party || undefined,
+    type: type || undefined,
+  };
 
   const [customers, transporters] = await Promise.all([
     listCustomers({ activeOnly: true }),
@@ -44,10 +62,36 @@ export default async function PaymentsPage({
   ];
 
   if (isDiscount) {
-    const discounts = await listDiscounts({ page });
-    return <DiscountsClient initial={discounts} parties={parties} />;
+    const [discounts, exportDiscounts] = await Promise.all([
+      listDiscounts({ page, ...listFilter }),
+      listDiscounts({ all: true, ...listFilter }),
+    ]);
+    return (
+      <DiscountsClient
+        initial={discounts}
+        exportRows={exportDiscounts.rows}
+        parties={parties}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        party={party}
+        type={type}
+      />
+    );
   }
 
-  const payments = await listPayments({ page });
-  return <PaymentsClient initial={payments} parties={parties} />;
+  const [payments, exportPayments] = await Promise.all([
+    listPayments({ page, ...listFilter }),
+    listPayments({ all: true, ...listFilter }),
+  ]);
+  return (
+    <PaymentsClient
+      initial={payments}
+      exportRows={exportPayments.rows}
+      parties={parties}
+      dateFrom={dateFrom}
+      dateTo={dateTo}
+      party={party}
+      type={type}
+    />
+  );
 }

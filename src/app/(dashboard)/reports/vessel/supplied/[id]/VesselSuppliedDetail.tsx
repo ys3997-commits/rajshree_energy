@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { CustomerCategory } from "@/generated/prisma";
-import type { VesselSuppliedCustomerRow } from "@/lib/actions/reports";
+import type {
+  VesselSuppliedCustomerRow,
+  VesselSuppliedTotals,
+} from "@/lib/actions/reports";
 import {
   formatQualityClass,
   formatRs,
@@ -65,9 +68,11 @@ function matchesCategoryFilter(
 
 export function VesselSuppliedDetail({
   vessel,
+  totals,
   customers,
 }: {
   vessel: VesselProfile;
+  totals: VesselSuppliedTotals;
   customers: VesselSuppliedCustomerRow[];
 }) {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("");
@@ -181,7 +186,19 @@ export function VesselSuppliedDetail({
           <div className="detail-stat">
             <span className="detail-stat-label">Total quantities</span>
             <span className="detail-stat-value">
-              {formatSaleOrderMt(vesselTotals.totalQuantity)}
+              {formatSaleOrderMt(totals.totalQuantity)}
+            </span>
+          </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">Dispatched quantities</span>
+            <span className="detail-stat-value">
+              {formatSaleOrderMt(totals.soldQuantity)}
+            </span>
+          </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">Stock in hand</span>
+            <span className="detail-stat-value">
+              {formatSaleOrderMt(totals.stockInHand)}
             </span>
           </div>
           <div className="detail-stat">

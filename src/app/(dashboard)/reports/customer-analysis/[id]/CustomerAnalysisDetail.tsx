@@ -17,6 +17,7 @@ import {
   formatMt,
   formatPurchaseOrderStatus,
   formatRs,
+  formatSaleOrderMt,
   formatSaleOrderStatus,
 } from "@/lib/domain/format";
 
@@ -94,13 +95,13 @@ function formatDate(iso: string | null): string {
 
 function formatBalance(value: string | null): string {
   if (value == null) return "—";
-  return `${formatMt(value)} MT`;
+  return formatSaleOrderMt(value);
 }
 
 function formatVolume(value: string): string {
   const n = Number(value);
   if (!Number.isFinite(n) || n === 0) return "—";
-  return `${formatMt(value)} MT`;
+  return formatSaleOrderMt(value);
 }
 
 function formatMargin(value: string | null): string {
@@ -210,9 +211,21 @@ function OrdersTable({
                   ? formatSaleOrderStatus(o.status)
                   : formatPurchaseOrderStatus(o.status)}
               </td>
-              <td className="num">{formatMt(o.quantity)}</td>
-              <td className="num">{formatMt(o.dispatchedOrder)}</td>
-              <td className="num">{formatMt(o.balanceOrder)}</td>
+              <td className="num">
+                {kind === "sale"
+                  ? formatSaleOrderMt(o.quantity)
+                  : formatMt(o.quantity)}
+              </td>
+              <td className="num">
+                {kind === "sale"
+                  ? formatSaleOrderMt(o.dispatchedOrder)
+                  : formatMt(o.dispatchedOrder)}
+              </td>
+              <td className="num">
+                {kind === "sale"
+                  ? formatSaleOrderMt(o.balanceOrder)
+                  : formatMt(o.balanceOrder)}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -294,9 +307,9 @@ export function CustomerAnalysisDetail({
       rows: saleOrders.map((o) => ({
         poNumber: o.poNumber,
         status: formatSaleOrderStatus(o.status),
-        quantity: formatMt(o.quantity),
-        dispatched: formatMt(o.dispatchedOrder),
-        balance: formatMt(o.balanceOrder),
+        quantity: formatSaleOrderMt(o.quantity),
+        dispatched: formatSaleOrderMt(o.dispatchedOrder),
+        balance: formatSaleOrderMt(o.balanceOrder),
       })),
       title: `${displayName} — sale orders`,
     }),
@@ -397,13 +410,13 @@ export function CustomerAnalysisDetail({
           <div className="detail-stat">
             <span className="detail-stat-label">Sale balance</span>
             <span className="detail-stat-value">
-              {formatMt(saleSide.balanceOrder)}
+              {formatSaleOrderMt(saleSide.balanceOrder)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Purchase balance</span>
             <span className="detail-stat-value">
-              {formatMt(purchaseSide.balanceOrder)}
+              {formatSaleOrderMt(purchaseSide.balanceOrder)}
             </span>
           </div>
           <div className="detail-stat">
@@ -455,7 +468,7 @@ export function CustomerAnalysisDetail({
           <span className="detail-meta-value">{customer.email || "—"}</span>
         </div>
         <div className="detail-meta-item">
-          <span className="detail-meta-label">Master dispatch</span>
+          <span className="detail-meta-label">Dispatch Register</span>
           <span className="detail-meta-value">
             <Link href={masterDispatchHref}>Open filtered report</Link>
           </span>

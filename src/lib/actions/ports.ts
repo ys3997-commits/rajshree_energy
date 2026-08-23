@@ -66,6 +66,7 @@ export async function updatePortOption(
   revalidatePath("/options");
   revalidatePath("/orders");
   revalidatePath("/reports/master-dispatch");
+  revalidatePath("/reports/dispatch-analysis");
   return { id: row.id };
 }
 
@@ -100,5 +101,6 @@ export async function backfillPortStates() {
   }
   revalidatePath("/options");
   revalidatePath("/reports/master-dispatch");
+  revalidatePath("/reports/dispatch-analysis");
   return { updated, total: ports.length };
 }

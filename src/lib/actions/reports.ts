@@ -979,11 +979,25 @@ export type VesselSuppliedCustomerRow = {
   profit: string | null;
 };
 
+export type VesselSuppliedTotals = {
+  totalQuantity: string;
+  soldQuantity: string;
+  stockInHand: string;
+};
+
 export async function getVesselSuppliedReport(vesselId: string) {
   const vessel = await prisma.vessel.findUnique({
     where: { id: vesselId },
     include: {
       qualityClass: { include: qualityClassInclude },
+      purchaseOrders: {
+        select: {
+          orderType: true,
+          quantity: true,
+          dispatchedOrder: true,
+          closingQuantity: true,
+        },
+      },
       dispatches: {
         select: {
           dispatchedQuantity: true,
@@ -1005,6 +1019,13 @@ export async function getVesselSuppliedReport(vesselId: string) {
     },
   });
   if (!vessel) return null;
+
+  const pos = vessel.purchaseOrders;
+  const totals: VesselSuppliedTotals = {
+    totalQuantity: sumDecimal(pos.map(displayOrderQtyValue)).toString(),
+    soldQuantity: sumDecimal(pos.map((o) => o.dispatchedOrder)).toString(),
+    stockInHand: sumDecimal(pos.map(displayBalanceValue)).toString(),
+  };
 
   const byCustomer = new Map<
     string,
@@ -1062,6 +1083,7 @@ export async function getVesselSuppliedReport(vesselId: string) {
       active: vessel.active,
       qualityClass: vessel.qualityClass,
     },
+    totals,
     customers,
   };
 }
@@ -1479,6 +1501,7 @@ export type ProfitAnalysisRow = {
   importedProfit: string;
   totalQuantity: string;
   totalProfit: string;
+  truckCount: string;
 };
 
 function isoLocalDay(d: Date): string {
@@ -1507,6 +1530,7 @@ function emptyProfitDay() {
     importedQty: new Decimal(0),
     domesticProfit: new Decimal(0),
     importedProfit: new Decimal(0),
+    trucks: 0,
   };
 }
 
@@ -1559,6 +1583,7 @@ export async function listProfitAnalysisReport(
       agg = emptyProfitDay();
       byDate.set(date, agg);
     }
+    agg.trucks += 1;
 
     const domestic = isDomesticDispatch(d);
     if (domestic) {
@@ -1614,6 +1639,7 @@ export async function listProfitAnalysisReport(
         .plus(agg.importedProfit)
         .toDecimalPlaces(2)
         .toString(),
+      truckCount: String(agg.trucks),
     }));
 }
 

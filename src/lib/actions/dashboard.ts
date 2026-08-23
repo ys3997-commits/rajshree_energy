@@ -127,6 +127,44 @@ export async function getHomeTodayKpis(): Promise<HomeTodayKpis> {
   };
 }
 
+export type HomePendingBillOwner = {
+  name: string;
+  pending: number;
+};
+
+/** Pending bills grouped by approver (owner option name). */
+export async function getHomePendingBillsByOwner(
+  staffId?: string,
+): Promise<HomePendingBillOwner[]> {
+  const staffScope = staffId ? { staffId } : {};
+  const [owners, grouped] = await Promise.all([
+    prisma.ownerOption.findMany({
+      orderBy: { name: "asc" },
+      select: { name: true },
+    }),
+    prisma.bill.groupBy({
+      by: ["approverName"],
+      where: { status: "PENDING", ...staffScope },
+      _count: { _all: true },
+    }),
+  ]);
+
+  const counts = new Map(
+    grouped.map((row) => [row.approverName, row._count._all]),
+  );
+  const names = owners.map((owner) => owner.name);
+  for (const row of grouped) {
+    if (row.approverName && !names.includes(row.approverName)) {
+      names.push(row.approverName);
+    }
+  }
+  names.sort((a, b) => a.localeCompare(b));
+  return names.map((name) => ({
+    name,
+    pending: counts.get(name) ?? 0,
+  }));
+}
+
 export type HomeLatestActivity = {
   purchaseSalesDate: string | null;
   paymentDate: string | null;
@@ -237,8 +275,30 @@ export type DispatchSplitBucket = {
 
 type SplitTotals = { domestic: Decimal; imported: Decimal };
 
+export type ProfitDiscountSplit = {
+  domestic: string;
+  imported: string;
+};
+
 function emptySplit(): SplitTotals {
   return { domestic: new Decimal(0), imported: new Decimal(0) };
+}
+
+function sumSplit(
+  map: Map<string, SplitTotals>,
+  keys: { key: string }[],
+): ProfitDiscountSplit {
+  let domestic = new Decimal(0);
+  let imported = new Decimal(0);
+  for (const { key } of keys) {
+    const totals = map.get(key) ?? emptySplit();
+    domestic = domestic.plus(totals.domestic);
+    imported = imported.plus(totals.imported);
+  }
+  return {
+    domestic: domestic.toString(),
+    imported: imported.toString(),
+  };
 }
 
 function toBucket(
@@ -285,13 +345,16 @@ function buildBuckets(
 /**
  * One query for home charts: last 6 months + last 7 days, each split into
  * domestic / imported for both dispatch volume (MT) and basic-rate profit (Rs).
- * Profit also includes discounts: received adds, paid subtracts, by coal origin.
+ * Profit bars are dispatch margin only. Discount received/paid is returned
+ * separately so the header can show profit, net discount, then net profit.
  */
 export async function getHomeDispatchCharts(): Promise<{
   months: DispatchSplitBucket[];
   days: DispatchSplitBucket[];
   profitMonths: DispatchSplitBucket[];
   profitDays: DispatchSplitBucket[];
+  profitMonthDiscount: ProfitDiscountSplit;
+  profitDayDiscount: ProfitDiscountSplit;
 }> {
   const today = startOfLocalDay(new Date());
   const monthStart = startOfMonth(addMonths(today, -5));
@@ -326,18 +389,22 @@ export async function getHomeDispatchCharts(): Promise<{
 
   const monthQty = new Map<string, SplitTotals>();
   const monthProfit = new Map<string, SplitTotals>();
+  const monthDiscount = new Map<string, SplitTotals>();
   for (let i = 0; i < 6; i++) {
     const key = monthKey(addMonths(monthStart, i));
     monthQty.set(key, emptySplit());
     monthProfit.set(key, emptySplit());
+    monthDiscount.set(key, emptySplit());
   }
 
   const dayQty = new Map<string, SplitTotals>();
   const dayProfit = new Map<string, SplitTotals>();
+  const dayDiscount = new Map<string, SplitTotals>();
   for (let i = 0; i < 7; i++) {
     const key = addCalendarDays(todayKey, i - 6);
     dayQty.set(key, emptySplit());
     dayProfit.set(key, emptySplit());
+    dayDiscount.set(key, emptySplit());
   }
 
   for (const row of rows) {
@@ -368,8 +435,8 @@ export async function getHomeDispatchCharts(): Promise<{
     if (delta.isZero()) continue;
     const domestic = discount.coalOrigin === CoalOrigin.DOMESTIC;
     const local = startOfLocalDay(discount.date);
-    addToSplit(monthProfit, monthKey(local), delta, domestic);
-    addToSplit(dayProfit, utcDayKey(discount.date), delta, domestic);
+    addToSplit(monthDiscount, monthKey(local), delta, domestic);
+    addToSplit(dayDiscount, utcDayKey(discount.date), delta, domestic);
   }
 
   const monthKeys = Array.from({ length: 6 }, (_, i) => {
@@ -396,6 +463,8 @@ export async function getHomeDispatchCharts(): Promise<{
     days: buildBuckets(dayQty, dayKeys),
     profitMonths: buildBuckets(monthProfit, monthKeys),
     profitDays: buildBuckets(dayProfit, dayKeys),
+    profitMonthDiscount: sumSplit(monthDiscount, monthKeys),
+    profitDayDiscount: sumSplit(dayDiscount, dayKeys),
   };
 }
 

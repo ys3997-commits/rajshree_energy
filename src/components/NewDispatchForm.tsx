@@ -9,6 +9,7 @@ import {
 } from "@/lib/actions/dispatch";
 import {
   formatQualityClass,
+  formatMt,
   formatRateBreakdownLine,
   normalizeLorryNumber,
 } from "@/lib/domain/format";
@@ -310,7 +311,7 @@ export function NewDispatchForm({
                 <option key={p.poNumber} value={p.poNumber}>
                   {p.poNumber} — {p.importer?.name ?? "?"} —{" "}
                   {p.vessel?.vesselName ?? "?"} (bal{" "}
-                  {p.balanceOrder != null ? `${p.balanceOrder} MT` : "n/a"})
+                  {p.balanceOrder != null ? formatMt(p.balanceOrder) : "n/a"})
                 </option>
               ))}
             </select>
@@ -319,7 +320,7 @@ export function NewDispatchForm({
                 <label>Purchase balance</label>
                 <div className="text-sm">
                   {selectedPurchase.balanceOrder != null
-                    ? `${selectedPurchase.balanceOrder} MT`
+                    ? formatMt(selectedPurchase.balanceOrder)
                     : "—"}
                 </div>
                 <label>Vessel</label>
@@ -447,7 +448,7 @@ export function NewDispatchForm({
               {orders.map((o) => (
                 <option key={o.poNumber} value={o.poNumber}>
                   {o.poNumber} — {o.customer?.name} (bal{" "}
-                  {o.balanceOrder != null ? `${o.balanceOrder} MT` : "n/a"})
+                  {o.balanceOrder != null ? formatMt(o.balanceOrder) : "n/a"})
                 </option>
               ))}
             </select>
@@ -456,7 +457,7 @@ export function NewDispatchForm({
                 <label>Sale balance</label>
                 <div className="text-sm">
                   {selectedOrder.balanceOrder != null
-                    ? `${selectedOrder.balanceOrder} MT`
+                    ? formatMt(selectedOrder.balanceOrder)
                     : "—"}
                 </div>
                 <label>Rate breakdown</label>

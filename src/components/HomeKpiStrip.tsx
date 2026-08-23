@@ -7,6 +7,7 @@ type Props = {
   profit: string;
   fundReceived: string;
   overdue: string;
+  stockInHand: string;
   unsoldQuantity: string;
 };
 
@@ -16,6 +17,7 @@ export function HomeKpiStrip({
   profit,
   fundReceived,
   overdue,
+  stockInHand,
   unsoldQuantity,
 }: Props) {
   const tiles = [
@@ -40,6 +42,11 @@ export function HomeKpiStrip({
       href: "/reports/collection",
     },
     {
+      label: "Today's stock in hand",
+      value: formatDispatchMt(stockInHand),
+      href: "/reports/product",
+    },
+    {
       label: "Today's unsold stock",
       value: formatDispatchMt(unsoldQuantity),
       href: "/reports/product",
@@ -51,7 +58,7 @@ export function HomeKpiStrip({
       <div className="home-section-head">
         <h2 className="home-section-title">Key Information</h2>
       </div>
-      <div className="home-kpi-row">
+      <div className="home-kpi-row home-key-row">
         {tiles.map((tile) => (
           <Link key={tile.label} href={tile.href} className="home-kpi">
             <span className="home-kpi-label">{tile.label}</span>

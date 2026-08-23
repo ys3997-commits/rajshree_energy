@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export function Modal({
   open,
@@ -8,12 +9,14 @@ export function Modal({
   onClose,
   children,
   wide,
+  className,
 }: {
   open: boolean;
   title: string;
   onClose: () => void;
   children: React.ReactNode;
   wide?: boolean;
+  className?: string;
 }) {
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -45,7 +48,11 @@ export function Modal({
 
   if (!open) return null;
 
-  return (
+  const panelClass = ["modal-panel", wide ? "modal-panel-wide" : "", className]
+    .filter(Boolean)
+    .join(" ");
+
+  const dialog = (
     <div className="modal-root" role="presentation">
       <button
         type="button"
@@ -55,7 +62,7 @@ export function Modal({
       />
       <div
         ref={panelRef}
-        className={`modal-panel${wide ? " modal-panel-wide" : ""}`}
+        className={panelClass}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -78,4 +85,7 @@ export function Modal({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return dialog;
+  return createPortal(dialog, document.body);
 }

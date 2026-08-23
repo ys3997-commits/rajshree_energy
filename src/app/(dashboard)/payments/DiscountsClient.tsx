@@ -19,7 +19,13 @@ import {
   parseAmountInput,
 } from "@/lib/domain/format";
 import { parsePartyKey, partyKey } from "@/lib/domain/paymentParty";
+import { SearchableSelect } from "@/components/SearchableSelect";
+import { TableDownloadButtons } from "@/components/TableDownloadButtons";
+import { FundFlowDateFilter } from "./FundFlowDateFilter";
+import { FundFlowTotals } from "./FundFlowTotals";
+import { PartyNameLink } from "./PartyNameLink";
 import { PaymentsTabs } from "./PaymentsTabs";
+import { paymentsHref } from "./paymentsHref";
 
 type Opt = {
   id: string;
@@ -29,6 +35,14 @@ type Opt = {
 };
 type Status = "RECEIVED" | "PAID" | "";
 type CoalOriginValue = "DOMESTIC" | "IMPORTED" | "";
+type FormState = {
+  date: string;
+  partyId: string;
+  status: Status;
+  amount: string;
+  coalOrigin: CoalOriginValue;
+  remarks: string;
+};
 
 function todayLocal(): string {
   const d = new Date();
@@ -38,7 +52,7 @@ function todayLocal(): string {
   return `${y}-${m}-${day}`;
 }
 
-function emptyForm(partyId = "") {
+function emptyForm(partyId = ""): FormState {
   return {
     date: todayLocal(),
     partyId,
@@ -49,13 +63,29 @@ function emptyForm(partyId = "") {
   };
 }
 
+function formFromRow(row: DiscountRow): FormState {
+  return {
+    date: row.date,
+    partyId: row.transporterId
+      ? partyKey("transporter", row.transporterId)
+      : partyKey("customer", row.customerId ?? ""),
+    status: row.status,
+    amount: row.amount,
+    coalOrigin: (row.coalOrigin ?? "") as CoalOriginValue,
+    remarks: row.remarks,
+  };
+}
+
 function statusLabel(status: string): string {
   return status === "RECEIVED" ? "Discount Received" : "Discount Paid";
 }
 
-function pageHref(page: number): string {
-  const base = "/payments?tab=discount";
-  return page <= 1 ? base : `${base}&page=${page}`;
+function typeClass(status: string): string {
+  return status === "RECEIVED" ? "fund-type-in" : "fund-type-out";
+}
+
+function rowTypeClass(status: string): string {
+  return status === "RECEIVED" ? "fund-row-in" : "fund-row-out";
 }
 
 function formatDateDdMmYyyy(value: string | null | undefined): string {
@@ -67,88 +97,110 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
   return `${day}/${month}/${year}`;
 }
 
+function partyLabel(row: DiscountRow): string {
+  return row.transporterId
+    ? `${row.customerName} — Transporter`
+    : row.customerName;
+}
+
+function resetAddFormAfterSave(form: FormState): FormState {
+  return {
+    ...form,
+    status: "" as Status,
+    amount: "",
+    remarks: "",
+  };
+}
+
+function hasListFilters(
+  dateFrom: string,
+  dateTo: string,
+  party: string,
+  type: string,
+): boolean {
+  return Boolean(dateFrom || dateTo || party || type);
+}
+
+function changeAmount(form: FormState, value: string): FormState | null {
+  const raw = parseAmountInput(value).replace(/[^\d.]/g, "");
+  if (raw === "") return { ...form, amount: "" };
+  if (!/^\d*\.?\d{0,2}$/.test(raw)) return null;
+  return { ...form, amount: raw };
+}
+
 export function DiscountsClient({
   initial,
+  exportRows,
   parties,
+  dateFrom,
+  dateTo,
+  party,
+  type,
 }: {
   initial: DiscountListResult;
+  exportRows: DiscountRow[];
   parties: Opt[];
+  dateFrom: string;
+  dateTo: string;
+  party: string;
+  type: string;
 }) {
   const router = useRouter();
-  const { rows, total, page, pageSize, totalPages } = initial;
+  const { rows, total, page, pageSize, totalPages, totals } = initial;
+  const listFilters = { dateFrom, dateTo, party, type };
 
-  const [form, setForm] = useState(() => emptyForm());
-  const [editing, setEditing] = useState<DiscountRow | null>(null);
+  const [addForm, setAddForm] = useState(() => emptyForm());
+  const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const amountDisplay = useMemo(
-    () => formatIndianAmountTyping(form.amount),
-    [form.amount],
+  const addAmountDisplay = useMemo(
+    () => formatIndianAmountTyping(addForm.amount),
+    [addForm.amount],
+  );
+  const editAmountDisplay = useMemo(
+    () => formatIndianAmountTyping(editForm.amount),
+    [editForm.amount],
   );
 
-  function onAmountChange(value: string) {
-    const raw = parseAmountInput(value).replace(/[^\d.]/g, "");
-    if (raw === "") {
-      setForm({ ...form, amount: "" });
-      return;
-    }
-    if (!/^\d*\.?\d{0,2}$/.test(raw)) return;
-    setForm({ ...form, amount: raw });
-  }
+  const partyOptions = useMemo(
+    () =>
+      parties.map((c) => ({
+        value: partyKey(c.kind, c.id),
+        label:
+          c.kind === "transporter"
+            ? `${c.name} — Transporter`
+            : `${c.name} — ${formatCustomerCategory(c.category)}`,
+        group: c.kind === "transporter" ? "Transporters" : "Customers",
+      })),
+    [parties],
+  );
 
-  function resetForm(partyId = "") {
-    setEditing(null);
-    setForm(emptyForm(partyId));
-  }
+  const downloadColumns = [
+    { key: "date", header: "Date" },
+    { key: "customer", header: "Customer" },
+    { key: "type", header: "Type" },
+    { key: "amount", header: "Amount", align: "right" as const },
+    { key: "origin", header: "Domestic / Imported" },
+    { key: "remarks", header: "Remarks" },
+  ];
+  const downloadRows = useMemo(
+    () =>
+      exportRows.map((row) => ({
+        date: formatDateDdMmYyyy(row.date),
+        customer: partyLabel(row),
+        type: statusLabel(row.status),
+        amount: formatRs(row.amount),
+        origin: formatCoalOrigin(row.coalOrigin),
+        remarks: row.remarks || "—",
+      })),
+    [exportRows],
+  );
 
-  function startEdit(row: DiscountRow) {
-    setEditing(row);
-    setForm({
-      date: row.date,
-      partyId: row.transporterId
-        ? partyKey("transporter", row.transporterId)
-        : partyKey("customer", row.customerId ?? ""),
-      status: row.status,
-      amount: row.amount,
-      coalOrigin: row.coalOrigin ?? "",
-      remarks: row.remarks,
-    });
-    setError(null);
-  }
-
-  function goToPage(targetPage: number) {
-    router.push(pageHref(targetPage));
-    router.refresh();
-  }
-
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    if (!form.partyId) {
-      setError("Customer or transporter is required");
-      return;
-    }
-    if (!form.status) {
-      setError("Select Discount Received or Discount Paid");
-      return;
-    }
-    if (!form.amount || Number(form.amount) <= 0) {
-      setError("Amount must be greater than zero");
-      return;
-    }
-    if (!form.coalOrigin) {
-      setError("Select Domestic coal or Imported coal");
-      return;
-    }
-    if (!form.remarks.trim()) {
-      setError("Remarks are required");
-      return;
-    }
-
+  function payloadFrom(form: FormState) {
     const party = parsePartyKey(form.partyId);
-    const payload = {
+    return {
       date: form.date,
       customerId: party.kind === "customer" ? party.id : null,
       transporterId: party.kind === "transporter" ? party.id : null,
@@ -157,22 +209,85 @@ export function DiscountsClient({
       coalOrigin: form.coalOrigin,
       remarks: form.remarks,
     };
+  }
 
+  function validate(form: FormState): string | null {
+    if (!form.partyId) return "Customer or transporter is required";
+    if (!form.status) return "Select Discount Received or Discount Paid";
+    if (!form.amount || Number(form.amount) <= 0) {
+      return "Amount must be greater than zero";
+    }
+    if (!form.coalOrigin) return "Select Domestic coal or Imported coal";
+    if (!form.remarks.trim()) return "Remarks are required";
+    return null;
+  }
+
+  function goToPage(targetPage: number) {
+    router.push(
+      paymentsHref({ tab: "discount", page: targetPage, ...listFilters }),
+    );
+    router.refresh();
+  }
+
+  function startEdit(row: DiscountRow) {
+    // Defer so the Edit click is not delivered to Update/Cancel, which
+    // appear in the same place and would close edit mode immediately.
+    window.setTimeout(() => {
+      setEditingId(row.id);
+      setEditForm(formFromRow(row));
+      setError(null);
+    }, 0);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditForm(emptyForm());
+  }
+
+  function onAdd(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    const message = validate(addForm);
+    if (message) {
+      setError(message);
+      return;
+    }
+    const payload = payloadFrom(addForm);
     startTransition(async () => {
       try {
-        if (editing) {
-          await updateDiscount(editing.id, payload);
-          resetForm();
-          goToPage(page);
-        } else {
-          await createDiscount(payload);
-          resetForm();
-          goToPage(1);
-        }
+        await createDiscount(payload);
+        setAddForm((prev) => resetAddFormAfterSave(prev));
+        goToPage(1);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
       }
     });
+  }
+
+  function saveEdit() {
+    if (!editingId) return;
+    setError(null);
+    const message = validate(editForm);
+    if (message) {
+      setError(message);
+      return;
+    }
+    const payload = payloadFrom(editForm);
+    const id = editingId;
+    startTransition(async () => {
+      try {
+        await updateDiscount(id, payload);
+        cancelEdit();
+        goToPage(page);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Save failed");
+      }
+    });
+  }
+
+  function onUpdate(e: FormEvent) {
+    e.preventDefault();
+    saveEdit();
   }
 
   function onDelete(row: DiscountRow) {
@@ -181,7 +296,7 @@ export function DiscountsClient({
     startTransition(async () => {
       try {
         await deleteDiscount(row.id);
-        if (editing?.id === row.id) resetForm();
+        if (editingId === row.id) cancelEdit();
         const remainingOnPage = rows.length - 1;
         const nextPage =
           remainingOnPage === 0 && page > 1 ? page - 1 : page;
@@ -197,22 +312,48 @@ export function DiscountsClient({
 
   return (
     <div>
-      <h1 className="page-title">Payments</h1>
-      <p className="page-subtitle">
-        Record discounts received from or paid to customers.
-      </p>
+      <div className="page-header">
+        <h1 className="page-title">Fund Flow</h1>
+        <TableDownloadButtons
+          title="Fund Flow — Discount"
+          filenameBase="fund-flow-discount"
+          columns={downloadColumns}
+          rows={downloadRows}
+        />
+      </div>
 
-      <PaymentsTabs active="discount" />
+      {totals ? (
+        <FundFlowTotals
+          receivedLabel="Discount received"
+          paidLabel="Discount paid"
+          received={totals.received}
+          paid={totals.paid}
+          net={totals.net}
+        />
+      ) : null}
+
+      <div className="filters">
+        <FundFlowDateFilter
+          tab="discount"
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          party={party}
+          type={type}
+          parties={parties}
+        />
+      </div>
+
+      <PaymentsTabs active="discount" {...listFilters} />
 
       {error && <div className="error-box">{error}</div>}
 
-      <div className="table-wrap">
+      <div className="table-wrap payments-table-wrap">
         <table className="data payments-table">
           <thead>
             <tr>
               <th>Date</th>
               <th>Customer</th>
-              <th>Status</th>
+              <th>Type</th>
               <th className="cell-num">Amount</th>
               <th>Domestic / Imported</th>
               <th>Remarks</th>
@@ -223,65 +364,39 @@ export function DiscountsClient({
             <tr className="payment-entry-row">
               <td>
                 <input
-                  form="discount-entry-form"
+                  form="discount-add-form"
                   type="date"
                   required
                   className="field-input"
                   aria-label="Date"
-                  value={form.date}
+                  value={addForm.date}
                   onChange={(e) =>
-                    setForm({ ...form, date: e.target.value })
+                    setAddForm({ ...addForm, date: e.target.value })
                   }
                 />
               </td>
               <td>
-                <select
-                  form="discount-entry-form"
+                <SearchableSelect
+                  form="discount-add-form"
                   required
                   className="field-input"
-                  aria-label="Customer or transporter"
-                  value={form.partyId}
-                  onChange={(e) =>
-                    setForm({ ...form, partyId: e.target.value })
-                  }
-                >
-                  <option value="">Select customer or transporter</option>
-                  <optgroup label="Customers">
-                    {parties
-                      .filter((c) => c.kind === "customer")
-                      .map((c) => (
-                        <option
-                          key={partyKey("customer", c.id)}
-                          value={partyKey("customer", c.id)}
-                        >
-                          {c.name} — {formatCustomerCategory(c.category)}
-                        </option>
-                      ))}
-                  </optgroup>
-                  <optgroup label="Transporters">
-                    {parties
-                      .filter((c) => c.kind === "transporter")
-                      .map((c) => (
-                        <option
-                          key={partyKey("transporter", c.id)}
-                          value={partyKey("transporter", c.id)}
-                        >
-                          {c.name} — Transporter
-                        </option>
-                      ))}
-                  </optgroup>
-                </select>
+                  ariaLabel="Customer or transporter"
+                  placeholder="Search customer or transporter"
+                  value={addForm.partyId}
+                  onChange={(partyId) => setAddForm({ ...addForm, partyId })}
+                  options={partyOptions}
+                />
               </td>
               <td>
                 <select
-                  form="discount-entry-form"
+                  form="discount-add-form"
                   required
                   className="field-input"
-                  aria-label="Status"
-                  value={form.status}
+                  aria-label="Type"
+                  value={addForm.status}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
+                    setAddForm({
+                      ...addForm,
                       status: e.target.value as Status,
                     })
                   }
@@ -293,27 +408,30 @@ export function DiscountsClient({
               </td>
               <td className="cell-num payment-amount-cell">
                 <input
-                  form="discount-entry-form"
+                  form="discount-add-form"
                   type="text"
                   inputMode="decimal"
                   required
                   className="field-input"
                   placeholder="0.00"
                   aria-label="Amount"
-                  value={amountDisplay}
-                  onChange={(e) => onAmountChange(e.target.value)}
+                  value={addAmountDisplay}
+                  onChange={(e) => {
+                    const next = changeAmount(addForm, e.target.value);
+                    if (next) setAddForm(next);
+                  }}
                 />
               </td>
               <td>
                 <select
-                  form="discount-entry-form"
+                  form="discount-add-form"
                   required
                   className="field-input"
                   aria-label="Domestic / Imported"
-                  value={form.coalOrigin}
+                  value={addForm.coalOrigin}
                   onChange={(e) =>
-                    setForm({
-                      ...form,
+                    setAddForm({
+                      ...addForm,
                       coalOrigin: e.target.value as CoalOriginValue,
                     })
                   }
@@ -325,83 +443,211 @@ export function DiscountsClient({
               </td>
               <td>
                 <input
-                  form="discount-entry-form"
+                  form="discount-add-form"
                   type="text"
                   required
                   className="field-input"
                   placeholder="Write remarks…"
                   aria-label="Remarks"
-                  value={form.remarks}
+                  value={addForm.remarks}
                   onChange={(e) =>
-                    setForm({ ...form, remarks: e.target.value })
+                    setAddForm({ ...addForm, remarks: e.target.value })
                   }
                 />
               </td>
               <td className="space-x-2 whitespace-nowrap">
                 <button
-                  form="discount-entry-form"
+                  form="discount-add-form"
                   type="submit"
                   className="btn btn-sm"
-                  disabled={pending}
+                  disabled={pending || editingId != null}
                 >
-                  {editing ? "Update" : "Add"}
+                  Add
                 </button>
-                {editing && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => resetForm()}
-                    disabled={pending}
-                  >
-                    Cancel
-                  </button>
-                )}
               </td>
             </tr>
 
             {rows.map((row, index) => {
               const prevDate = index > 0 ? rows[index - 1].date : null;
               const dateBreak = prevDate != null && prevDate !== row.date;
+              const isEditing = editingId === row.id;
               return (
                 <tr
                   key={row.id}
-                  className={dateBreak ? "payment-date-break" : undefined}
+                  className={[
+                    dateBreak ? "payment-date-break" : "",
+                    isEditing ? "payment-editing-row" : "",
+                    rowTypeClass(row.status),
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined}
                 >
-                  <td>{formatDateDdMmYyyy(row.date)}</td>
-                  <td>
-                    {row.transporterId
-                      ? `${row.customerName} — Transporter`
-                      : row.customerName}
-                  </td>
-                  <td>{statusLabel(row.status)}</td>
-                  <td className="cell-num">{formatRs(row.amount)}</td>
-                  <td>{formatCoalOrigin(row.coalOrigin)}</td>
-                  <td>{row.remarks || "—"}</td>
-                  <td className="space-x-2 whitespace-nowrap">
-                    <button
-                      type="button"
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => startEdit(row)}
-                      disabled={pending}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-danger btn-sm"
-                      onClick={() => onDelete(row)}
-                      disabled={pending}
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  {isEditing ? (
+                    <>
+                      <td>
+                        <input
+                          form="discount-edit-form"
+                          type="date"
+                          required
+                          className="field-input"
+                          aria-label="Date"
+                          value={editForm.date}
+                          onChange={(e) =>
+                            setEditForm({ ...editForm, date: e.target.value })
+                          }
+                        />
+                      </td>
+                      <td>
+                        <SearchableSelect
+                          form="discount-edit-form"
+                          required
+                          className="field-input"
+                          ariaLabel="Customer or transporter"
+                          placeholder="Search customer or transporter"
+                          value={editForm.partyId}
+                          onChange={(partyId) =>
+                            setEditForm({ ...editForm, partyId })
+                          }
+                          options={partyOptions}
+                        />
+                      </td>
+                      <td>
+                        <select
+                          form="discount-edit-form"
+                          required
+                          className="field-input"
+                          aria-label="Type"
+                          value={editForm.status}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              status: e.target.value as Status,
+                            })
+                          }
+                        >
+                          <option value="RECEIVED">Discount Received</option>
+                          <option value="PAID">Discount Paid</option>
+                        </select>
+                      </td>
+                      <td className="cell-num payment-amount-cell">
+                        <input
+                          form="discount-edit-form"
+                          type="text"
+                          inputMode="decimal"
+                          required
+                          className="field-input"
+                          placeholder="0.00"
+                          aria-label="Amount"
+                          value={editAmountDisplay}
+                          onChange={(e) => {
+                            const next = changeAmount(editForm, e.target.value);
+                            if (next) setEditForm(next);
+                          }}
+                        />
+                      </td>
+                      <td>
+                        <select
+                          form="discount-edit-form"
+                          required
+                          className="field-input"
+                          aria-label="Domestic / Imported"
+                          value={editForm.coalOrigin}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              coalOrigin: e.target.value as CoalOriginValue,
+                            })
+                          }
+                        >
+                          <option value="DOMESTIC">Domestic coal</option>
+                          <option value="IMPORTED">Imported coal</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          form="discount-edit-form"
+                          type="text"
+                          required
+                          className="field-input"
+                          placeholder="Write remarks…"
+                          aria-label="Remarks"
+                          value={editForm.remarks}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              remarks: e.target.value,
+                            })
+                          }
+                        />
+                      </td>
+                      <td className="space-x-2 whitespace-nowrap">
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          onClick={saveEdit}
+                          disabled={pending}
+                        >
+                          Update
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={cancelEdit}
+                          disabled={pending}
+                        >
+                          Cancel
+                        </button>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{formatDateDdMmYyyy(row.date)}</td>
+                      <td>
+                        <PartyNameLink
+                          customerId={row.customerId}
+                          transporterId={row.transporterId}
+                          name={row.customerName}
+                        />
+                      </td>
+                      <td className={typeClass(row.status)}>
+                        {statusLabel(row.status)}
+                      </td>
+                      <td className={`cell-num ${typeClass(row.status)}`}>
+                        {formatRs(row.amount)}
+                      </td>
+                      <td>{formatCoalOrigin(row.coalOrigin)}</td>
+                      <td>{row.remarks || "—"}</td>
+                      <td className="space-x-2 whitespace-nowrap">
+                        <button
+                          type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => startEdit(row)}
+                          disabled={pending}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={() => onDelete(row)}
+                          disabled={pending}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </>
+                  )}
                 </tr>
               );
             })}
 
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7}>No discounts yet.</td>
+                <td colSpan={7}>
+                  {hasListFilters(dateFrom, dateTo, party, type)
+                    ? "No discounts match these filters."
+                    : "No discounts yet."}
+                </td>
               </tr>
             )}
           </tbody>
@@ -416,7 +662,11 @@ export function DiscountsClient({
           <div className="payments-pagination-actions">
             {page > 1 && (
               <Link
-                href={pageHref(page - 1)}
+                href={paymentsHref({
+                  tab: "discount",
+                  page: page - 1,
+                  ...listFilters,
+                })}
                 className="btn btn-secondary btn-sm"
                 prefetch={false}
               >
@@ -428,7 +678,11 @@ export function DiscountsClient({
             </span>
             {page < totalPages && (
               <Link
-                href={pageHref(page + 1)}
+                href={paymentsHref({
+                  tab: "discount",
+                  page: page + 1,
+                  ...listFilters,
+                })}
                 className="btn btn-secondary btn-sm"
                 prefetch={false}
               >
@@ -439,7 +693,8 @@ export function DiscountsClient({
         </div>
       )}
 
-      <form id="discount-entry-form" onSubmit={onSubmit} hidden />
+      <form id="discount-add-form" onSubmit={onAdd} hidden />
+      <form id="discount-edit-form" onSubmit={onUpdate} hidden />
     </div>
   );
 }

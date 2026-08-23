@@ -1,19 +1,22 @@
 "use server";
 
-import { PaymentDirection } from "@/generated/prisma";
+import { PaymentDirection, type Prisma } from "@/generated/prisma";
 import { toDecimal } from "@/lib/domain/computations";
+import { hasDateFilter, utcDayRange } from "@/lib/domain/dateRange";
 import {
   adjustCustomerDue,
   paymentDueDelta,
 } from "@/lib/domain/customerDue";
+import { parseFundFlowType } from "@/app/(dashboard)/payments/paymentsHref";
 import {
   parsePaymentParty,
+  tryParsePartyKey,
   type PaymentParty,
 } from "@/lib/domain/paymentParty";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-const PAYMENTS_PAGE_SIZE = 20;
+const PAYMENTS_PAGE_SIZE = 35;
 
 export type PaymentInput = {
   date: string;
@@ -33,12 +36,19 @@ export type PaymentRow = {
   amount: string;
 };
 
+export type FundFlowTotals = {
+  received: string;
+  paid: string;
+  net: string;
+};
+
 export type PaymentListResult = {
   rows: PaymentRow[];
   total: number;
   page: number;
   pageSize: number;
   totalPages: number;
+  totals: FundFlowTotals | null;
 };
 
 function parseDirection(value: string): PaymentDirection {
@@ -147,27 +157,111 @@ function revalidatePaymentPaths(party?: PaymentParty) {
   }
 }
 
+function paymentWhere(options?: {
+  dateFrom?: string;
+  dateTo?: string;
+  party?: string;
+  type?: string;
+}): Prisma.PaymentWhereInput {
+  const and: Prisma.PaymentWhereInput[] = [];
+  const date = utcDayRange(options?.dateFrom, options?.dateTo);
+  if (date) and.push({ date });
+
+  const parsedParty = tryParsePartyKey(options?.party);
+  if (parsedParty?.kind === "customer") {
+    and.push({ customerId: parsedParty.id });
+  } else if (parsedParty?.kind === "transporter") {
+    and.push({ transporterId: parsedParty.id });
+  }
+
+  const flowType = parseFundFlowType(options?.type);
+  if (flowType === "received") {
+    and.push({ direction: PaymentDirection.RECEIVED });
+  } else if (flowType === "paid") {
+    and.push({ direction: PaymentDirection.SENT });
+  }
+
+  return and.length ? { AND: and } : {};
+}
+
+async function paymentTotals(
+  where: Prisma.PaymentWhereInput,
+  dateFrom?: string,
+  dateTo?: string,
+): Promise<FundFlowTotals | null> {
+  if (!hasDateFilter(dateFrom, dateTo)) return null;
+
+  const groups = await prisma.payment.groupBy({
+    by: ["direction"],
+    where,
+    _sum: { amount: true },
+  });
+  const received =
+    groups.find((g) => g.direction === PaymentDirection.RECEIVED)?._sum
+      .amount ?? 0;
+  const paid =
+    groups.find((g) => g.direction === PaymentDirection.SENT)?._sum.amount ??
+    0;
+  const receivedDec = toDecimal(received);
+  const paidDec = toDecimal(paid);
+  return {
+    received: receivedDec.toFixed(2),
+    paid: paidDec.toFixed(2),
+    net: receivedDec.minus(paidDec).toFixed(2),
+  };
+}
+
 export async function listPayments(options?: {
   page?: number;
   pageSize?: number;
+  all?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  party?: string;
+  type?: string;
 }): Promise<PaymentListResult> {
+  const where = paymentWhere(options);
+
+  if (options?.all) {
+    const [rows, totals] = await Promise.all([
+      prisma.payment.findMany({
+        where,
+        include: paymentInclude,
+        orderBy: paymentOrderBy,
+      }),
+      paymentTotals(where, options.dateFrom, options.dateTo),
+    ]);
+    return {
+      rows: rows.map(toPaymentRow),
+      total: rows.length,
+      page: 1,
+      pageSize: Math.max(1, rows.length),
+      totalPages: 1,
+      totals,
+    };
+  }
+
   const pageSize = Math.max(
     1,
     Math.min(100, options?.pageSize ?? PAYMENTS_PAGE_SIZE),
   );
   const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
 
-  const total = await prisma.payment.count();
+  const total = await prisma.payment.count({ where });
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(requestedPage, totalPages);
   const skip = (page - 1) * pageSize;
 
-  const rows = await prisma.payment.findMany({
-    include: paymentInclude,
-    orderBy: paymentOrderBy,
-    skip,
-    take: pageSize,
-  });
+  const [rows, totals] = await Promise.all([
+    prisma.payment.findMany({
+      where,
+      include: paymentInclude,
+      orderBy: paymentOrderBy,
+      skip,
+      take: pageSize,
+    }),
+    paymentTotals(where, options?.dateFrom, options?.dateTo),
+  ]);
 
   return {
     rows: rows.map(toPaymentRow),
@@ -175,6 +269,7 @@ export async function listPayments(options?: {
     page,
     pageSize,
     totalPages,
+    totals,
   };
 }
 

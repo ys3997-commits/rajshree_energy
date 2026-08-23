@@ -13,6 +13,7 @@ import {
   formatCreditPeriod,
   formatCustomerCategory,
   formatDateDdMmYyyy,
+  formatMt,
   formatRs,
 } from "@/lib/domain/format";
 
@@ -97,17 +98,6 @@ function numericValue(value: string | null | undefined): number {
   if (value == null || value === "") return 0;
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
-}
-
-function formatQtyMt(value: string | null | undefined): string {
-  if (value == null || value === "") return "—";
-  const n = Number(value);
-  if (!Number.isFinite(n)) return value;
-  return `${n.toLocaleString("en-US", {
-    useGrouping: false,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} MT`;
 }
 
 function daysSinceLastDispatch(
@@ -291,8 +281,8 @@ export function SalesEngineClient({
         saleExecutive: row.saleExecutive
           ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
           : "—",
-        orderInHand: formatQtyMt(row.orderInHand),
-        soldQuantity: formatQtyMt(row.soldQuantity),
+        orderInHand: formatMt(row.orderInHand),
+        soldQuantity: formatMt(row.soldQuantity),
         daysSince: daysSinceLastDispatch(row.lastDispatchDate, today),
         due: formatRs(row.due),
         overdue: formatRs(row.overdue),
@@ -580,8 +570,8 @@ export function SalesEngineClient({
                       ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
                       : "—"}
                   </td>
-                  <td className="cell-num">{formatQtyMt(row.orderInHand)}</td>
-                  <td className="cell-num">{formatQtyMt(row.soldQuantity)}</td>
+                  <td className="cell-num">{formatMt(row.orderInHand)}</td>
+                  <td className="cell-num">{formatMt(row.soldQuantity)}</td>
                   <td className="cell-num sales-engine-days-col">
                     {daysSinceLastDispatch(row.lastDispatchDate, today)}
                   </td>

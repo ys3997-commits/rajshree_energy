@@ -257,6 +257,8 @@ function revalidateDispatchPaths() {
   revalidatePath("/orders");
   revalidatePath("/purchase-orders");
   revalidatePath("/dispatches");
+  revalidatePath("/update/purchase");
+  revalidatePath("/update/sale");
   revalidatePath("/vessels");
   revalidatePath("/receipts/pending");
   revalidatePath("/reconciliation");
@@ -943,5 +945,7 @@ export async function confirmReceipt(
   revalidatePath("/reconciliation");
   revalidatePath("/orders");
   revalidatePath("/dispatches");
+  revalidatePath("/update/purchase");
+  revalidatePath("/update/sale");
   return { id: updated.id };
 }

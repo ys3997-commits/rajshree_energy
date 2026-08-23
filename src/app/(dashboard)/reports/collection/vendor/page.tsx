@@ -12,7 +12,7 @@ export default async function VendorCollectionReportPage() {
           <p className="page-eyebrow">
             <Link href="/reports">Report</Link>
             <span aria-hidden="true"> · </span>
-            Collection
+            Collection Engine
             <span aria-hidden="true"> · </span>
             Vendor Collection
           </p>

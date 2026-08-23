@@ -1,19 +1,22 @@
 "use server";
 
-import { CoalOrigin, DiscountStatus } from "@/generated/prisma";
+import { CoalOrigin, DiscountStatus, type Prisma } from "@/generated/prisma";
 import { toDecimal } from "@/lib/domain/computations";
+import { hasDateFilter, utcDayRange } from "@/lib/domain/dateRange";
 import {
   adjustCustomerDue,
   discountDueDelta,
 } from "@/lib/domain/customerDue";
+import { parseFundFlowType } from "@/app/(dashboard)/payments/paymentsHref";
 import {
   parsePaymentParty,
+  tryParsePartyKey,
   type PaymentParty,
 } from "@/lib/domain/paymentParty";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-const DISCOUNTS_PAGE_SIZE = 20;
+const DISCOUNTS_PAGE_SIZE = 35;
 
 export type DiscountInput = {
   date: string;
@@ -37,12 +40,19 @@ export type DiscountRow = {
   remarks: string;
 };
 
+export type DiscountFlowTotals = {
+  received: string;
+  paid: string;
+  net: string;
+};
+
 export type DiscountListResult = {
   rows: DiscountRow[];
   total: number;
   page: number;
   pageSize: number;
   totalPages: number;
+  totals: DiscountFlowTotals | null;
 };
 
 function parseStatus(value: string): DiscountStatus {
@@ -170,27 +180,110 @@ function revalidateDiscountPaths(party?: PaymentParty) {
   }
 }
 
+function discountWhere(options?: {
+  dateFrom?: string;
+  dateTo?: string;
+  party?: string;
+  type?: string;
+}): Prisma.DiscountWhereInput {
+  const and: Prisma.DiscountWhereInput[] = [];
+  const date = utcDayRange(options?.dateFrom, options?.dateTo);
+  if (date) and.push({ date });
+
+  const parsedParty = tryParsePartyKey(options?.party);
+  if (parsedParty?.kind === "customer") {
+    and.push({ customerId: parsedParty.id });
+  } else if (parsedParty?.kind === "transporter") {
+    and.push({ transporterId: parsedParty.id });
+  }
+
+  const flowType = parseFundFlowType(options?.type);
+  if (flowType === "received") {
+    and.push({ status: DiscountStatus.RECEIVED });
+  } else if (flowType === "paid") {
+    and.push({ status: DiscountStatus.PAID });
+  }
+
+  return and.length ? { AND: and } : {};
+}
+
+async function discountTotals(
+  where: Prisma.DiscountWhereInput,
+  dateFrom?: string,
+  dateTo?: string,
+): Promise<DiscountFlowTotals | null> {
+  if (!hasDateFilter(dateFrom, dateTo)) return null;
+
+  const groups = await prisma.discount.groupBy({
+    by: ["status"],
+    where,
+    _sum: { amount: true },
+  });
+  const received =
+    groups.find((g) => g.status === DiscountStatus.RECEIVED)?._sum.amount ??
+    0;
+  const paid =
+    groups.find((g) => g.status === DiscountStatus.PAID)?._sum.amount ?? 0;
+  const receivedDec = toDecimal(received);
+  const paidDec = toDecimal(paid);
+  return {
+    received: receivedDec.toFixed(2),
+    paid: paidDec.toFixed(2),
+    net: receivedDec.minus(paidDec).toFixed(2),
+  };
+}
+
 export async function listDiscounts(options?: {
   page?: number;
   pageSize?: number;
+  all?: boolean;
+  dateFrom?: string;
+  dateTo?: string;
+  party?: string;
+  type?: string;
 }): Promise<DiscountListResult> {
+  const where = discountWhere(options);
+
+  if (options?.all) {
+    const [rows, totals] = await Promise.all([
+      prisma.discount.findMany({
+        where,
+        include: discountInclude,
+        orderBy: discountOrderBy,
+      }),
+      discountTotals(where, options.dateFrom, options.dateTo),
+    ]);
+    return {
+      rows: rows.map(toDiscountRow),
+      total: rows.length,
+      page: 1,
+      pageSize: Math.max(1, rows.length),
+      totalPages: 1,
+      totals,
+    };
+  }
+
   const pageSize = Math.max(
     1,
     Math.min(100, options?.pageSize ?? DISCOUNTS_PAGE_SIZE),
   );
   const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
 
-  const total = await prisma.discount.count();
+  const total = await prisma.discount.count({ where });
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const page = Math.min(requestedPage, totalPages);
   const skip = (page - 1) * pageSize;
 
-  const rows = await prisma.discount.findMany({
-    include: discountInclude,
-    orderBy: discountOrderBy,
-    skip,
-    take: pageSize,
-  });
+  const [rows, totals] = await Promise.all([
+    prisma.discount.findMany({
+      where,
+      include: discountInclude,
+      orderBy: discountOrderBy,
+      skip,
+      take: pageSize,
+    }),
+    discountTotals(where, options?.dateFrom, options?.dateTo),
+  ]);
 
   return {
     rows: rows.map(toDiscountRow),
@@ -198,6 +291,7 @@ export async function listDiscounts(options?: {
     page,
     pageSize,
     totalPages,
+    totals,
   };
 }
 

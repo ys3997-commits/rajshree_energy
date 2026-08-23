@@ -14,7 +14,8 @@ export const APP_PAGES: AppPage[] = [
   { key: "orders", href: "/orders", label: "Sale orders", group: "Pages" },
   { key: "purchase-orders", href: "/purchase-orders", label: "Purchase orders", group: "Pages" },
   { key: "dispatches", href: "/dispatches", label: "Dispatches", group: "Pages" },
-  { key: "payments", href: "/payments", label: "Payments", group: "Pages" },
+  { key: "update", href: "/update", label: "Update", group: "Pages" },
+  { key: "payments", href: "/payments", label: "Bank", group: "Pages" },
   { key: "bills", href: "/bills", label: "Bills", group: "Pages" },
   { key: "vessels", href: "/vessels", label: "Vessels", group: "Pages" },
   { key: "qualities", href: "/qualities", label: "Qualities", group: "Pages" },
@@ -113,7 +114,7 @@ export const GRANTABLE_PAGES = APP_PAGES.filter((page) => !page.ownerOnly);
 
 export const ALL_PAGE_KEYS = APP_PAGES.map((page) => page.key);
 
-const PATH_ALIASES: { from: string; to: string }[] = [
+const PATH_ALIASES: { from: string; to: string; exact?: boolean }[] = [
   { from: "/staff", to: "/options" },
   { from: "/reports/quality-report", to: "/reports/product" },
   { from: "/reports/sales-engine", to: "/reports/sales" },
@@ -123,7 +124,11 @@ const PATH_ALIASES: { from: string; to: string }[] = [
 
 function canonicalPath(pathname: string): string {
   const aliases = [...PATH_ALIASES].sort((a, b) => b.from.length - a.from.length);
-  for (const { from, to } of aliases) {
+  for (const { from, to, exact } of aliases) {
+    if (exact) {
+      if (pathname === from) return to;
+      continue;
+    }
     if (pathname === from || pathname.startsWith(`${from}/`)) {
       return `${to}${pathname.slice(from.length)}`;
     }
@@ -161,6 +166,11 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
   if (path === "/reports") return hasAnyReportAccess(pageKeys);
   const page = pageForPath(path);
   if (!page || page.ownerOnly) return false;
+  if (page.key === "update" && path.startsWith("/update/transport")) {
+    if (pageKeys.includes("update") || pageKeys.includes("reports-transport-engine")) {
+      return true;
+    }
+  }
   return pageKeys.includes(page.key);
 }
 
