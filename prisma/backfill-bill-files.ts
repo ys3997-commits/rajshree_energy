@@ -2,20 +2,41 @@ import { PrismaClient } from "../src/generated/prisma";
 
 const prisma = new PrismaClient();
 
+type LegacyBillRow = {
+  id: string;
+  fileName: string | null;
+  fileMime: string | null;
+  fileData: Buffer | null;
+};
+
+async function legacyBillFileColumnsExist(): Promise<boolean> {
+  const cols = await prisma.$queryRaw<{ column_name: string }[]>`
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'Bill'
+      AND column_name IN ('fileName', 'fileMime', 'fileData')
+  `;
+  return cols.length === 3;
+}
+
 async function main() {
-  const bills = await prisma.bill.findMany({
-    select: {
-      id: true,
-      fileName: true,
-      fileMime: true,
-      fileData: true,
-      _count: { select: { files: true } },
-    },
-  });
+  if (!(await legacyBillFileColumnsExist())) {
+    console.log("Legacy Bill file columns not found; nothing to backfill.");
+    return;
+  }
+
+  const bills = await prisma.$queryRaw<LegacyBillRow[]>`
+    SELECT b.id, b."fileName", b."fileMime", b."fileData"
+    FROM "Bill" b
+    WHERE b."fileData" IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM "BillFile" f WHERE f."billId" = b.id
+      )
+  `;
 
   let copied = 0;
   for (const bill of bills) {
-    if (bill._count.files > 0) continue;
     if (!bill.fileData || !bill.fileName || !bill.fileMime) continue;
     await prisma.billFile.create({
       data: {
