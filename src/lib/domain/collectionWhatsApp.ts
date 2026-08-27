@@ -68,33 +68,44 @@ export function collectionWhatsAppDisabledReason(input: {
   return null;
 }
 
-export function collectionWhatsAppUrl(input: {
+export function collectionWhatsAppLinks(input: {
   paymentInChargeName: string | null | undefined;
   paymentInChargeContact: string | null | undefined;
   dealingCompany: string | null | undefined;
   due: string;
   overdue: string;
-}): string | null {
+}): { app: string; web: string } | null {
   if (collectionWhatsAppDisabledReason(input)) return null;
   const phone = toWhatsAppPhone(input.paymentInChargeContact);
   if (!phone) return null;
-  const text = buildCollectionWhatsAppMessage(input);
-  // Use the WhatsApp protocol so the OS opens the installed app / handler
-  // directly — skips the wa.me "App vs WhatsApp Web" chooser page.
-  return `whatsapp://send?phone=${phone}&text=${encodeURIComponent(text)}`;
+  const text = encodeURIComponent(buildCollectionWhatsAppMessage(input));
+  return {
+    // Desktop / mobile app — no App vs Web chooser page.
+    app: `whatsapp://send?phone=${phone}&text=${text}`,
+    // WhatsApp Web — used when the app does not hand off.
+    web: `https://web.whatsapp.com/send?phone=${phone}&text=${text}`,
+  };
+}
+
+/** App deep link (whatsapp://). Prefer collectionWhatsAppLinks when Web fallback is needed. */
+export function collectionWhatsAppUrl(
+  input: Parameters<typeof collectionWhatsAppLinks>[0],
+): string | null {
+  return collectionWhatsAppLinks(input)?.app ?? null;
 }
 
 /**
  * Watches whether a whatsapp:// navigation handed off to the OS.
  * Call this from the click handler without preventDefault so the browser
- * opens WhatsApp at native speed; onUnavailable runs only if handoff fails.
+ * opens WhatsApp at native speed; onAppMiss runs only if handoff fails
+ * (then open WhatsApp Web).
  *
  * Uses a longer window + a second focus check so a slow Desktop handoff
- * does not flash "Open WhatsApp First" after WhatsApp already opened.
+ * does not also open WhatsApp Web.
  */
 export function watchWhatsAppHandoff(
-  onUnavailable: () => void,
-  timeoutMs = 2500,
+  onAppMiss: () => void,
+  timeoutMs = 1200,
 ): void {
   if (typeof window === "undefined") return;
 
@@ -127,7 +138,7 @@ export function watchWhatsAppHandoff(
 
   timeoutId = window.setTimeout(() => {
     if (settled) return;
-    // Blur often arrives a moment after WhatsApp opens — confirm before warning.
+    // Blur often arrives a moment after the app opens — confirm before Web fallback.
     verifyId = window.setTimeout(() => {
       if (settled) return;
       if (!document.hasFocus() || document.hidden) {
@@ -136,7 +147,7 @@ export function watchWhatsAppHandoff(
       }
       settled = true;
       cleanup();
-      onUnavailable();
-    }, 400);
+      onAppMiss();
+    }, 350);
   }, timeoutMs);
 }

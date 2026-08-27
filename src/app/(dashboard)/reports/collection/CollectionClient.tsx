@@ -12,7 +12,7 @@ import {
   formatCustomerCategory,
   formatRs,
 } from "@/lib/domain/format";
-import { collectionWhatsAppDisabledReason, collectionWhatsAppUrl, watchWhatsAppHandoff } from "@/lib/domain/collectionWhatsApp";
+import { collectionWhatsAppDisabledReason, collectionWhatsAppLinks, watchWhatsAppHandoff } from "@/lib/domain/collectionWhatsApp";
 import { Modal } from "@/components/Modal";
 
 type PlannedCallFilter =
@@ -520,7 +520,7 @@ export function CollectionClient({
                 dealingCompany: row.dealingCompany,
                 paymentInChargeContact: row.paymentInChargeContact,
               });
-              const waUrl = collectionWhatsAppUrl({
+              const waLinks = collectionWhatsAppLinks({
                 paymentInChargeName: row.paymentInChargeName,
                 paymentInChargeContact: row.paymentInChargeContact,
                 dealingCompany: row.dealingCompany,
@@ -585,18 +585,18 @@ export function CollectionClient({
                         }
                       />
                       <a
-                        className={`btn-whatsapp-icon${waUrl ? "" : " disabled"}`}
-                        href={waUrl ?? undefined}
+                        className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
+                        href={waLinks?.app}
                         rel="noopener noreferrer"
-                        aria-disabled={!waUrl}
+                        aria-disabled={!waLinks}
                         aria-label={
-                          waUrl
+                          waLinks
                             ? `WhatsApp ${row.paymentInChargeName ?? row.name}`
                             : (waDisabledReason ?? "WhatsApp unavailable")
                         }
-                        tabIndex={waUrl ? undefined : -1}
+                        tabIndex={waLinks ? undefined : -1}
                         onClick={(e) => {
-                          if (!waUrl) {
+                          if (!waLinks) {
                             e.preventDefault();
                             setError(
                               waDisabledReason ??
@@ -604,14 +604,19 @@ export function CollectionClient({
                             );
                             return;
                           }
-                          // Let the browser follow href=whatsapp:// immediately
-                          // (fastest path). Only watch for a failed handoff.
-                          watchWhatsAppHandoff(() =>
-                            setError("Open WhatsApp First"),
-                          );
+                          // Native app link first (fast). If the app does not
+                          // hand off, open WhatsApp Web with the same message.
+                          watchWhatsAppHandoff(() => {
+                            const opened = window.open(
+                              waLinks.web,
+                              "_blank",
+                              "noopener,noreferrer",
+                            );
+                            if (!opened) setError("Open WhatsApp First");
+                          });
                         }}
                         title={
-                          waUrl
+                          waLinks
                             ? "Open WhatsApp with collection message"
                             : (waDisabledReason ?? "WhatsApp unavailable")
                         }

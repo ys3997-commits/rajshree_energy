@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCollectionWhatsAppMessage,
+  collectionWhatsAppLinks,
   collectionWhatsAppUrl,
   isRajshreeEnergyDealingCompany,
   toWhatsAppPhone,
@@ -52,21 +53,24 @@ describe("buildCollectionWhatsAppMessage", () => {
   });
 });
 
-describe("collectionWhatsAppUrl", () => {
-  it("builds a whatsapp:// link when phone and Rajshree Energy dealing company exist", () => {
-    const url = collectionWhatsAppUrl({
+describe("collectionWhatsAppLinks", () => {
+  it("builds app and web links when phone and Rajshree Energy dealing company exist", () => {
+    const links = collectionWhatsAppLinks({
       paymentInChargeName: "Ramesh",
       paymentInChargeContact: "9876543210",
       dealingCompany: "Rajshree Energy",
       due: "1000",
       overdue: "500",
     });
-    expect(url).toMatch(/^whatsapp:\/\/send\?phone=919876543210&text=/);
+    expect(links?.app).toMatch(/^whatsapp:\/\/send\?phone=919876543210&text=/);
+    expect(links?.web).toMatch(
+      /^https:\/\/web\.whatsapp\.com\/send\?phone=919876543210&text=/,
+    );
   });
 
   it("returns null without a phone", () => {
     expect(
-      collectionWhatsAppUrl({
+      collectionWhatsAppLinks({
         paymentInChargeName: "Ramesh",
         paymentInChargeContact: null,
         dealingCompany: "Rajshree Energy",
@@ -78,7 +82,7 @@ describe("collectionWhatsAppUrl", () => {
 
   it("returns null when dealing company is not Rajshree Energy", () => {
     expect(
-      collectionWhatsAppUrl({
+      collectionWhatsAppLinks({
         paymentInChargeName: "Ramesh",
         paymentInChargeContact: "9876543210",
         dealingCompany: "Other Company",
@@ -86,5 +90,18 @@ describe("collectionWhatsAppUrl", () => {
         overdue: "500",
       }),
     ).toBeNull();
+  });
+});
+
+describe("collectionWhatsAppUrl", () => {
+  it("returns the app deep link", () => {
+    const url = collectionWhatsAppUrl({
+      paymentInChargeName: "Ramesh",
+      paymentInChargeContact: "9876543210",
+      dealingCompany: "Rajshree Energy",
+      due: "1000",
+      overdue: "500",
+    });
+    expect(url).toMatch(/^whatsapp:\/\/send\?phone=919876543210&text=/);
   });
 });
