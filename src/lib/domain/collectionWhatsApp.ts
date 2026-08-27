@@ -87,67 +87,9 @@ export function collectionWhatsAppLinks(input: {
   };
 }
 
-/** App deep link (whatsapp://). Prefer collectionWhatsAppLinks when Web fallback is needed. */
+/** App deep link (whatsapp://). Prefer collectionWhatsAppLinks when Web is needed. */
 export function collectionWhatsAppUrl(
   input: Parameters<typeof collectionWhatsAppLinks>[0],
 ): string | null {
   return collectionWhatsAppLinks(input)?.app ?? null;
-}
-
-/**
- * Watches whether a whatsapp:// navigation handed off to the OS.
- * Call this from the click handler without preventDefault so the browser
- * opens WhatsApp at native speed; onAppMiss runs only if handoff fails
- * (then open WhatsApp Web).
- *
- * Uses a longer window + a second focus check so a slow Desktop handoff
- * does not also open WhatsApp Web.
- */
-export function watchWhatsAppHandoff(
-  onAppMiss: () => void,
-  timeoutMs = 1200,
-): void {
-  if (typeof window === "undefined") return;
-
-  let settled = false;
-  let timeoutId = 0;
-  let verifyId = 0;
-
-  const cleanup = () => {
-    window.removeEventListener("blur", onHandedOff);
-    window.removeEventListener("pagehide", onHandedOff);
-    document.removeEventListener("visibilitychange", onVisibility);
-  };
-
-  const finishHandedOff = () => {
-    if (settled) return;
-    settled = true;
-    window.clearTimeout(timeoutId);
-    window.clearTimeout(verifyId);
-    cleanup();
-  };
-
-  const onHandedOff = () => finishHandedOff();
-  const onVisibility = () => {
-    if (document.hidden) finishHandedOff();
-  };
-
-  window.addEventListener("blur", onHandedOff);
-  window.addEventListener("pagehide", onHandedOff);
-  document.addEventListener("visibilitychange", onVisibility);
-
-  timeoutId = window.setTimeout(() => {
-    if (settled) return;
-    // Blur often arrives a moment after the app opens — confirm before Web fallback.
-    verifyId = window.setTimeout(() => {
-      if (settled) return;
-      if (!document.hasFocus() || document.hidden) {
-        finishHandedOff();
-        return;
-      }
-      settled = true;
-      cleanup();
-      onAppMiss();
-    }, 350);
-  }, timeoutMs);
 }

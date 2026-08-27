@@ -12,7 +12,7 @@ import {
   formatCustomerCategory,
   formatRs,
 } from "@/lib/domain/format";
-import { collectionWhatsAppDisabledReason, collectionWhatsAppLinks, watchWhatsAppHandoff } from "@/lib/domain/collectionWhatsApp";
+import { collectionWhatsAppDisabledReason, collectionWhatsAppLinks } from "@/lib/domain/collectionWhatsApp";
 import { Modal } from "@/components/Modal";
 
 type PlannedCallFilter =
@@ -586,7 +586,8 @@ export function CollectionClient({
                       />
                       <a
                         className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
-                        href={waLinks?.app}
+                        href={waLinks?.web}
+                        target="_blank"
                         rel="noopener noreferrer"
                         aria-disabled={!waLinks}
                         aria-label={
@@ -604,16 +605,17 @@ export function CollectionClient({
                             );
                             return;
                           }
-                          // Native app link first (fast). If the app does not
-                          // hand off, open WhatsApp Web with the same message.
-                          watchWhatsAppHandoff(() => {
-                            const opened = window.open(
-                              waLinks.web,
-                              "_blank",
-                              "noopener,noreferrer",
-                            );
-                            if (!opened) setError("Open WhatsApp First");
-                          });
+                          // Default action opens WhatsApp Web (href). Defer the
+                          // app deep link so it cannot block that navigation.
+                          const appUrl = waLinks.app;
+                          window.setTimeout(() => {
+                            const appLink = document.createElement("a");
+                            appLink.href = appUrl;
+                            appLink.style.display = "none";
+                            document.body.appendChild(appLink);
+                            appLink.click();
+                            appLink.remove();
+                          }, 0);
                         }}
                         title={
                           waLinks
