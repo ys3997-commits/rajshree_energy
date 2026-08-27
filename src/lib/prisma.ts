@@ -1,4 +1,8 @@
+import dns from "node:dns";
 import { Prisma, PrismaClient } from "@/generated/prisma";
+
+// Windows/local DNS often returns IPv6 first; Supabase pooler reaches via IPv4.
+dns.setDefaultResultOrder("ipv4first");
 
 const TRANSIENT_CODES = new Set(["P1001", "P1017", "P2024", "P1008"]);
 const MAX_TRANSIENT_RETRIES = 2;
@@ -76,7 +80,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 /** Bump when the generated client or pool settings change so HMR drops stale sockets. */
-const PRISMA_GEN = 12;
+const PRISMA_GEN = 13;
 
 function getPrisma(): AppPrisma {
   if (globalForPrisma.prismaGen === PRISMA_GEN && globalForPrisma.prisma) {

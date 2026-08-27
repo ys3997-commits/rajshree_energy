@@ -16,7 +16,7 @@ export const APP_PAGES: AppPage[] = [
   { key: "dispatches", href: "/dispatches", label: "Dispatches", group: "Pages" },
   { key: "update", href: "/update", label: "Update", group: "Pages" },
   { key: "payments", href: "/payments", label: "Bank", group: "Pages" },
-  { key: "bills", href: "/bills", label: "Bills", group: "Pages" },
+  { key: "bills", href: "/bills", label: "Approvals", group: "Pages" },
   { key: "vessels", href: "/vessels", label: "Vessels", group: "Pages" },
   { key: "qualities", href: "/qualities", label: "Qualities", group: "Pages" },
   { key: "customers", href: "/customers", label: "Customers", group: "Pages" },
@@ -25,7 +25,7 @@ export const APP_PAGES: AppPage[] = [
   {
     key: "reports-collection",
     href: "/reports/collection",
-    label: "Collection",
+    label: "Collection Engine",
     group: "Reports",
   },
   {

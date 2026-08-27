@@ -13,7 +13,7 @@ const links = [
   { href: "/purchase-orders", label: "Purchase orders" },
   { href: "/dispatches", label: "Dispatches" },
   { href: "/payments", label: "Bank" },
-  { href: "/bills", label: "Bills" },
+  { href: "/bills", label: "Approvals" },
   // { href: "/receipts/pending", label: "Receipts" },
   // { href: "/reconciliation", label: "Reconciliation" },
   { href: "/vessels", label: "Vessels" },
@@ -36,7 +36,7 @@ const reportLinks: ReportItem[] = [
   {
     label: "Collection",
     children: [
-      { href: "/reports/collection", label: "Collection" },
+      { href: "/reports/collection", label: "Collection Engine" },
       { href: "/reports/collection/vendor", label: "Vendor Collection" },
     ],
   },

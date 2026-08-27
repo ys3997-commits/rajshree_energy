@@ -931,7 +931,8 @@ table.data.sales-engine-table thead th.sales-engine-customer-col {
 
 .collection-table td.collection-date-col .collection-date-input {
   display: block;
-  width: 100%;
+  flex: 1 1 auto;
+  width: auto;
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
@@ -943,10 +944,48 @@ table.data.sales-engine-table thead th.sales-engine-customer-col {
 
 .collection-table th.collection-date-col,
 .collection-table td.collection-date-col {
-  width: 11rem;
-  min-width: 11rem;
-  max-width: 11rem;
+  width: 12.5rem;
+  min-width: 12.5rem;
+  max-width: 12.5rem;
   overflow: hidden;
+}
+
+.collection-call-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-whatsapp-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  border-radius: 0.35rem;
+  background: #b2ff59;
+  color: #1b5e20;
+  text-decoration: none;
+  line-height: 0;
+}
+
+.btn-whatsapp-icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.btn-whatsapp-icon:hover {
+  background: #76ff03;
+  color: #1b5e20;
+}
+
+.btn-whatsapp-icon.disabled,
+.btn-whatsapp-icon[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 td.cell-num,
@@ -2458,6 +2497,98 @@ table.data tbody tr.customer-row-inactive:hover td {
   text-transform: uppercase;
   color: var(--muted);
   vertical-align: 0.05em;
+}
+
+.customer-inline-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 8.5rem;
+}
+
+.customer-inline-stack .field-input,
+.customer-inline-stack select {
+  width: 100%;
+  min-width: 0;
+}
+
+table.data tbody tr.payment-editing-row .field-input,
+table.data tbody tr.payment-editing-row select,
+table.data tbody tr.payment-editing-row .field-with-unit input {
+  background: #fff;
+  color: var(--ink);
+  border-color: #b79a3d;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+table.data tbody tr.payment-editing-row .field-with-unit .field-unit {
+  background: #fff8e1;
+  border-color: #b79a3d;
+  color: var(--ink);
+}
+
+table.data tbody tr.payment-editing-row .customer-edit-category-cell {
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
+}
+
+table.data tbody tr.payment-editing-row .customer-edit-category-select {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 9.5rem;
+  height: 2.35rem;
+  padding: 0.35rem 2rem 0.35rem 0.65rem;
+  border: 1.5px solid #8a7020;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: #14171c;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  appearance: auto;
+  -webkit-appearance: menulist;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+table.data tbody tr.payment-editing-row td.customer-edit-amount-cell {
+  white-space: normal;
+  min-width: 7.25rem;
+  max-width: 8rem;
+  vertical-align: middle;
+}
+
+table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-with-unit {
+  min-width: 6.75rem;
+  width: 100%;
+  max-width: 7.5rem;
+  margin-left: auto;
+}
+
+table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-with-unit input {
+  width: auto;
+  min-width: 3.25rem;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.75rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-unit {
+  padding: 0 0.4rem;
+  font-size: 0.68rem;
+}
+
+.customer-edit-extra-row td {
+  padding-top: 0.75rem;
+  padding-bottom: 0.85rem;
+}
+
+.customer-edit-extra {
+  margin: 0;
+  max-width: 56rem;
 }
 
 .dispatch-bool-toggle {

@@ -58,7 +58,7 @@ describe("firstAllowedPath", () => {
     expect(firstAllowedPath([])).toBe("/login");
   });
 
-  it("does not land on Bills when another page is granted", () => {
+  it("does not land on Approvals when another page is granted", () => {
     expect(
       firstAllowedPath([
         "bills",

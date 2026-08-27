@@ -206,7 +206,7 @@ export function BillsClient({
 
   return (
     <div>
-      <h1 className="page-title">Bills</h1>
+      <h1 className="page-title">Approvals</h1>
       <p className="page-subtitle">
         {canUpload
           ? "Upload a bill for the owner to approve. Rejected bills stay on record — upload a new file if you need to send it again."
