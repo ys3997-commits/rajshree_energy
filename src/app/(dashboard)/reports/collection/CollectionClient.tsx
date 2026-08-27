@@ -12,7 +12,11 @@ import {
   formatCustomerCategory,
   formatRs,
 } from "@/lib/domain/format";
-import { collectionWhatsAppDisabledReason, collectionWhatsAppLinks } from "@/lib/domain/collectionWhatsApp";
+import {
+  collectionWhatsAppDisabledReason,
+  collectionWhatsAppLinks,
+  openCollectionWhatsAppWeb,
+} from "@/lib/domain/collectionWhatsApp";
 import { Modal } from "@/components/Modal";
 
 type PlannedCallFilter =
@@ -587,7 +591,6 @@ export function CollectionClient({
                       <a
                         className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
                         href={waLinks?.web}
-                        target="_blank"
                         rel="noopener noreferrer"
                         aria-disabled={!waLinks}
                         aria-label={
@@ -597,16 +600,21 @@ export function CollectionClient({
                         }
                         tabIndex={waLinks ? undefined : -1}
                         onClick={(e) => {
+                          e.preventDefault();
                           if (!waLinks) {
-                            e.preventDefault();
                             setError(
                               waDisabledReason ??
                                 "WhatsApp is unavailable for this row.",
                             );
                             return;
                           }
-                          // Default action opens WhatsApp Web (href). Defer the
-                          // app deep link so it cannot block that navigation.
+                          // One named tab for Web — later clicks reuse it.
+                          const opened = openCollectionWhatsAppWeb(waLinks.web);
+                          if (!opened) {
+                            setError("Open WhatsApp First");
+                            return;
+                          }
+                          // Also try the Desktop/mobile app.
                           const appUrl = waLinks.app;
                           window.setTimeout(() => {
                             const appLink = document.createElement("a");

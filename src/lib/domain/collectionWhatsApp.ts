@@ -87,6 +87,17 @@ export function collectionWhatsAppLinks(input: {
   };
 }
 
+/** Reuse one browser tab/window for all collection WhatsApp Web sends. */
+export const COLLECTION_WHATSAPP_WEB_WINDOW = "rajshree_collection_whatsapp_web";
+
+/** Open (or reuse) the WhatsApp Web compose tab for this message. */
+export function openCollectionWhatsAppWeb(webUrl: string): Window | null {
+  if (typeof window === "undefined") return null;
+  const tab = window.open(webUrl, COLLECTION_WHATSAPP_WEB_WINDOW);
+  tab?.focus();
+  return tab;
+}
+
 /** App deep link (whatsapp://). Prefer collectionWhatsAppLinks when Web is needed. */
 export function collectionWhatsAppUrl(
   input: Parameters<typeof collectionWhatsAppLinks>[0],
