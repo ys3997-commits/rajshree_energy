@@ -128,6 +128,8 @@ exports.Prisma.StaffScalarFieldEnum = {
   role: 'role',
   passwordHash: 'passwordHash',
   pageKeys: 'pageKeys',
+  collectionSalesExecs: 'collectionSalesExecs',
+  salesEngineSalesExecs: 'salesEngineSalesExecs',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -250,6 +252,7 @@ exports.Prisma.CustomerScalarFieldEnum = {
   openingDue: 'openingDue',
   due: 'due',
   plannedCollectionCallDate: 'plannedCollectionCallDate',
+  collectionThrough: 'collectionThrough',
   plannedSaleCallDate: 'plannedSaleCallDate',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -401,6 +404,11 @@ exports.CustomerCategory = exports.$Enums.CustomerCategory = {
   SUPPLIER: 'SUPPLIER',
   INDUSTRY: 'INDUSTRY',
   TRADER: 'TRADER'
+};
+
+exports.CollectionThrough = exports.$Enums.CollectionThrough = {
+  CALL: 'CALL',
+  SMS: 'SMS'
 };
 
 exports.OrderType = exports.$Enums.OrderType = {

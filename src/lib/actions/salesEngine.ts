@@ -10,6 +10,12 @@ import {
   sumSalesSuppliedInCreditWindow,
 } from "@/lib/domain/customerDue";
 import { prisma } from "@/lib/prisma";
+import { AccessDeniedError, requirePage } from "@/lib/auth/access";
+import {
+  getStaffReportExecScope,
+  rowMatchesExecScope,
+  SALES_ENGINE_PAGE_KEY,
+} from "@/lib/auth/report-exec-access";
 
 export type SalesEngineRow = {
   id: string;
@@ -204,11 +210,21 @@ export async function updatePlannedSaleCall(
 ): Promise<{ plannedSaleCallDate: string | null }> {
   if (!customerId) throw new Error("Customer is required");
 
+  const access = await requirePage(SALES_ENGINE_PAGE_KEY);
+
   const existing = await prisma.customer.findUnique({
     where: { id: customerId },
-    select: { id: true },
+    select: { id: true, saleExecutive: true },
   });
   if (!existing) throw new Error("Customer not found");
+
+  const scope = getStaffReportExecScope(access, SALES_ENGINE_PAGE_KEY);
+  if (
+    scope !== "all" &&
+    !rowMatchesExecScope(existing.saleExecutive, scope)
+  ) {
+    throw new AccessDeniedError();
+  }
 
   const plannedSaleCallDate = parseOptionalDate(date);
 

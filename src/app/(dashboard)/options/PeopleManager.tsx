@@ -3,6 +3,12 @@
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { createStaff, deleteStaff, updateStaff } from "@/lib/actions/staff";
 import { GRANTABLE_PAGES, PAGE_GROUPS } from "@/lib/auth/pages";
+import {
+  COLLECTION_ENGINE_PAGE_KEY,
+  isReportExecAll,
+  REPORT_EXEC_ALL,
+  SALES_ENGINE_PAGE_KEY,
+} from "@/lib/auth/report-exec-access";
 import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
 
@@ -12,14 +18,30 @@ export type PeopleRow = {
   role: string | null;
   hasLogin: boolean;
   pageKeys: string[];
+  collectionSalesExecs: string[];
+  salesEngineSalesExecs: string[];
 };
+
+type SaleExecutiveOption = { id: string; name: string };
+
+function toggleExecScope(
+  current: string[],
+  name: string,
+): string[] {
+  if (isReportExecAll(current)) return [name];
+  return current.includes(name)
+    ? current.filter((item) => item !== name)
+    : [...current, name];
+}
 
 export function PeopleManager({
   people,
+  saleExecutives,
   query,
   onChange,
 }: {
   people: PeopleRow[];
+  saleExecutives: SaleExecutiveOption[];
   query: string;
   onChange: (people: PeopleRow[]) => void;
 }) {
@@ -32,6 +54,17 @@ export function PeopleManager({
   const [password, setPassword] = useState("");
   const [disableLogin, setDisableLogin] = useState(false);
   const [pageKeys, setPageKeys] = useState<string[]>([]);
+  const [collectionSalesExecs, setCollectionSalesExecs] = useState<string[]>(
+    [],
+  );
+  const [salesEngineSalesExecs, setSalesEngineSalesExecs] = useState<string[]>(
+    [],
+  );
+
+  const sortedExecutives = useMemo(
+    () => [...saleExecutives].sort((a, b) => a.name.localeCompare(b.name)),
+    [saleExecutives],
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -51,6 +84,8 @@ export function PeopleManager({
     setPassword("");
     setDisableLogin(false);
     setPageKeys([]);
+    setCollectionSalesExecs([]);
+    setSalesEngineSalesExecs([]);
     setEditorOpen(true);
   }
 
@@ -61,6 +96,8 @@ export function PeopleManager({
     setPassword("");
     setDisableLogin(false);
     setPageKeys(item.pageKeys);
+    setCollectionSalesExecs(item.collectionSalesExecs);
+    setSalesEngineSalesExecs(item.salesEngineSalesExecs);
     setEditorOpen(true);
   }
 
@@ -72,11 +109,18 @@ export function PeopleManager({
   }
 
   function togglePage(key: string) {
+    const turningOn = !pageKeys.includes(key);
     setPageKeys((current) =>
-      current.includes(key)
-        ? current.filter((item) => item !== key)
-        : [...current, key],
+      turningOn
+        ? [...current, key]
+        : current.filter((item) => item !== key),
     );
+    if (key === COLLECTION_ENGINE_PAGE_KEY) {
+      setCollectionSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
+    }
+    if (key === SALES_ENGINE_PAGE_KEY) {
+      setSalesEngineSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
+    }
   }
 
   function toggleGroup(group: (typeof PAGE_GROUPS)[number]) {
@@ -85,8 +129,29 @@ export function PeopleManager({
     );
     const allOn = keys.every((key) => pageKeys.includes(key));
     setPageKeys((current) => {
-      if (allOn) return current.filter((key) => !keys.includes(key));
-      return [...new Set([...current, ...keys])];
+      if (allOn) {
+        if (keys.includes(COLLECTION_ENGINE_PAGE_KEY)) {
+          setCollectionSalesExecs([]);
+        }
+        if (keys.includes(SALES_ENGINE_PAGE_KEY)) {
+          setSalesEngineSalesExecs([]);
+        }
+        return current.filter((key) => !keys.includes(key));
+      }
+      const next = [...new Set([...current, ...keys])];
+      if (
+        keys.includes(COLLECTION_ENGINE_PAGE_KEY) &&
+        !current.includes(COLLECTION_ENGINE_PAGE_KEY)
+      ) {
+        setCollectionSalesExecs([REPORT_EXEC_ALL]);
+      }
+      if (
+        keys.includes(SALES_ENGINE_PAGE_KEY) &&
+        !current.includes(SALES_ENGINE_PAGE_KEY)
+      ) {
+        setSalesEngineSalesExecs([REPORT_EXEC_ALL]);
+      }
+      return next;
     });
   }
 
@@ -94,6 +159,42 @@ export function PeopleManager({
     editing ? editing.hasLogin && !disableLogin : password.trim(),
   );
   const showPages = loginEnabled || Boolean(password.trim());
+
+  function renderExecScope(
+    pageKey: typeof COLLECTION_ENGINE_PAGE_KEY | typeof SALES_ENGINE_PAGE_KEY,
+    scope: string[],
+    setScope: (next: string[]) => void,
+  ) {
+    if (!pageKeys.includes(pageKey)) return null;
+
+    const allOn = isReportExecAll(scope);
+
+    return (
+      <div className="people-exec-scope">
+        <label className="people-exec-item">
+          <input
+            type="checkbox"
+            checked={allOn}
+            onChange={(e) =>
+              setScope(e.target.checked ? [REPORT_EXEC_ALL] : [])
+            }
+          />
+          ALL
+        </label>
+        {sortedExecutives.map((executive) => (
+          <label key={executive.id} className="people-exec-item">
+            <input
+              type="checkbox"
+              checked={!allOn && scope.includes(executive.name)}
+              disabled={allOn}
+              onChange={() => setScope(toggleExecScope(scope, executive.name))}
+            />
+            {executive.name}
+          </label>
+        ))}
+      </div>
+    );
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -110,6 +211,8 @@ export function PeopleManager({
             role: nextRole || null,
             password: password.trim() || null,
             pageKeys,
+            collectionSalesExecs,
+            salesEngineSalesExecs,
             disableLogin,
           });
           onChange(
@@ -123,6 +226,8 @@ export function PeopleManager({
             role: nextRole || null,
             password: password.trim() || null,
             pageKeys,
+            collectionSalesExecs,
+            salesEngineSalesExecs,
           });
           onChange(
             [...people, toRow(row)].sort((a, b) => a.name.localeCompare(b.name)),
@@ -299,14 +404,36 @@ export function PeopleManager({
                     </div>
                     <div className="people-page-grid">
                       {pages.map((page) => (
-                        <label key={page.key} className="people-page-item">
-                          <input
-                            type="checkbox"
-                            checked={pageKeys.includes(page.key)}
-                            onChange={() => togglePage(page.key)}
-                          />
-                          {page.label}
-                        </label>
+                        <div
+                          key={page.key}
+                          className={
+                            page.key === COLLECTION_ENGINE_PAGE_KEY ||
+                            page.key === SALES_ENGINE_PAGE_KEY
+                              ? "people-page-cell people-page-cell-scoped"
+                              : "people-page-cell"
+                          }
+                        >
+                          <label className="people-page-item">
+                            <input
+                              type="checkbox"
+                              checked={pageKeys.includes(page.key)}
+                              onChange={() => togglePage(page.key)}
+                            />
+                            {page.label}
+                          </label>
+                          {page.key === COLLECTION_ENGINE_PAGE_KEY &&
+                            renderExecScope(
+                              COLLECTION_ENGINE_PAGE_KEY,
+                              collectionSalesExecs,
+                              setCollectionSalesExecs,
+                            )}
+                          {page.key === SALES_ENGINE_PAGE_KEY &&
+                            renderExecScope(
+                              SALES_ENGINE_PAGE_KEY,
+                              salesEngineSalesExecs,
+                              setSalesEngineSalesExecs,
+                            )}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -339,6 +466,8 @@ function toRow(row: {
   role: string | null;
   hasLogin: boolean;
   pageKeys: string[];
+  collectionSalesExecs: string[];
+  salesEngineSalesExecs: string[];
 }): PeopleRow {
   return {
     id: row.id,
@@ -346,5 +475,7 @@ function toRow(row: {
     role: row.role,
     hasLogin: row.hasLogin,
     pageKeys: row.pageKeys,
+    collectionSalesExecs: row.collectionSalesExecs,
+    salesEngineSalesExecs: row.salesEngineSalesExecs,
   };
 }

@@ -198,6 +198,7 @@ export type CustomerDueRow = {
   dealingCompany: string | null;
   creditDays: number | null;
   plannedCollectionCallDate: string | null;
+  collectionThrough: "CALL" | "SMS" | null;
   due: string;
   overdue: string;
   lastPaymentDate: string | null;
@@ -226,6 +227,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       sector: true,
       dealingCompany: true,
       plannedCollectionCallDate: true,
+      collectionThrough: true,
     },
     orderBy: { due: "desc" },
   });
@@ -318,6 +320,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       plannedCollectionCallDate: customer.plannedCollectionCallDate
         ? customer.plannedCollectionCallDate.toISOString().slice(0, 10)
         : null,
+      collectionThrough: customer.collectionThrough,
       due: customer.due.toString(),
       overdue: overdue.toString(),
       lastPaymentDate: last ? last.date.toISOString().slice(0, 10) : null,

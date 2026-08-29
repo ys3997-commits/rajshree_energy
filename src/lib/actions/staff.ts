@@ -2,6 +2,13 @@
 
 import { requireOwner } from "@/lib/auth/access";
 import { GRANTABLE_PAGES } from "@/lib/auth/pages";
+import {
+  COLLECTION_ENGINE_PAGE_KEY,
+  normalizeExecScopeForSave,
+  normalizeStoredExecScope,
+  SALES_ENGINE_PAGE_KEY,
+  validateExecScopeForSave,
+} from "@/lib/auth/report-exec-access";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
@@ -39,6 +46,55 @@ function normalizePageKeys(pageKeys: string[] | undefined): string[] {
   return [...unique];
 }
 
+function normalizeStaffExecScopes(input: {
+  pageKeys: string[];
+  collectionSalesExecs?: string[];
+  salesEngineSalesExecs?: string[];
+}) {
+  const hasCollection = input.pageKeys.includes(COLLECTION_ENGINE_PAGE_KEY);
+  const hasSalesEngine = input.pageKeys.includes(SALES_ENGINE_PAGE_KEY);
+
+  validateExecScopeForSave(
+    input.collectionSalesExecs ?? [],
+    hasCollection,
+    "Collection Engine",
+  );
+  validateExecScopeForSave(
+    input.salesEngineSalesExecs ?? [],
+    hasSalesEngine,
+    "Sales Engine Report",
+  );
+
+  return {
+    collectionSalesExecs: normalizeExecScopeForSave(
+      input.collectionSalesExecs ?? [],
+      hasCollection,
+    ),
+    salesEngineSalesExecs: normalizeExecScopeForSave(
+      input.salesEngineSalesExecs ?? [],
+      hasSalesEngine,
+    ),
+  };
+}
+
+function staffRow<T extends {
+  pageKeys: string[];
+  collectionSalesExecs: string[];
+  salesEngineSalesExecs: string[];
+}>(row: T) {
+  return {
+    ...row,
+    collectionSalesExecs: normalizeStoredExecScope(
+      row.collectionSalesExecs,
+      row.pageKeys.includes(COLLECTION_ENGINE_PAGE_KEY),
+    ),
+    salesEngineSalesExecs: normalizeStoredExecScope(
+      row.salesEngineSalesExecs,
+      row.pageKeys.includes(SALES_ENGINE_PAGE_KEY),
+    ),
+  };
+}
+
 async function assertPasswordAvailable(password: string, exceptStaffId?: string) {
   const others = await prisma.staff.findMany({
     where: {
@@ -57,7 +113,7 @@ async function assertPasswordAvailable(password: string, exceptStaffId?: string)
 export async function listStaff() {
   await requireOwner();
   const rows = await prisma.staff.findMany({ orderBy: { name: "asc" } });
-  return rows.map((row) => publicStaff(row));
+  return rows.map((row) => publicStaff(staffRow(row)));
 }
 
 export async function createStaff(input: {
@@ -65,12 +121,19 @@ export async function createStaff(input: {
   role?: string | null;
   password?: string | null;
   pageKeys?: string[];
+  collectionSalesExecs?: string[];
+  salesEngineSalesExecs?: string[];
 }) {
   await requireOwner();
   const name = capitalizeName(input.name);
   if (!name) throw new Error("Name is required");
   const password = input.password?.trim() || "";
   const pageKeys = normalizePageKeys(input.pageKeys);
+  const execScopes = normalizeStaffExecScopes({
+    pageKeys,
+    collectionSalesExecs: input.collectionSalesExecs,
+    salesEngineSalesExecs: input.salesEngineSalesExecs,
+  });
 
   let passwordHash: string | null = null;
   if (password) {
@@ -88,10 +151,12 @@ export async function createStaff(input: {
       role: capitalizeName(input.role),
       passwordHash,
       pageKeys: passwordHash ? pageKeys : [],
+      collectionSalesExecs: passwordHash ? execScopes.collectionSalesExecs : [],
+      salesEngineSalesExecs: passwordHash ? execScopes.salesEngineSalesExecs : [],
     },
   });
   revalidateStaffPaths();
-  return publicStaff(row);
+  return publicStaff(staffRow(row));
 }
 
 export async function updateStaff(
@@ -101,6 +166,8 @@ export async function updateStaff(
     role?: string | null;
     password?: string | null;
     pageKeys?: string[];
+    collectionSalesExecs?: string[];
+    salesEngineSalesExecs?: string[];
     disableLogin?: boolean;
   },
 ) {
@@ -112,12 +179,21 @@ export async function updateStaff(
   if (!existing) throw new Error("Person not found");
 
   const pageKeys = normalizePageKeys(input.pageKeys);
+  const execScopes = normalizeStaffExecScopes({
+    pageKeys,
+    collectionSalesExecs: input.collectionSalesExecs,
+    salesEngineSalesExecs: input.salesEngineSalesExecs,
+  });
   let passwordHash = existing.passwordHash;
   let nextPages = existing.pageKeys;
+  let nextCollectionExecs = existing.collectionSalesExecs;
+  let nextSalesEngineExecs = existing.salesEngineSalesExecs;
 
   if (input.disableLogin) {
     passwordHash = null;
     nextPages = [];
+    nextCollectionExecs = [];
+    nextSalesEngineExecs = [];
   } else {
     const password = input.password?.trim() || "";
     if (password) {
@@ -130,8 +206,12 @@ export async function updateStaff(
         throw new Error("Select at least one page for login access");
       }
       nextPages = pageKeys;
+      nextCollectionExecs = execScopes.collectionSalesExecs;
+      nextSalesEngineExecs = execScopes.salesEngineSalesExecs;
     } else {
       nextPages = [];
+      nextCollectionExecs = [];
+      nextSalesEngineExecs = [];
     }
   }
 
@@ -142,10 +222,12 @@ export async function updateStaff(
       role: capitalizeName(input.role),
       passwordHash,
       pageKeys: nextPages,
+      collectionSalesExecs: nextCollectionExecs,
+      salesEngineSalesExecs: nextSalesEngineExecs,
     },
   });
   revalidateStaffPaths();
-  return publicStaff(row);
+  return publicStaff(staffRow(row));
 }
 
 export async function deleteStaff(id: string) {

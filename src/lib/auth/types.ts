@@ -1,4 +1,11 @@
 export type Access =
   | { kind: "owner"; name: string; pageKeys: "all" }
-  | { kind: "staff"; id: string; name: string; pageKeys: string[] }
+  | {
+      kind: "staff";
+      id: string;
+      name: string;
+      pageKeys: string[];
+      collectionSalesExecs: string[];
+      salesEngineSalesExecs: string[];
+    }
   | { kind: "none" };

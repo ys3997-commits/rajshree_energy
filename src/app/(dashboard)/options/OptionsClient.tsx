@@ -473,6 +473,7 @@ export function OptionsClient({
         {activeId === "people" ? (
           <PeopleManager
             people={peopleItems}
+            saleExecutives={items.saleExecutives}
             query={query}
             onChange={setPeopleItems}
           />

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
-import { updatePlannedCollectionCall } from "@/lib/actions/collection";
+import { updatePlannedCollectionCall, updateCollectionThrough } from "@/lib/actions/collection";
 import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
   capitalizeName,
@@ -18,6 +18,7 @@ import {
   openCollectionWhatsAppWeb,
 } from "@/lib/domain/collectionWhatsApp";
 import { Modal } from "@/components/Modal";
+import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
 
 type PlannedCallFilter =
   | ""
@@ -124,8 +125,10 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 
 export function CollectionClient({
   initialRows,
+  allowedSaleExecutives,
 }: {
   initialRows: CustomerDueRow[];
+  allowedSaleExecutives: ExecScopeFilter;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
@@ -147,6 +150,7 @@ export function CollectionClient({
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sectorFilter, setSectorFilter] = useState("");
   const [savingCallId, setSavingCallId] = useState<string | null>(null);
+  const [savingThroughId, setSavingThroughId] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<CollectionSortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
@@ -168,10 +172,16 @@ export function CollectionClient({
     setSortDir(key === "name" ? "asc" : "desc");
   }
 
-  const saleExecutiveOptions = useMemo(
-    () => distinctTrimmed(buyerRows.map((row) => row.saleExecutive)),
-    [buyerRows],
-  );
+  const saleExecutiveOptions = useMemo(() => {
+    const fromRows = distinctTrimmed(buyerRows.map((row) => row.saleExecutive));
+    if (allowedSaleExecutives === "all") return fromRows;
+    const allowed = new Set(
+      allowedSaleExecutives.map((name) => name.trim().toLowerCase()),
+    );
+    return fromRows.filter((name) => allowed.has(name.toLowerCase()));
+  }, [buyerRows, allowedSaleExecutives]);
+  const showSaleExecutiveFilter =
+    allowedSaleExecutives === "all" || allowedSaleExecutives.length > 1;
   const dealingCompanyOptions = useMemo(
     () => distinctTrimmed(buyerRows.map((row) => row.dealingCompany)),
     [buyerRows],
@@ -310,6 +320,43 @@ export function CollectionClient({
     });
   }
 
+  function onThroughChange(
+    customerId: string,
+    value: string,
+  ) {
+    const nextThrough =
+      value === "CALL" || value === "SMS" ? value : null;
+    setError(null);
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === customerId
+          ? { ...row, collectionThrough: nextThrough }
+          : row,
+      ),
+    );
+    setSavingThroughId(customerId);
+    startTransition(async () => {
+      try {
+        const result = await updateCollectionThrough(customerId, nextThrough);
+        setRows((prev) =>
+          prev.map((row) =>
+            row.id === customerId
+              ? { ...row, collectionThrough: result.collectionThrough }
+              : row,
+          ),
+        );
+        router.refresh();
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to save through",
+        );
+        router.refresh();
+      } finally {
+        setSavingThroughId(null);
+      }
+    });
+  }
+
   return (
     <>
       <Modal
@@ -342,20 +389,22 @@ export function CollectionClient({
             <option value="future">Future</option>
           </select>
         </label>
-        <label>
-          Sales executive
-          <select
-            value={saleExecutiveFilter}
-            onChange={(e) => setSaleExecutiveFilter(e.target.value)}
-          >
-            <option value="">All</option>
-            {saleExecutiveOptions.map((name) => (
-              <option key={name} value={name}>
-                {capitalizeName(name) ?? name}
-              </option>
-            ))}
-          </select>
-        </label>
+        {showSaleExecutiveFilter && (
+          <label>
+            Sales executive
+            <select
+              value={saleExecutiveFilter}
+              onChange={(e) => setSaleExecutiveFilter(e.target.value)}
+            >
+              <option value="">All</option>
+              {saleExecutiveOptions.map((name) => (
+                <option key={name} value={name}>
+                  {capitalizeName(name) ?? name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label>
           Dealing company
           <select
@@ -503,6 +552,8 @@ export function CollectionClient({
               <th className="cell-num">Last Payment Amount</th>
               <th className="cell-num">Credit Period</th>
               <th className="collection-date-col">Planned Call Date</th>
+              <th className="collection-through-col">Through</th>
+              <th className="collection-whatsapp-col" aria-label="WhatsApp" />
             </tr>
           </thead>
           <tbody>
@@ -567,20 +618,36 @@ export function CollectionClient({
                     {formatCreditPeriod(row.creditDays)}
                   </td>
                   <td className="collection-date-col">
-                    <div className="collection-call-actions">
-                      <input
-                        type="date"
-                        lang="en-GB"
-                        className="field-input collection-date-input"
-                        aria-label={`Planned call for ${row.name}`}
-                        value={row.plannedCollectionCallDate ?? ""}
-                        disabled={savingCallId === row.id || pending}
-                        onChange={(e) =>
-                          onPlannedCallChange(row.id, e.target.value)
-                        }
-                      />
-                      <a
-                        className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
+                    <input
+                      type="date"
+                      lang="en-GB"
+                      className="field-input collection-date-input"
+                      aria-label={`Planned call for ${row.name}`}
+                      value={row.plannedCollectionCallDate ?? ""}
+                      disabled={savingCallId === row.id || pending}
+                      onChange={(e) =>
+                        onPlannedCallChange(row.id, e.target.value)
+                      }
+                    />
+                  </td>
+                  <td className="collection-through-col">
+                    <select
+                      className="field-input collection-through-select"
+                      aria-label={`Through for ${row.name}`}
+                      value={row.collectionThrough ?? ""}
+                      disabled={savingThroughId === row.id || pending}
+                      onChange={(e) =>
+                        onThroughChange(row.id, e.target.value)
+                      }
+                    >
+                      <option value="">-</option>
+                      <option value="CALL">Call</option>
+                      <option value="SMS">SMS</option>
+                    </select>
+                  </td>
+                  <td className="collection-whatsapp-col">
+                    <a
+                      className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
                         href={waLinks?.web}
                         rel="noopener noreferrer"
                         aria-disabled={!waLinks}
@@ -633,14 +700,13 @@ export function CollectionClient({
                           />
                         </svg>
                       </a>
-                    </div>
                   </td>
                 </tr>
               );
             })}
             {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={11}>
+                <td colSpan={13}>
                   {buyerRows.length === 0
                     ? "No outstanding dues."
                     : "No customers match these filters."}

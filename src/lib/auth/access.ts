@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { canAccessPath, firstAllowedPath } from "@/lib/auth/pages";
+import { normalizeStoredExecScope } from "@/lib/auth/report-exec-access";
 import type { Access } from "@/lib/auth/types";
 import {
   STAFF_SESSION_COOKIE,
@@ -34,17 +35,33 @@ export async function getCurrentAccess(): Promise<Access> {
 
   const staff = await prisma.staff.findUnique({
     where: { id: staffId },
-    select: { id: true, name: true, passwordHash: true, pageKeys: true },
+    select: {
+      id: true,
+      name: true,
+      passwordHash: true,
+      pageKeys: true,
+      collectionSalesExecs: true,
+      salesEngineSalesExecs: true,
+    },
   });
   if (!staff?.passwordHash || staff.pageKeys.length === 0) {
     return { kind: "none" };
   }
 
+  const pageKeys = staff.pageKeys;
   return {
     kind: "staff",
     id: staff.id,
     name: staff.name,
-    pageKeys: staff.pageKeys,
+    pageKeys,
+    collectionSalesExecs: normalizeStoredExecScope(
+      staff.collectionSalesExecs,
+      pageKeys.includes("reports-collection"),
+    ),
+    salesEngineSalesExecs: normalizeStoredExecScope(
+      staff.salesEngineSalesExecs,
+      pageKeys.includes("reports-sales-engine"),
+    ),
   };
 }
 

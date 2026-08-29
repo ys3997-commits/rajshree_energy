@@ -1,9 +1,18 @@
 import Link from "next/link";
+import { requirePage } from "@/lib/auth/access";
+import {
+  COLLECTION_ENGINE_PAGE_KEY,
+  filterRowsByExecScope,
+  getStaffReportExecScope,
+} from "@/lib/auth/report-exec-access";
 import { listCustomersWithDue } from "@/lib/actions/customers";
 import { CollectionClient } from "./CollectionClient";
 
 export default async function CollectionReportPage() {
+  const access = await requirePage(COLLECTION_ENGINE_PAGE_KEY);
   const rows = await listCustomersWithDue();
+  const execScope = getStaffReportExecScope(access, COLLECTION_ENGINE_PAGE_KEY);
+  const filteredRows = filterRowsByExecScope(rows, execScope);
 
   return (
     <div>
@@ -23,7 +32,10 @@ export default async function CollectionReportPage() {
         </div>
       </div>
 
-      <CollectionClient initialRows={rows} />
+      <CollectionClient
+        initialRows={filteredRows}
+        allowedSaleExecutives={execScope}
+      />
     </div>
   );
 }

@@ -65,6 +65,11 @@ enum BillStatus {
   REJECTED
 }
 
+enum CollectionThrough {
+  CALL
+  SMS
+}
+
 model Staff {
   id           String   @id @default(cuid())
   name         String
@@ -73,6 +78,10 @@ model Staff {
   passwordHash String?
   /// Page keys this person may open. Ignored for the owner account.
   pageKeys     String[] @default([])
+  /// Sales executives visible in Collection Engine. ["*"] = all; else executive names.
+  collectionSalesExecs String[] @default([])
+  /// Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
+  salesEngineSalesExecs String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -235,6 +244,8 @@ model Customer {
   due                      Decimal          @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?
+  /// How the next collection follow-up will be made.
+  collectionThrough         CollectionThrough?
   /// Next planned sales call date (calendar day) — separate from collection.
   plannedSaleCallDate      DateTime?
   createdAt                DateTime         @default(now())

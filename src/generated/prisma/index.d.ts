@@ -132,6 +132,14 @@ export namespace $Enums {
 export type CustomerCategory = (typeof CustomerCategory)[keyof typeof CustomerCategory]
 
 
+export const CollectionThrough: {
+  CALL: 'CALL',
+  SMS: 'SMS'
+};
+
+export type CollectionThrough = (typeof CollectionThrough)[keyof typeof CollectionThrough]
+
+
 export const OrderType: {
   REGULAR: 'REGULAR',
   OPEN: 'OPEN'
@@ -209,6 +217,10 @@ export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus]
 export type CustomerCategory = $Enums.CustomerCategory
 
 export const CustomerCategory: typeof $Enums.CustomerCategory
+
+export type CollectionThrough = $Enums.CollectionThrough
+
+export const CollectionThrough: typeof $Enums.CollectionThrough
 
 export type OrderType = $Enums.OrderType
 
@@ -3172,6 +3184,8 @@ export namespace Prisma {
     role: number
     passwordHash: number
     pageKeys: number
+    collectionSalesExecs: number
+    salesEngineSalesExecs: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3202,6 +3216,8 @@ export namespace Prisma {
     role?: true
     passwordHash?: true
     pageKeys?: true
+    collectionSalesExecs?: true
+    salesEngineSalesExecs?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3285,6 +3301,8 @@ export namespace Prisma {
     role: string | null
     passwordHash: string | null
     pageKeys: string[]
+    collectionSalesExecs: string[]
+    salesEngineSalesExecs: string[]
     createdAt: Date
     updatedAt: Date
     _count: StaffCountAggregateOutputType | null
@@ -3312,6 +3330,8 @@ export namespace Prisma {
     role?: boolean
     passwordHash?: boolean
     pageKeys?: boolean
+    collectionSalesExecs?: boolean
+    salesEngineSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
@@ -3326,6 +3346,8 @@ export namespace Prisma {
     role?: boolean
     passwordHash?: boolean
     pageKeys?: boolean
+    collectionSalesExecs?: boolean
+    salesEngineSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["staff"]>
@@ -3336,6 +3358,8 @@ export namespace Prisma {
     role?: boolean
     passwordHash?: boolean
     pageKeys?: boolean
+    collectionSalesExecs?: boolean
+    salesEngineSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -3367,6 +3391,14 @@ export namespace Prisma {
        * Page keys this person may open. Ignored for the owner account.
        */
       pageKeys: string[]
+      /**
+       * Sales executives visible in Collection Engine. ["*"] = all; else executive names.
+       */
+      collectionSalesExecs: string[]
+      /**
+       * Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
+       */
+      salesEngineSalesExecs: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["staff"]>
@@ -3770,6 +3802,8 @@ export namespace Prisma {
     readonly role: FieldRef<"Staff", 'String'>
     readonly passwordHash: FieldRef<"Staff", 'String'>
     readonly pageKeys: FieldRef<"Staff", 'String[]'>
+    readonly collectionSalesExecs: FieldRef<"Staff", 'String[]'>
+    readonly salesEngineSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly createdAt: FieldRef<"Staff", 'DateTime'>
     readonly updatedAt: FieldRef<"Staff", 'DateTime'>
   }
@@ -14402,6 +14436,7 @@ export namespace Prisma {
     openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
+    collectionThrough: $Enums.CollectionThrough | null
     plannedSaleCallDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14437,6 +14472,7 @@ export namespace Prisma {
     openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
+    collectionThrough: $Enums.CollectionThrough | null
     plannedSaleCallDate: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14472,6 +14508,7 @@ export namespace Prisma {
     openingDue: number
     due: number
     plannedCollectionCallDate: number
+    collectionThrough: number
     plannedSaleCallDate: number
     createdAt: number
     updatedAt: number
@@ -14521,6 +14558,7 @@ export namespace Prisma {
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
+    collectionThrough?: true
     plannedSaleCallDate?: true
     createdAt?: true
     updatedAt?: true
@@ -14556,6 +14594,7 @@ export namespace Prisma {
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
+    collectionThrough?: true
     plannedSaleCallDate?: true
     createdAt?: true
     updatedAt?: true
@@ -14591,6 +14630,7 @@ export namespace Prisma {
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
+    collectionThrough?: true
     plannedSaleCallDate?: true
     createdAt?: true
     updatedAt?: true
@@ -14713,6 +14753,7 @@ export namespace Prisma {
     openingDue: Decimal
     due: Decimal
     plannedCollectionCallDate: Date | null
+    collectionThrough: $Enums.CollectionThrough | null
     plannedSaleCallDate: Date | null
     createdAt: Date
     updatedAt: Date
@@ -14767,6 +14808,7 @@ export namespace Prisma {
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    collectionThrough?: boolean
     plannedSaleCallDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14809,6 +14851,7 @@ export namespace Prisma {
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    collectionThrough?: boolean
     plannedSaleCallDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14845,6 +14888,7 @@ export namespace Prisma {
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    collectionThrough?: boolean
     plannedSaleCallDate?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -14915,6 +14959,10 @@ export namespace Prisma {
        * Next planned collection phone call date (calendar day).
        */
       plannedCollectionCallDate: Date | null
+      /**
+       * How the next collection follow-up will be made.
+       */
+      collectionThrough: $Enums.CollectionThrough | null
       /**
        * Next planned sales call date (calendar day) — separate from collection.
        */
@@ -15349,6 +15397,7 @@ export namespace Prisma {
     readonly openingDue: FieldRef<"Customer", 'Decimal'>
     readonly due: FieldRef<"Customer", 'Decimal'>
     readonly plannedCollectionCallDate: FieldRef<"Customer", 'DateTime'>
+    readonly collectionThrough: FieldRef<"Customer", 'CollectionThrough'>
     readonly plannedSaleCallDate: FieldRef<"Customer", 'DateTime'>
     readonly createdAt: FieldRef<"Customer", 'DateTime'>
     readonly updatedAt: FieldRef<"Customer", 'DateTime'>
@@ -24798,6 +24847,8 @@ export namespace Prisma {
     role: 'role',
     passwordHash: 'passwordHash',
     pageKeys: 'pageKeys',
+    collectionSalesExecs: 'collectionSalesExecs',
+    salesEngineSalesExecs: 'salesEngineSalesExecs',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -24956,6 +25007,7 @@ export namespace Prisma {
     openingDue: 'openingDue',
     due: 'due',
     plannedCollectionCallDate: 'plannedCollectionCallDate',
+    collectionThrough: 'collectionThrough',
     plannedSaleCallDate: 'plannedSaleCallDate',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -25223,6 +25275,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'CollectionThrough'
+   */
+  export type EnumCollectionThroughFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CollectionThrough'>
+    
+
+
+  /**
+   * Reference to a field of type 'CollectionThrough[]'
+   */
+  export type ListEnumCollectionThroughFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CollectionThrough[]'>
+    
+
+
+  /**
    * Reference to a field of type 'OrderType'
    */
   export type EnumOrderTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderType'>
@@ -25388,6 +25454,8 @@ export namespace Prisma {
     role?: StringNullableFilter<"Staff"> | string | null
     passwordHash?: StringNullableFilter<"Staff"> | string | null
     pageKeys?: StringNullableListFilter<"Staff">
+    collectionSalesExecs?: StringNullableListFilter<"Staff">
+    salesEngineSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
@@ -25401,6 +25469,8 @@ export namespace Prisma {
     role?: SortOrderInput | SortOrder
     passwordHash?: SortOrderInput | SortOrder
     pageKeys?: SortOrder
+    collectionSalesExecs?: SortOrder
+    salesEngineSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealByCustomers?: CustomerOrderByRelationAggregateInput
@@ -25417,6 +25487,8 @@ export namespace Prisma {
     role?: StringNullableFilter<"Staff"> | string | null
     passwordHash?: StringNullableFilter<"Staff"> | string | null
     pageKeys?: StringNullableListFilter<"Staff">
+    collectionSalesExecs?: StringNullableListFilter<"Staff">
+    salesEngineSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
@@ -25430,6 +25502,8 @@ export namespace Prisma {
     role?: SortOrderInput | SortOrder
     passwordHash?: SortOrderInput | SortOrder
     pageKeys?: SortOrder
+    collectionSalesExecs?: SortOrder
+    salesEngineSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: StaffCountOrderByAggregateInput
@@ -25446,6 +25520,8 @@ export namespace Prisma {
     role?: StringNullableWithAggregatesFilter<"Staff"> | string | null
     passwordHash?: StringNullableWithAggregatesFilter<"Staff"> | string | null
     pageKeys?: StringNullableListFilter<"Staff">
+    collectionSalesExecs?: StringNullableListFilter<"Staff">
+    salesEngineSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
   }
@@ -26094,6 +26170,7 @@ export namespace Prisma {
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionThrough?: EnumCollectionThroughNullableFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
@@ -26135,6 +26212,7 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
+    collectionThrough?: SortOrderInput | SortOrder
     plannedSaleCallDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26179,6 +26257,7 @@ export namespace Prisma {
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionThrough?: EnumCollectionThroughNullableFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
@@ -26220,6 +26299,7 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
+    collectionThrough?: SortOrderInput | SortOrder
     plannedSaleCallDate?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -26263,6 +26343,7 @@ export namespace Prisma {
     openingDue?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    collectionThrough?: EnumCollectionThroughNullableWithAggregatesFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
@@ -27099,6 +27180,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -27112,6 +27195,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -27125,6 +27210,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -27138,6 +27225,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -27151,6 +27240,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27161,6 +27252,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27171,6 +27264,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27858,6 +27953,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27899,6 +27995,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27938,6 +28035,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27979,6 +28077,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28019,6 +28118,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28053,6 +28153,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28088,6 +28189,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29079,6 +29181,8 @@ export namespace Prisma {
     role?: SortOrder
     passwordHash?: SortOrder
     pageKeys?: SortOrder
+    collectionSalesExecs?: SortOrder
+    salesEngineSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29568,6 +29672,13 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type EnumCollectionThroughNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.CollectionThrough | EnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCollectionThroughNullableFilter<$PrismaModel> | $Enums.CollectionThrough | null
+  }
+
   export type StaffNullableRelationFilter = {
     is?: StaffWhereInput | null
     isNot?: StaffWhereInput | null
@@ -29603,6 +29714,7 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    collectionThrough?: SortOrder
     plannedSaleCallDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29644,6 +29756,7 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    collectionThrough?: SortOrder
     plannedSaleCallDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29679,6 +29792,7 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    collectionThrough?: SortOrder
     plannedSaleCallDate?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -29728,6 +29842,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumCollectionThroughNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CollectionThrough | EnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCollectionThroughNullableWithAggregatesFilter<$PrismaModel> | $Enums.CollectionThrough | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumCollectionThroughNullableFilter<$PrismaModel>
+    _max?: NestedEnumCollectionThroughNullableFilter<$PrismaModel>
   }
 
   export type QualityClassNullableRelationFilter = {
@@ -30499,6 +30623,14 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type StaffCreatecollectionSalesExecsInput = {
+    set: string[]
+  }
+
+  export type StaffCreatesalesEngineSalesExecsInput = {
+    set: string[]
+  }
+
   export type CustomerCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -30550,6 +30682,16 @@ export namespace Prisma {
   }
 
   export type StaffUpdatepageKeysInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type StaffUpdatecollectionSalesExecsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type StaffUpdatesalesEngineSalesExecsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -31192,6 +31334,10 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type NullableEnumCollectionThroughFieldUpdateOperationsInput = {
+    set?: $Enums.CollectionThrough | null
   }
 
   export type StaffUpdateOneWithoutDealByCustomersNestedInput = {
@@ -32085,6 +32231,13 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type NestedEnumCollectionThroughNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.CollectionThrough | EnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCollectionThroughNullableFilter<$PrismaModel> | $Enums.CollectionThrough | null
+  }
+
   export type NestedEnumCustomerCategoryWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.CustomerCategory | EnumCustomerCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.CustomerCategory[] | ListEnumCustomerCategoryFieldRefInput<$PrismaModel>
@@ -32134,6 +32287,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumCollectionThroughNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CollectionThrough | EnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    in?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.CollectionThrough[] | ListEnumCollectionThroughFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumCollectionThroughNullableWithAggregatesFilter<$PrismaModel> | $Enums.CollectionThrough | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumCollectionThroughNullableFilter<$PrismaModel>
+    _max?: NestedEnumCollectionThroughNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumOrderTypeFilter<$PrismaModel = never> = {
@@ -32406,6 +32569,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32445,6 +32609,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32612,6 +32777,7 @@ export namespace Prisma {
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionThrough?: EnumCollectionThroughNullableFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
     createdAt?: DateTimeFilter<"Customer"> | Date | string
     updatedAt?: DateTimeFilter<"Customer"> | Date | string
@@ -33462,6 +33628,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutOrderByInput
@@ -33474,6 +33642,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
@@ -33728,6 +33898,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutOrderByNestedInput
@@ -33740,6 +33912,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
@@ -34107,6 +34281,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -34147,6 +34322,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -34167,6 +34343,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -34179,6 +34357,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -34342,6 +34522,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34382,6 +34563,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34408,6 +34590,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -34420,6 +34604,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -34533,6 +34719,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -34573,6 +34760,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -34743,6 +34931,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34783,6 +34972,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35057,6 +35247,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35097,6 +35288,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35329,6 +35521,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35369,6 +35562,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35407,6 +35601,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35447,6 +35642,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35538,6 +35734,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35578,6 +35775,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35659,6 +35857,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35699,6 +35898,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35790,6 +35990,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35830,6 +36031,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35888,6 +36090,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -35900,6 +36104,8 @@ export namespace Prisma {
     role?: string | null
     passwordHash?: string | null
     pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -35956,6 +36162,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -35968,6 +36176,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -36116,6 +36326,7 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36187,6 +36398,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36226,6 +36438,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36265,6 +36478,7 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

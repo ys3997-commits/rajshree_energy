@@ -1,9 +1,18 @@
 import Link from "next/link";
+import { requirePage } from "@/lib/auth/access";
+import {
+  filterRowsByExecScope,
+  getStaffReportExecScope,
+  SALES_ENGINE_PAGE_KEY,
+} from "@/lib/auth/report-exec-access";
 import { listSalesEngineRows } from "@/lib/actions/salesEngine";
 import { SalesEngineClient } from "./SalesEngineClient";
 
 export default async function SalesEnginePage() {
+  const access = await requirePage(SALES_ENGINE_PAGE_KEY);
   const rows = await listSalesEngineRows();
+  const execScope = getStaffReportExecScope(access, SALES_ENGINE_PAGE_KEY);
+  const filteredRows = filterRowsByExecScope(rows, execScope);
 
   return (
     <div>
@@ -23,7 +32,10 @@ export default async function SalesEnginePage() {
         </div>
       </div>
 
-      <SalesEngineClient initialRows={rows} />
+      <SalesEngineClient
+        initialRows={filteredRows}
+        allowedSaleExecutives={execScope}
+      />
     </div>
   );
 }

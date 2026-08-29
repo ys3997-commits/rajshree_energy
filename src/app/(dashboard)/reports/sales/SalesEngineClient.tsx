@@ -8,6 +8,7 @@ import {
   updatePlannedSaleCall,
   type SalesEngineRow,
 } from "@/lib/actions/salesEngine";
+import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
 import {
   capitalizeName,
   formatAmount,
@@ -127,8 +128,10 @@ function sortIndicator(active: boolean, dir: SortDir): string {
 
 export function SalesEngineClient({
   initialRows,
+  allowedSaleExecutives,
 }: {
   initialRows: SalesEngineRow[];
+  allowedSaleExecutives: ExecScopeFilter;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
@@ -168,10 +171,16 @@ export function SalesEngineClient({
     return (value ?? "").trim().toLocaleLowerCase();
   }
 
-  const saleExecutiveOptions = useMemo(
-    () => distinctTrimmed(rows.map((row) => row.saleExecutive)),
-    [rows],
-  );
+  const saleExecutiveOptions = useMemo(() => {
+    const fromRows = distinctTrimmed(rows.map((row) => row.saleExecutive));
+    if (allowedSaleExecutives === "all") return fromRows;
+    const allowed = new Set(
+      allowedSaleExecutives.map((name) => name.trim().toLowerCase()),
+    );
+    return fromRows.filter((name) => allowed.has(name.toLowerCase()));
+  }, [rows, allowedSaleExecutives]);
+  const showSaleExecutiveFilter =
+    allowedSaleExecutives === "all" || allowedSaleExecutives.length > 1;
   const cityOptions = useMemo(
     () => distinctTrimmed(rows.map((row) => row.city)),
     [rows],
@@ -346,20 +355,22 @@ export function SalesEngineClient({
             <option value="future">Future</option>
           </select>
         </label>
-        <label>
-          Sales executive
-          <select
-            value={saleExecutiveFilter}
-            onChange={(e) => setSaleExecutiveFilter(e.target.value)}
-          >
-            <option value="">All</option>
-            {saleExecutiveOptions.map((name) => (
-              <option key={name} value={name}>
-                {capitalizeName(name) ?? name}
-              </option>
-            ))}
-          </select>
-        </label>
+        {showSaleExecutiveFilter && (
+          <label>
+            Sales executive
+            <select
+              value={saleExecutiveFilter}
+              onChange={(e) => setSaleExecutiveFilter(e.target.value)}
+            >
+              <option value="">All</option>
+              {saleExecutiveOptions.map((name) => (
+                <option key={name} value={name}>
+                  {capitalizeName(name) ?? name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <label>
           City
           <select

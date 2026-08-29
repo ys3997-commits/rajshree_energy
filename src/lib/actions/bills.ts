@@ -28,6 +28,7 @@ import {
   nextApprovalNumber,
   parseApprovalNumber,
 } from "@/lib/domain/approvalNumbers";
+import { capitalizeName } from "@/lib/domain/format";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
