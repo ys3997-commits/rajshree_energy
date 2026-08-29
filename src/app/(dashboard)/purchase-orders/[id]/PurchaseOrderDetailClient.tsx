@@ -269,7 +269,7 @@ export function PurchaseOrderDetailClient({
 
       <h2 className="mb-3 text-base font-semibold">Dispatches</h2>
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>Date</th>
@@ -327,7 +327,7 @@ export function PurchaseOrderDetailClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

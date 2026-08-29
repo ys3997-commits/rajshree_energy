@@ -121,9 +121,9 @@ export function formatDispatchMt(
 }
 
 /**
- * Format a rate/amount for display with Rs prefix (integer, Indian grouping).
+ * Indian-grouped integer amount without currency prefix (reports).
  */
-export function formatRs(
+export function formatAmount(
   value: { toString(): string } | number | string | null | undefined,
 ): string {
   if (value == null || value === "") return "—";
@@ -131,7 +131,17 @@ export function formatRs(
   if (s === "—") return "—";
   const n = Number(s);
   if (!Number.isFinite(n)) return s;
-  return `Rs ${formatIndianNumber(Math.round(n))}`;
+  return formatIndianNumber(Math.round(n));
+}
+
+/**
+ * Format a rate/amount for display with Rs prefix (integer, Indian grouping).
+ */
+export function formatRs(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  const amount = formatAmount(value);
+  return amount === "—" ? "—" : `Rs ${amount}`;
 }
 
 export function formatCustomerCategory(

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  formatAmount,
   formatDateDdMmYyyy,
   formatDispatchMt,
   formatLorryNumber,
@@ -43,15 +44,25 @@ describe("formatIndianAmountTyping", () => {
   });
 });
 
-describe("formatMt / formatRs", () => {
+describe("formatAmount / formatRs", () => {
+  it("formats integers with Indian grouping", () => {
+    expect(formatAmount(100000)).toBe("1,00,000");
+    expect(formatAmount(99.4)).toBe("99");
+  });
+
+  it("formatRs adds prefix", () => {
+    expect(formatRs(100000)).toBe("Rs 1,00,000");
+    expect(formatRs(99.4)).toBe("Rs 99");
+  });
+});
+
+describe("formatMt", () => {
   it("formats weights with two decimals and MT", () => {
     expect(formatMt(38.18)).toBe("38.18 MT");
     expect(formatMt(12.5)).toBe("12.50 MT");
     expect(formatMt(1234.567)).toBe("1234.57 MT");
     expect(formatMt(100000)).toBe("100000.00 MT");
     expect(formatMt(null)).toBe("—");
-    expect(formatRs(100000)).toBe("Rs 1,00,000");
-    expect(formatRs(99.4)).toBe("Rs 99");
   });
 });
 

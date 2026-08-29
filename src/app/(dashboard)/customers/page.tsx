@@ -5,7 +5,6 @@ import {
   listOwnerOptions,
   listSaleExecutiveOptions,
   listSectorOptions,
-  listStateOptions,
 } from "@/lib/actions/option-lists";
 import { CustomersClient } from "./CustomersClient";
 
@@ -29,7 +28,6 @@ export default async function CustomersPage({
     customers,
     allCustomers,
     cities,
-    states,
     sectors,
     saleExecutives,
     dealingCompanies,
@@ -38,7 +36,6 @@ export default async function CustomersPage({
     listCustomersPage({ page, customerId, category }),
     listCustomers(),
     listCityOptions(),
-    listStateOptions(),
     listSectorOptions(),
     listSaleExecutiveOptions(),
     listDealingCompanyOptions(),
@@ -53,8 +50,7 @@ export default async function CustomersPage({
         name: c.name,
         category: c.category,
       }))}
-      cities={cities.map((o) => o.name)}
-      states={states.map((o) => o.name)}
+      cityOptions={cities.map((o) => ({ name: o.name, state: o.state }))}
       sectors={sectors.map((o) => o.name)}
       saleExecutives={saleExecutives.map((o) => o.name)}
       dealingCompanies={dealingCompanies.map((o) => o.name)}

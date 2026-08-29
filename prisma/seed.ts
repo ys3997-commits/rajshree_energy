@@ -53,9 +53,13 @@ async function main() {
   );
 
   await Promise.all(
-    ["Kolkata", "Jamshedpur", "Raipur", "Paradip", "Nagpur"].map((name) =>
-      prisma.cityOption.create({ data: { name } }),
-    ),
+    [
+      { name: "Kolkata", state: "West Bengal" },
+      { name: "Jamshedpur", state: "Jharkhand" },
+      { name: "Raipur", state: "Chhattisgarh" },
+      { name: "Paradip", state: "Odisha" },
+      { name: "Nagpur", state: "Maharashtra" },
+    ].map((row) => prisma.cityOption.create({ data: row })),
   );
 
   await Promise.all(

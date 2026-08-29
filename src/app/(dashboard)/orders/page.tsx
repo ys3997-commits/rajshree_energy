@@ -27,6 +27,7 @@ import {
   formatQualityClass,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
+import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
@@ -48,12 +49,13 @@ export default async function OrdersPage({
   searchParams: SearchParams;
 }) {
   const sp = await searchParams;
+  const statusFilter = resolveOrderListStatusFilter(sp.status);
 
   // Keep concurrency under Prisma/Supabase pool (connection_limit=5).
   const [orders, customers, ports, saleExecutives, qualityClasses] =
     await Promise.all([
       listOrders({
-        status: sp.status || "",
+        status: statusFilter,
         customerId: sp.customerId || "",
         portId: sp.portId || "",
         orderById: sp.orderById || "",
@@ -186,7 +188,7 @@ export default async function OrdersPage({
       <form className="filters" method="get">
         <label>
           Status
-          <select name="status" defaultValue={sp.status ?? ""}>
+          <select name="status" defaultValue={statusFilter}>
             <option value="">All</option>
             <option value="RUNNING">Running</option>
             <option value="COMPLETED">Completed</option>
@@ -254,7 +256,7 @@ export default async function OrdersPage({
       </form>
 
       <div className="table-wrap table-wrap-scroll orders-table-wrap">
-        <table className="data orders-table">
+        <div className="table-h-scroll"><table className="data orders-table">
           <thead>
             <tr>
               <th>PO number</th>
@@ -353,7 +355,7 @@ export default async function OrdersPage({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

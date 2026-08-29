@@ -11,7 +11,7 @@ import {
   formatDispatchMt,
   formatLorryNumber,
   formatQualityClass,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 
 function profitPmtValue(
@@ -29,7 +29,7 @@ function formatProfitPmt(
   weight: DecimalLike | null | undefined,
 ): string {
   const pmt = profitPmtValue(profit, weight);
-  return pmt == null ? "—" : formatRs(pmt);
+  return pmt == null ? "—" : formatAmount(pmt);
 }
 
 function formatProfitPercent(
@@ -85,7 +85,7 @@ export default async function MasterDispatchReportPage({
   const exportColumns = [
     { key: "date", header: "Date" },
     { key: "lorryNumber", header: "Lorry no" },
-    { key: "weight", header: "Weight (MT)", align: "right" as const },
+    { key: "weight", header: "Weight", align: "right" as const },
     { key: "vesselName", header: "Vessel name" },
     { key: "quality", header: "Quality" },
     { key: "gstState", header: "GST state" },
@@ -123,13 +123,13 @@ export default async function MasterDispatchReportPage({
     quality: formatQualityClass(row.qualityClass),
     gstState: row.gstState ?? "—",
     vendor: row.vendorName ?? "—",
-    purchaseBasic: formatRs(row.purchaseBasicRate),
+    purchaseBasic: formatAmount(row.purchaseBasicRate),
     customer: row.customerName ?? "—",
-    saleBasic: formatRs(row.saleBasicRate),
+    saleBasic: formatAmount(row.saleBasicRate),
     transporter: row.transporterName ?? "—",
-    freightPmt: formatRs(row.freight),
-    freightAmount: formatRs(row.freightAmount),
-    profit: formatRs(row.lineProfit),
+    freightPmt: formatAmount(row.freight),
+    freightAmount: formatAmount(row.freightAmount),
+    profit: formatAmount(row.lineProfit),
     profitPmt: formatProfitPmt(row.lineProfit, row.dispatchedQuantity),
     profitPercent: formatProfitPercent(
       row.lineProfit,
@@ -238,7 +238,7 @@ export default async function MasterDispatchReportPage({
       </form>
 
       <div className="table-wrap table-wrap-scroll dispatch-analysis-table-wrap">
-        <table className="data report-table dispatch-analysis-table">
+        <div className="table-h-scroll"><table className="data report-table dispatch-analysis-table">
           <thead>
             <tr className="report-group-row">
               <th colSpan={6}>Dispatch</th>
@@ -249,18 +249,18 @@ export default async function MasterDispatchReportPage({
             </tr>
             <tr>
               <th>Date</th>
-              <th>Lorry no</th>
-              <th className="cell-num">Weight (MT)</th>
-              <th>Vessel name</th>
+              <th>Lorry No</th>
+              <th className="cell-num">Weight</th>
+              <th>Vessel Name</th>
               <th>Quality</th>
-              <th>GST state</th>
+              <th>GST State</th>
               <th>Vendor</th>
-              <th className="cell-num">Basic price</th>
-              <th>Customer name</th>
-              <th className="cell-num">Basic price</th>
-              <th>Transporter name</th>
+              <th className="cell-num">Basic Price</th>
+              <th className="report-customer-col">Customer Name</th>
+              <th className="cell-num">Basic Price</th>
+              <th>Transporter Name</th>
               <th className="cell-num">Freight PMT</th>
-              <th className="cell-num">Freight amount</th>
+              <th className="cell-num">Freight Amount</th>
               <th className="cell-num">Profit</th>
               <th className="cell-num">Profit PMT</th>
               <th className="cell-num">Profit %</th>
@@ -277,7 +277,9 @@ export default async function MasterDispatchReportPage({
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td className="cell-num">{formatDispatchMt(row.dispatchedQuantity)}</td>
+                <td className="cell-num">
+                  {formatDispatchMt(row.dispatchedQuantity)}
+                </td>
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className={row.gstState ? undefined : "cell-center"}>
@@ -286,19 +288,29 @@ export default async function MasterDispatchReportPage({
                 <td className={row.vendorName ? undefined : "cell-center"}>
                   {row.vendorName ?? "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.purchaseBasicRate)}</td>
-                <td className={row.customerName ? undefined : "cell-center"}>
+                <td className="cell-num">
+                  {formatAmount(row.purchaseBasicRate)}
+                </td>
+                <td
+                  className={
+                    row.customerName
+                      ? "report-customer-col"
+                      : "report-customer-col cell-center"
+                  }
+                >
                   {row.customerName ?? "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
+                <td className="cell-num">{formatAmount(row.saleBasicRate)}</td>
                 <td
-                  className={row.transporterName ? undefined : "cell-center"}
+                  className={
+                    row.transporterName ? undefined : "cell-center"
+                  }
                 >
                   {row.transporterName ?? "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.freight)}</td>
-                <td className="cell-num">{formatRs(row.freightAmount)}</td>
-                <td className="cell-num">{formatRs(row.lineProfit)}</td>
+                <td className="cell-num">{formatAmount(row.freight)}</td>
+                <td className="cell-num">{formatAmount(row.freightAmount)}</td>
+                <td className="cell-num">{formatAmount(row.lineProfit)}</td>
                 <td className="cell-num">
                   {formatProfitPmt(row.lineProfit, row.dispatchedQuantity)}
                 </td>
@@ -318,7 +330,7 @@ export default async function MasterDispatchReportPage({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

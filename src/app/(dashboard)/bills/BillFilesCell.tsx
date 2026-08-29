@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Modal } from "@/components/Modal";
 import type { BillFileRow } from "@/lib/actions/bills";
 
@@ -32,11 +32,6 @@ function fileTypeLabel(file: BillFileRow): string {
   if (ext === "JPEG") return "JPG";
   if (ext) return ext;
   return "Image";
-}
-
-function chipLabel(files: BillFileRow[]): string {
-  if (files.length === 1) return fileTypeLabel(files[0]);
-  return `${files.length} files`;
 }
 
 function PdfIcon() {
@@ -94,19 +89,11 @@ function FilePreview({ file }: { file: BillFileRow }) {
 
 export function BillFilesCell({ files }: { files: BillFileRow[] }) {
   const [open, setOpen] = useState(false);
-  const [activeId, setActiveId] = useState(files[0]?.id ?? "");
-  const active = files.find((file) => file.id === activeId) ?? files[0];
-  const kinds = useMemo(
-    () => ({
-      pdf: files.some(isPdf),
-      image: files.some(isImage),
-    }),
-    [files],
-  );
+  const file = files[0];
 
-  if (files.length === 0) return "—";
+  if (!file) return "—";
 
-  const label = chipLabel(files);
+  const label = fileTypeLabel(file);
 
   return (
     <>
@@ -114,65 +101,38 @@ export function BillFilesCell({ files }: { files: BillFileRow[] }) {
         type="button"
         className="bill-files-chip"
         aria-haspopup="dialog"
-        aria-label={`View ${files.length === 1 ? label : `${files.length} files`}`}
-        onClick={() => {
-          setActiveId(files[0].id);
-          setOpen(true);
-        }}
+        aria-label={`View ${label}`}
+        onClick={() => setOpen(true)}
       >
         <span className="bill-files-chip-icons">
-          {kinds.pdf ? <PdfIcon /> : null}
-          {kinds.image ? <ImageIcon /> : null}
+          <FileKindIcon file={file} />
         </span>
         {label}
       </button>
       <Modal
         open={open}
-        title="Documents"
+        title="Document"
         className="modal-panel-preview"
         onClose={() => setOpen(false)}
       >
-        {active ? (
-          <div className="bill-file-preview">
-            {files.length > 1 ? (
-              <ul className="bill-file-preview-tabs">
-                {files.map((file) => (
-                  <li key={file.id}>
-                    <button
-                      type="button"
-                      className={
-                        file.id === active.id
-                          ? "bill-file-preview-tab is-active"
-                          : "bill-file-preview-tab"
-                      }
-                      title={file.fileName}
-                      onClick={() => setActiveId(file.id)}
-                    >
-                      <FileKindIcon file={file} />
-                      <span>{file.fileName}</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-            <div className="bill-file-preview-toolbar">
-              <span className="bill-file-preview-name" title={active.fileName}>
-                {active.fileName}
-              </span>
-              <a
-                href={fileHref(active.id)}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-link"
-              >
-                Open
-              </a>
-            </div>
-            <div className="bill-file-preview-stage">
-              <FilePreview key={active.id} file={active} />
-            </div>
+        <div className="bill-file-preview">
+          <div className="bill-file-preview-toolbar">
+            <span className="bill-file-preview-name" title={file.fileName}>
+              {file.fileName}
+            </span>
+            <a
+              href={fileHref(file.id)}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-link"
+            >
+              Open
+            </a>
           </div>
-        ) : null}
+          <div className="bill-file-preview-stage">
+            <FilePreview file={file} />
+          </div>
+        </div>
       </Modal>
     </>
   );

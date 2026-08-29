@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { CustomerCategory } from "@/generated/prisma";
 import { AGEING_BUCKETS } from "@/lib/domain/ageingBuckets";
-import { capitalizeName, formatRs } from "@/lib/domain/format";
+import { capitalizeName, formatAmount } from "@/lib/domain/format";
 
 type AgeingBucketKey = (typeof AGEING_BUCKETS)[number]["key"];
 type AgeingReportRow = {
@@ -38,7 +38,7 @@ function sortIndicator(active: boolean, dir: SortDir): string {
 }
 
 function formatBucket(value: string): string {
-  return numericValue(value) === 0 ? "—" : formatRs(value);
+  return numericValue(value) === 0 ? "—" : formatAmount(value);
 }
 
 function emptyTotals(): Record<AgeingBucketKey, number> {
@@ -144,7 +144,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
     () =>
       filtered.map((row) => ({
         customer: row.name,
-        totalDue: formatRs(row.totalDue),
+        totalDue: formatAmount(row.totalDue),
         ...Object.fromEntries(
           AGEING_BUCKETS.map((bucket) => [
             bucket.key,
@@ -176,7 +176,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
           <div className="detail-stat">
             <span className="detail-stat-label">Total due</span>
             <span className="detail-stat-value">
-              {formatRs(totals.totalDue.toFixed(2))}
+              {formatAmount(totals.totalDue.toFixed(2))}
             </span>
           </div>
         </div>
@@ -254,6 +254,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
         </p>
       ) : (
         <div className="table-wrap ageing-table-wrap">
+          <div className="table-h-scroll">
           <table className="data ageing-table">
             <thead>
               <tr className="ageing-amount-row">
@@ -264,7 +265,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
                   &nbsp;
                 </th>
                 <th className="cell-num ageing-total-col">
-                  {formatRs(totals.totalDue.toFixed(2))}
+                  {formatAmount(totals.totalDue.toFixed(2))}
                 </th>
                 {AGEING_BUCKETS.map((bucket) => (
                   <th key={bucket.key} className="cell-num">
@@ -319,7 +320,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
                     </Link>
                   </td>
                   <td className="cell-num ageing-total-col">
-                    {formatRs(row.totalDue)}
+                    {formatAmount(row.totalDue)}
                   </td>
                   {AGEING_BUCKETS.map((bucket) => (
                     <td key={bucket.key} className="cell-num">
@@ -333,7 +334,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
               <tr>
                 <td className="ageing-customer-col">Total</td>
                 <td className="cell-num ageing-total-col">
-                  {formatRs(totals.totalDue.toFixed(2))}
+                  {formatAmount(totals.totalDue.toFixed(2))}
                 </td>
                 {AGEING_BUCKETS.map((bucket) => (
                   <td key={bucket.key} className="cell-num">
@@ -342,7 +343,7 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
                 ))}
               </tr>
             </tfoot>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

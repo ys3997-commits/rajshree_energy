@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { TransportDueRow } from "@/lib/actions/transportDue";
-import { capitalizeName, formatDateDdMmYyyy, formatRs } from "@/lib/domain/format";
+import { capitalizeName, formatDateDdMmYyyy, formatAmount } from "@/lib/domain/format";
 
 type SortKey = "due" | "transporterDue";
 type SortDir = "asc" | "desc";
@@ -103,11 +103,11 @@ export function TransportDueClient({
     contact: row.ownerContactNumber1 ?? "—",
     city: row.city ?? "—",
     state: row.state ?? "—",
-    due: formatRs(row.due),
-    transporterDue: formatRs(row.transporterDue),
+    due: formatAmount(row.due),
+    transporterDue: formatAmount(row.transporterDue),
     lastFundPaidDate: formatDateDdMmYyyy(row.lastFundPaidDate),
     lastFundPaidAmount: row.lastFundPaidAmount
-      ? formatRs(row.lastFundPaidAmount)
+      ? formatAmount(row.lastFundPaidAmount)
       : "—",
   }));
 
@@ -165,7 +165,7 @@ export function TransportDueClient({
       <div className="detail-stat-row transport-due-totals">
         <div className="detail-stat">
           <span className="detail-stat-label">Total Due</span>
-          <span className="detail-stat-value">{formatRs(String(totals.due))}</span>
+          <span className="detail-stat-value">{formatAmount(String(totals.due))}</span>
         </div>
         <div className="detail-stat">
           <span className="detail-stat-label">
@@ -174,16 +174,16 @@ export function TransportDueClient({
             after TDS
           </span>
           <span className="detail-stat-value">
-            {formatRs(String(totals.transporterDue))}
+            {formatAmount(String(totals.transporterDue))}
           </span>
         </div>
       </div>
 
       <div className="table-wrap">
-        <table className="data payments-table collection-table vendor-collection-table">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
-              <th className="collection-customer-col">Transporter</th>
+              <th>Transporter</th>
               <th>Owner</th>
               <th>Contact</th>
               <th>City</th>
@@ -225,7 +225,7 @@ export function TransportDueClient({
           <tbody>
             {filteredRows.map((row) => (
               <tr key={row.id}>
-                <td className="collection-customer-col">
+                <td>
                   <Link
                     href={`/transporters/${row.id}?from=due`}
                     className="btn-link"
@@ -241,14 +241,14 @@ export function TransportDueClient({
                 <td>{row.ownerContactNumber1 ?? "—"}</td>
                 <td>{row.city ?? "—"}</td>
                 <td>{row.state ?? "—"}</td>
-                <td className="cell-num">{formatRs(row.due)}</td>
-                <td className="cell-num">{formatRs(row.transporterDue)}</td>
+                <td className="cell-num">{formatAmount(row.due)}</td>
+                <td className="cell-num">{formatAmount(row.transporterDue)}</td>
                 <td className="cell-center">
                   {formatDateDdMmYyyy(row.lastFundPaidDate)}
                 </td>
                 <td className="cell-num">
                   {row.lastFundPaidAmount
-                    ? formatRs(row.lastFundPaidAmount)
+                    ? formatAmount(row.lastFundPaidAmount)
                     : "—"}
                 </td>
               </tr>
@@ -266,17 +266,17 @@ export function TransportDueClient({
           {filteredRows.length > 0 && (
             <tfoot>
               <tr>
-                <td className="collection-customer-col">Total Due</td>
+                <td>Total Due</td>
                 <td colSpan={4} />
-                <td className="cell-num">{formatRs(String(totals.due))}</td>
+                <td className="cell-num">{formatAmount(String(totals.due))}</td>
                 <td className="cell-num">
-                  {formatRs(String(totals.transporterDue))}
+                  {formatAmount(String(totals.transporterDue))}
                 </td>
                 <td colSpan={2} />
               </tr>
             </tfoot>
           )}
-        </table>
+        </table></div>
       </div>
     </>
   );

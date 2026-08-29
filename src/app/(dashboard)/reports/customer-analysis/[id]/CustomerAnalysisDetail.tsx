@@ -16,7 +16,7 @@ import {
   formatDispatchMt,
   formatMt,
   formatPurchaseOrderStatus,
-  formatRs,
+  formatAmount,
   formatSaleOrderMt,
   formatSaleOrderStatus,
 } from "@/lib/domain/format";
@@ -149,8 +149,8 @@ function SideBlock({
           label="Dispatched"
           value={formatVolume(metrics.dispatchedVolume)}
         />
-        <Kpi label="Total profit" value={formatRs(metrics.totalProfit)} />
-        <Kpi label="Avg profit / MT" value={formatRs(metrics.avgProfitPerMt)} />
+        <Kpi label="Total profit" value={formatAmount(metrics.totalProfit)} />
+        <Kpi label="Avg profit / MT" value={formatAmount(metrics.avgProfitPerMt)} />
         <Kpi label="Margin" value={formatMargin(metrics.marginPercent)} />
         <Kpi
           label="Last dispatch"
@@ -173,23 +173,25 @@ function OrdersTable({
   if (rows.length === 0) {
     return (
       <div className="table-wrap">
-        <p className="empty-state">
+        <div className="table-h-scroll"><p className="empty-state">
           No {kind === "sale" ? "sale" : "purchase"} orders for this {partyNoun}.
-        </p>
+        </p></div>
       </div>
     );
   }
 
   return (
     <div className="table-wrap">
-      <table className="data">
+      <div className="table-h-scroll"><table className="data">
         <thead>
           <tr>
-            <th>{kind === "sale" ? "Sale order" : "Purchase order"}</th>
+            <th>
+              {kind === "sale" ? "Sale order" : "Purchase order"}
+            </th>
             <th>Status</th>
-            <th className="num">Quantity</th>
-            <th className="num">Dispatched</th>
-            <th className="num">Balance</th>
+            <th className="cell-num">Quantity</th>
+            <th className="cell-num">Dispatched</th>
+            <th className="cell-num">Balance</th>
           </tr>
         </thead>
         <tbody>
@@ -211,17 +213,17 @@ function OrdersTable({
                   ? formatSaleOrderStatus(o.status)
                   : formatPurchaseOrderStatus(o.status)}
               </td>
-              <td className="num">
+              <td className="cell-num">
                 {kind === "sale"
                   ? formatSaleOrderMt(o.quantity)
                   : formatMt(o.quantity)}
               </td>
-              <td className="num">
+              <td className="cell-num">
                 {kind === "sale"
                   ? formatSaleOrderMt(o.dispatchedOrder)
                   : formatMt(o.dispatchedOrder)}
               </td>
-              <td className="num">
+              <td className="cell-num">
                 {kind === "sale"
                   ? formatSaleOrderMt(o.balanceOrder)
                   : formatMt(o.balanceOrder)}
@@ -229,7 +231,7 @@ function OrdersTable({
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }
@@ -276,8 +278,8 @@ export function CustomerAnalysisDetail({
         orders: String(saleSide.orderCount),
         balance: formatBalance(saleSide.balanceOrder),
         dispatched: formatVolume(saleSide.dispatchedVolume),
-        totalProfit: formatRs(saleSide.totalProfit),
-        avgProfit: formatRs(saleSide.avgProfitPerMt),
+        totalProfit: formatAmount(saleSide.totalProfit),
+        avgProfit: formatAmount(saleSide.avgProfitPerMt),
         margin: formatMargin(saleSide.marginPercent),
         lastDispatch: formatDate(saleSide.lastDispatchDate),
       },
@@ -286,8 +288,8 @@ export function CustomerAnalysisDetail({
         orders: String(purchaseSide.orderCount),
         balance: formatBalance(purchaseSide.balanceOrder),
         dispatched: formatVolume(purchaseSide.dispatchedVolume),
-        totalProfit: formatRs(purchaseSide.totalProfit),
-        avgProfit: formatRs(purchaseSide.avgProfitPerMt),
+        totalProfit: formatAmount(purchaseSide.totalProfit),
+        avgProfit: formatAmount(purchaseSide.avgProfitPerMt),
         margin: formatMargin(purchaseSide.marginPercent),
         lastDispatch: formatDate(purchaseSide.lastDispatchDate),
       },
@@ -345,7 +347,7 @@ export function CustomerAnalysisDetail({
         { key: "vessel", header: "Vessel" },
         { key: "salePo", header: "Sale order" },
         { key: "purchasePo", header: "Purchase order" },
-        { key: "qty", header: "Qty (MT)", align: "right" as const },
+        { key: "qty", header: "Qty", align: "right" as const },
         { key: "profit", header: "Profit", align: "right" as const },
       ],
       rows: dispatches.map((d) => ({
@@ -355,7 +357,7 @@ export function CustomerAnalysisDetail({
         salePo: d.salePoNumber,
         purchasePo: d.purchasePoNumber,
         qty: formatDispatchMt(d.dispatchedQuantity),
-        profit: formatRs(d.lineProfit),
+        profit: formatAmount(d.lineProfit),
       })),
       title: `${displayName} — dispatches`,
     }),
@@ -405,7 +407,7 @@ export function CustomerAnalysisDetail({
         <div className="detail-stat-row">
           <div className="detail-stat">
             <span className="detail-stat-label">Due</span>
-            <span className="detail-stat-value">{formatRs(customer.due)}</span>
+            <span className="detail-stat-value">{formatAmount(customer.due)}</span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Sale balance</span>
@@ -424,7 +426,7 @@ export function CustomerAnalysisDetail({
               {variant === "vendor" ? "Purchase avg / MT" : "Sale avg / MT"}
             </span>
             <span className="detail-stat-value">
-              {formatRs(
+              {formatAmount(
                 variant === "vendor"
                   ? purchaseSide.avgProfitPerMt
                   : saleSide.avgProfitPerMt,
@@ -565,11 +567,11 @@ export function CustomerAnalysisDetail({
           <h2 className="analysis-section-title">Dispatches in range</h2>
           {dispatches.length === 0 ? (
             <div className="table-wrap">
-              <p className="empty-state">No dispatches in this date range.</p>
+              <div className="table-h-scroll"><p className="empty-state">No dispatches in this date range.</p></div>
             </div>
           ) : (
             <div className="table-wrap table-wrap-scroll">
-              <table className="data">
+              <div className="table-h-scroll"><table className="data">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -577,15 +579,19 @@ export function CustomerAnalysisDetail({
                     <th>Vessel</th>
                     <th>Sale order</th>
                     <th>Purchase order</th>
-                    <th className="num">Qty (MT)</th>
-                    <th className="num">Profit</th>
+                    <th className="cell-num">Qty</th>
+                    <th className="cell-num">Profit</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dispatches.map((d) => (
                     <tr key={`${d.side}-${d.id}`}>
-                      <td className="cell-date">{formatDate(d.dispatchDate)}</td>
-                      <td>{d.side === "sale" ? "Sale" : "Purchase"}</td>
+                      <td className="cell-date">
+                        {formatDate(d.dispatchDate)}
+                      </td>
+                      <td>
+                        {d.side === "sale" ? "Sale" : "Purchase"}
+                      </td>
                       <td>{d.vesselName}</td>
                       <td>
                         {d.orderId ? (
@@ -605,14 +611,14 @@ export function CustomerAnalysisDetail({
                           d.purchasePoNumber
                         )}
                       </td>
-                      <td className="num">
+                      <td className="cell-num">
                         {formatDispatchMt(d.dispatchedQuantity)}
                       </td>
-                      <td className="num">{formatRs(d.lineProfit)}</td>
+                      <td className="cell-num">{formatAmount(d.lineProfit)}</td>
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </div>
           )}
         </section>

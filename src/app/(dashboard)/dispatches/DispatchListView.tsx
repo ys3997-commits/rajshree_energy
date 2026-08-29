@@ -154,7 +154,7 @@ export function DispatchListView({
       </form>
 
       <div className="table-wrap table-wrap-scroll dispatches-table-wrap">
-        <table className="data report-table report-table-dispatches">
+        <div className="table-h-scroll"><table className="data report-table report-table-dispatches">
           <thead>
             <tr className="report-group-row">
               <th colSpan={7}>Dispatch</th>
@@ -358,7 +358,7 @@ export function DispatchListView({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </>
   );

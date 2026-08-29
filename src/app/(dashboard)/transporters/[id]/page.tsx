@@ -172,13 +172,13 @@ export default async function TransporterDetailPage({
 
       {months.length === 0 ? (
         <div className="table-wrap">
-          <p className="empty-state">
+          <div className="table-h-scroll"><p className="empty-state">
             No dispatches for this transporter yet.
-          </p>
+          </p></div>
         </div>
       ) : (
         <div className="table-wrap">
-          <table className="data transporter-dispatch-table">
+          <div className="table-h-scroll"><table className="data transporter-dispatch-table">
             <thead>
               <tr>
                 <th>Date</th>
@@ -287,7 +287,7 @@ export default async function TransporterDetailPage({
                 </Fragment>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

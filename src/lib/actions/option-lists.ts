@@ -1,6 +1,7 @@
 "use server";
 
 import { capitalizeName } from "@/lib/domain/format";
+import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -49,22 +50,37 @@ export async function deleteSaleExecutiveOption(id: string) {
   revalidateOptionPaths();
 }
 
+function trimState(state: string, label = "State") {
+  const trimmed = state.trim();
+  if (!trimmed) throw new Error(`${label} is required`);
+  if (!INDIAN_STATES_AND_UTS.includes(trimmed as (typeof INDIAN_STATES_AND_UTS)[number])) {
+    throw new Error("Select a valid Indian state or union territory");
+  }
+  return trimmed;
+}
+
 export async function listCityOptions() {
   return prisma.cityOption.findMany({ orderBy: { name: "asc" } });
 }
 
-export async function createCityOption(name: string) {
+export async function createCityOption(name: string, state: string) {
   const row = await prisma.cityOption.create({
-    data: { name: trimName(name, "Name") },
+    data: {
+      name: trimName(name, "Name"),
+      state: trimState(state),
+    },
   });
   revalidateOptionPaths();
   return { id: row.id };
 }
 
-export async function updateCityOption(id: string, name: string) {
+export async function updateCityOption(id: string, name: string, state: string) {
   const row = await prisma.cityOption.update({
     where: { id },
-    data: { name: trimName(name, "Name") },
+    data: {
+      name: trimName(name, "Name"),
+      state: trimState(state),
+    },
   });
   revalidateOptionPaths();
   return { id: row.id };

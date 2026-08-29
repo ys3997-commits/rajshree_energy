@@ -10,7 +10,7 @@ import {
   formatDispatchMt,
   formatLorryNumber,
   formatQualityClass,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 import {
   parsePurchaseOrderSequence,
@@ -121,17 +121,17 @@ export default async function MasterDispatchReportPage({
     diff: formatDispatchMt(row.diffInQuantity),
     purchasePo: displayOrderDigits(row.purchasePoNumber, "purchase"),
     vendor: row.vendorName ?? "—",
-    purchaseBasic: formatRs(row.purchaseBasicRate),
-    purchaseTotal: formatRs(row.purchaseTotalRate),
+    purchaseBasic: formatAmount(row.purchaseBasicRate),
+    purchaseTotal: formatAmount(row.purchaseTotalRate),
     purchaseInvoice: row.purchaseInvoiceNumber ?? "—",
     salePo: displayOrderDigits(row.salePoNumber, "sale"),
     customer: row.customerName ?? "—",
-    saleBasic: formatRs(row.saleBasicRate),
-    saleTotal: formatRs(row.saleTotalRate),
+    saleBasic: formatAmount(row.saleBasicRate),
+    saleTotal: formatAmount(row.saleTotalRate),
     saleInvoice: row.saleInvoiceNumber ?? "—",
     transporter: row.transporterName ?? "—",
-    freightPmt: formatRs(row.freight),
-    freightAmount: formatRs(row.freightAmount),
+    freightPmt: formatAmount(row.freight),
+    freightAmount: formatAmount(row.freightAmount),
   }));
 
   return (
@@ -232,7 +232,7 @@ export default async function MasterDispatchReportPage({
       </form>
 
       <div className="table-wrap table-wrap-scroll dispatch-register-table-wrap">
-        <table className="data report-table dispatch-register-table">
+        <div className="table-h-scroll"><table className="data report-table dispatch-register-table">
           <thead>
             <tr className="report-group-row">
               <th colSpan={8}>Dispatch</th>
@@ -242,26 +242,26 @@ export default async function MasterDispatchReportPage({
             </tr>
             <tr>
               <th>Date</th>
-              <th>Lorry no</th>
+              <th>Lorry No</th>
               <th className="cell-num">Weight</th>
-              <th>Vessel name</th>
+              <th>Vessel Name</th>
               <th>Quality</th>
-              <th>GST state</th>
+              <th>GST State</th>
               <th className="cell-num">Received</th>
               <th className="cell-num">Diff</th>
-              <th>PO no</th>
+              <th>PO No</th>
               <th>Vendor</th>
-              <th className="cell-num">Basic price</th>
-              <th className="cell-num">Total price</th>
-              <th>Purchase invoice</th>
-              <th>SO no</th>
-              <th>Customer name</th>
-              <th className="cell-num">Basic price</th>
-              <th className="cell-num">Total price</th>
-              <th>Sale invoice</th>
-              <th>Transporter name</th>
+              <th className="cell-num">Basic Price</th>
+              <th className="cell-num">Total Price</th>
+              <th>Purchase Invoice</th>
+              <th>SO No</th>
+              <th className="report-customer-col">Customer Name</th>
+              <th className="cell-num">Basic Price</th>
+              <th className="cell-num">Total Price</th>
+              <th>Sale Invoice</th>
+              <th>Transporter Name</th>
               <th className="cell-num">Freight PMT</th>
-              <th className="cell-num">Freight amount</th>
+              <th className="cell-num">Freight Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -275,7 +275,9 @@ export default async function MasterDispatchReportPage({
                 <td className={row.lorryNumber ? undefined : "cell-center"}>
                   {formatLorryNumber(row.lorryNumber) ?? "—"}
                 </td>
-                <td className="cell-num">{formatDispatchMt(row.dispatchedQuantity)}</td>
+                <td className="cell-num">
+                  {formatDispatchMt(row.dispatchedQuantity)}
+                </td>
                 <td>{row.vesselName}</td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className={row.gstState ? undefined : "cell-center"}>
@@ -310,8 +312,12 @@ export default async function MasterDispatchReportPage({
                 <td className={row.vendorName ? undefined : "cell-center"}>
                   {row.vendorName ?? "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.purchaseBasicRate)}</td>
-                <td className="cell-num">{formatRs(row.purchaseTotalRate)}</td>
+                <td className="cell-num">
+                  {formatAmount(row.purchaseBasicRate)}
+                </td>
+                <td className="cell-num">
+                  {formatAmount(row.purchaseTotalRate)}
+                </td>
                 <td
                   className={
                     row.purchaseInvoiceNumber ? undefined : "cell-center"
@@ -331,23 +337,33 @@ export default async function MasterDispatchReportPage({
                     displayOrderDigits(row.salePoNumber, "sale")
                   )}
                 </td>
-                <td className={row.customerName ? undefined : "cell-center"}>
+                <td
+                  className={
+                    row.customerName
+                      ? "report-customer-col"
+                      : "report-customer-col cell-center"
+                  }
+                >
                   {row.customerName ?? "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
-                <td className="cell-num">{formatRs(row.saleTotalRate)}</td>
+                <td className="cell-num">{formatAmount(row.saleBasicRate)}</td>
+                <td className="cell-num">{formatAmount(row.saleTotalRate)}</td>
                 <td
-                  className={row.saleInvoiceNumber ? undefined : "cell-center"}
+                  className={
+                    row.saleInvoiceNumber ? undefined : "cell-center"
+                  }
                 >
                   {row.saleInvoiceNumber ?? "—"}
                 </td>
                 <td
-                  className={row.transporterName ? undefined : "cell-center"}
+                  className={
+                    row.transporterName ? undefined : "cell-center"
+                  }
                 >
                   {row.transporterName ?? "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.freight)}</td>
-                <td className="cell-num">{formatRs(row.freightAmount)}</td>
+                <td className="cell-num">{formatAmount(row.freight)}</td>
+                <td className="cell-num">{formatAmount(row.freightAmount)}</td>
               </tr>
             ))}
             {rows.length === 0 && (
@@ -356,7 +372,7 @@ export default async function MasterDispatchReportPage({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

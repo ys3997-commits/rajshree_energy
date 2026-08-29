@@ -36,6 +36,16 @@ type CustomerOpt = {
   category: CustomerCategory;
 };
 
+type CityOpt = {
+  name: string;
+  state: string;
+};
+
+function stateForCity(cityOptions: CityOpt[], city: string): string {
+  if (!city) return "";
+  return cityOptions.find((c) => c.name === city)?.state ?? "";
+}
+
 type FormState = {
   name: string;
   category: CustomerCategory | "";
@@ -172,8 +182,7 @@ function formatContact(name: string | null, contact: string | null): string {
 export function CustomersClient({
   initial,
   customerOptions,
-  cities,
-  states,
+  cityOptions,
   sectors,
   saleExecutives,
   dealingCompanies,
@@ -181,8 +190,7 @@ export function CustomersClient({
 }: {
   initial: CustomerListResult;
   customerOptions: CustomerOpt[];
-  cities: string[];
-  states: string[];
+  cityOptions: CityOpt[];
   sectors: string[];
   saleExecutives: string[];
   dealingCompanies: string[];
@@ -244,6 +252,14 @@ export function CustomersClient({
     COLLECTION_OFFICER,
     ...saleExecutives.filter((name) => name !== COLLECTION_OFFICER),
   ];
+  const cityNames = cityOptions.map((c) => c.name);
+
+  function onCityChange(
+    city: string,
+    apply: (patch: Partial<FormState>) => void,
+  ) {
+    apply({ city, state: stateForCity(cityOptions, city) });
+  }
 
   function applyFilters(nextCustomerId: string, nextCategory: string) {
     router.push(customersHref(1, nextCustomerId, nextCategory));
@@ -595,15 +611,16 @@ export function CustomersClient({
         <label>City</label>
         <OptionSelect
           value={addForm.city}
-          onChange={(city) => patchAdd({ city })}
-          options={cities}
+          onChange={(city) => onCityChange(city, patchAdd)}
+          options={cityNames}
         />
 
         <label>State</label>
-        <OptionSelect
+        <input
+          readOnly
+          className="field-input"
           value={addForm.state}
-          onChange={(state) => patchAdd({ state })}
-          options={states}
+          placeholder={addForm.city ? "—" : "Select city first"}
         />
 
         <label>Credit period</label>
@@ -708,19 +725,21 @@ export function CustomersClient({
       </div>
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data customers-table">
           <thead>
             <tr>
-              <th>Company</th>
-              <th>Category</th>
+              <th className="customer-col-company">Company</th>
+              <th className="customer-col-category">Category</th>
               <th>City</th>
               <th>Owner</th>
               <th>Purchaser</th>
               <th>Payment</th>
-              <th className="num">Credit period</th>
-              <th className="num">Opening due</th>
-              <th>Sector</th>
-              <th>Sales Executive</th>
+              <th>Accountant</th>
+              <th className="num customer-col-credit">Credit period</th>
+              <th className="num customer-col-opening">Opening due</th>
+              <th className="customer-col-sector">Sector</th>
+              <th className="customer-col-sales-exec">Sales Executive</th>
+              <th>Approach for funds</th>
               <th>Dealing company</th>
               <th />
             </tr>
@@ -741,7 +760,7 @@ export function CustomersClient({
                   >
                     {isEditing ? (
                       <>
-                        <td>
+                        <td className="customer-col-company">
                           <div className="customer-inline-stack">
                             <input
                               form="customer-edit-form"
@@ -762,11 +781,10 @@ export function CustomersClient({
                             />
                           </div>
                         </td>
-                        <td className="customer-edit-category-cell">
+                        <td className="customer-col-category">
                           <select
                             form="customer-edit-form"
                             required
-                            className="customer-edit-category-select"
                             aria-label="Category"
                             value={editForm.category}
                             onChange={(e) =>
@@ -791,15 +809,16 @@ export function CustomersClient({
                           <div className="customer-inline-stack">
                             <OptionSelect
                               value={editForm.city}
-                              onChange={(city) => patchEdit({ city })}
-                              options={cities}
+                              onChange={(city) => onCityChange(city, patchEdit)}
+                              options={cityNames}
                               emptyLabel="City"
                             />
-                            <OptionSelect
+                            <input
+                              readOnly
+                              className="field-input"
+                              aria-label="State"
                               value={editForm.state}
-                              onChange={(state) => patchEdit({ state })}
-                              options={states}
-                              emptyLabel="State"
+                              placeholder={editForm.city ? "—" : "Select city"}
                             />
                           </div>
                         </td>
@@ -915,7 +934,40 @@ export function CustomersClient({
                             />
                           </div>
                         </td>
-                        <td className="num customer-edit-amount-cell">
+                        <td>
+                          <div className="customer-inline-stack">
+                            <input
+                              className="field-input"
+                              placeholder="Name"
+                              aria-label="Accountant name"
+                              value={editForm.accountantName}
+                              onChange={(e) =>
+                                setEditNameField(
+                                  "accountantName",
+                                  e.target.value,
+                                )
+                              }
+                              onBlur={() =>
+                                blurEditNameField("accountantName")
+                              }
+                            />
+                            <input
+                              className="field-input"
+                              placeholder="Phone"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              aria-label="Accountant phone"
+                              value={editForm.accountantContact}
+                              onChange={(e) =>
+                                setEditPhoneField(
+                                  "accountantContact",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                          </div>
+                        </td>
+                        <td className="num customer-col-credit">
                           <div className="field-with-unit">
                             <input
                               form="customer-edit-form"
@@ -932,7 +984,7 @@ export function CustomersClient({
                             <span className="field-unit">days</span>
                           </div>
                         </td>
-                        <td className="num customer-edit-amount-cell">
+                        <td className="num customer-col-opening">
                           <div className="field-with-unit">
                             <input
                               form="customer-edit-form"
@@ -948,20 +1000,29 @@ export function CustomersClient({
                             <span className="field-unit">Rs</span>
                           </div>
                         </td>
-                        <td>
+                        <td className="customer-col-sector">
                           <OptionSelect
                             value={editForm.sector}
                             onChange={(sector) => patchEdit({ sector })}
                             options={sectors}
                           />
                         </td>
-                        <td>
+                        <td className="customer-col-sales-exec">
                           <OptionSelect
                             value={editForm.saleExecutive}
                             onChange={(saleExecutive) =>
                               patchEdit({ saleExecutive })
                             }
                             options={saleExecutives}
+                          />
+                        </td>
+                        <td>
+                          <OptionSelect
+                            value={editForm.approachForFunds}
+                            onChange={(approachForFunds) =>
+                              patchEdit({ approachForFunds })
+                            }
+                            options={approachOptions}
                           />
                         </td>
                         <td>
@@ -994,7 +1055,7 @@ export function CustomersClient({
                       </>
                     ) : (
                       <>
-                        <td>
+                        <td className="customer-col-company">
                           {capitalizeName(row.name) ?? row.name}
                           {!row.active && (
                             <span className="customer-inactive-label">
@@ -1002,7 +1063,7 @@ export function CustomersClient({
                             </span>
                           )}
                         </td>
-                        <td>{formatCustomerCategory(row.category)}</td>
+                        <td className="customer-col-category">{formatCustomerCategory(row.category)}</td>
                         <td>
                           {[row.city, row.state].filter(Boolean).join(", ") ||
                             "—"}
@@ -1022,12 +1083,21 @@ export function CustomersClient({
                             row.paymentInChargeContact,
                           )}
                         </td>
-                        <td className="num">
+                        <td>
+                          {formatContact(
+                            row.accountantName,
+                            row.accountantContact,
+                          )}
+                        </td>
+                        <td className="num customer-col-credit">
                           {formatCreditPeriod(row.creditDays)}
                         </td>
-                        <td className="num">{formatRs(row.openingDue)}</td>
-                        <td>{row.sector ?? "—"}</td>
-                        <td>{row.saleExecutive ?? "—"}</td>
+                        <td className="num customer-col-opening">
+                          {formatRs(row.openingDue)}
+                        </td>
+                        <td className="customer-col-sector">{row.sector ?? "—"}</td>
+                        <td className="customer-col-sales-exec">{row.saleExecutive ?? "—"}</td>
+                        <td>{row.approachForFunds ?? "—"}</td>
                         <td>{row.dealingCompany ?? "—"}</td>
                         <td className="space-x-2 whitespace-nowrap">
                           <Link
@@ -1058,39 +1128,8 @@ export function CustomersClient({
                   </tr>
                   {isEditing && (
                     <tr className="payment-editing-row customer-edit-extra-row">
-                      <td colSpan={12}>
+                      <td colSpan={14}>
                         <div className="customer-edit-extra form-grid form-grid-wide">
-                          <label>Accountant</label>
-                          <div className="role-fields">
-                            <input
-                              className="field-input"
-                              placeholder="Name"
-                              value={editForm.accountantName}
-                              onChange={(e) =>
-                                setEditNameField(
-                                  "accountantName",
-                                  e.target.value,
-                                )
-                              }
-                              onBlur={() =>
-                                blurEditNameField("accountantName")
-                              }
-                            />
-                            <input
-                              className="field-input"
-                              placeholder="Phone"
-                              inputMode="numeric"
-                              pattern="[0-9]*"
-                              value={editForm.accountantContact}
-                              onChange={(e) =>
-                                setEditPhoneField(
-                                  "accountantContact",
-                                  e.target.value,
-                                )
-                              }
-                            />
-                          </div>
-
                           <label
                             className={
                               editFactoryEditable
@@ -1159,14 +1198,6 @@ export function CustomersClient({
                             }
                           />
 
-                          <label>Approach for funds</label>
-                          <OptionSelect
-                            value={editForm.approachForFunds}
-                            onChange={(approachForFunds) =>
-                              patchEdit({ approachForFunds })
-                            }
-                            options={approachOptions}
-                          />
                         </div>
                       </td>
                     </tr>
@@ -1177,7 +1208,7 @@ export function CustomersClient({
 
             {rows.length === 0 && (
               <tr>
-                <td colSpan={12}>
+                <td colSpan={14}>
                   {customerId || category
                     ? "No customers match these filters."
                     : "No customers yet."}
@@ -1185,7 +1216,7 @@ export function CustomersClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {totalPages > 1 && (

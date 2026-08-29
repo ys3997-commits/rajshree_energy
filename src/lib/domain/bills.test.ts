@@ -10,7 +10,13 @@ import {
   validateBillFile,
   validateBillFiles,
   validateBillRemark,
+  validateOwnerReviewRemark,
+  countRemarkWords,
+  remarkFirstLine,
+  remarkIsExpandable,
+  MAX_BILL_REMARK_WORDS,
   validateApproverName,
+  validateAccountVoucherNo,
   validateInvoiceAmount,
   validateInvoiceIssuedBy,
 } from "./bills";
@@ -62,6 +68,23 @@ describe("bill remarks and files", () => {
     expect(validateBillRemark(" Need payment ", "Remark")).toBe("Need payment");
   });
 
+  it("limits remarks to twenty-five words", () => {
+    expect(countRemarkWords("one two three")).toBe(3);
+    expect(
+      validateOwnerReviewRemark("approved for payment today", "Approval remark"),
+    ).toBe("approved for payment today");
+    expect(() =>
+      validateOwnerReviewRemark(
+        Array.from({ length: 26 }, (_, i) => `word${i + 1}`).join(" "),
+        "Approval remark",
+      ),
+    ).toThrow(/at most 25 words/i);
+    expect(
+      validateOwnerReviewRemark("need payment approval", "Doer remark"),
+    ).toBe("need payment approval");
+    expect(MAX_BILL_REMARK_WORDS).toBe(25);
+  });
+
   it("requires invoice issuer and a positive amount", () => {
     expect(() => validateInvoiceIssuedBy("  ")).toThrow("Invoice issued by is required");
     expect(validateInvoiceIssuedBy(" acme logistics ")).toBe("acme logistics");
@@ -90,23 +113,19 @@ describe("bill remarks and files", () => {
     ).toThrow(/4 MB/);
   });
 
-  it("accepts several files and rejects too many", () => {
+  it("accepts one file and rejects more than one", () => {
     expect(
+      validateBillFiles([
+        { name: "a.pdf", type: "application/pdf", size: 100 },
+      ]),
+    ).toHaveLength(1);
+
+    expect(() =>
       validateBillFiles([
         { name: "a.pdf", type: "application/pdf", size: 100 },
         { name: "b.jpg", type: "image/jpeg", size: 200 },
       ]),
-    ).toHaveLength(2);
-
-    expect(() =>
-      validateBillFiles(
-        Array.from({ length: 11 }, (_, i) => ({
-          name: `${i}.pdf`,
-          type: "application/pdf",
-          size: 10,
-        })),
-      ),
-    ).toThrow(/at most 10 documents/);
+    ).toThrow(/only one document/i);
   });
 });
 
@@ -125,5 +144,26 @@ describe("bill access", () => {
     expect(canViewBill(owner, "s1")).toBe(true);
     expect(canReviewBill(owner, "PENDING")).toBe(true);
     expect(canReviewBill(owner, "REJECTED")).toBe(false);
+  });
+});
+
+describe("remark preview", () => {
+  it("shows the first line only", () => {
+    expect(remarkFirstLine("  line one\nline two ")).toBe("line one");
+    expect(remarkFirstLine("single")).toBe("single");
+    expect(remarkFirstLine("  ")).toBe("");
+  });
+
+  it("marks multi-line and long single-line remarks as expandable", () => {
+    expect(remarkIsExpandable("one\ntwo")).toBe(true);
+    expect(remarkIsExpandable("short")).toBe(false);
+    expect(remarkIsExpandable("a".repeat(49))).toBe(true);
+  });
+});
+
+describe("account voucher no", () => {
+  it("trims voucher numbers", () => {
+    expect(validateAccountVoucherNo("  PV-102 ")).toBe("PV-102");
+    expect(validateAccountVoucherNo("")).toBe("");
   });
 });

@@ -8994,6 +8994,7 @@ export namespace Prisma {
   export type CityOptionMinAggregateOutputType = {
     id: string | null
     name: string | null
+    state: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9001,6 +9002,7 @@ export namespace Prisma {
   export type CityOptionMaxAggregateOutputType = {
     id: string | null
     name: string | null
+    state: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9008,6 +9010,7 @@ export namespace Prisma {
   export type CityOptionCountAggregateOutputType = {
     id: number
     name: number
+    state: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9017,6 +9020,7 @@ export namespace Prisma {
   export type CityOptionMinAggregateInputType = {
     id?: true
     name?: true
+    state?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9024,6 +9028,7 @@ export namespace Prisma {
   export type CityOptionMaxAggregateInputType = {
     id?: true
     name?: true
+    state?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9031,6 +9036,7 @@ export namespace Prisma {
   export type CityOptionCountAggregateInputType = {
     id?: true
     name?: true
+    state?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9111,6 +9117,7 @@ export namespace Prisma {
   export type CityOptionGroupByOutputType = {
     id: string
     name: string
+    state: string
     createdAt: Date
     updatedAt: Date
     _count: CityOptionCountAggregateOutputType | null
@@ -9135,6 +9142,7 @@ export namespace Prisma {
   export type CityOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    state?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["cityOption"]>
@@ -9142,6 +9150,7 @@ export namespace Prisma {
   export type CityOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     name?: boolean
+    state?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["cityOption"]>
@@ -9149,6 +9158,7 @@ export namespace Prisma {
   export type CityOptionSelectScalar = {
     id?: boolean
     name?: boolean
+    state?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -9160,6 +9170,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
+      state: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["cityOption"]>
@@ -9557,6 +9568,7 @@ export namespace Prisma {
   interface CityOptionFieldRefs {
     readonly id: FieldRef<"CityOption", 'String'>
     readonly name: FieldRef<"CityOption", 'String'>
+    readonly state: FieldRef<"CityOption", 'String'>
     readonly createdAt: FieldRef<"CityOption", 'DateTime'>
     readonly updatedAt: FieldRef<"CityOption", 'DateTime'>
   }
@@ -22675,6 +22687,7 @@ export namespace Prisma {
 
   export type BillMinAggregateOutputType = {
     id: string | null
+    approvalNo: string | null
     date: Date | null
     invoiceIssuedBy: string | null
     invoiceAmount: Decimal | null
@@ -22682,6 +22695,7 @@ export namespace Prisma {
     remark: string | null
     status: $Enums.BillStatus | null
     reviewRemark: string | null
+    accountVoucherNo: string | null
     reviewedAt: Date | null
     staffId: string | null
     createdAt: Date | null
@@ -22690,6 +22704,7 @@ export namespace Prisma {
 
   export type BillMaxAggregateOutputType = {
     id: string | null
+    approvalNo: string | null
     date: Date | null
     invoiceIssuedBy: string | null
     invoiceAmount: Decimal | null
@@ -22697,6 +22712,7 @@ export namespace Prisma {
     remark: string | null
     status: $Enums.BillStatus | null
     reviewRemark: string | null
+    accountVoucherNo: string | null
     reviewedAt: Date | null
     staffId: string | null
     createdAt: Date | null
@@ -22705,6 +22721,7 @@ export namespace Prisma {
 
   export type BillCountAggregateOutputType = {
     id: number
+    approvalNo: number
     date: number
     invoiceIssuedBy: number
     invoiceAmount: number
@@ -22712,6 +22729,7 @@ export namespace Prisma {
     remark: number
     status: number
     reviewRemark: number
+    accountVoucherNo: number
     reviewedAt: number
     staffId: number
     createdAt: number
@@ -22730,6 +22748,7 @@ export namespace Prisma {
 
   export type BillMinAggregateInputType = {
     id?: true
+    approvalNo?: true
     date?: true
     invoiceIssuedBy?: true
     invoiceAmount?: true
@@ -22737,6 +22756,7 @@ export namespace Prisma {
     remark?: true
     status?: true
     reviewRemark?: true
+    accountVoucherNo?: true
     reviewedAt?: true
     staffId?: true
     createdAt?: true
@@ -22745,6 +22765,7 @@ export namespace Prisma {
 
   export type BillMaxAggregateInputType = {
     id?: true
+    approvalNo?: true
     date?: true
     invoiceIssuedBy?: true
     invoiceAmount?: true
@@ -22752,6 +22773,7 @@ export namespace Prisma {
     remark?: true
     status?: true
     reviewRemark?: true
+    accountVoucherNo?: true
     reviewedAt?: true
     staffId?: true
     createdAt?: true
@@ -22760,6 +22782,7 @@ export namespace Prisma {
 
   export type BillCountAggregateInputType = {
     id?: true
+    approvalNo?: true
     date?: true
     invoiceIssuedBy?: true
     invoiceAmount?: true
@@ -22767,6 +22790,7 @@ export namespace Prisma {
     remark?: true
     status?: true
     reviewRemark?: true
+    accountVoucherNo?: true
     reviewedAt?: true
     staffId?: true
     createdAt?: true
@@ -22862,6 +22886,7 @@ export namespace Prisma {
 
   export type BillGroupByOutputType = {
     id: string
+    approvalNo: string | null
     date: Date
     invoiceIssuedBy: string
     invoiceAmount: Decimal | null
@@ -22869,6 +22894,7 @@ export namespace Prisma {
     remark: string
     status: $Enums.BillStatus
     reviewRemark: string
+    accountVoucherNo: string
     reviewedAt: Date | null
     staffId: string
     createdAt: Date
@@ -22896,6 +22922,7 @@ export namespace Prisma {
 
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    approvalNo?: boolean
     date?: boolean
     invoiceIssuedBy?: boolean
     invoiceAmount?: boolean
@@ -22903,6 +22930,7 @@ export namespace Prisma {
     remark?: boolean
     status?: boolean
     reviewRemark?: boolean
+    accountVoucherNo?: boolean
     reviewedAt?: boolean
     staffId?: boolean
     createdAt?: boolean
@@ -22914,6 +22942,7 @@ export namespace Prisma {
 
   export type BillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    approvalNo?: boolean
     date?: boolean
     invoiceIssuedBy?: boolean
     invoiceAmount?: boolean
@@ -22921,6 +22950,7 @@ export namespace Prisma {
     remark?: boolean
     status?: boolean
     reviewRemark?: boolean
+    accountVoucherNo?: boolean
     reviewedAt?: boolean
     staffId?: boolean
     createdAt?: boolean
@@ -22930,6 +22960,7 @@ export namespace Prisma {
 
   export type BillSelectScalar = {
     id?: boolean
+    approvalNo?: boolean
     date?: boolean
     invoiceIssuedBy?: boolean
     invoiceAmount?: boolean
@@ -22937,6 +22968,7 @@ export namespace Prisma {
     remark?: boolean
     status?: boolean
     reviewRemark?: boolean
+    accountVoucherNo?: boolean
     reviewedAt?: boolean
     staffId?: boolean
     createdAt?: boolean
@@ -22960,6 +22992,10 @@ export namespace Prisma {
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      /**
+       * Year-based approval reference (AN 2025-0001).
+       */
+      approvalNo: string | null
       date: Date
       /**
        * Who issued the invoice (vendor / party name).
@@ -22982,6 +23018,10 @@ export namespace Prisma {
        * Owner remark written when approving or rejecting.
        */
       reviewRemark: string
+      /**
+       * Tally / accounts voucher reference entered after approval.
+       */
+      accountVoucherNo: string
       reviewedAt: Date | null
       staffId: string
       createdAt: Date
@@ -23382,6 +23422,7 @@ export namespace Prisma {
    */ 
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'String'>
+    readonly approvalNo: FieldRef<"Bill", 'String'>
     readonly date: FieldRef<"Bill", 'DateTime'>
     readonly invoiceIssuedBy: FieldRef<"Bill", 'String'>
     readonly invoiceAmount: FieldRef<"Bill", 'Decimal'>
@@ -23389,6 +23430,7 @@ export namespace Prisma {
     readonly remark: FieldRef<"Bill", 'String'>
     readonly status: FieldRef<"Bill", 'BillStatus'>
     readonly reviewRemark: FieldRef<"Bill", 'String'>
+    readonly accountVoucherNo: FieldRef<"Bill", 'String'>
     readonly reviewedAt: FieldRef<"Bill", 'DateTime'>
     readonly staffId: FieldRef<"Bill", 'String'>
     readonly createdAt: FieldRef<"Bill", 'DateTime'>
@@ -24824,6 +24866,7 @@ export namespace Prisma {
   export const CityOptionScalarFieldEnum: {
     id: 'id',
     name: 'name',
+    state: 'state',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -25042,6 +25085,7 @@ export namespace Prisma {
 
   export const BillScalarFieldEnum: {
     id: 'id',
+    approvalNo: 'approvalNo',
     date: 'date',
     invoiceIssuedBy: 'invoiceIssuedBy',
     invoiceAmount: 'invoiceAmount',
@@ -25049,6 +25093,7 @@ export namespace Prisma {
     remark: 'remark',
     status: 'status',
     reviewRemark: 'reviewRemark',
+    accountVoucherNo: 'accountVoucherNo',
     reviewedAt: 'reviewedAt',
     staffId: 'staffId',
     createdAt: 'createdAt',
@@ -25709,6 +25754,7 @@ export namespace Prisma {
     NOT?: CityOptionWhereInput | CityOptionWhereInput[]
     id?: StringFilter<"CityOption"> | string
     name?: StringFilter<"CityOption"> | string
+    state?: StringFilter<"CityOption"> | string
     createdAt?: DateTimeFilter<"CityOption"> | Date | string
     updatedAt?: DateTimeFilter<"CityOption"> | Date | string
   }
@@ -25716,6 +25762,7 @@ export namespace Prisma {
   export type CityOptionOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25726,6 +25773,7 @@ export namespace Prisma {
     AND?: CityOptionWhereInput | CityOptionWhereInput[]
     OR?: CityOptionWhereInput[]
     NOT?: CityOptionWhereInput | CityOptionWhereInput[]
+    state?: StringFilter<"CityOption"> | string
     createdAt?: DateTimeFilter<"CityOption"> | Date | string
     updatedAt?: DateTimeFilter<"CityOption"> | Date | string
   }, "id" | "name">
@@ -25733,6 +25781,7 @@ export namespace Prisma {
   export type CityOptionOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CityOptionCountOrderByAggregateInput
@@ -25746,6 +25795,7 @@ export namespace Prisma {
     NOT?: CityOptionScalarWhereWithAggregatesInput | CityOptionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"CityOption"> | string
     name?: StringWithAggregatesFilter<"CityOption"> | string
+    state?: StringWithAggregatesFilter<"CityOption"> | string
     createdAt?: DateTimeWithAggregatesFilter<"CityOption"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CityOption"> | Date | string
   }
@@ -26876,6 +26926,7 @@ export namespace Prisma {
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     id?: StringFilter<"Bill"> | string
+    approvalNo?: StringNullableFilter<"Bill"> | string | null
     date?: DateTimeFilter<"Bill"> | Date | string
     invoiceIssuedBy?: StringFilter<"Bill"> | string
     invoiceAmount?: DecimalNullableFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
@@ -26883,6 +26934,7 @@ export namespace Prisma {
     remark?: StringFilter<"Bill"> | string
     status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringFilter<"Bill"> | string
+    accountVoucherNo?: StringFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
     staffId?: StringFilter<"Bill"> | string
     createdAt?: DateTimeFilter<"Bill"> | Date | string
@@ -26893,6 +26945,7 @@ export namespace Prisma {
 
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
+    approvalNo?: SortOrderInput | SortOrder
     date?: SortOrder
     invoiceIssuedBy?: SortOrder
     invoiceAmount?: SortOrderInput | SortOrder
@@ -26900,6 +26953,7 @@ export namespace Prisma {
     remark?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
+    accountVoucherNo?: SortOrder
     reviewedAt?: SortOrderInput | SortOrder
     staffId?: SortOrder
     createdAt?: SortOrder
@@ -26910,6 +26964,7 @@ export namespace Prisma {
 
   export type BillWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    approvalNo?: string
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
@@ -26920,16 +26975,18 @@ export namespace Prisma {
     remark?: StringFilter<"Bill"> | string
     status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringFilter<"Bill"> | string
+    accountVoucherNo?: StringFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
     staffId?: StringFilter<"Bill"> | string
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     staff?: XOR<StaffRelationFilter, StaffWhereInput>
     files?: BillFileListRelationFilter
-  }, "id">
+  }, "id" | "approvalNo">
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
+    approvalNo?: SortOrderInput | SortOrder
     date?: SortOrder
     invoiceIssuedBy?: SortOrder
     invoiceAmount?: SortOrderInput | SortOrder
@@ -26937,6 +26994,7 @@ export namespace Prisma {
     remark?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
+    accountVoucherNo?: SortOrder
     reviewedAt?: SortOrderInput | SortOrder
     staffId?: SortOrder
     createdAt?: SortOrder
@@ -26953,6 +27011,7 @@ export namespace Prisma {
     OR?: BillScalarWhereWithAggregatesInput[]
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Bill"> | string
+    approvalNo?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     date?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     invoiceIssuedBy?: StringWithAggregatesFilter<"Bill"> | string
     invoiceAmount?: DecimalNullableWithAggregatesFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
@@ -26960,6 +27019,7 @@ export namespace Prisma {
     remark?: StringWithAggregatesFilter<"Bill"> | string
     status?: EnumBillStatusWithAggregatesFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringWithAggregatesFilter<"Bill"> | string
+    accountVoucherNo?: StringWithAggregatesFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableWithAggregatesFilter<"Bill"> | Date | string | null
     staffId?: StringWithAggregatesFilter<"Bill"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
@@ -27447,6 +27507,7 @@ export namespace Prisma {
   export type CityOptionCreateInput = {
     id?: string
     name: string
+    state?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27454,6 +27515,7 @@ export namespace Prisma {
   export type CityOptionUncheckedCreateInput = {
     id?: string
     name: string
+    state?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27461,6 +27523,7 @@ export namespace Prisma {
   export type CityOptionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27468,6 +27531,7 @@ export namespace Prisma {
   export type CityOptionUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27475,6 +27539,7 @@ export namespace Prisma {
   export type CityOptionCreateManyInput = {
     id?: string
     name: string
+    state?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27482,6 +27547,7 @@ export namespace Prisma {
   export type CityOptionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27489,6 +27555,7 @@ export namespace Prisma {
   export type CityOptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28733,6 +28800,7 @@ export namespace Prisma {
 
   export type BillCreateInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -28740,6 +28808,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28749,6 +28818,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -28756,6 +28826,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     staffId: string
     createdAt?: Date | string
@@ -28765,6 +28836,7 @@ export namespace Prisma {
 
   export type BillUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -28772,6 +28844,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28781,6 +28854,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -28788,6 +28862,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     staffId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28797,6 +28872,7 @@ export namespace Prisma {
 
   export type BillCreateManyInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -28804,6 +28880,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     staffId: string
     createdAt?: Date | string
@@ -28812,6 +28889,7 @@ export namespace Prisma {
 
   export type BillUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -28819,6 +28897,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28826,6 +28905,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -28833,6 +28913,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     staffId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29287,6 +29368,7 @@ export namespace Prisma {
   export type CityOptionCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29294,6 +29376,7 @@ export namespace Prisma {
   export type CityOptionMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29301,6 +29384,7 @@ export namespace Prisma {
   export type CityOptionMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
+    state?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30257,6 +30341,7 @@ export namespace Prisma {
 
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
+    approvalNo?: SortOrder
     date?: SortOrder
     invoiceIssuedBy?: SortOrder
     invoiceAmount?: SortOrder
@@ -30264,6 +30349,7 @@ export namespace Prisma {
     remark?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
+    accountVoucherNo?: SortOrder
     reviewedAt?: SortOrder
     staffId?: SortOrder
     createdAt?: SortOrder
@@ -30276,6 +30362,7 @@ export namespace Prisma {
 
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
+    approvalNo?: SortOrder
     date?: SortOrder
     invoiceIssuedBy?: SortOrder
     invoiceAmount?: SortOrder
@@ -30283,6 +30370,7 @@ export namespace Prisma {
     remark?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
+    accountVoucherNo?: SortOrder
     reviewedAt?: SortOrder
     staffId?: SortOrder
     createdAt?: SortOrder
@@ -30291,6 +30379,7 @@ export namespace Prisma {
 
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
+    approvalNo?: SortOrder
     date?: SortOrder
     invoiceIssuedBy?: SortOrder
     invoiceAmount?: SortOrder
@@ -30298,6 +30387,7 @@ export namespace Prisma {
     remark?: SortOrder
     status?: SortOrder
     reviewRemark?: SortOrder
+    accountVoucherNo?: SortOrder
     reviewedAt?: SortOrder
     staffId?: SortOrder
     createdAt?: SortOrder
@@ -32431,6 +32521,7 @@ export namespace Prisma {
 
   export type BillCreateWithoutStaffInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -32438,6 +32529,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32446,6 +32538,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutStaffInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -32453,6 +32546,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32585,6 +32679,7 @@ export namespace Prisma {
     OR?: BillScalarWhereInput[]
     NOT?: BillScalarWhereInput | BillScalarWhereInput[]
     id?: StringFilter<"Bill"> | string
+    approvalNo?: StringNullableFilter<"Bill"> | string | null
     date?: DateTimeFilter<"Bill"> | Date | string
     invoiceIssuedBy?: StringFilter<"Bill"> | string
     invoiceAmount?: DecimalNullableFilter<"Bill"> | Decimal | DecimalJsLike | number | string | null
@@ -32592,6 +32687,7 @@ export namespace Prisma {
     remark?: StringFilter<"Bill"> | string
     status?: EnumBillStatusFilter<"Bill"> | $Enums.BillStatus
     reviewRemark?: StringFilter<"Bill"> | string
+    accountVoucherNo?: StringFilter<"Bill"> | string
     reviewedAt?: DateTimeNullableFilter<"Bill"> | Date | string | null
     staffId?: StringFilter<"Bill"> | string
     createdAt?: DateTimeFilter<"Bill"> | Date | string
@@ -35909,6 +36005,7 @@ export namespace Prisma {
 
   export type BillCreateWithoutFilesInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -35916,6 +36013,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35924,6 +36022,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutFilesInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -35931,6 +36030,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     staffId: string
     createdAt?: Date | string
@@ -35955,6 +36055,7 @@ export namespace Prisma {
 
   export type BillUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -35962,6 +36063,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35970,6 +36072,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutFilesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -35977,6 +36080,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     staffId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36040,6 +36144,7 @@ export namespace Prisma {
 
   export type BillCreateManyStaffInput = {
     id?: string
+    approvalNo?: string | null
     date: Date | string
     invoiceIssuedBy?: string
     invoiceAmount?: Decimal | DecimalJsLike | number | string | null
@@ -36047,6 +36152,7 @@ export namespace Prisma {
     remark: string
     status?: $Enums.BillStatus
     reviewRemark?: string
+    accountVoucherNo?: string
     reviewedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36231,6 +36337,7 @@ export namespace Prisma {
 
   export type BillUpdateWithoutStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -36238,6 +36345,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36246,6 +36354,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -36253,6 +36362,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36261,6 +36371,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
+    approvalNo?: NullableStringFieldUpdateOperationsInput | string | null
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     invoiceIssuedBy?: StringFieldUpdateOperationsInput | string
     invoiceAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -36268,6 +36379,7 @@ export namespace Prisma {
     remark?: StringFieldUpdateOperationsInput | string
     status?: EnumBillStatusFieldUpdateOperationsInput | $Enums.BillStatus
     reviewRemark?: StringFieldUpdateOperationsInput | string
+    accountVoucherNo?: StringFieldUpdateOperationsInput | string
     reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -175,7 +175,7 @@ export function QualitiesClient({
       </form>
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>Type</th>
@@ -221,7 +221,7 @@ export function QualitiesClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

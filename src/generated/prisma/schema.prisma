@@ -146,6 +146,7 @@ model SaleExecutiveOption {
 model CityOption {
   id        String   @id @default(cuid())
   name      String   @unique
+  state     String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -415,6 +416,8 @@ model Discount {
 /// Staff-uploaded bill awaiting owner approval.
 model Bill {
   id              String     @id @default(cuid())
+  /// Year-based approval reference (AN 2025-0001).
+  approvalNo      String?    @unique
   date            DateTime
   /// Who issued the invoice (vendor / party name).
   invoiceIssuedBy String     @default("")
@@ -427,6 +430,8 @@ model Bill {
   status          BillStatus @default(PENDING)
   /// Owner remark written when approving or rejecting.
   reviewRemark    String     @default("")
+  /// Tally / accounts voucher reference entered after approval.
+  accountVoucherNo String    @default("")
   reviewedAt      DateTime?
   staffId         String
   createdAt       DateTime   @default(now())

@@ -15,7 +15,7 @@ import {
   formatDispatchMt,
   formatDispatchTerms,
   formatLorryNumber,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 
 function formatChecklistYes(value: boolean): string {
@@ -136,17 +136,17 @@ export function TransportEngineClient({
     { key: "lorryNumber", header: "Lorry number" },
     {
       key: "loadingWeight",
-      header: "Loading weight (MT)",
+      header: "Loading weight",
       align: "right" as const,
     },
     {
       key: "receivingWeight",
-      header: "Receiving weight (MT)",
+      header: "Receiving weight",
       align: "right" as const,
     },
     {
       key: "diffInWeight",
-      header: "Diff in weight (MT)",
+      header: "Diff in weight",
       align: "right" as const,
     },
     { key: "customer", header: "Customer name" },
@@ -187,9 +187,9 @@ export function TransportEngineClient({
           ? (capitalizeName(row.transporterName) ?? row.transporterName)
           : "—",
         freightPerTon:
-          row.freightPerTon != null ? formatRs(row.freightPerTon) : "—",
+          row.freightPerTon != null ? formatAmount(row.freightPerTon) : "—",
         freightAmount:
-          row.freightAmount != null ? formatRs(row.freightAmount) : "—",
+          row.freightAmount != null ? formatAmount(row.freightAmount) : "—",
         biltyHardCopy: formatChecklistYes(row.biltyHardCopy),
         invoiceHardCopy: formatChecklistYes(row.invoiceHardCopy),
         transportInvoiceNo: row.transportInvoiceNo?.trim() || "—",
@@ -333,17 +333,17 @@ export function TransportEngineClient({
         />
       </form>
 
-      <div className="table-wrap transport-engine-table-wrap">
-        <table className="data payments-table transport-engine-table">
+      <div className="table-wrap">
+        <div className="table-h-scroll"><table className="data transport-engine-table">
           <thead>
             <tr>
               <th>Date</th>
               <th>Sale invoice</th>
               <th>Lorry number</th>
-              <th className="cell-num">Loading weight (MT)</th>
-              <th className="cell-num">Receiving weight (MT)</th>
-              <th className="cell-num">Diff in weight (MT)</th>
-              <th>Customer name</th>
+              <th className="cell-num">Loading weight</th>
+              <th className="cell-num">Receiving weight</th>
+              <th className="cell-num">Diff in weight</th>
+              <th className="report-customer-col">Customer name</th>
               <th>Port name</th>
               <th>Delivery terms</th>
               <th>Transporter name</th>
@@ -390,7 +390,13 @@ export function TransportEngineClient({
                   >
                     {formatDispatchMt(row.diffInWeight)}
                   </td>
-                  <td className={row.customerName ? undefined : "cell-center"}>
+                  <td
+                    className={
+                      row.customerName
+                        ? "report-customer-col"
+                        : "report-customer-col cell-center"
+                    }
+                  >
                     {row.customerName
                       ? (capitalizeName(row.customerName) ?? row.customerName)
                       : "—"}
@@ -398,7 +404,9 @@ export function TransportEngineClient({
                   <td className={row.portName ? undefined : "cell-center"}>
                     {row.portName ?? "—"}
                   </td>
-                  <td>{formatDispatchTerms(row.dispatchTerms)}</td>
+                  <td>
+                    {formatDispatchTerms(row.dispatchTerms)}
+                  </td>
                   <td
                     className={
                       row.transporterName ? undefined : "cell-center"
@@ -411,12 +419,12 @@ export function TransportEngineClient({
                   </td>
                   <td className="cell-num">
                     {row.freightPerTon != null
-                      ? formatRs(row.freightPerTon)
+                      ? formatAmount(row.freightPerTon)
                       : "—"}
                   </td>
                   <td className="cell-num">
                     {row.freightAmount != null
-                      ? formatRs(row.freightAmount)
+                      ? formatAmount(row.freightAmount)
                       : "—"}
                   </td>
                   <td className="cell-center">
@@ -464,7 +472,7 @@ export function TransportEngineClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <Modal

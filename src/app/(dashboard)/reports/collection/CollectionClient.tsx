@@ -10,7 +10,7 @@ import {
   capitalizeName,
   formatCreditPeriod,
   formatCustomerCategory,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 import {
   collectionWhatsAppDisabledReason,
@@ -71,6 +71,28 @@ function matchesPlannedCallFilter(
   if (filter === "tomorrow") return p === tomorrow;
   if (filter === "older") return p < today;
   return p > tomorrow;
+}
+
+function rowHighlightClass(
+  planned: string | null,
+  today: string,
+): string | undefined {
+  const p = normalizePlannedDate(planned);
+  if (!p) return undefined;
+  if (p === today) return "collection-row-call-today";
+  if (p < today) return "collection-row-due-call";
+  return undefined;
+}
+
+function rowClassName(
+  plannedDate: string | null,
+  today: string,
+  lastPaidYesterday: boolean,
+): string | undefined {
+  const highlight = rowHighlightClass(plannedDate, today);
+  if (highlight) return highlight;
+  if (lastPaidYesterday) return "payment-row-yesterday";
+  return undefined;
 }
 
 function distinctTrimmed(values: Array<string | null | undefined>): string[] {
@@ -439,10 +461,11 @@ export function CollectionClient({
       </form>
 
       <div className="table-wrap">
-        <table className="data payments-table collection-table">
+        <div className="table-h-scroll">
+        <table className="data collection-engine-table">
           <thead>
             <tr>
-              <th className="collection-customer-col">
+              <th className="collection-engine-customer-col">
                 <button
                   type="button"
                   className="th-sort"
@@ -452,35 +475,17 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "name", sortDir)}
                 </button>
               </th>
-              <th>
-                Payment
-                <br />
-                in charge
-              </th>
-              <th>
-                Contact
-                <br />
-                number
-              </th>
-              <th>
-                Sales
-                <br />
-                executive
-              </th>
-              <th>
-                Dealing
-                <br />
-                company
-              </th>
+              <th>Payment In Charge</th>
+              <th>Contact Number</th>
+              <th>Sales Executive</th>
+              <th>Dealing Company</th>
               <th className="cell-num">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("due")}
                 >
-                  Total
-                  <br />
-                  Due
+                  Total Due
                   {sortIndicator(sortKey === "due", sortDir)}
                 </button>
               </th>
@@ -494,26 +499,10 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "overdue", sortDir)}
                 </button>
               </th>
-              <th>
-                Last
-                <br />
-                payment date
-              </th>
-              <th className="cell-num">
-                Last
-                <br />
-                payment amount
-              </th>
-              <th className="cell-num">
-                Credit
-                <br />
-                period
-              </th>
-              <th className="collection-date-col">
-                Planned
-                <br />
-                call date
-              </th>
+              <th>Last Payment Date</th>
+              <th className="cell-num">Last Payment Amount</th>
+              <th className="cell-num">Credit Period</th>
+              <th className="collection-date-col">Planned Call Date</th>
             </tr>
           </thead>
           <tbody>
@@ -534,11 +523,13 @@ export function CollectionClient({
               return (
                 <tr
                   key={row.id}
-                  className={
-                    lastPaidYesterday ? "payment-row-yesterday" : undefined
-                  }
+                  className={rowClassName(
+                    row.plannedCollectionCallDate,
+                    today,
+                    lastPaidYesterday,
+                  )}
                 >
-                  <td className="collection-customer-col">
+                  <td className="collection-engine-customer-col">
                     <Link
                       href={`/reports/customer-analysis/${row.id}`}
                       className="btn-link"
@@ -564,12 +555,12 @@ export function CollectionClient({
                         row.dealingCompany)
                       : "—"}
                   </td>
-                  <td className="cell-num">{formatRs(row.due)}</td>
-                  <td className="cell-num">{formatRs(row.overdue)}</td>
+                  <td className="cell-num">{formatAmount(row.due)}</td>
+                  <td className="cell-num">{formatAmount(row.overdue)}</td>
                   <td>{formatDateDdMmYyyy(row.lastPaymentDate)}</td>
                   <td className="cell-num">
                     {row.lastPaymentAmount
-                      ? formatRs(row.lastPaymentAmount)
+                      ? formatAmount(row.lastPaymentAmount)
                       : "—"}
                   </td>
                   <td className="cell-num">
@@ -658,6 +649,7 @@ export function CollectionClient({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );

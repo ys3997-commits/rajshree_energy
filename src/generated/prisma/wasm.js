@@ -178,6 +178,7 @@ exports.Prisma.SaleExecutiveOptionScalarFieldEnum = {
 exports.Prisma.CityOptionScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  state: 'state',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -357,6 +358,7 @@ exports.Prisma.DiscountScalarFieldEnum = {
 
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
+  approvalNo: 'approvalNo',
   date: 'date',
   invoiceIssuedBy: 'invoiceIssuedBy',
   invoiceAmount: 'invoiceAmount',
@@ -364,6 +366,7 @@ exports.Prisma.BillScalarFieldEnum = {
   remark: 'remark',
   status: 'status',
   reviewRemark: 'reviewRemark',
+  accountVoucherNo: 'accountVoucherNo',
   reviewedAt: 'reviewedAt',
   staffId: 'staffId',
   createdAt: 'createdAt',

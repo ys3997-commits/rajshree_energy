@@ -7,7 +7,7 @@ import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
   capitalizeName,
   formatCreditPeriod,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 
 type CollectionSortKey = "due" | "overdue";
@@ -217,10 +217,10 @@ export function VendorCollectionClient({
       </form>
 
       <div className="table-wrap">
-        <table className="data payments-table collection-table vendor-collection-table">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
-              <th className="collection-customer-col">Customer</th>
+              <th className="report-customer-col">Customer</th>
               <th>Payment in charge</th>
               <th>Contact number</th>
               <th>Sales executive</th>
@@ -250,7 +250,7 @@ export function VendorCollectionClient({
           <tbody>
             {filteredRows.map((row) => (
               <tr key={row.id}>
-                <td className="collection-customer-col">
+                <td className="report-customer-col">
                   <Link
                     href={`/reports/customer-analysis/${row.id}`}
                     className="btn-link"
@@ -270,8 +270,8 @@ export function VendorCollectionClient({
                     ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
                     : "—"}
                 </td>
-                <td className="cell-num">{formatRs(row.due)}</td>
-                <td className="cell-num">{formatRs(row.overdue)}</td>
+                <td className="cell-num">{formatAmount(row.due)}</td>
+                <td className="cell-num">{formatAmount(row.overdue)}</td>
                 <td className="cell-num">
                   {formatCreditPeriod(row.creditDays)}
                 </td>
@@ -287,7 +287,7 @@ export function VendorCollectionClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </>
   );

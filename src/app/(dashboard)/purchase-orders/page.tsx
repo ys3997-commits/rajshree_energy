@@ -1,4 +1,3 @@
-import { PurchaseOrderStatus } from "@/generated/prisma";
 import {
   listPurchaseOrders,
   suggestNextPurchasePoNumber,
@@ -17,6 +16,7 @@ import {
   formatQualityClass,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
+import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
@@ -34,11 +34,7 @@ export default async function PurchaseOrdersPage({
   searchParams: SearchParams;
 }) {
   const sp = await searchParams;
-  const statusFilter =
-    sp.status === PurchaseOrderStatus.RUNNING ||
-    sp.status === PurchaseOrderStatus.COMPLETED
-      ? sp.status
-      : "";
+  const statusFilter = resolveOrderListStatusFilter(sp.status);
 
   const [orders, customers, vessels, suggestedPo] = await Promise.all([
     listPurchaseOrders({
@@ -155,7 +151,7 @@ export default async function PurchaseOrdersPage({
       </form>
 
       <div className="table-wrap table-wrap-scroll purchase-orders-table-wrap">
-        <table className="data purchase-orders-table">
+        <div className="table-h-scroll"><table className="data purchase-orders-table">
           <thead>
             <tr>
               <th>Purchase PO</th>
@@ -235,7 +231,7 @@ export default async function PurchaseOrdersPage({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

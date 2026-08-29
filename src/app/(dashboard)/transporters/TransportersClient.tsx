@@ -193,7 +193,7 @@ export function TransportersClient({
       </form>
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>Company</th>
@@ -262,7 +262,7 @@ export function TransportersClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

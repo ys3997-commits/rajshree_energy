@@ -126,14 +126,14 @@ export function VesselSuppliedList({
         <p className="home-empty">No vessels match your filters.</p>
       ) : (
         <div className="table-wrap table-wrap-scroll">
-          <table className="data report-table">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
                 <th>Vessel name</th>
                 <th>Quality class</th>
-                <th className="num">Total quantities</th>
-                <th className="num">Supplied to industry</th>
-                <th className="num">Supplied to trader &amp; vendor</th>
+                <th className="cell-num">Total quantities</th>
+                <th className="cell-num">Supplied to industry</th>
+                <th className="cell-num">Supplied to trader &amp; vendor</th>
               </tr>
             </thead>
             <tbody>
@@ -156,11 +156,11 @@ export function VesselSuppliedList({
                     {!v.active ? " · Inactive" : ""}
                   </td>
                   <td>{formatQualityClass(v.qualityClass)}</td>
-                  <td className="num">{formatSaleOrderMt(v.totalQuantity)}</td>
-                  <td className="num">
+                  <td className="cell-num">{formatSaleOrderMt(v.totalQuantity)}</td>
+                  <td className="cell-num">
                     {formatSupplyShare(v.industryQuantity, v.totalQuantity)}
                   </td>
-                  <td className="num">
+                  <td className="cell-num">
                     {formatSupplyShare(
                       v.traderVendorQuantity,
                       v.totalQuantity,
@@ -169,7 +169,7 @@ export function VesselSuppliedList({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

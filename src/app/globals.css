@@ -20,6 +20,10 @@
   --radius-sm: 8px;
   --shadow: 0 1px 2px rgba(20, 23, 28, 0.04), 0 8px 24px rgba(20, 23, 28, 0.04);
   --app-header-height: 4.25rem;
+  --table-head-padding-y: 0.95rem;
+  --table-body-padding-y: 0.15rem;
+  --table-cell-padding-x: 1.15rem;
+  --table-head-row-height: calc(var(--table-head-padding-y) * 2 + 1.25rem);
   --background: var(--bg);
   --foreground: var(--ink);
 }
@@ -56,16 +60,43 @@ a {
 }
 
 /* —— Shell —— */
+html:has(.app-shell) {
+  height: 100%;
+  overflow: hidden;
+}
+
+body:has(.app-shell) {
+  height: 100%;
+  overflow: hidden;
+}
+
 .app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-height: 100vh;
   color: var(--ink);
   padding-top: var(--app-header-height);
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .app-main {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
   margin: 0 auto;
   max-width: 1440px;
+  width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-main-inner {
   padding: 2.5rem 2rem 4rem;
+  box-sizing: border-box;
+  min-height: 100%;
 }
 
 .app-header {
@@ -511,11 +542,15 @@ a {
 
 /* —— Tables —— */
 .table-wrap {
-  overflow-x: auto;
+  overflow: visible;
   border: 1px solid var(--line);
   background: var(--surface-solid);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+}
+
+.table-h-scroll {
+  display: contents;
 }
 
 .table-wrap:has(.collection-table) {
@@ -524,7 +559,6 @@ a {
 }
 
 .table-wrap.sales-engine-table-wrap {
-  /* overflow-x:auto on .table-wrap blocks viewport sticky headers */
   overflow: visible;
   max-height: none;
 }
@@ -533,14 +567,9 @@ a {
   overflow: visible;
   max-height: none;
   max-width: none;
-  width: max-content;
+  width: 100%;
   min-width: 100%;
   background: #ffffff;
-}
-
-.payments-table th,
-.payments-table td {
-  padding: 0.45rem 0.75rem;
 }
 
 .table-wrap:has(.payments-table) {
@@ -562,7 +591,7 @@ table.data.payments-table {
 
 table.data.payments-table thead th {
   position: sticky;
-  top: var(--app-header-height);
+  top: 0;
   z-index: 5;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
@@ -570,7 +599,7 @@ table.data.payments-table thead th {
 
 table.data.payments-table tbody tr.payment-entry-row td {
   position: sticky;
-  top: calc(var(--app-header-height) + 2.1rem);
+  top: var(--table-head-row-height);
   z-index: 4;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
@@ -646,20 +675,22 @@ table.data.payments-table tbody tr.payment-entry-row td {
   table-layout: fixed;
 }
 
-.collection-table th,
-.collection-table td {
-  padding: 0.12rem 0.4rem;
+.collection-table thead th {
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+}
+
+.collection-table tbody td,
+.collection-table tfoot td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
   line-height: 1.15;
 }
 
 .collection-table tbody tr:last-child td {
-  padding-bottom: 0.45rem;
+  padding-bottom: var(--table-body-padding-y);
 }
 
 .collection-table th {
   font-size: 0.6rem;
-  padding-top: 0.22rem;
-  padding-bottom: 0.22rem;
   letter-spacing: 0.03em;
   white-space: normal;
   overflow: visible;
@@ -839,55 +870,57 @@ table.data.sales-engine-table {
 }
 
 .sales-engine-table th {
-  white-space: normal;
+  white-space: nowrap;
   overflow: visible;
-  vertical-align: bottom;
-  line-height: 1.2;
-  padding-top: 0.16rem;
-  padding-bottom: 0.16rem;
+  vertical-align: middle;
+  line-height: 1.35;
 }
 
 table.data.sales-engine-table thead th,
 table.data.sales-engine-table thead th.cell-num {
   position: sticky;
-  /* Sit just under the sticky app header */
-  top: var(--app-header-height);
+  top: 0;
   z-index: 5;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
-  text-transform: none;
-  letter-spacing: 0.01em;
-  white-space: normal;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  vertical-align: middle;
+  line-height: 1.35;
+}
+
+table.data.sales-engine-table thead th.cell-num,
+table.data.sales-engine-table thead th.cell-num button.th-sort {
+  text-align: right;
 }
 
 table.data.sales-engine-table thead th.sales-engine-customer-col {
-  top: var(--app-header-height);
+  top: 0;
   left: 0;
   z-index: 6;
   background: #f8fafb;
-  text-transform: none;
+  text-transform: capitalize;
 }
 
 .sales-engine-table th button.th-sort {
-  display: inline-block;
-  max-width: 100%;
-  white-space: normal;
-  line-height: 1.2;
+  display: inline;
+  max-width: none;
+  white-space: nowrap;
+  line-height: inherit;
   text-align: inherit;
-  text-transform: none;
-  letter-spacing: 0.01em;
-}
-
-.sales-engine-table th,
-.sales-engine-table td {
-  padding-left: 0.28rem;
-  padding-right: 0.28rem;
+  text-transform: capitalize;
+  letter-spacing: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
 .sales-engine-table td {
   overflow: visible;
-  padding-top: 0.08rem;
-  padding-bottom: 0.08rem;
 }
 
 .sales-engine-table th.sales-engine-purchaser-col,
@@ -1105,12 +1138,46 @@ table.data {
   font-size: 0.875rem;
 }
 
+/* Sticky headers: .app-main is the scroll container — no overflow on table wrappers */
+.app-main .table-wrap > table.data,
+.app-main .table-h-scroll > table.data,
+.app-main .ledger-panel-body > .table-h-scroll > table.data,
+.app-main .ledger-panel-body > table.data {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.app-main .table-wrap > table.data thead th,
+.app-main .table-h-scroll > table.data thead th,
+.app-main .ledger-panel-body table.data thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.app-main .table-wrap > table.data thead th button.th-sort,
+.app-main .table-h-scroll > table.data thead th button.th-sort {
+  background: #f8fafb;
+}
+
 table.data th,
 table.data td {
   border-bottom: 1px solid var(--line);
-  padding: 0.95rem 1.15rem;
   text-align: left;
   vertical-align: middle;
+}
+
+table.data thead th {
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+}
+
+table.data tbody td,
+table.data tfoot td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
 }
 
 table.data td.cell-num {
@@ -1225,19 +1292,15 @@ table.data td.col-actions {
 .table-wrap.dispatch-register-table-wrap,
 .table-wrap.dispatch-analysis-table-wrap,
 .table-wrap.transport-engine-table-wrap {
-  /* overflow-x:auto on .table-wrap blocks viewport sticky headers */
   overflow: visible;
   max-height: none;
-  max-width: none;
-  width: max-content;
-  min-width: 100%;
   background: #ffffff;
 }
 
 table.data.orders-table thead th,
 table.data.purchase-orders-table thead th {
   position: sticky;
-  top: var(--app-header-height);
+  top: 0;
   z-index: 5;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
@@ -1267,7 +1330,7 @@ table.data.report-table-dispatches thead tr.report-group-row th,
 table.data.dispatch-register-table thead tr.report-group-row th,
 table.data.dispatch-analysis-table thead tr.report-group-row th {
   position: sticky;
-  top: var(--app-header-height);
+  top: 0;
   z-index: 6;
   background: #e8eeed;
   box-shadow: inset 0 -1px 0 var(--line);
@@ -1277,7 +1340,7 @@ table.data.report-table-dispatches thead tr:not(.report-group-row) th,
 table.data.dispatch-register-table thead tr:not(.report-group-row) th,
 table.data.dispatch-analysis-table thead tr:not(.report-group-row) th {
   position: sticky;
-  top: calc(var(--app-header-height) + 2.45rem);
+  top: var(--table-head-row-height);
   z-index: 5;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
@@ -2078,7 +2141,7 @@ table.data.transport-engine-table thead th,
 table.data.transport-engine-table thead th.cell-num,
 table.data.transport-engine-table thead th.cell-center {
   position: sticky;
-  top: var(--app-header-height);
+  top: 0;
   z-index: 6;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
@@ -2515,70 +2578,52 @@ table.data tbody tr.customer-row-inactive:hover td {
 table.data tbody tr.payment-editing-row .field-input,
 table.data tbody tr.payment-editing-row select,
 table.data tbody tr.payment-editing-row .field-with-unit input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  border: 1px solid #b79a3d;
+  border-radius: var(--radius-sm);
   background: #fff;
   color: var(--ink);
-  border-color: #b79a3d;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
+table.data tbody tr.payment-editing-row .field-with-unit {
+  width: 100%;
+  min-width: 6.75rem;
+}
+
+table.data tbody tr.payment-editing-row .field-with-unit input {
+  width: auto;
+  min-width: 3.25rem;
+  flex: 1 1 auto;
+}
+
 table.data tbody tr.payment-editing-row .field-with-unit .field-unit {
+  min-height: 2.35rem;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
   background: #fff8e1;
-  border-color: #b79a3d;
+  border: 1px solid #b79a3d;
+  border-left: none;
   color: var(--ink);
 }
 
-table.data tbody tr.payment-editing-row .customer-edit-category-cell {
-  width: 10rem;
-  min-width: 10rem;
-  max-width: 10rem;
-}
-
-table.data tbody tr.payment-editing-row .customer-edit-category-select {
-  display: block;
+table.data tbody tr.payment-editing-row .customer-edit-extra .field-input,
+table.data tbody tr.payment-editing-row .customer-edit-extra select {
   box-sizing: border-box;
-  width: 100%;
-  min-width: 9.5rem;
-  height: 2.35rem;
-  padding: 0.35rem 2rem 0.35rem 0.65rem;
-  border: 1.5px solid #8a7020;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  border: 1px solid #b79a3d;
   border-radius: var(--radius-sm);
   background: #fff;
-  color: #14171c;
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1.2;
-  appearance: auto;
-  -webkit-appearance: menulist;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
-}
-
-table.data tbody tr.payment-editing-row td.customer-edit-amount-cell {
-  white-space: normal;
-  min-width: 7.25rem;
-  max-width: 8rem;
-  vertical-align: middle;
-}
-
-table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-with-unit {
-  min-width: 6.75rem;
-  width: 100%;
-  max-width: 7.5rem;
-  margin-left: auto;
-}
-
-table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-with-unit input {
-  width: auto;
-  min-width: 3.25rem;
-  padding: 0.3rem 0.4rem;
-  font-size: 0.75rem;
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-}
-
-table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-unit {
-  padding: 0 0.4rem;
-  font-size: 0.68rem;
+  color: var(--ink);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
 }
 
 .customer-edit-extra-row td {
@@ -2589,6 +2634,55 @@ table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-unit {
 .customer-edit-extra {
   margin: 0;
   max-width: 56rem;
+}
+
+.customers-table:has(.payment-editing-row) th.customer-col-company,
+.customers-table:has(.payment-editing-row) td.customer-col-company {
+  width: 12.5rem;
+  min-width: 12.5rem;
+  max-width: 12.5rem;
+}
+
+.customers-table:has(.payment-editing-row) th.customer-col-category,
+.customers-table:has(.payment-editing-row) td.customer-col-category {
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
+}
+
+.customers-table:has(.payment-editing-row) th.customer-col-credit,
+.customers-table:has(.payment-editing-row) td.customer-col-credit {
+  width: 9rem;
+  min-width: 9rem;
+  max-width: 9rem;
+}
+
+.customers-table:has(.payment-editing-row) th.customer-col-opening,
+.customers-table:has(.payment-editing-row) td.customer-col-opening {
+  width: 10rem;
+  min-width: 10rem;
+  max-width: 10rem;
+}
+
+.customers-table:has(.payment-editing-row) th.customer-col-sector,
+.customers-table:has(.payment-editing-row) td.customer-col-sector {
+  width: 10.5rem;
+  min-width: 10.5rem;
+  max-width: 10.5rem;
+}
+
+.customers-table:has(.payment-editing-row) th.customer-col-sales-exec,
+.customers-table:has(.payment-editing-row) td.customer-col-sales-exec {
+  width: 11.5rem;
+  min-width: 11.5rem;
+  max-width: 11.5rem;
+}
+
+.customers-table:has(.payment-editing-row) td.customer-col-credit .field-with-unit,
+.customers-table:has(.payment-editing-row) td.customer-col-opening .field-with-unit {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 .dispatch-bool-toggle {
@@ -2931,36 +3025,42 @@ table.data tbody tr.payment-editing-row .customer-edit-amount-cell .field-unit {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  overflow: auto;
+  overflow: visible;
   background: rgba(255, 255, 255, 0.62);
 }
 
 .home-profit-table {
   width: 100%;
   min-width: 28rem;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   table-layout: fixed;
 }
 
-.home-profit-table th,
-.home-profit-table td {
-  padding: 0.42rem 0.7rem;
-  text-align: right;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
 .home-profit-table thead th {
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+  position: sticky;
+  top: 0;
+  z-index: 5;
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
   background: rgba(31, 92, 85, 0.06);
+  box-shadow: inset 0 -1px 0 var(--line);
 }
 
 .home-profit-table .home-profit-table-stub {
   width: 8.5rem;
+}
+
+.home-profit-table tbody th,
+.home-profit-table tbody td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
+  text-align: right;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .home-profit-table tbody th {
@@ -3721,7 +3821,7 @@ a.home-quality-row:hover {
   border-radius: var(--radius);
   background: var(--surface-solid);
   box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .ledger-panel {
@@ -3744,7 +3844,7 @@ a.home-quality-row:hover {
   font-size: 0.8125rem;
   font-weight: 700;
   letter-spacing: 0.02em;
-  text-transform: none;
+  text-transform: capitalize;
   text-align: center;
   line-height: 1.2;
   color: var(--accent);
@@ -3754,7 +3854,11 @@ a.home-quality-row:hover {
 
 .ledger-panel-body {
   flex: 1;
-  overflow-x: auto;
+  overflow: visible;
+}
+
+.ledger-panel-body .table-h-scroll {
+  display: contents;
 }
 
 .ledger-panel-body table {
@@ -3762,21 +3866,18 @@ a.home-quality-row:hover {
   width: 100%;
 }
 
-.ledger-panel-body thead th {
+.ledger-panel-body table.data thead th {
   border-top: none;
-  position: sticky;
-  top: 0;
-  z-index: 1;
   background: #f3f6f5;
   color: var(--ink-soft);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-  text-transform: none;
+  text-transform: capitalize;
   white-space: nowrap;
-  padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--line-strong);
   vertical-align: bottom;
+  box-shadow: inset 0 -1px 0 var(--line);
 }
 
 .ledger-panel-body table.data th.cell-num {
@@ -3784,18 +3885,17 @@ a.home-quality-row:hover {
 }
 
 .ledger-panel-body table.data td {
-  padding: 0.55rem 0.85rem;
   font-size: 0.8125rem;
 }
 
 .ledger-panel-body table.data th:first-child,
 .ledger-panel-body table.data td:first-child {
-  padding-left: 1rem;
+  padding-left: var(--table-cell-padding-x);
 }
 
 .ledger-panel-body table.data th:last-child,
 .ledger-panel-body table.data td:last-child {
-  padding-right: 1rem;
+  padding-right: var(--table-cell-padding-x);
 }
 
 @media (max-width: 1100px) {
@@ -3925,44 +4025,44 @@ table.data.ageing-table th.cell-num button.th-sort {
 
 table.data.ageing-table thead th {
   position: sticky;
-  top: var(--app-header-height);
+  top: 0;
   z-index: 5;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
 }
 
 table.data.ageing-table thead tr.ageing-amount-row th {
-  top: var(--app-header-height);
+  top: 0;
   z-index: 5;
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  text-transform: none;
+  text-transform: capitalize;
   letter-spacing: 0;
   color: var(--ink);
 }
 
 table.data.ageing-table thead tr.ageing-days-row th {
-  top: calc(var(--app-header-height) + 2.35rem);
+  top: var(--table-head-row-height);
   z-index: 5;
   font-size: 0.875rem;
   letter-spacing: 0;
-  text-transform: none;
+  text-transform: capitalize;
 }
 
 table.data.ageing-table thead tr.ageing-days-row th button.th-sort {
   font-size: 0.875rem;
   letter-spacing: 0;
-  text-transform: none;
+  text-transform: capitalize;
 }
 
 .ageing-table th.ageing-customer-col,
 .ageing-table td.ageing-customer-col {
   position: sticky;
   left: 0;
-  width: 14.375rem;
-  min-width: 14.375rem;
-  max-width: 14.375rem;
+  width: 16.5rem;
+  min-width: 16.5rem;
+  max-width: 16.5rem;
   white-space: normal;
   box-shadow: 1px 0 0 var(--line);
 }
@@ -3970,7 +4070,7 @@ table.data.ageing-table thead tr.ageing-days-row th button.th-sort {
 .ageing-table th.ageing-total-col,
 .ageing-table td.ageing-total-col {
   position: sticky;
-  left: 14.375rem;
+  left: 16.5rem;
   min-width: 7.5rem;
   box-shadow: 1px 0 0 var(--line);
 }
@@ -3985,40 +4085,40 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-customer-col {
   vertical-align: middle;
   font-size: 0.875rem;
   letter-spacing: 0;
-  text-transform: none;
+  text-transform: capitalize;
   box-shadow: 1px 0 0 var(--line);
 }
 
 table.data.ageing-table thead th.ageing-customer-col button.th-sort {
   font-size: 0.875rem;
   letter-spacing: 0;
-  text-transform: none;
+  text-transform: capitalize;
 }
 
 table.data.ageing-table thead tr.ageing-amount-row th.ageing-customer-col {
-  top: var(--app-header-height);
+  top: 0;
 }
 
 table.data.ageing-table thead tr.ageing-days-row th.ageing-customer-col {
-  top: calc(var(--app-header-height) + 2.35rem);
+  top: var(--table-head-row-height);
 }
 
 table.data.ageing-table thead th.ageing-total-col,
 table.data.ageing-table thead tr.ageing-amount-row th.ageing-total-col,
 table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   position: sticky;
-  left: 14.375rem;
+  left: 16.5rem;
   z-index: 7;
   background: #f8fafb;
   box-shadow: 1px 0 0 var(--line);
 }
 
 table.data.ageing-table thead tr.ageing-amount-row th.ageing-total-col {
-  top: var(--app-header-height);
+  top: 0;
 }
 
 table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
-  top: calc(var(--app-header-height) + 2.35rem);
+  top: var(--table-head-row-height);
 }
 
 .ageing-table td.ageing-customer-col,
@@ -4064,6 +4164,246 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   }
 }
 
+/* Collection Engine — same table layout as Approvals */
+table.data.collection-engine-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+}
+
+table.data.collection-engine-table thead th,
+table.data.collection-engine-table thead th button.th-sort {
+  background: #ffffff;
+}
+
+table.data.collection-engine-table tbody td {
+  background: #ffffff;
+}
+
+table.data.collection-engine-table tbody tr:hover td {
+  background: #ffffff;
+}
+
+table.data.collection-engine-table th.collection-engine-customer-col,
+table.data.collection-engine-table td.collection-engine-customer-col {
+  position: sticky;
+  left: 0;
+  width: 15rem;
+  min-width: 15rem;
+  max-width: 15rem;
+  white-space: normal;
+  word-break: break-word;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    1px 0 0 var(--line),
+    4px 0 8px -2px rgba(20, 23, 28, 0.08);
+}
+
+table.data.collection-engine-table th.collection-engine-customer-col {
+  z-index: 7;
+  background-color: #ffffff;
+}
+
+table.data.collection-engine-table td.collection-engine-customer-col {
+  z-index: 4;
+  background-color: #ffffff;
+}
+
+table.data.collection-engine-table tbody tr:hover td.collection-engine-customer-col {
+  background-color: #ffffff;
+}
+
+table.data.collection-engine-table tbody tr.payment-row-yesterday td.collection-engine-customer-col {
+  background-color: #e8f2f0;
+}
+
+table.data.collection-engine-table tbody tr.payment-row-yesterday:hover td.collection-engine-customer-col {
+  background-color: #dcebe8;
+}
+
+table.data.collection-engine-table th.collection-engine-customer-col button.th-sort {
+  background-color: #ffffff;
+}
+
+table.data.collection-engine-table td.collection-engine-customer-col .btn-link {
+  white-space: normal;
+  word-break: break-word;
+}
+
+table.data.collection-engine-table th.collection-date-col,
+table.data.collection-engine-table td.collection-date-col {
+  width: 12.5rem;
+  min-width: 12.5rem;
+  max-width: 12.5rem;
+}
+
+table.data.collection-engine-table td.collection-date-col .collection-date-input {
+  display: block;
+  flex: 1 1 auto;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+table.data.collection-engine-table tbody tr.payment-row-yesterday td {
+  background: rgba(31, 92, 85, 0.12);
+}
+
+table.data.collection-engine-table tbody tr.payment-row-yesterday:hover td {
+  background: rgba(31, 92, 85, 0.18);
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-today td {
+  background: rgba(180, 140, 20, 0.08);
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-today:hover td {
+  background: rgba(180, 140, 20, 0.14);
+}
+
+table.data.collection-engine-table tbody tr.collection-row-due-call td {
+  background: rgba(155, 44, 44, 0.08);
+}
+
+table.data.collection-engine-table tbody tr.collection-row-due-call:hover td {
+  background: rgba(155, 44, 44, 0.14);
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-today td.collection-engine-customer-col {
+  background-color: #f9f5ec;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-today:hover td.collection-engine-customer-col {
+  background-color: #f4efde;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-due-call td.collection-engine-customer-col {
+  background-color: #f7eeee;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-due-call:hover td.collection-engine-customer-col {
+  background-color: #f1e1e1;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-today .collection-date-input {
+  border-color: rgba(180, 140, 20, 0.35);
+}
+
+table.data.collection-engine-table tbody tr.collection-row-due-call .collection-date-input {
+  border-color: rgba(155, 44, 44, 0.35);
+}
+
+/* Report tables — wider customer column for two-line names */
+.report-page table.data th.report-customer-col,
+.report-page table.data td.report-customer-col {
+  min-width: 16.5rem;
+  max-width: 22rem;
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: middle;
+}
+
+.report-page table.data td.report-customer-col .btn-link,
+.report-page table.data td.report-customer-col .ca-list-link {
+  white-space: normal;
+  word-break: break-word;
+}
+
+table.data.sales-engine-table td .collection-date-input {
+  width: 9.5rem;
+  min-width: 0;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-today td {
+  background: rgba(180, 140, 20, 0.08);
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-today:hover td {
+  background: rgba(180, 140, 20, 0.14);
+}
+
+table.data.sales-engine-table tbody tr.collection-row-due-call td {
+  background: rgba(155, 44, 44, 0.08);
+}
+
+table.data.sales-engine-table tbody tr.collection-row-due-call:hover td {
+  background: rgba(155, 44, 44, 0.14);
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-today .collection-date-input {
+  border-color: rgba(180, 140, 20, 0.35);
+}
+
+table.data.sales-engine-table tbody tr.collection-row-due-call .collection-date-input {
+  border-color: rgba(155, 44, 44, 0.35);
+}
+
+/* Full-width tables — edge to edge in main content area */
+.approvals-page .table-wrap,
+.report-page .table-wrap,
+.report-page .ledger-panels {
+  margin-inline: -2rem;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
+.approvals-page .table-wrap:not(.ageing-table-wrap),
+.report-page .table-wrap:not(.ageing-table-wrap) {
+  width: calc(100% + 4rem);
+}
+
+.report-page .table-wrap.ageing-table-wrap,
+.approvals-page .table-wrap.ageing-table-wrap {
+  width: calc(100% + 4rem);
+  min-width: calc(100% + 4rem);
+  max-width: none;
+}
+
+.report-page .ledger-panels {
+  width: calc(100% + 4rem);
+}
+
+/* Sticky table headers — scroll is on .app-main; table wrappers stay overflow-free */
+.report-page .table-wrap,
+.approvals-page .table-wrap {
+  overflow: visible;
+}
+
+.report-page table.data thead th,
+.report-page table.data thead th button.th-sort {
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+}
+
+.report-page table.data thead th.cell-num,
+.report-page table.data thead th.cell-num button.th-sort {
+  text-align: right;
+}
+
+.approvals-page table.data thead th,
+.approvals-page table.data thead th button.th-sort {
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0;
+  color: var(--ink-soft);
+}
+
+.approvals-page table.data thead th.cell-num,
+.approvals-page table.data thead th.cell-num button.th-sort {
+  text-align: right;
+}
+
 .bill-status {
   display: inline-flex;
   align-items: center;
@@ -4091,6 +4431,34 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
 
 .bill-files-cell {
   white-space: nowrap;
+}
+
+.bill-remark-preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  max-width: 14rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.12em;
+}
+
+.bill-remark-preview:hover {
+  color: var(--accent);
+}
+
+.bill-remark-full {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.5;
 }
 
 .bill-files-chip {
@@ -4123,8 +4491,7 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   gap: 0.12rem;
 }
 
-.bill-files-chip-icons svg,
-.bill-file-preview-tab svg {
+.bill-files-chip-icons svg {
   display: block;
   width: 14px;
   height: 14px;
@@ -4136,45 +4503,6 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   flex-direction: column;
   flex: 1;
   min-height: 0;
-}
-
-.bill-file-preview-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin: 0;
-  padding: 0.85rem 1.15rem 0;
-  list-style: none;
-}
-
-.bill-file-preview-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  max-width: 14rem;
-  margin: 0;
-  padding: 0.3rem 0.65rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #f8fafb;
-  color: var(--ink-soft);
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.bill-file-preview-tab span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bill-file-preview-tab:hover,
-.bill-file-preview-tab.is-active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-color: rgba(31, 92, 85, 0.18);
 }
 
 .bill-file-preview-toolbar {
@@ -4222,35 +4550,32 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   background: #fff;
 }
 
-.bill-file-picker {
-  margin: 0;
+.bill-file-field {
+  position: relative;
+}
+
+.bill-file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   padding: 0;
-  list-style: none;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.bill-file-picker {
-  margin-top: 0.55rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.bill-file-picker li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.35rem 0.55rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: #f8fafb;
-  font-size: 0.8125rem;
-}
-
-.bill-file-hint {
-  margin: 0.45rem 0 0;
+.bill-file-trigger {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
   color: var(--muted);
-  font-size: 0.8125rem;
+}
+
+.bill-file-trigger.has-file {
+  color: var(--ink);
 }
 
 .bill-review-meta {
@@ -4278,4 +4603,282 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   clip: rect(0, 0, 0, 0);
   border: 0;
   box-shadow: none;
+}
+
+/* Report screen tables — demo + future rollout */
+table.data.report-screen-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+table.data.report-screen-table thead th {
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+  white-space: nowrap;
+}
+
+table.data.report-screen-table tbody td,
+table.data.report-screen-table tfoot td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
+  white-space: nowrap;
+}
+
+table.data.report-screen-table th.col-date,
+table.data.report-screen-table td.col-date {
+  min-width: 7rem;
+}
+
+table.data.report-screen-table th.col-code,
+table.data.report-screen-table td.col-code {
+  min-width: 6.5rem;
+}
+
+table.data.report-screen-table th.col-name,
+table.data.report-screen-table td.col-name {
+  min-width: 12rem;
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.data.report-screen-table th.col-qty,
+table.data.report-screen-table td.col-qty {
+  min-width: 7rem;
+}
+
+table.data.report-screen-table th.col-amt,
+table.data.report-screen-table td.col-amt {
+  min-width: 8.5rem;
+}
+
+table.data.report-screen-table th.col-status,
+table.data.report-screen-table td.col-status {
+  min-width: 6rem;
+}
+
+table.data.collection-table.report-screen-table {
+  table-layout: auto;
+}
+
+table.data.collection-table.report-screen-table thead th {
+  font-size: 0.72rem;
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+  line-height: 1.35;
+}
+
+table.data.collection-table.report-screen-table tbody td,
+table.data.collection-table.report-screen-table tfoot td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
+  line-height: 1.35;
+}
+
+table.data.collection-table.report-screen-table th.collection-customer-col,
+table.data.collection-table.report-screen-table td.collection-customer-col {
+  width: auto;
+  min-width: 12rem;
+  max-width: 18rem;
+}
+
+table.data.collection-table.report-screen-table th.collection-date-col,
+table.data.collection-table.report-screen-table td.collection-date-col {
+  width: auto;
+  min-width: 12.5rem;
+  max-width: 14rem;
+}
+
+table.data.sales-engine-table.report-screen-table thead th {
+  font-size: 0.72rem;
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+  line-height: 1.35;
+}
+
+table.data.sales-engine-table.report-screen-table tbody td,
+table.data.sales-engine-table.report-screen-table tfoot td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
+  line-height: 1.35;
+}
+
+table.data.sales-engine-table.report-screen-table th.sales-engine-customer-col,
+table.data.sales-engine-table.report-screen-table td.sales-engine-customer-col {
+  width: auto;
+  min-width: 12rem;
+  max-width: 18rem;
+}
+
+table.data.sales-engine-table.report-screen-table th.sales-engine-purchaser-col,
+table.data.sales-engine-table.report-screen-table td.sales-engine-purchaser-col {
+  width: auto;
+  min-width: 10rem;
+  max-width: 14rem;
+}
+
+table.data.sales-engine-table.report-screen-table th.sales-engine-sale-exec-col,
+table.data.sales-engine-table.report-screen-table td.sales-engine-sale-exec-col {
+  width: auto;
+  min-width: 9rem;
+  max-width: 12rem;
+}
+
+table.data.sales-engine-table.report-screen-table th.col-date,
+table.data.sales-engine-table.report-screen-table td.col-date {
+  min-width: 10.5rem;
+}
+
+table.data.ageing-table.report-screen-table th.ageing-customer-col,
+table.data.ageing-table.report-screen-table td.ageing-customer-col {
+  width: auto;
+  min-width: 12rem;
+  max-width: 18rem;
+}
+
+table.data.transport-engine-table.report-screen-table thead th {
+  font-size: 0.72rem;
+  padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+  line-height: 1.35;
+}
+
+table.data.transport-engine-table.report-screen-table tbody td,
+table.data.transport-engine-table.report-screen-table tfoot td {
+  padding: var(--table-body-padding-y) var(--table-cell-padding-x);
+  line-height: 1.35;
+}
+
+.report-spacing-demo-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.report-spacing-demo-toggle {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+.report-spacing-demo-toggle-btn {
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border: 0;
+  border-radius: calc(var(--radius-sm) - 2px);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.report-spacing-demo-toggle-btn.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-spacing-demo-mode-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.report-spacing-demo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.report-spacing-demo-tab {
+  margin: 0;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.report-spacing-demo-tab.is-active {
+  border-color: rgba(31, 92, 85, 0.28);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-spacing-demo-section {
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+.report-spacing-demo-section-proposed {
+  border-color: rgba(31, 92, 85, 0.28);
+  background: #f9fcfb;
+}
+
+.report-spacing-demo-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.report-spacing-demo-note {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.report-spacing-demo-note code {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.8125rem;
+}
+
+.report-spacing-demo-legend {
+  padding: 1.25rem 1.35rem;
+  border-radius: var(--radius-sm);
+  background: #f8fafb;
+  border: 1px dashed var(--line-strong);
+}
+
+.report-spacing-demo-legend ul {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.report-report-spacing-demo-banner {
+  display: block;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(31, 92, 85, 0.22);
+  background: rgba(31, 92, 85, 0.06);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.report-report-spacing-demo-banner:hover {
+  background: rgba(31, 92, 85, 0.1);
+  border-color: rgba(31, 92, 85, 0.35);
+}
+
+.report-report-spacing-demo-banner strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.95rem;
+}
+
+.report-report-spacing-demo-banner span {
+  color: var(--muted);
+  font-size: 0.875rem;
 }

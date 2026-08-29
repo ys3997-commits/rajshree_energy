@@ -67,13 +67,13 @@ export function QualityReportList({
         <p className="home-empty">No quality classes match your search.</p>
       ) : (
         <div className="table-wrap table-wrap-scroll">
-          <table className="data">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
                 <th>Quality class</th>
-                <th className="num">Stock In Hand</th>
-                <th className="num">Order In Hand</th>
-                <th className="num">Unsold Qty</th>
+                <th className="cell-num">Stock In Hand</th>
+                <th className="cell-num">Order In Hand</th>
+                <th className="cell-num">Unsold Qty</th>
                 <th />
               </tr>
             </thead>
@@ -88,10 +88,10 @@ export function QualityReportList({
                       {formatQualityClass(r.qualityClass)}
                     </Link>
                   </td>
-                  <td className="num">{formatSaleOrderMt(r.poBalance)}</td>
-                  <td className="num">{formatSaleOrderMt(r.soBalance)}</td>
-                  <td className="num">{formatSaleOrderMt(r.unsoldQuantity)}</td>
-                  <td className="num">
+                  <td className="cell-num">{formatSaleOrderMt(r.poBalance)}</td>
+                  <td className="cell-num">{formatSaleOrderMt(r.soBalance)}</td>
+                  <td className="cell-num">{formatSaleOrderMt(r.unsoldQuantity)}</td>
+                  <td className="cell-num">
                     <Link
                       href={`/reports/product/${r.id}`}
                       className="btn-link"
@@ -102,7 +102,7 @@ export function QualityReportList({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

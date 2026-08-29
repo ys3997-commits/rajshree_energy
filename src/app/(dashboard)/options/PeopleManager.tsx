@@ -171,7 +171,7 @@ export function PeopleManager({
       </div>
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>Name</th>
@@ -217,7 +217,7 @@ export function PeopleManager({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <Modal

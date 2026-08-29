@@ -7,19 +7,16 @@ import {
   createOwnerOption,
   createSaleExecutiveOption,
   createSectorOption,
-  createStateOption,
   deleteCityOption,
   deleteDealingCompanyOption,
   deleteOwnerOption,
   deleteSaleExecutiveOption,
   deleteSectorOption,
-  deleteStateOption,
   updateCityOption,
   updateDealingCompanyOption,
   updateOwnerOption,
   updateSaleExecutiveOption,
   updateSectorOption,
-  updateStateOption,
 } from "@/lib/actions/option-lists";
 import {
   createOriginOption,
@@ -36,10 +33,12 @@ import {
 } from "@/lib/actions/ports";
 import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
+import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
 import { PeopleManager, type PeopleRow } from "./PeopleManager";
 
 type Opt = { id: string; name: string };
 type PortOpt = Opt & { state: string };
+type CityOpt = Opt & { state: string };
 
 type CategoryId =
   | "origins"
@@ -47,7 +46,6 @@ type CategoryId =
   | "ports"
   | "saleExecutives"
   | "cities"
-  | "states"
   | "sectors"
   | "people"
   | "owners"
@@ -86,14 +84,8 @@ const CATEGORIES: {
   {
     id: "cities",
     label: "Cities",
-    description: "Suggested cities on customers and transporters.",
+    description: "Suggested cities and states on customers and transporters.",
     placeholder: "New city",
-  },
-  {
-    id: "states",
-    label: "States",
-    description: "Suggested states on customers and transporters.",
-    placeholder: "New state",
   },
   {
     id: "sectors",
@@ -127,8 +119,7 @@ type ItemMap = {
   qualities: Opt[];
   ports: PortOpt[];
   saleExecutives: Opt[];
-  cities: Opt[];
-  states: Opt[];
+  cities: CityOpt[];
   sectors: Opt[];
   owners: Opt[];
   dealingCompanies: Opt[];
@@ -140,7 +131,6 @@ export function OptionsClient({
   ports,
   saleExecutives,
   cities,
-  states,
   sectors,
   people,
   owners,
@@ -150,8 +140,7 @@ export function OptionsClient({
   qualities: Opt[];
   ports: PortOpt[];
   saleExecutives: Opt[];
-  cities: Opt[];
-  states: Opt[];
+  cities: CityOpt[];
   sectors: Opt[];
   people: PeopleRow[];
   owners: Opt[];
@@ -163,7 +152,6 @@ export function OptionsClient({
     ports,
     saleExecutives,
     cities,
-    states,
     sectors,
     owners,
     dealingCompanies,
@@ -173,9 +161,13 @@ export function OptionsClient({
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [stateDraft, setStateDraft] = useState("");
-  const [editing, setEditing] = useState<Opt | PortOpt | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState("");
+  const [editStateDraft, setEditStateDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const hasStateColumn = activeId === "ports" || activeId === "cities";
 
   const active = CATEGORIES.find((c) => c.id === activeId) ?? CATEGORIES[0];
 
@@ -184,7 +176,7 @@ export function OptionsClient({
     const q = query.trim().toLowerCase();
     const sorted = [...items[activeId]].sort((a, b) => a.name.localeCompare(b.name));
     if (!q) return sorted;
-    if (activeId === "ports") {
+    if (activeId === "ports" || activeId === "cities") {
       return (sorted as PortOpt[]).filter(
         (item) =>
           item.name.toLowerCase().includes(q) ||
@@ -199,8 +191,29 @@ export function OptionsClient({
     setQuery("");
     setDraft("");
     setStateDraft("");
-    setEditing(null);
+    cancelEdit();
     setError(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditDraft("");
+    setEditStateDraft("");
+  }
+
+  function startEdit(item: Opt | PortOpt | CityOpt) {
+    // Defer so the Edit click is not delivered to Update/Cancel, which
+    // appear in the same place and would close edit mode immediately.
+    window.setTimeout(() => {
+      setEditingId(item.id);
+      setEditDraft(item.name);
+      if (activeId === "ports" || activeId === "cities") {
+        setEditStateDraft((item as PortOpt | CityOpt).state);
+      } else {
+        setEditStateDraft("");
+      }
+      setError(null);
+    }, 0);
   }
 
   function setCategoryItems<K extends SimpleCategoryId>(
@@ -222,9 +235,8 @@ export function OptionsClient({
       case "saleExecutives":
         return createSaleExecutiveOption(name);
       case "cities":
-        return createCityOption(name);
-      case "states":
-        return createStateOption(name);
+        if (!state) throw new Error("State is required");
+        return createCityOption(name, state);
       case "sectors":
         return createSectorOption(name);
       case "owners":
@@ -248,9 +260,8 @@ export function OptionsClient({
       case "saleExecutives":
         return updateSaleExecutiveOption(id, name);
       case "cities":
-        return updateCityOption(id, name);
-      case "states":
-        return updateStateOption(id, name);
+        if (!state) throw new Error("State is required");
+        return updateCityOption(id, name, state);
       case "sectors":
         return updateSectorOption(id, name);
       case "owners":
@@ -274,8 +285,6 @@ export function OptionsClient({
         return deleteSaleExecutiveOption(id);
       case "cities":
         return deleteCityOption(id);
-      case "states":
-        return deleteStateOption(id);
       case "sectors":
         return deleteSectorOption(id);
       case "owners":
@@ -287,7 +296,7 @@ export function OptionsClient({
     }
   }
 
-  async function onSubmit(e: FormEvent) {
+  async function onAdd(e: FormEvent) {
     e.preventDefault();
     setError(null);
     const name = capitalizeName(draft);
@@ -297,49 +306,91 @@ export function OptionsClient({
       setError("Port state is required");
       return;
     }
+    if (activeId === "cities" && !state) {
+      setError("State is required");
+      return;
+    }
 
     startTransition(async () => {
       try {
-        if (editing) {
-          await updateItem(editing.id, name, undefined, state ?? undefined);
-          if (activeId === "ports") {
-            setCategoryItems(
-              "ports",
-              items.ports
-                .map((item) =>
-                  item.id === editing.id ? { ...item, name, state: state! } : item,
-                )
-                .sort((a, b) => a.name.localeCompare(b.name)),
-            );
-          } else {
-            setCategoryItems(
-              activeId as Exclude<SimpleCategoryId, "ports">,
-              items[activeId as Exclude<SimpleCategoryId, "ports">]
-                .map((item) => (item.id === editing.id ? { ...item, name } : item))
-                .sort((a, b) => a.name.localeCompare(b.name)),
-            );
-          }
-          setEditing(null);
+        const { id } = await createItem(name, undefined, state ?? undefined);
+        if (activeId === "ports") {
+          setCategoryItems(
+            "ports",
+            [...items.ports, { id, name, state: state! }].sort((a, b) =>
+              a.name.localeCompare(b.name),
+            ),
+          );
+        } else if (activeId === "cities") {
+          setCategoryItems(
+            "cities",
+            [...items.cities, { id, name, state: state! }].sort((a, b) =>
+              a.name.localeCompare(b.name),
+            ),
+          );
         } else {
-          const { id } = await createItem(name, undefined, state ?? undefined);
-          if (activeId === "ports") {
-            setCategoryItems(
-              "ports",
-              [...items.ports, { id, name, state: state! }].sort((a, b) =>
-                a.name.localeCompare(b.name),
-              ),
-            );
-          } else {
-            setCategoryItems(
-              activeId as Exclude<SimpleCategoryId, "ports">,
-              [...items[activeId as Exclude<SimpleCategoryId, "ports">], { id, name }].sort(
-                (a, b) => a.name.localeCompare(b.name),
-              ),
-            );
-          }
+          setCategoryItems(
+            activeId as Exclude<SimpleCategoryId, "ports" | "cities">,
+            [
+              ...items[activeId as Exclude<SimpleCategoryId, "ports" | "cities">],
+              { id, name },
+            ].sort((a, b) => a.name.localeCompare(b.name)),
+          );
         }
         setDraft("");
         setStateDraft("");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Save failed");
+      }
+    });
+  }
+
+  function saveEdit() {
+    if (!editingId) return;
+    setError(null);
+    const name = capitalizeName(editDraft);
+    if (!name) return;
+    const state = capitalizeName(editStateDraft);
+    if (activeId === "ports" && !state) {
+      setError("Port state is required");
+      return;
+    }
+    if (activeId === "cities" && !state) {
+      setError("State is required");
+      return;
+    }
+
+    const id = editingId;
+    startTransition(async () => {
+      try {
+        await updateItem(id, name, undefined, state ?? undefined);
+        if (activeId === "ports") {
+          setCategoryItems(
+            "ports",
+            items.ports
+              .map((item) =>
+                item.id === id ? { ...item, name, state: state! } : item,
+              )
+              .sort((a, b) => a.name.localeCompare(b.name)),
+          );
+        } else if (activeId === "cities") {
+          setCategoryItems(
+            "cities",
+            items.cities
+              .map((item) =>
+                item.id === id ? { ...item, name, state: state! } : item,
+              )
+              .sort((a, b) => a.name.localeCompare(b.name)),
+          );
+        } else {
+          setCategoryItems(
+            activeId as Exclude<SimpleCategoryId, "ports" | "cities">,
+            items[activeId as Exclude<SimpleCategoryId, "ports" | "cities">]
+              .map((item) => (item.id === id ? { ...item, name } : item))
+              .sort((a, b) => a.name.localeCompare(b.name)),
+          );
+        }
+        cancelEdit();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
       }
@@ -356,11 +407,7 @@ export function OptionsClient({
           activeId as SimpleCategoryId,
           items[activeId as SimpleCategoryId].filter((row) => row.id !== item.id),
         );
-        if (editing?.id === item.id) {
-          setEditing(null);
-          setDraft("");
-          setStateDraft("");
-        }
+        if (editingId === item.id) cancelEdit();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Delete failed");
       }
@@ -431,16 +478,17 @@ export function OptionsClient({
           />
         ) : (
           <>
-        <form onSubmit={onSubmit} className="options-toolbar">
+        <form onSubmit={onAdd} className="options-toolbar">
           <input
             required
             className="field-input"
-            placeholder={editing ? `Edit ${active.label.toLowerCase()}` : active.placeholder}
+            placeholder={active.placeholder}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onBlur={() => {
               if (draft.trim()) setDraft(capitalizeName(draft) ?? draft);
             }}
+            disabled={pending || editingId != null}
           />
           {activeId === "ports" && (
             <select
@@ -448,100 +496,154 @@ export function OptionsClient({
               className="field-input"
               value={stateDraft}
               onChange={(e) => setStateDraft(e.target.value)}
+              disabled={pending || editingId != null}
             >
               <option value="">Select GST state</option>
-              {states.map((s) => (
-                <option key={s.id} value={s.name}>
-                  {s.name}
+              {INDIAN_STATES_AND_UTS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
                 </option>
               ))}
             </select>
           )}
-          <button type="submit" className="btn" disabled={pending}>
-            {editing ? "Update" : "Add"}
-          </button>
-          {editing && (
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => {
-                setEditing(null);
-                setDraft("");
-                setStateDraft("");
-              }}
+          {activeId === "cities" && (
+            <select
+              required
+              className="field-input"
+              value={stateDraft}
+              onChange={(e) => setStateDraft(e.target.value)}
+              disabled={pending || editingId != null}
             >
-              Cancel
-            </button>
+              <option value="">Select state</option>
+              {INDIAN_STATES_AND_UTS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
           )}
+          <button
+            type="submit"
+            className="btn"
+            disabled={pending || editingId != null}
+          >
+            Add
+          </button>
         </form>
 
         <div className="table-wrap">
-          <table className="data">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
                 <th>Name</th>
                 {activeId === "ports" && <th>GST state</th>}
+                {activeId === "cities" && <th>State</th>}
                 <th className="options-actions-col" />
               </tr>
             </thead>
             <tbody>
-              {activeId === "ports"
-                  ? (filteredOptions as PortOpt[]).map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.name}</td>
-                        <td>{item.state}</td>
+              {filteredOptions.map((item) => {
+                const isEditing = editingId === item.id;
+                const stateRow = item as PortOpt | CityOpt;
+                return (
+                  <tr
+                    key={item.id}
+                    className={isEditing ? "payment-editing-row" : undefined}
+                  >
+                    {isEditing ? (
+                      <>
+                        <td>
+                          <input
+                            required
+                            className="field-input"
+                            aria-label="Name"
+                            value={editDraft}
+                            onChange={(e) => setEditDraft(e.target.value)}
+                            onBlur={() => {
+                              if (editDraft.trim()) {
+                                setEditDraft(capitalizeName(editDraft) ?? editDraft);
+                              }
+                            }}
+                          />
+                        </td>
+                        {hasStateColumn && (
+                          <td>
+                            <select
+                              required
+                              className="field-input"
+                              aria-label={
+                                activeId === "ports" ? "GST state" : "State"
+                              }
+                              value={editStateDraft}
+                              onChange={(e) => setEditStateDraft(e.target.value)}
+                            >
+                              <option value="">
+                                {activeId === "ports"
+                                  ? "Select GST state"
+                                  : "Select state"}
+                              </option>
+                              {INDIAN_STATES_AND_UTS.map((name) => (
+                                <option key={name} value={name}>
+                                  {name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        )}
                         <td className="space-x-2 whitespace-nowrap">
                           <button
                             type="button"
-                            className="btn btn-secondary"
-                            onClick={() => {
-                              setEditing(item);
-                              setDraft(item.name);
-                              setStateDraft(item.state);
-                            }}
+                            className="btn btn-sm"
+                            onClick={saveEdit}
+                            disabled={pending}
+                          >
+                            Update
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={cancelEdit}
+                            disabled={pending}
+                          >
+                            Cancel
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{item.name}</td>
+                        {hasStateColumn && (
+                          <td>{stateRow.state || "—"}</td>
+                        )}
+                        <td className="space-x-2 whitespace-nowrap">
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => startEdit(item)}
+                            disabled={pending}
                           >
                             Edit
                           </button>
                           <button
                             type="button"
-                            className="btn btn-danger"
+                            className="btn btn-danger btn-sm"
                             onClick={() => onDelete(item)}
                             disabled={pending}
                           >
                             Delete
                           </button>
                         </td>
-                      </tr>
-                    ))
-                  : filteredOptions.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.name}</td>
-                      <td className="space-x-2 whitespace-nowrap">
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          onClick={() => {
-                            setEditing(item);
-                            setDraft(item.name);
-                            setStateDraft("");
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger"
-                          onClick={() => onDelete(item)}
-                          disabled={pending}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                      </>
+                    )}
+                  </tr>
+                );
+              })}
               {filteredOptions.length === 0 && (
                 <tr>
-                  <td colSpan={activeId === "ports" ? 3 : 2} className="options-empty">
+                  <td
+                    colSpan={hasStateColumn ? 3 : 2}
+                    className="options-empty"
+                  >
                     {query.trim()
                       ? "No matches for your search."
                       : `No ${active.label.toLowerCase()} yet. Add one above.`}
@@ -549,7 +651,7 @@ export function OptionsClient({
                 </tr>
               )}
             </tbody>
-          </table>
+          </table></div>
         </div>
           </>
         )}

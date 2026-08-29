@@ -42,7 +42,7 @@ export function PendingReceiptsClient({ initial }: { initial: Row[] }) {
       {error && <div className="error-box">{error}</div>}
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>Dispatch date</th>
@@ -116,7 +116,7 @@ export function PendingReceiptsClient({ initial }: { initial: Row[] }) {
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

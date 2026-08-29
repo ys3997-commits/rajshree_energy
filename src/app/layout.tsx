@@ -33,7 +33,7 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${newsreader.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="h-full min-h-full">{children}</body>
     </html>
   );
 }

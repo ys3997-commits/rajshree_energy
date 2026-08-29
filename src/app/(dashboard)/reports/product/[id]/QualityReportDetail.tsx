@@ -113,18 +113,18 @@ export function QualityReportDetail({
         </div>
         {vessels.length === 0 ? (
           <div className="table-wrap">
-            <p className="empty-state">
+            <div className="table-h-scroll"><p className="empty-state">
               No vessels linked to this quality class.
-            </p>
+            </p></div>
           </div>
         ) : (
           <div className="table-wrap table-wrap-scroll">
-            <table className="data">
+            <div className="table-h-scroll"><table className="data">
               <thead>
                 <tr>
                   <th>Vessel</th>
                   <th>Port</th>
-                  <th className="num">Balance</th>
+                  <th className="cell-num">Balance</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,13 +145,13 @@ export function QualityReportDetail({
                       {!v.active ? " · Inactive" : ""}
                     </td>
                     <td>{formatPort(v.portName, v.portState)}</td>
-                    <td className="num">
+                    <td className="cell-num">
                       {formatSaleOrderMt(v.balanceQuantity)}
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
         )}
       </section>

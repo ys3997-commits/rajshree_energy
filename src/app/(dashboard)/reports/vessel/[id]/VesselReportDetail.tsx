@@ -9,7 +9,7 @@ import {
   displayOrderQuantity,
   formatOrderStatusForDisplay,
   formatQualityClass,
-  formatRs,
+  formatAmount,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 
@@ -88,8 +88,8 @@ export function VesselReportDetail({
           closing: formatSaleOrderMt(o.closingQuantity),
           balance: formatSaleOrderMt(displayOrderBalance(displayRow)),
           vendor: o.vendorName,
-          basicPrice: formatRs(o.rate),
-          finalPrice: formatRs(o.finalRate),
+          basicPrice: formatAmount(o.rate),
+          finalPrice: formatAmount(o.finalRate),
           status: formatOrderStatusForDisplay(displayRow),
         };
       }),
@@ -161,24 +161,24 @@ export function VesselReportDetail({
         </div>
         {purchaseOrders.length === 0 ? (
           <div className="table-wrap">
-            <p className="empty-state">
+            <div className="table-h-scroll"><p className="empty-state">
               No purchase orders linked to this vessel.
-            </p>
+            </p></div>
           </div>
         ) : (
           <div className="table-wrap table-wrap-scroll">
-            <table className="data report-table">
+            <div className="table-h-scroll"><table className="data">
               <thead>
                 <tr>
                   <th>PO number</th>
                   <th>Date</th>
-                  <th className="num">Order qty</th>
-                  <th className="num">Dispatched</th>
-                  <th className="num">Closing</th>
-                  <th className="num">Balance</th>
+                  <th className="cell-num">Order qty</th>
+                  <th className="cell-num">Dispatched</th>
+                  <th className="cell-num">Closing</th>
+                  <th className="cell-num">Balance</th>
                   <th>Vendor</th>
-                  <th className="num">Basic price</th>
-                  <th className="num">Final price</th>
+                  <th className="cell-num">Basic price</th>
+                  <th className="cell-num">Final price</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -200,22 +200,24 @@ export function VesselReportDetail({
                           {o.poNumber}
                         </Link>
                       </td>
-                      <td className="cell-date">{formatDate(o.orderDate)}</td>
-                      <td className="num">
+                      <td className="cell-date">
+                        {formatDate(o.orderDate)}
+                      </td>
+                      <td className="cell-num">
                         {formatSaleOrderMt(displayOrderQuantity(displayRow))}
                       </td>
-                      <td className="num">
+                      <td className="cell-num">
                         {formatSaleOrderMt(o.dispatchedOrder)}
                       </td>
-                      <td className="num">
+                      <td className="cell-num">
                         {formatSaleOrderMt(o.closingQuantity)}
                       </td>
-                      <td className="num">
+                      <td className="cell-num">
                         {formatSaleOrderMt(displayOrderBalance(displayRow))}
                       </td>
                       <td>{o.vendorName}</td>
-                      <td className="num">{formatRs(o.rate)}</td>
-                      <td className="num">{formatRs(o.finalRate)}</td>
+                      <td className="cell-num">{formatAmount(o.rate)}</td>
+                      <td className="cell-num">{formatAmount(o.finalRate)}</td>
                       <td>
                         {formatOrderStatusForDisplay(displayRow)}
                       </td>
@@ -223,7 +225,7 @@ export function VesselReportDetail({
                   );
                 })}
               </tbody>
-            </table>
+            </table></div>
           </div>
         )}
       </section>

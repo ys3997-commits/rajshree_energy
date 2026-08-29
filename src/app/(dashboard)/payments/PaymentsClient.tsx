@@ -331,7 +331,7 @@ export function PaymentsClient({
       {error && <div className="error-box">{error}</div>}
 
       <div className="table-wrap payments-table-wrap">
-        <table className="data payments-table">
+        <div className="table-h-scroll"><table className="data payments-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -562,7 +562,7 @@ export function PaymentsClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       {totalPages > 1 && (

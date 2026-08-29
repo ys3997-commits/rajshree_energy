@@ -7,7 +7,7 @@ import { CustomerCategory } from "@/generated/prisma";
 import type { CustomerAnalysisListRow } from "@/lib/actions/reports";
 import {
   formatCustomerCategory,
-  formatRs,
+  formatAmount,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 
@@ -137,12 +137,12 @@ export function CustomerAnalysisList({
     () =>
       filtered.map((c) => ({
         customer: c.name,
-        openingDue: formatRs(c.openingDue),
+        openingDue: formatAmount(c.openingDue),
         category: formatCustomerCategory(c.category),
         totalQuantity: formatSaleOrderMt(c.totalQuantity),
-        totalDue: formatRs(c.due),
-        totalMargin: formatRs(c.totalProfit),
-        marginPmt: formatRs(c.marginPmt),
+        totalDue: formatAmount(c.due),
+        totalMargin: formatAmount(c.totalProfit),
+        marginPmt: formatAmount(c.marginPmt),
       })),
     [filtered],
   );
@@ -172,19 +172,19 @@ export function CustomerAnalysisList({
           <div className="detail-stat">
             <span className="detail-stat-label">Total due</span>
             <span className="detail-stat-value">
-              {formatRs(summary.totalDue)}
+              {formatAmount(summary.totalDue)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Total Margin</span>
             <span className="detail-stat-value">
-              {formatRs(summary.totalMargin)}
+              {formatAmount(summary.totalMargin)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Margin PMT</span>
             <span className="detail-stat-value">
-              {formatRs(summary.marginPmt)}
+              {formatAmount(summary.marginPmt)}
             </span>
           </div>
         </div>
@@ -250,10 +250,10 @@ export function CustomerAnalysisList({
         <p className="home-empty">No customers match your filter.</p>
       ) : (
         <div className="table-wrap">
-          <table className="data">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
-                <th>
+                <th className="report-customer-col">
                   <button
                     type="button"
                     className="th-sort"
@@ -263,7 +263,7 @@ export function CustomerAnalysisList({
                     {sortIndicator(sortKey === "name", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -274,7 +274,7 @@ export function CustomerAnalysisList({
                   </button>
                 </th>
                 <th>Category</th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -284,7 +284,7 @@ export function CustomerAnalysisList({
                     {sortIndicator(sortKey === "totalQuantity", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -294,7 +294,7 @@ export function CustomerAnalysisList({
                     {sortIndicator(sortKey === "due", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -304,7 +304,7 @@ export function CustomerAnalysisList({
                     {sortIndicator(sortKey === "totalProfit", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -326,7 +326,7 @@ export function CustomerAnalysisList({
                       : "ca-list-row customer-row-inactive"
                   }
                 >
-                  <td>
+                  <td className="report-customer-col">
                     <Link
                       href={customerDetailHref(c.id, dateFrom, dateTo)}
                       className="ca-list-link"
@@ -334,16 +334,18 @@ export function CustomerAnalysisList({
                       {c.name}
                     </Link>
                   </td>
-                  <td className="num">{formatRs(c.openingDue)}</td>
+                  <td className="cell-num">{formatAmount(c.openingDue)}</td>
                   <td>{formatCustomerCategory(c.category)}</td>
-                  <td className="num">{formatSaleOrderMt(c.totalQuantity)}</td>
-                  <td className="num">{formatRs(c.due)}</td>
-                  <td className="num">{formatRs(c.totalProfit)}</td>
-                  <td className="num">{formatRs(c.marginPmt)}</td>
+                  <td className="cell-num">
+                    {formatSaleOrderMt(c.totalQuantity)}
+                  </td>
+                  <td className="cell-num">{formatAmount(c.due)}</td>
+                  <td className="cell-num">{formatAmount(c.totalProfit)}</td>
+                  <td className="cell-num">{formatAmount(c.marginPmt)}</td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

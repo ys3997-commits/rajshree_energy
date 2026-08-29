@@ -166,7 +166,7 @@ export function VesselsClient({
       </form>
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>Vessel</th>
@@ -225,7 +225,7 @@ export function VesselsClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

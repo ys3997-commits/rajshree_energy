@@ -123,10 +123,10 @@ export function SaleAnalysisClient({
   const stateExportColumns = [
     { key: "product", header: "Product" },
     { key: "state", header: "State" },
-    { key: "stateQty", header: "State qty (MT)", align: "right" as const },
+    { key: "stateQty", header: "State qty", align: "right" as const },
     { key: "statePct", header: "State %", align: "right" as const },
     { key: "city", header: "City" },
-    { key: "cityQty", header: "City qty (MT)", align: "right" as const },
+    { key: "cityQty", header: "City qty", align: "right" as const },
     { key: "cityPct", header: "City %", align: "right" as const },
   ];
 
@@ -153,7 +153,7 @@ export function SaleAnalysisClient({
   const cityExportColumns = [
     { key: "product", header: "Product" },
     { key: "city", header: "City" },
-    { key: "cityQty", header: "City qty (MT)", align: "right" as const },
+    { key: "cityQty", header: "City qty", align: "right" as const },
     { key: "cityPct", header: "City %", align: "right" as const },
     { key: "state", header: "State" },
   ];
@@ -275,16 +275,16 @@ export function SaleAnalysisClient({
           <p className="home-empty">No sale dispatches match your filters.</p>
         ) : (
           <div className="table-wrap table-wrap-scroll">
-            <table className="data sale-analysis-table">
+            <div className="table-h-scroll"><table className="data sale-analysis-table">
               <thead>
                 <tr>
                   <th>Product</th>
                   <th>State</th>
-                  <th className="num">State qty</th>
-                  <th className="num">State %</th>
+                  <th className="cell-num">State qty</th>
+                  <th className="cell-num">State %</th>
                   <th>City</th>
-                  <th className="num">City qty</th>
-                  <th className="num">City %</th>
+                  <th className="cell-num">City qty</th>
+                  <th className="cell-num">City %</th>
                 </tr>
               </thead>
               <tbody>
@@ -349,40 +349,40 @@ export function SaleAnalysisClient({
                             </td>
                           ) : null}
                           {showState ? (
-                            <td className="num" rowSpan={stateRowSpan}>
+                            <td className="cell-num" rowSpan={stateRowSpan}>
                               {formatSaleOrderMt(state.quantity)}
                             </td>
                           ) : null}
                           {showState ? (
-                            <td className="num" rowSpan={stateRowSpan}>
+                            <td className="cell-num" rowSpan={stateRowSpan}>
                               {formatPct(state.percent)}
                             </td>
                           ) : null}
                           <td>{titleCasePlace(city.city)}</td>
-                          <td className="num">
+                          <td className="cell-num">
                             {formatSaleOrderMt(city.quantity)}
                           </td>
-                          <td className="num">{formatPct(city.percent)}</td>
+                          <td className="cell-num">{formatPct(city.percent)}</td>
                         </tr>
                       );
                     });
                   });
                 })}
               </tbody>
-            </table>
+            </table></div>
           </div>
         )
       ) : filteredCityProducts.length === 0 ? (
         <p className="home-empty">No sale dispatches match your filters.</p>
       ) : (
         <div className="table-wrap table-wrap-scroll">
-          <table className="data sale-analysis-table">
+          <div className="table-h-scroll"><table className="data sale-analysis-table">
             <thead>
               <tr>
                 <th>Product</th>
                 <th>City</th>
-                <th className="num">City qty</th>
-                <th className="num">City %</th>
+                <th className="cell-num">City qty</th>
+                <th className="cell-num">City %</th>
                 <th>State</th>
               </tr>
             </thead>
@@ -428,14 +428,14 @@ export function SaleAnalysisClient({
                       </td>
                     ) : null}
                     <td>{titleCasePlace(city.city)}</td>
-                    <td className="num">{formatSaleOrderMt(city.quantity)}</td>
-                    <td className="num">{formatPct(city.percent)}</td>
+                    <td className="cell-num">{formatSaleOrderMt(city.quantity)}</td>
+                    <td className="cell-num">{formatPct(city.percent)}</td>
                     <td>{titleCasePlace(city.state)}</td>
                   </tr>
                 ));
               })}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

@@ -9,7 +9,7 @@ import {
   capitalizeName,
   formatCustomerCategory,
   formatDispatchMt,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 
 function formatDateDdMmYyyy(value: string | null | undefined): string {
@@ -29,7 +29,7 @@ function exportBlank(value: string | null | undefined): string {
 
 function formatRate(value: string | null): string {
   if (value == null || value === "") return "—";
-  return formatRs(value);
+  return formatAmount(value);
 }
 
 function exportDate(value: string | null | undefined): string {
@@ -39,7 +39,7 @@ function exportDate(value: string | null | undefined): string {
 
 function exportRate(value: string | null | undefined): string {
   if (value == null || value === "") return "";
-  return exportBlank(formatRs(value));
+  return exportBlank(formatAmount(value));
 }
 
 function exportWeight(value: string | null | undefined): string {
@@ -49,7 +49,7 @@ function exportWeight(value: string | null | undefined): string {
 
 function exportRsAmount(value: string | null | undefined): string {
   if (value == null || value === "") return "";
-  return exportBlank(formatRs(value));
+  return exportBlank(formatAmount(value));
 }
 
 /** Fund paid and discount received display as "- Rs …". */
@@ -58,7 +58,7 @@ function formatFundAmount(
   amount: string | null,
 ): string {
   if (amount == null) return "—";
-  const formatted = formatRs(amount);
+  const formatted = formatAmount(amount);
   if (fundType === "Fund paid" || fundType === "Discount received") {
     return `- ${formatted}`;
   }
@@ -298,24 +298,24 @@ export function LedgerClient({
             <div className="detail-stat">
               <span className="detail-stat-label">Opening balance</span>
               <span className="detail-stat-value">
-                {formatRs(openingDue)}
+                {formatAmount(openingDue)}
               </span>
             </div>
             <div className="detail-stat">
               <span className="detail-stat-label">Sale</span>
-              <span className="detail-stat-value">{formatRs(saleTotal)}</span>
+              <span className="detail-stat-value">{formatAmount(saleTotal)}</span>
             </div>
             <div className="detail-stat">
               <span className="detail-stat-label">Fund</span>
-              <span className="detail-stat-value">{formatRs(fundTotal)}</span>
+              <span className="detail-stat-value">{formatAmount(fundTotal)}</span>
             </div>
             <div className="detail-stat">
               <span className="detail-stat-label">Current due</span>
-              <span className="detail-stat-value">{formatRs(due)}</span>
+              <span className="detail-stat-value">{formatAmount(due)}</span>
             </div>
             <div className="detail-stat">
               <span className="detail-stat-label">Overdue</span>
-              <span className="detail-stat-value">{formatRs(overdue)}</span>
+              <span className="detail-stat-value">{formatAmount(overdue)}</span>
             </div>
           </div>
         ) : null}
@@ -360,7 +360,7 @@ export function LedgerClient({
         </label>
         {customerId ? (
           <TableDownloadButtons
-            title={`Ledger — ${customerLabel}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Total quantity ${formatDispatchMt(saleQuantity)} · Opening balance ${formatRs(openingDue)} · Sale ${formatRs(saleTotal)} · Fund ${formatRs(fundTotal)} · Current due ${formatRs(due)} · Overdue ${formatRs(overdue)}`}
+            title={`Ledger — ${customerLabel}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Total quantity ${formatDispatchMt(saleQuantity)} · Opening balance ${formatAmount(openingDue)} · Sale ${formatAmount(saleTotal)} · Fund ${formatAmount(fundTotal)} · Current due ${formatAmount(due)} · Overdue ${formatAmount(overdue)}`}
             filenameBase={filenameBase}
             columns={exportColumns}
             rows={exportRows}
@@ -375,7 +375,8 @@ export function LedgerClient({
           <section className="ledger-panel ledger-panel-dispatch">
             <h2 className="ledger-panel-title">Dispatch</h2>
             <div className="ledger-panel-body table-wrap-scroll">
-              <table className="data payments-table">
+              <div className="table-h-scroll">
+              <table className="data">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -384,14 +385,18 @@ export function LedgerClient({
                     <th className="cell-num">Weight</th>
                     <th className="cell-num">Basic Rate</th>
                     <th className="cell-num">GST</th>
-                    {showTcs ? <th className="cell-num">TCS</th> : null}
+                    {showTcs ? (
+                      <th className="cell-num">TCS</th>
+                    ) : null}
                     <th className="cell-num">Final Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dispatchRows.map((row) => (
                     <tr key={row.id}>
-                      <td>{formatDateDdMmYyyy(row.date)}</td>
+                      <td>
+                        {formatDateDdMmYyyy(row.date)}
+                      </td>
                       <td>{row.dispatchType ?? "—"}</td>
                       <td>
                         {row.lorryNumber?.trim() ? row.lorryNumber : "—"}
@@ -410,20 +415,22 @@ export function LedgerClient({
                       ) : null}
                       <td className="cell-num">
                         {row.finalAmount != null
-                          ? formatRs(row.finalAmount)
+                          ? formatAmount(row.finalAmount)
                           : "—"}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </section>
 
           <section className="ledger-panel ledger-panel-funds">
             <h2 className="ledger-panel-title">Funds &amp; Discounts</h2>
             <div className="ledger-panel-body table-wrap-scroll">
-              <table className="data payments-table">
+              <div className="table-h-scroll">
+              <table className="data">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -434,7 +441,9 @@ export function LedgerClient({
                 <tbody>
                   {fundRows.map((row) => (
                     <tr key={row.id}>
-                      <td>{formatDateDdMmYyyy(row.fundDate)}</td>
+                      <td>
+                        {formatDateDdMmYyyy(row.fundDate)}
+                      </td>
                       <td>{row.fundType ?? "—"}</td>
                       <td className="cell-num">
                         {formatFundAmount(row.fundType, row.fundAmount)}
@@ -443,6 +452,7 @@ export function LedgerClient({
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </section>
         </div>

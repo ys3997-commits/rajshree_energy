@@ -8,8 +8,9 @@ export const BILL_STATUS_LABEL: Record<BillStatus, string> = {
 };
 
 export const MAX_BILL_FILE_BYTES = 4 * 1024 * 1024;
-export const MAX_BILL_FILES = 10;
-export const MAX_BILL_TOTAL_BYTES = 12 * 1024 * 1024;
+export const MAX_BILL_FILES = 1;
+export const MAX_BILL_TOTAL_BYTES = MAX_BILL_FILE_BYTES;
+export const MAX_BILL_REMARK_WORDS = 25;
 
 const ALLOWED_BILL_MIME = new Set([
   "application/pdf",
@@ -71,6 +72,37 @@ export function validateBillRemark(value: string, label: string): string {
   return remark;
 }
 
+export function countRemarkWords(value: string): number {
+  const trimmed = value.trim();
+  if (!trimmed) return 0;
+  return trimmed.split(/\s+/).length;
+}
+
+/** First line of a remark for compact table display. */
+export function remarkFirstLine(text: string): string {
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+  return trimmed.split(/\r?\n/, 1)[0] ?? "";
+}
+
+/** Whether the remark has more text than the one-line table preview. */
+export function remarkIsExpandable(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed) return false;
+  if (trimmed.includes("\n") || trimmed.includes("\r")) return true;
+  return trimmed.length > 48;
+}
+
+export function validateOwnerReviewRemark(value: string, label: string): string {
+  const remark = validateBillRemark(value, label);
+  if (countRemarkWords(remark) > MAX_BILL_REMARK_WORDS) {
+    throw new Error(
+      `${label} must be at most ${MAX_BILL_REMARK_WORDS} words`,
+    );
+  }
+  return remark;
+}
+
 export function validateInvoiceIssuedBy(value: string): string {
   const name = value.trim();
   if (!name) throw new Error("Invoice issued by is required");
@@ -122,9 +154,9 @@ export function validateBillFiles(
   files: { name: string; type: string; size: number }[],
 ): { fileName: string; mime: string }[] {
   const uploaded = files.filter((file) => file.size > 0 || file.name.trim());
-  if (uploaded.length === 0) throw new Error("Documents are required");
+  if (uploaded.length === 0) throw new Error("Document is required");
   if (uploaded.length > MAX_BILL_FILES) {
-    throw new Error(`Upload at most ${MAX_BILL_FILES} documents`);
+    throw new Error("Upload only one document");
   }
   let total = 0;
   const meta = uploaded.map((file) => {
@@ -132,7 +164,7 @@ export function validateBillFiles(
     return validateBillFile(file);
   });
   if (total > MAX_BILL_TOTAL_BYTES) {
-    throw new Error("Documents together must be 12 MB or smaller");
+    throw new Error("Document must be 4 MB or smaller");
   }
   return meta;
 }
@@ -155,4 +187,8 @@ export function canReviewBill(
   status: string,
 ): boolean {
   return access.kind === "owner" && status === "PENDING";
+}
+
+export function validateAccountVoucherNo(value: string): string {
+  return value.trim();
 }

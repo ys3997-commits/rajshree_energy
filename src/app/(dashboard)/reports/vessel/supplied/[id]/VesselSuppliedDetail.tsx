@@ -10,7 +10,7 @@ import type {
 } from "@/lib/actions/reports";
 import {
   formatQualityClass,
-  formatRs,
+  formatAmount,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 
@@ -149,8 +149,8 @@ export function VesselSuppliedDetail({
       filtered.map((c) => ({
         customer: c.customerName,
         quantity: formatSaleOrderMt(c.totalQuantity),
-        totalMargin: formatRs(c.profit),
-        marginPmt: formatRs(marginPmt(c.profit, c.totalQuantity)),
+        totalMargin: formatAmount(c.profit),
+        marginPmt: formatAmount(marginPmt(c.profit, c.totalQuantity)),
       })),
     [filtered],
   );
@@ -204,13 +204,13 @@ export function VesselSuppliedDetail({
           <div className="detail-stat">
             <span className="detail-stat-label">Total margin</span>
             <span className="detail-stat-value">
-              {formatRs(vesselTotals.totalMargin)}
+              {formatAmount(vesselTotals.totalMargin)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Margin PMT</span>
             <span className="detail-stat-value">
-              {formatRs(vesselTotals.marginPmt)}
+              {formatAmount(vesselTotals.marginPmt)}
             </span>
           </div>
         </div>
@@ -242,10 +242,10 @@ export function VesselSuppliedDetail({
         <p className="home-empty">No customers match your filter.</p>
       ) : (
         <div className="table-wrap table-wrap-scroll">
-          <table className="data report-table">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
-                <th>
+                <th className="report-customer-col">
                   <button
                     type="button"
                     className="th-sort"
@@ -255,7 +255,7 @@ export function VesselSuppliedDetail({
                     {sortIndicator(sortKey === "customerName", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -265,7 +265,7 @@ export function VesselSuppliedDetail({
                     {sortIndicator(sortKey === "totalQuantity", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -275,7 +275,7 @@ export function VesselSuppliedDetail({
                     {sortIndicator(sortKey === "profit", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -290,18 +290,18 @@ export function VesselSuppliedDetail({
             <tbody>
               {filtered.map((c) => (
                 <tr key={c.customerId} className="ca-list-row">
-                  <td>{c.customerName}</td>
-                  <td className="num">
+                  <td className="report-customer-col">{c.customerName}</td>
+                  <td className="cell-num">
                     {formatSaleOrderMt(c.totalQuantity)}
                   </td>
-                  <td className="num">{formatRs(c.profit)}</td>
-                  <td className="num">
-                    {formatRs(marginPmt(c.profit, c.totalQuantity))}
+                  <td className="cell-num">{formatAmount(c.profit)}</td>
+                  <td className="cell-num">
+                    {formatAmount(marginPmt(c.profit, c.totalQuantity))}
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

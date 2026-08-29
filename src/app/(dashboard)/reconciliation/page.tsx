@@ -12,7 +12,7 @@ export default async function ReconciliationPage() {
       </p>
 
       <div className="table-wrap">
-        <table className="data">
+        <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
               <th>PO</th>
@@ -52,7 +52,7 @@ export default async function ReconciliationPage() {
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );

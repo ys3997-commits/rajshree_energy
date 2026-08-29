@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { CustomerAnalysisListRow } from "@/lib/actions/reports";
-import { formatRs, formatSaleOrderMt } from "@/lib/domain/format";
+import { formatAmount, formatSaleOrderMt } from "@/lib/domain/format";
 
 type SortKey = "name" | "totalQuantity" | "due" | "totalProfit" | "marginPmt";
 type SortDir = "asc" | "desc";
@@ -112,9 +112,9 @@ export function VendorAnalysisList({
       filtered.map((v) => ({
         vendor: v.name,
         totalQuantity: formatSaleOrderMt(v.totalQuantity),
-        totalDue: formatRs(v.due),
-        totalMargin: formatRs(v.totalProfit),
-        marginPmt: formatRs(v.marginPmt),
+        totalDue: formatAmount(v.due),
+        totalMargin: formatAmount(v.totalProfit),
+        marginPmt: formatAmount(v.marginPmt),
       })),
     [filtered],
   );
@@ -143,19 +143,19 @@ export function VendorAnalysisList({
           <div className="detail-stat">
             <span className="detail-stat-label">Total due</span>
             <span className="detail-stat-value">
-              {formatRs(summary.totalDue)}
+              {formatAmount(summary.totalDue)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Total Margin</span>
             <span className="detail-stat-value">
-              {formatRs(summary.totalMargin)}
+              {formatAmount(summary.totalMargin)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Margin PMT</span>
             <span className="detail-stat-value">
-              {formatRs(summary.marginPmt)}
+              {formatAmount(summary.marginPmt)}
             </span>
           </div>
         </div>
@@ -208,7 +208,7 @@ export function VendorAnalysisList({
         <p className="home-empty">No vendors found.</p>
       ) : (
         <div className="table-wrap">
-          <table className="data">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
                 <th>
@@ -221,7 +221,7 @@ export function VendorAnalysisList({
                     {sortIndicator(sortKey === "name", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -231,7 +231,7 @@ export function VendorAnalysisList({
                     {sortIndicator(sortKey === "totalQuantity", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -241,7 +241,7 @@ export function VendorAnalysisList({
                     {sortIndicator(sortKey === "due", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -251,7 +251,7 @@ export function VendorAnalysisList({
                     {sortIndicator(sortKey === "totalProfit", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -281,14 +281,16 @@ export function VendorAnalysisList({
                       {v.name}
                     </Link>
                   </td>
-                  <td className="num">{formatSaleOrderMt(v.totalQuantity)}</td>
-                  <td className="num">{formatRs(v.due)}</td>
-                  <td className="num">{formatRs(v.totalProfit)}</td>
-                  <td className="num">{formatRs(v.marginPmt)}</td>
+                  <td className="cell-num">
+                    {formatSaleOrderMt(v.totalQuantity)}
+                  </td>
+                  <td className="cell-num">{formatAmount(v.due)}</td>
+                  <td className="cell-num">{formatAmount(v.totalProfit)}</td>
+                  <td className="cell-num">{formatAmount(v.marginPmt)}</td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

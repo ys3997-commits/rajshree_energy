@@ -20,7 +20,9 @@ export default async function DashboardLayout({
   return (
     <div className="app-shell">
       <AppNav access={access} />
-      <main className="app-main">{children}</main>
+      <main className="app-main">
+        <div className="app-main-inner">{children}</div>
+      </main>
     </div>
   );
 }

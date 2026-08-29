@@ -88,16 +88,16 @@ export function VesselReportList({
         <p className="home-empty">No vessels match your search.</p>
       ) : (
         <div className="table-wrap table-wrap-scroll">
-          <table className="data report-table">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
                 <th>Vessel</th>
                 <th>Port</th>
                 <th>Quality</th>
-                <th className="num">Order qty</th>
-                <th className="num">Dispatched</th>
-                <th className="num">Closing</th>
-                <th className="num">Balance</th>
+                <th className="cell-num">Order qty</th>
+                <th className="cell-num">Dispatched</th>
+                <th className="cell-num">Closing</th>
+                <th className="cell-num">Balance</th>
                 <th />
               </tr>
             </thead>
@@ -122,11 +122,11 @@ export function VesselReportList({
                   </td>
                   <td>{formatPort(v.portName, v.portState)}</td>
                   <td>{formatQualityClass(v.qualityClass)}</td>
-                  <td className="num">{formatSaleOrderMt(v.orderQuantity)}</td>
-                  <td className="num">{formatSaleOrderMt(v.dispatchedQuantity)}</td>
-                  <td className="num">{formatSaleOrderMt(v.closingQuantity)}</td>
-                  <td className="num">{formatSaleOrderMt(v.balanceQuantity)}</td>
-                  <td className="num">
+                  <td className="cell-num">{formatSaleOrderMt(v.orderQuantity)}</td>
+                  <td className="cell-num">{formatSaleOrderMt(v.dispatchedQuantity)}</td>
+                  <td className="cell-num">{formatSaleOrderMt(v.closingQuantity)}</td>
+                  <td className="cell-num">{formatSaleOrderMt(v.balanceQuantity)}</td>
+                  <td className="cell-num">
                     <Link
                       href={`/reports/vessel/${v.id}`}
                       className="btn-link"
@@ -137,7 +137,7 @@ export function VesselReportList({
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

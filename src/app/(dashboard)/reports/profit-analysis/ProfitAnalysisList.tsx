@@ -8,7 +8,7 @@ import {
   formatDateDdMmYyyy,
   formatDispatchMt,
   formatIndianNumber,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 
 type SortKey =
@@ -126,12 +126,12 @@ export function ProfitAnalysisList({
       filtered.map((row) => ({
         date: formatDateDdMmYyyy(row.date),
         domesticQuantity: formatDispatchMt(row.domesticQuantity),
-        domesticProfit: formatRs(row.domesticProfit),
+        domesticProfit: formatAmount(row.domesticProfit),
         importedQuantity: formatDispatchMt(row.importedQuantity),
-        importedProfit: formatRs(row.importedProfit),
+        importedProfit: formatAmount(row.importedProfit),
         truckCount: formatIndianNumber(row.truckCount),
         totalQuantity: formatDispatchMt(row.totalQuantity),
-        totalProfit: formatRs(row.totalProfit),
+        totalProfit: formatAmount(row.totalProfit),
       })),
     [filtered],
   );
@@ -161,7 +161,7 @@ export function ProfitAnalysisList({
           <div className="detail-stat">
             <span className="detail-stat-label">Total profit</span>
             <span className="detail-stat-value">
-              {formatRs(summary.totalProfit)}
+              {formatAmount(summary.totalProfit)}
             </span>
           </div>
           <div className="detail-stat">
@@ -173,7 +173,7 @@ export function ProfitAnalysisList({
           <div className="detail-stat">
             <span className="detail-stat-label">Domestic profit</span>
             <span className="detail-stat-value">
-              {formatRs(summary.domesticProfit)}
+              {formatAmount(summary.domesticProfit)}
             </span>
           </div>
           <div className="detail-stat">
@@ -185,7 +185,7 @@ export function ProfitAnalysisList({
           <div className="detail-stat">
             <span className="detail-stat-label">Imported profit</span>
             <span className="detail-stat-value">
-              {formatRs(summary.importedProfit)}
+              {formatAmount(summary.importedProfit)}
             </span>
           </div>
         </div>
@@ -234,7 +234,7 @@ export function ProfitAnalysisList({
         </p>
       ) : (
         <div className="table-wrap">
-          <table className="data">
+          <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
                 <th>
@@ -247,7 +247,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "date", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -257,7 +257,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "totalQuantity", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -267,7 +267,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "totalProfit", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -277,7 +277,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "domesticQuantity", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -287,7 +287,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "domesticProfit", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -297,7 +297,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "importedQuantity", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -307,7 +307,7 @@ export function ProfitAnalysisList({
                     {sortIndicator(sortKey === "importedProfit", sortDir)}
                   </button>
                 </th>
-                <th className="num">
+                <th className="cell-num">
                   <button
                     type="button"
                     className="th-sort"
@@ -322,24 +322,28 @@ export function ProfitAnalysisList({
             <tbody>
               {filtered.map((row) => (
                 <tr key={row.date}>
-                  <td>{formatDateDdMmYyyy(row.date)}</td>
-                  <td className="num">
+                  <td>
+                    {formatDateDdMmYyyy(row.date)}
+                  </td>
+                  <td className="cell-num">
                     {formatDispatchMt(row.totalQuantity)}
                   </td>
-                  <td className="num">{formatRs(row.totalProfit)}</td>
-                  <td className="num">
+                  <td className="cell-num">{formatAmount(row.totalProfit)}</td>
+                  <td className="cell-num">
                     {formatDispatchMt(row.domesticQuantity)}
                   </td>
-                  <td className="num">{formatRs(row.domesticProfit)}</td>
-                  <td className="num">
+                  <td className="cell-num">{formatAmount(row.domesticProfit)}</td>
+                  <td className="cell-num">
                     {formatDispatchMt(row.importedQuantity)}
                   </td>
-                  <td className="num">{formatRs(row.importedProfit)}</td>
-                  <td className="num">{formatIndianNumber(row.truckCount)}</td>
+                  <td className="cell-num">{formatAmount(row.importedProfit)}</td>
+                  <td className="cell-num">
+                    {formatIndianNumber(row.truckCount)}
+                  </td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-import { listBills } from "@/lib/actions/bills";
+import { listBills, suggestNextApprovalNumber } from "@/lib/actions/bills";
 import { listOwnerOptions } from "@/lib/actions/option-lists";
 import { BillsClient } from "./BillsClient";
 
@@ -33,6 +33,9 @@ export default async function BillsPage({
     }),
     listOwnerOptions(),
   ]);
+  const suggestedApprovalNo = initial.canUpload
+    ? await suggestNextApprovalNumber(new Date().toISOString().slice(0, 10))
+    : "";
   return (
     <BillsClient
       initial={initial}
@@ -42,6 +45,7 @@ export default async function BillsPage({
       approver={approver}
       sentBy={sentBy}
       owners={owners.map((o) => o.name)}
+      suggestedApprovalNo={suggestedApprovalNo}
     />
   );
 }

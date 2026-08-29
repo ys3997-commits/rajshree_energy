@@ -17,12 +17,17 @@ import {
   parseIsoDay,
   validateApproverName,
   validateBillFiles,
-  validateBillRemark,
+  validateOwnerReviewRemark,
+  validateAccountVoucherNo,
   validateInvoiceAmount,
   validateInvoiceIssuedBy,
   type BillStatus as BillStatusName,
 } from "@/lib/domain/bills";
-import { capitalizeName } from "@/lib/domain/format";
+import {
+  approvalYearFromIsoDay,
+  nextApprovalNumber,
+  parseApprovalNumber,
+} from "@/lib/domain/approvalNumbers";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -30,6 +35,7 @@ const BILLS_PAGE_SIZE = 20;
 
 const billSelect = {
   id: true,
+  approvalNo: true,
   date: true,
   invoiceIssuedBy: true,
   invoiceAmount: true,
@@ -37,6 +43,7 @@ const billSelect = {
   remark: true,
   status: true,
   reviewRemark: true,
+  accountVoucherNo: true,
   reviewedAt: true,
   staffId: true,
   createdAt: true,
@@ -55,6 +62,7 @@ export type BillFileRow = {
 
 export type BillRow = {
   id: string;
+  approvalNo: string | null;
   date: string;
   invoiceIssuedBy: string;
   invoiceAmount: string | null;
@@ -63,6 +71,7 @@ export type BillRow = {
   files: BillFileRow[];
   status: BillStatusName;
   reviewRemark: string;
+  accountVoucherNo: string;
   reviewedAt: string | null;
   staffId: string;
   staffName: string;
@@ -97,6 +106,7 @@ function parseDate(value: string): Date {
 
 function toBillRow(row: {
   id: string;
+  approvalNo: string | null;
   date: Date;
   invoiceIssuedBy: string;
   invoiceAmount: { toString(): string } | null;
@@ -104,6 +114,7 @@ function toBillRow(row: {
   remark: string;
   status: BillStatus;
   reviewRemark: string;
+  accountVoucherNo: string;
   reviewedAt: Date | null;
   staffId: string;
   staff: { name: string };
@@ -111,6 +122,7 @@ function toBillRow(row: {
 }): BillRow {
   return {
     id: row.id,
+    approvalNo: row.approvalNo,
     date: row.date.toISOString().slice(0, 10),
     invoiceIssuedBy: row.invoiceIssuedBy,
     invoiceAmount: row.invoiceAmount?.toString() ?? null,
@@ -123,6 +135,7 @@ function toBillRow(row: {
     })),
     status: row.status,
     reviewRemark: row.reviewRemark,
+    accountVoucherNo: row.accountVoucherNo,
     reviewedAt: row.reviewedAt?.toISOString() ?? null,
     staffId: row.staffId,
     staffName: row.staff.name,
@@ -142,16 +155,81 @@ function staffScope(access: Awaited<ReturnType<typeof requireBillsAccess>>) {
   return access.kind === "staff" ? { staffId: access.id } : {};
 }
 
-function formFiles(formData: FormData): File[] {
-  const fromList = formData.getAll("files").filter((item): item is File => {
-    return item instanceof File && (item.size > 0 || item.name.trim() !== "");
-  });
-  if (fromList.length > 0) return fromList;
+function formFile(formData: FormData): File | null {
   const single = formData.get("file");
   if (single instanceof File && (single.size > 0 || single.name.trim() !== "")) {
-    return [single];
+    return single;
   }
-  return [];
+  return null;
+}
+
+type BillTx = Pick<typeof prisma, "bill">;
+
+async function ensureBillApprovalNumbers(): Promise<void> {
+  const missing = await prisma.bill.findMany({
+    where: { approvalNo: null },
+    select: { id: true, date: true, createdAt: true },
+    orderBy: [{ date: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+  });
+  if (missing.length === 0) return;
+
+  const existing = await prisma.bill.findMany({
+    where: { approvalNo: { not: null } },
+    select: { approvalNo: true },
+  });
+  const byYear = new Map<number, string[]>();
+  for (const row of existing) {
+    const parsed = parseApprovalNumber(row.approvalNo);
+    if (!parsed) continue;
+    const list = byYear.get(parsed.year) ?? [];
+    list.push(row.approvalNo!);
+    byYear.set(parsed.year, list);
+  }
+
+  for (const bill of missing) {
+    const year = bill.date.getUTCFullYear();
+    const numbers = byYear.get(year) ?? [];
+    const approvalNo = nextApprovalNumber(numbers, year);
+    await prisma.bill.update({
+      where: { id: bill.id },
+      data: { approvalNo },
+    });
+    numbers.push(approvalNo);
+    byYear.set(year, numbers);
+  }
+}
+
+async function allocateApprovalNumber(tx: BillTx, year: number): Promise<string> {
+  const rows = await tx.bill.findMany({
+    where: { approvalNo: { startsWith: `AN ${year}-` } },
+    select: { approvalNo: true },
+  });
+  const approvalNo = nextApprovalNumber(
+    rows.map((row) => row.approvalNo),
+    year,
+  );
+  const existing = await tx.bill.findUnique({
+    where: { approvalNo },
+    select: { id: true },
+  });
+  if (existing) {
+    throw new Error(`Approval number ${approvalNo} is already taken`);
+  }
+  return approvalNo;
+}
+
+/** Suggest the next approval number for the bill date year (AN 2025-0001). */
+export async function suggestNextApprovalNumber(dateIso: string): Promise<string> {
+  await ensureBillApprovalNumbers();
+  const year = approvalYearFromIsoDay(dateIso);
+  const rows = await prisma.bill.findMany({
+    where: { approvalNo: { startsWith: `AN ${year}-` } },
+    select: { approvalNo: true },
+  });
+  return nextApprovalNumber(
+    rows.map((row) => row.approvalNo),
+    year,
+  );
 }
 
 export async function listBills(options?: {
@@ -163,6 +241,7 @@ export async function listBills(options?: {
   sentBy?: string | null;
 }): Promise<BillListResult> {
   const access = await requireBillsAccess();
+  await ensureBillApprovalNumbers();
   const pageSize = BILLS_PAGE_SIZE;
   const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
   const status = parseBillStatusFilter(options?.status);
@@ -243,32 +322,42 @@ export async function createBill(formData: FormData): Promise<BillRow> {
   if (!ownerMatch) {
     throw new Error("Approver name must be an owner from Options");
   }
-  const remark = validateBillRemark(String(formData.get("remark") ?? ""), "Remark");
-  const files = formFiles(formData);
+  const remark = validateOwnerReviewRemark(
+    String(formData.get("remark") ?? ""),
+    "Doer remark",
+  );
+  const uploaded = formFile(formData);
   const meta = validateBillFiles(
-    files.map((file) => ({ name: file.name, type: file.type, size: file.size })),
+    uploaded
+      ? [{ name: uploaded.name, type: uploaded.type, size: uploaded.size }]
+      : [],
   );
 
-  const row = await prisma.bill.create({
-    data: {
-      date,
-      invoiceIssuedBy,
-      invoiceAmount,
-      approverName,
-      remark,
-      staffId: access.id,
-      files: {
-        create: await Promise.all(
-          files.map(async (file, index) => ({
-            fileName: meta[index].fileName,
-            fileMime: meta[index].mime,
-            fileData: Buffer.from(await file.arrayBuffer()),
-            sortOrder: index,
-          })),
-        ),
+  await ensureBillApprovalNumbers();
+
+  const row = await prisma.$transaction(async (tx) => {
+    const year = date.getUTCFullYear();
+    const approvalNo = await allocateApprovalNumber(tx, year);
+    return tx.bill.create({
+      data: {
+        approvalNo,
+        date,
+        invoiceIssuedBy,
+        invoiceAmount,
+        approverName,
+        remark,
+        staffId: access.id,
+        files: {
+          create: {
+            fileName: meta[0].fileName,
+            fileMime: meta[0].mime,
+            fileData: Buffer.from(await uploaded!.arrayBuffer()),
+            sortOrder: 0,
+          },
+        },
       },
-    },
-    select: billSelect,
+      select: billSelect,
+    });
   });
 
   revalidatePath("/bills");
@@ -281,7 +370,7 @@ export async function reviewBill(
   remark: string,
 ): Promise<BillRow> {
   const access = await requireOwner();
-  const reviewRemark = validateBillRemark(
+  const reviewRemark = validateOwnerReviewRemark(
     remark,
     status === "APPROVED" ? "Approval remark" : "Rejection remark",
   );
@@ -301,6 +390,32 @@ export async function reviewBill(
       status,
       reviewRemark,
       reviewedAt: new Date(),
+    },
+    select: billSelect,
+  });
+
+  revalidatePath("/bills");
+  return toBillRow(row);
+}
+
+export async function updateBillAccountVoucherNo(
+  id: string,
+  accountVoucherNo: string,
+): Promise<BillRow> {
+  const access = await requireBillsAccess();
+  const existing = await prisma.bill.findUnique({
+    where: { id },
+    select: { staffId: true },
+  });
+  if (!existing) throw new Error("Bill not found");
+  if (!canViewBill(access, existing.staffId)) {
+    throw new AccessDeniedError();
+  }
+
+  const row = await prisma.bill.update({
+    where: { id },
+    data: {
+      accountVoucherNo: validateAccountVoucherNo(accountVoucherNo),
     },
     select: billSelect,
   });

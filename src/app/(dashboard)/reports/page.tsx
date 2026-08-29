@@ -1,4 +1,5 @@
 import { LockedLink } from "@/components/LockedLink";
+import Link from "next/link";
 import { getCurrentAccess } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
 

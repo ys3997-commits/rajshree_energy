@@ -5,7 +5,6 @@ import {
   listOwnerOptions,
   listSaleExecutiveOptions,
   listSectorOptions,
-  listStateOptions,
 } from "@/lib/actions/option-lists";
 import {
   listOriginOptions,
@@ -21,7 +20,6 @@ export default async function OptionsPage() {
     ports,
     saleExecutives,
     cities,
-    states,
     sectors,
     people,
     owners,
@@ -32,7 +30,6 @@ export default async function OptionsPage() {
     listPortOptions(),
     listSaleExecutiveOptions(),
     listCityOptions(),
-    listStateOptions(),
     listSectorOptions(),
     listStaff(),
     listOwnerOptions(),
@@ -46,7 +43,6 @@ export default async function OptionsPage() {
       ports={ports}
       saleExecutives={saleExecutives}
       cities={cities}
-      states={states}
       sectors={sectors}
       people={people.map((row) => ({
         id: row.id,

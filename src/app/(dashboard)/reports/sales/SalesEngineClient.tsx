@@ -10,11 +10,11 @@ import {
 } from "@/lib/actions/salesEngine";
 import {
   capitalizeName,
+  formatAmount,
   formatCreditPeriod,
   formatCustomerCategory,
   formatDateDdMmYyyy,
   formatMt,
-  formatRs,
 } from "@/lib/domain/format";
 
 type PlannedCallFilter =
@@ -284,8 +284,8 @@ export function SalesEngineClient({
         orderInHand: formatMt(row.orderInHand),
         soldQuantity: formatMt(row.soldQuantity),
         daysSince: daysSinceLastDispatch(row.lastDispatchDate, today),
-        due: formatRs(row.due),
-        overdue: formatRs(row.overdue),
+        due: formatAmount(row.due),
+        overdue: formatAmount(row.overdue),
         creditPeriod: formatCreditPeriod(row.creditDays),
         plannedCall: formatDateDdMmYyyy(row.plannedSaleCallDate),
       })),
@@ -441,42 +441,30 @@ export function SalesEngineClient({
         />
       </form>
 
-      <div className="table-wrap sales-engine-table-wrap">
-        <table className="data payments-table collection-table sales-engine-table">
+      <div className="table-wrap">
+        <div className="table-h-scroll"><table className="data sales-engine-table">
           <thead>
             <tr>
-              <th className="sales-engine-customer-col">
+              <th className="report-customer-col">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("name")}
                 >
                   Customer
-                  <br />
-                  Name
                   {sortIndicator(sortKey === "name", sortDir)}
                 </button>
               </th>
-              <th className="sales-engine-purchaser-col">
-                Purchaser
-                <br />
-                Name
-              </th>
+              <th>Purchaser Name</th>
+              <th>Phone Number</th>
+              <th>Role</th>
               <th>
-                Phone
-                <br />
-                Number
-              </th>
-              <th className="sales-engine-role-col">Role</th>
-              <th className="sales-engine-sale-exec-col">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("saleExecutive")}
                 >
-                  Sale
-                  <br />
-                  Executive
+                  Sale Executive
                   {sortIndicator(sortKey === "saleExecutive", sortDir)}
                 </button>
               </th>
@@ -486,9 +474,7 @@ export function SalesEngineClient({
                   className="th-sort"
                   onClick={() => toggleSort("orderInHand")}
                 >
-                  Order
-                  <br />
-                  In Hand
+                  Order In Hand
                   {sortIndicator(sortKey === "orderInHand", sortDir)}
                 </button>
               </th>
@@ -498,26 +484,18 @@ export function SalesEngineClient({
                   className="th-sort"
                   onClick={() => toggleSort("soldQuantity")}
                 >
-                  Sold
-                  <br />
-                  Quantity
+                  Sold Quantity
                   {sortIndicator(sortKey === "soldQuantity", sortDir)}
                 </button>
               </th>
-              <th className="cell-num sales-engine-days-col">
-                Last
-                <br />
-                Dispatch
-              </th>
+              <th className="cell-num">Last Dispatch</th>
               <th className="cell-num">
                 <button
                   type="button"
                   className="th-sort"
                   onClick={() => toggleSort("due")}
                 >
-                  Total
-                  <br />
-                  Due
+                  Total Due
                   {sortIndicator(sortKey === "due", sortDir)}
                 </button>
               </th>
@@ -531,16 +509,8 @@ export function SalesEngineClient({
                   {sortIndicator(sortKey === "overdue", sortDir)}
                 </button>
               </th>
-              <th className="cell-num">
-                Credit
-                <br />
-                Period
-              </th>
-              <th>
-                Planned
-                <br />
-                Call
-              </th>
+              <th className="cell-num">Credit Period</th>
+              <th>Planned Call</th>
             </tr>
           </thead>
           <tbody>
@@ -548,7 +518,7 @@ export function SalesEngineClient({
               const rowClass = rowHighlightClass(row.plannedSaleCallDate, today);
               return (
                 <tr key={row.id} className={rowClass}>
-                  <td className="sales-engine-customer-col">
+                  <td className="report-customer-col">
                     <Link
                       href={`/reports/customer-analysis/${row.id}`}
                       className="btn-link"
@@ -556,27 +526,25 @@ export function SalesEngineClient({
                       {capitalizeName(row.name) ?? row.name}
                     </Link>
                   </td>
-                  <td className="sales-engine-purchaser-col">
+                  <td>
                     {row.purchaserName
                       ? (capitalizeName(row.purchaserName) ?? row.purchaserName)
                       : "—"}
                   </td>
                   <td>{row.purchaserContact ?? "—"}</td>
-                  <td className="sales-engine-role-col">
-                    {row.purchaserRole ?? "—"}
-                  </td>
-                  <td className="sales-engine-sale-exec-col">
+                  <td>{row.purchaserRole ?? "—"}</td>
+                  <td>
                     {row.saleExecutive
                       ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)
                       : "—"}
                   </td>
                   <td className="cell-num">{formatMt(row.orderInHand)}</td>
                   <td className="cell-num">{formatMt(row.soldQuantity)}</td>
-                  <td className="cell-num sales-engine-days-col">
+                  <td className="cell-num">
                     {daysSinceLastDispatch(row.lastDispatchDate, today)}
                   </td>
-                  <td className="cell-num">{formatRs(row.due)}</td>
-                  <td className="cell-num">{formatRs(row.overdue)}</td>
+                  <td className="cell-num">{formatAmount(row.due)}</td>
+                  <td className="cell-num">{formatAmount(row.overdue)}</td>
                   <td className="cell-num">
                     {formatCreditPeriod(row.creditDays)}
                   </td>
@@ -606,7 +574,7 @@ export function SalesEngineClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   );
