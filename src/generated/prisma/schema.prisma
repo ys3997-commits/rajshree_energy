@@ -65,16 +65,25 @@ enum BillStatus {
   REJECTED
 }
 
+enum CollectionThrough {
+  CALL
+  SMS
+}
+
 model Staff {
-  id           String   @id @default(cuid())
-  name         String
-  role         String?
+  id                    String   @id @default(cuid())
+  name                  String
+  role                  String?
   /// Set when this person may log in. Owner uses Supabase instead.
-  passwordHash String?
+  passwordHash          String?
   /// Page keys this person may open. Ignored for the owner account.
-  pageKeys     String[] @default([])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  pageKeys              String[] @default([])
+  /// Sales executives visible in Collection Engine. ["*"] = all; else executive names.
+  collectionSalesExecs  String[] @default([])
+  /// Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
+  salesEngineSalesExecs String[] @default([])
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   dealByCustomers Customer[] @relation("DealBy")
   orders          Order[]
@@ -202,10 +211,10 @@ model QualityClass {
 }
 
 model Customer {
-  id                        String           @id @default(cuid())
+  id                        String             @id @default(cuid())
   name                      String
   category                  CustomerCategory
-  active                    Boolean          @default(true)
+  active                    Boolean            @default(true)
   ownerName                 String?
   ownerContact              String?
   purchaserName             String?
@@ -230,15 +239,17 @@ model Customer {
   /// Suggested dealing company name (from Options list; stored as text).
   dealingCompany            String?
   /// Carry-forward balance from before this system (manual). Included in `due`.
-  openingDue                Decimal          @default(0) @db.Decimal(18, 2)
+  openingDue                Decimal            @default(0) @db.Decimal(18, 2)
   /// Net amount owed by the customer to Rajshree (openingDue + sales − purchases − received + sent − discount paid + discount received).
-  due                       Decimal          @default(0) @db.Decimal(18, 2)
+  due                       Decimal            @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?
+  /// How the next collection follow-up will be made.
+  collectionThrough         CollectionThrough?
   /// Next planned sales call date (calendar day) — separate from collection.
   plannedSaleCallDate       DateTime?
-  createdAt                 DateTime         @default(now())
-  updatedAt                 DateTime         @updatedAt
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
 
   dealBy         Staff?          @relation("DealBy", fields: [dealById], references: [id])
   orders         Order[]
@@ -415,27 +426,27 @@ model Discount {
 
 /// Staff-uploaded bill awaiting owner approval.
 model Bill {
-  id              String     @id @default(cuid())
+  id               String     @id @default(cuid())
   /// Year-based approval reference (AN 2025-0001).
-  approvalNo      String?    @unique
-  date            DateTime
+  approvalNo       String?    @unique
+  date             DateTime
   /// Who issued the invoice (vendor / party name).
-  invoiceIssuedBy String     @default("")
+  invoiceIssuedBy  String     @default("")
   /// Invoice total in rupees.
-  invoiceAmount   Decimal?   @db.Decimal(18, 2)
+  invoiceAmount    Decimal?   @db.Decimal(18, 2)
   /// Owner option name selected as the bill approver.
-  approverName    String     @default("")
+  approverName     String     @default("")
   /// Staff remark written at upload.
-  remark          String
-  status          BillStatus @default(PENDING)
+  remark           String
+  status           BillStatus @default(PENDING)
   /// Owner remark written when approving or rejecting.
-  reviewRemark    String     @default("")
+  reviewRemark     String     @default("")
   /// Tally / accounts voucher reference entered after approval.
-  accountVoucherNo String    @default("")
-  reviewedAt      DateTime?
-  staffId         String
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  accountVoucherNo String     @default("")
+  reviewedAt       DateTime?
+  staffId          String
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
   staff Staff      @relation(fields: [staffId], references: [id], onDelete: Cascade)
   files BillFile[]

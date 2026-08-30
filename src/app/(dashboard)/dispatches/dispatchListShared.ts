@@ -1,5 +1,5 @@
 import { DispatchTerms, ReceiptStatus } from "@/generated/prisma";
-import { listDispatches } from "@/lib/actions/receipts";
+import { listDispatches, type DispatchFilters } from "@/lib/actions/receipts";
 import { listCustomers } from "@/lib/actions/customers";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
 import {
@@ -21,7 +21,7 @@ import {
   formatAmount,
   formatRs,
 } from "@/lib/domain/format";
-import { computeGst, toDecimal } from "@/lib/domain/computations";
+import { computeGst, toDecimal, type DecimalLike } from "@/lib/domain/computations";
 import {
   parsePurchaseOrderSequence,
   parseSaleOrderSequence,
@@ -56,16 +56,16 @@ export function displayOrderDigits(
 }
 
 export function formatPurchaseBasicAmount(
-  weight: { toString(): string } | number | string,
-  basicRate: { toString(): string } | number | string | null | undefined,
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
 ): string {
   if (basicRate == null) return "—";
-  return formatAmount(toDecimal(weight).mul(basicRate));
+  return formatAmount(toDecimal(weight).mul(toDecimal(basicRate)));
 }
 
 export function formatPurchaseGstAmount(
-  weight: { toString(): string } | number | string,
-  basicRate: { toString(): string } | number | string | null | undefined,
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
 ): string {
   const gst = computeGst({
     rate: basicRate != null ? toDecimal(basicRate) : null,
@@ -76,21 +76,24 @@ export function formatPurchaseGstAmount(
 }
 
 export function formatPurchaseTcsAmount(
-  weight: { toString(): string } | number | string,
-  basicRate: { toString(): string } | number | string | null | undefined,
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
 ): string {
   const gst = computeGst({
     rate: basicRate != null ? toDecimal(basicRate) : null,
     quantity: toDecimal(weight),
   });
   if (gst == null || basicRate == null) return "—";
-  const tcs = toDecimal(weight).mul(basicRate).plus(gst).mul(PURCHASE_TCS_RATE);
+  const tcs = toDecimal(weight)
+    .mul(toDecimal(basicRate))
+    .plus(gst)
+    .mul(PURCHASE_TCS_RATE);
   return formatAmount(tcs);
 }
 
 export function formatPurchaseTotalAmount(
-  weight: { toString(): string } | number | string,
-  basicRate: { toString(): string } | number | string | null | undefined,
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
 ): string {
   if (basicRate == null) return "—";
   const basicAmount = toDecimal(weight).mul(basicRate);
@@ -325,17 +328,17 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
 }
 
 export async function loadDispatchListData(sp: DispatchSearchParams) {
-  const purchaseUpdateStatus =
+  const purchaseUpdateStatus: DispatchFilters["purchaseUpdateStatus"] =
     sp.purchaseUpdateStatus === "PENDING" ||
     sp.purchaseUpdateStatus === "RECEIVED"
       ? sp.purchaseUpdateStatus
       : "";
-  const saleUpdateStatus =
+  const saleUpdateStatus: DispatchFilters["saleUpdateStatus"] =
     sp.saleUpdateStatus === "PENDING" || sp.saleUpdateStatus === "RECEIVED"
       ? sp.saleUpdateStatus
       : "";
 
-  const filters = {
+  const filters: DispatchFilters = {
     receiptStatus: (sp.receiptStatus as ReceiptStatus) || "",
     purchaseUpdateStatus,
     saleUpdateStatus,
