@@ -7,6 +7,17 @@ import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
 import { formatMtNumber } from "@/lib/domain/format";
 
+export type SaleEditRowSummary = {
+  dispatchNumber: string;
+  date: string;
+  lorryNumber: string;
+  weight: string;
+  basicPrice: string;
+  totalPrice: string;
+  deliveryTerms: string;
+  transporter: string;
+};
+
 function isSaleComplete(input: {
   saleInvoiceNumber: string | null;
   receivingQuantity: string | null;
@@ -21,18 +32,29 @@ function isSaleComplete(input: {
   );
 }
 
+function SummaryField({ label, value }: { label: string; value: string }) {
+  return (
+    <>
+      <span className="purchase-edit-summary-label">{label}</span>
+      <span className="purchase-edit-summary-value">{value}</span>
+    </>
+  );
+}
+
 export function EditDispatchSaleButton({
   dispatchId,
   saleInvoiceNumber,
   dispatchedQuantity,
   receivingQuantity,
   dispatchTerms,
+  rowSummary,
 }: {
   dispatchId: string;
   saleInvoiceNumber: string | null;
   dispatchedQuantity: string;
   receivingQuantity: string | null;
   dispatchTerms: DispatchTerms;
+  rowSummary?: SaleEditRowSummary;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -107,12 +129,45 @@ export function EditDispatchSaleButton({
       <Modal
         open={open}
         title="Sale edit"
+        wide={Boolean(rowSummary)}
         onClose={() => {
           if (!saving) setOpen(false);
         }}
       >
         {error && <div className="error-box">{error}</div>}
+        {rowSummary ? (
+          <section className="purchase-edit-summary">
+            <h3 className="purchase-edit-section-title">Dispatch details</h3>
+            <div className="form-grid form-grid-plain purchase-edit-summary-grid">
+              <SummaryField
+                label="Dispatch no"
+                value={rowSummary.dispatchNumber}
+              />
+              <SummaryField label="Date" value={rowSummary.date} />
+              <SummaryField label="Lorry no" value={rowSummary.lorryNumber} />
+              <SummaryField label="Weight" value={rowSummary.weight} />
+              <SummaryField label="Basic price" value={rowSummary.basicPrice} />
+              <SummaryField label="Total price" value={rowSummary.totalPrice} />
+              <SummaryField
+                label="Delivery terms"
+                value={rowSummary.deliveryTerms}
+              />
+              <SummaryField
+                label="Transporter name"
+                value={rowSummary.transporter}
+              />
+            </div>
+          </section>
+        ) : null}
         <form onSubmit={onSubmit} className="form-grid form-grid-plain">
+          {rowSummary ? (
+            <h3
+              className="purchase-edit-section-title"
+              style={{ gridColumn: "1 / -1" }}
+            >
+              Update sale
+            </h3>
+          ) : null}
           <label htmlFor={`sale-invoice-${dispatchId}`}>
             Sale invoice number
           </label>
@@ -121,7 +176,7 @@ export function EditDispatchSaleButton({
             value={saleInvoice}
             onChange={(e) => setSaleInvoice(e.target.value)}
             placeholder="Sale invoice number"
-            autoFocus
+            autoFocus={!rowSummary}
           />
 
           <label htmlFor={`factory-qty-${dispatchId}`}>

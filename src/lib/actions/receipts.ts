@@ -16,12 +16,16 @@ const qualityClassInclude = {
 
 export type DispatchFilters = {
   receiptStatus?: ReceiptStatus | "";
+  purchaseUpdateStatus?: "PENDING" | "RECEIVED" | "";
+  saleUpdateStatus?: "PENDING" | "RECEIVED" | "";
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
   vendorId?: string;
   customerId?: string;
   dispatchDate?: string;
+  dispatchDateStart?: string;
+  dispatchDateEnd?: string;
 };
 
 export async function listDispatches(filters: DispatchFilters = {}) {
@@ -29,6 +33,32 @@ export async function listDispatches(filters: DispatchFilters = {}) {
 
   const where: Prisma.DispatchWhereInput = {};
   if (filters.receiptStatus) where.receiptStatus = filters.receiptStatus;
+  if (filters.purchaseUpdateStatus === "RECEIVED") {
+    where.entryInTally = true;
+    where.AND = [
+      { purchaseInvoiceNumber: { not: null } },
+      { NOT: { purchaseInvoiceNumber: "" } },
+    ];
+  } else if (filters.purchaseUpdateStatus === "PENDING") {
+    where.OR = [
+      { entryInTally: false },
+      { purchaseInvoiceNumber: null },
+      { purchaseInvoiceNumber: "" },
+    ];
+  }
+  if (filters.saleUpdateStatus === "RECEIVED") {
+    where.AND = [
+      { saleInvoiceNumber: { not: null } },
+      { NOT: { saleInvoiceNumber: "" } },
+      { receivingQuantity: { not: null } },
+    ];
+  } else if (filters.saleUpdateStatus === "PENDING") {
+    where.OR = [
+      { saleInvoiceNumber: null },
+      { saleInvoiceNumber: "" },
+      { receivingQuantity: null },
+    ];
+  }
   if (filters.poNumber) {
     where.poNumber = { contains: filters.poNumber, mode: "insensitive" };
   }
@@ -43,7 +73,19 @@ export async function listDispatches(filters: DispatchFilters = {}) {
   if (filters.customerId) {
     where.order = { customerId: filters.customerId };
   }
-  if (filters.dispatchDate) {
+  if (filters.dispatchDateStart || filters.dispatchDateEnd) {
+    where.dispatchDate = {};
+    if (filters.dispatchDateStart) {
+      where.dispatchDate.gte = new Date(
+        `${filters.dispatchDateStart}T00:00:00.000Z`,
+      );
+    }
+    if (filters.dispatchDateEnd) {
+      where.dispatchDate.lte = new Date(
+        `${filters.dispatchDateEnd}T23:59:59.999Z`,
+      );
+    }
+  } else if (filters.dispatchDate) {
     where.dispatchDate = {
       gte: new Date(`${filters.dispatchDate}T00:00:00.000Z`),
       lte: new Date(`${filters.dispatchDate}T23:59:59.999Z`),

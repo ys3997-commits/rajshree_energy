@@ -5,14 +5,15 @@ export default async function UpdateTransportPage() {
   const rows = await listTransportEngineRows();
 
   return (
-    <div>
+    <div className="update-page">
       <div className="page-header">
-        <h1 className="page-title">Update</h1>
+        <h1 className="page-title">Update - Transport</h1>
       </div>
       <TransportEngineClient
         initialRows={rows}
         exportTitle="Update — Transport"
         exportFilenameBase="update-transport"
+        variant="update"
       />
     </div>
   );

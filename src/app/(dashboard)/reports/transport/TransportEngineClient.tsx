@@ -1,12 +1,10 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import { DispatchTerms } from "@/generated/prisma";
-import { Modal } from "@/components/Modal";
+import { EditTransportChecklistButton } from "@/components/EditTransportChecklistButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
-  updateTransportChecklist,
   type TransportEngineRow,
 } from "@/lib/actions/transportEngine";
 import {
@@ -17,6 +15,7 @@ import {
   formatLorryNumber,
   formatAmount,
 } from "@/lib/domain/format";
+import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
 
 function formatChecklistYes(value: boolean): string {
   return value ? "Yes" : "—";
@@ -46,16 +45,42 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
   return [...names].sort((a, b) => a.localeCompare(b));
 }
 
+function buildTransportEditRowSummary(row: TransportEngineRow) {
+  const lorry = formatLorryNumber(row.lorryNumber);
+  return {
+    dispatchNumber: displayDispatchNumber(row.dispatchNumber),
+    date: formatDateDdMmYyyy(row.dispatchDate),
+    saleInvoice: row.saleInvoiceNumber ?? "—",
+    lorryNumber: lorry ?? "—",
+    loadingWeight: formatDispatchMt(row.loadingWeight),
+    receivingWeight: formatDispatchMt(row.receivingWeight),
+    diffInWeight: formatDispatchMt(row.diffInWeight),
+    customer: row.customerName
+      ? (capitalizeName(row.customerName) ?? row.customerName)
+      : "—",
+    portName: row.portName ?? "—",
+    deliveryTerms: formatDispatchTerms(row.dispatchTerms),
+    transporter: row.transporterName
+      ? (capitalizeName(row.transporterName) ?? row.transporterName)
+      : "—",
+    freightPerTon:
+      row.freightPerTon != null ? formatAmount(row.freightPerTon) : "—",
+    freightAmount:
+      row.freightAmount != null ? formatAmount(row.freightAmount) : "—",
+  };
+}
+
 export function TransportEngineClient({
   initialRows,
   exportTitle = "Transport Engine Report",
   exportFilenameBase = "transport-engine",
+  variant = "report",
 }: {
   initialRows: TransportEngineRow[];
   exportTitle?: string;
   exportFilenameBase?: string;
+  variant?: "report" | "update";
 }) {
-  const router = useRouter();
   const [rows, setRows] = useState(initialRows);
   const [prevInitial, setPrevInitial] = useState(initialRows);
   if (initialRows !== prevInitial) {
@@ -63,24 +88,16 @@ export function TransportEngineClient({
     setRows(initialRows);
   }
 
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
   const [customerFilter, setCustomerFilter] = useState("");
   const [transporterFilter, setTransporterFilter] = useState("");
   const [deliveryTermsFilter, setDeliveryTermsFilter] = useState<
     "" | DispatchTerms
-  >("");
+  >(() => (variant === "update" ? DispatchTerms.FOR : ""));
   const [completeFilter, setCompleteFilter] = useState<"" | "complete" | "pending">(
     "",
   );
-
-  const [editRow, setEditRow] = useState<TransportEngineRow | null>(null);
-  const [biltyHardCopy, setBiltyHardCopy] = useState(false);
-  const [transportInvoiceNo, setTransportInvoiceNo] = useState("");
-  const [invoiceHardCopy, setInvoiceHardCopy] = useState(false);
-  const [entryInTally, setEntryInTally] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState("");
 
   const customerOptions = useMemo(
     () => distinctTrimmed(rows.map((row) => row.customerName)),
@@ -94,8 +111,11 @@ export function TransportEngineClient({
   const hasActiveFilters = Boolean(
     customerFilter ||
       transporterFilter ||
-      deliveryTermsFilter ||
-      completeFilter,
+      (deliveryTermsFilter &&
+        !(variant === "update" && deliveryTermsFilter === DispatchTerms.FOR)) ||
+      completeFilter ||
+      dateStart ||
+      dateEnd,
   );
 
   const filtered = useMemo(() => {
@@ -120,6 +140,8 @@ export function TransportEngineClient({
         if (completeFilter === "complete" && !complete) return false;
         if (completeFilter === "pending" && complete) return false;
       }
+      if (dateStart && row.dispatchDate < dateStart) return false;
+      if (dateEnd && row.dispatchDate > dateEnd) return false;
       return true;
     });
   }, [
@@ -128,10 +150,13 @@ export function TransportEngineClient({
     transporterFilter,
     deliveryTermsFilter,
     completeFilter,
+    dateStart,
+    dateEnd,
   ]);
 
-  const exportColumns = [
-    { key: "date", header: "Date" },
+  const exportColumns = useMemo(() => {
+    const base = [
+      { key: "date", header: "Date" },
     { key: "saleInvoice", header: "Sale invoice" },
     { key: "lorryNumber", header: "Lorry number" },
     {
@@ -167,12 +192,42 @@ export function TransportEngineClient({
     { key: "invoiceHardCopy", header: "Invoice hard copy" },
     { key: "transportInvoiceNo", header: "Transport invoice no" },
     { key: "entryInTally", header: "Entry in Tally" },
-  ];
+    ];
+    if (variant === "update") {
+      return [
+        { key: "dispatchNumber", header: "Dispatch No" },
+        ...base.map((column) => {
+          const titleCaseHeaders: Record<string, string> = {
+            date: "Date",
+            saleInvoice: "Sale Invoice",
+            lorryNumber: "Lorry Number",
+            loadingWeight: "Loading Weight",
+            receivingWeight: "Receiving Weight",
+            diffInWeight: "Diff in Weight",
+            customer: "Customer Name",
+            portName: "Port Name",
+            deliveryTerms: "Delivery Terms",
+            transporter: "Transporter Name",
+            freightPerTon: "Freight per Ton",
+            freightAmount: "Freight Amount",
+            biltyHardCopy: "Bilty Hard Copy",
+            invoiceHardCopy: "Invoice Hard Copy",
+            transportInvoiceNo: "Transport Invoice No",
+            entryInTally: "Entry in Tally",
+          };
+          const header = titleCaseHeaders[column.key];
+          return header ? { ...column, header } : column;
+        }),
+      ];
+    }
+    return base;
+  }, [variant]);
 
   const exportRows = useMemo(
     () =>
-      filtered.map((row) => ({
-        date: formatDateDdMmYyyy(row.dispatchDate),
+      filtered.map((row) => {
+        const base = {
+          date: formatDateDdMmYyyy(row.dispatchDate),
         saleInvoice: row.saleInvoiceNumber ?? "—",
         lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
         loadingWeight: formatDispatchMt(row.loadingWeight),
@@ -194,68 +249,22 @@ export function TransportEngineClient({
         invoiceHardCopy: formatChecklistYes(row.invoiceHardCopy),
         transportInvoiceNo: row.transportInvoiceNo?.trim() || "—",
         entryInTally: formatChecklistYes(row.entryInTally),
-      })),
-    [filtered],
+        };
+        if (variant === "update") {
+          return {
+            dispatchNumber: displayDispatchNumber(row.dispatchNumber),
+            ...base,
+          };
+        }
+        return base;
+      }),
+    [filtered, variant],
   );
 
-  function openEdit(row: TransportEngineRow) {
-    setEditRow(row);
-    setBiltyHardCopy(row.biltyHardCopy);
-    setTransportInvoiceNo(row.transportInvoiceNo ?? "");
-    setInvoiceHardCopy(row.invoiceHardCopy);
-    setEntryInTally(row.entryInTally);
-    setError(null);
-  }
-
-  function closeEdit() {
-    if (saving) return;
-    setEditRow(null);
-    setError(null);
-  }
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!editRow) return;
-    setError(null);
-    setSaving(true);
-    try {
-      const result = await updateTransportChecklist(editRow.id, {
-        biltyHardCopy,
-        transportInvoiceNo:
-          transportInvoiceNo.trim() === "" ? null : transportInvoiceNo,
-        invoiceHardCopy,
-        softCopyStatus: editRow.softCopyStatus,
-        entryInTally,
-      });
-      setRows((prev) =>
-        prev.map((row) =>
-          row.id === editRow.id
-            ? {
-                ...row,
-                biltyHardCopy: result.biltyHardCopy,
-                transportInvoiceNo: result.transportInvoiceNo,
-                invoiceHardCopy: result.invoiceHardCopy,
-                softCopyStatus: result.softCopyStatus,
-                entryInTally: result.entryInTally,
-              }
-            : row,
-        ),
-      );
-      setEditRow(null);
-      startTransition(() => {
-        router.refresh();
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
-    } finally {
-      setSaving(false);
-    }
-  }
+  const isUpdateLayout = variant === "update";
 
   return (
     <div>
-      {error && !editRow && <p className="form-error">{error}</p>}
-
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
           Customer
@@ -311,6 +320,28 @@ export function TransportEngineClient({
             <option value="pending">Pending</option>
           </select>
         </label>
+        <label>
+          Date start
+          <input
+            type="date"
+            lang="en-GB"
+            className="field-input"
+            value={dateStart}
+            max={dateEnd || undefined}
+            onChange={(e) => setDateStart(e.target.value)}
+          />
+        </label>
+        <label>
+          Date end
+          <input
+            type="date"
+            lang="en-GB"
+            className="field-input"
+            value={dateEnd}
+            min={dateStart || undefined}
+            onChange={(e) => setDateEnd(e.target.value)}
+          />
+        </label>
         {hasActiveFilters && (
           <button
             type="button"
@@ -318,8 +349,12 @@ export function TransportEngineClient({
             onClick={() => {
               setCustomerFilter("");
               setTransporterFilter("");
-              setDeliveryTermsFilter("");
+              setDeliveryTermsFilter(
+                variant === "update" ? DispatchTerms.FOR : "",
+              );
               setCompleteFilter("");
+              setDateStart("");
+              setDateEnd("");
             }}
           >
             Clear
@@ -333,35 +368,93 @@ export function TransportEngineClient({
         />
       </form>
 
-      <div className="table-wrap">
-        <div className="table-h-scroll"><table className="data transport-engine-table">
+      <div
+        className={
+          isUpdateLayout
+            ? "table-wrap table-wrap-scroll update-transport-table-wrap"
+            : "table-wrap"
+        }
+      >
+        <div className="table-h-scroll">
+          <table
+            className={
+              isUpdateLayout
+                ? "data update-transport-table"
+                : "data transport-engine-table"
+            }
+          >
+            {isUpdateLayout ? (
+              <colgroup>
+                <col className="update-transport-col-dispatch" />
+                <col className="update-transport-col-date" />
+                <col className="update-transport-col-invoice" />
+                <col className="update-transport-col-lorry" />
+                <col className="update-transport-col-qty" />
+                <col className="update-transport-col-qty" />
+                <col className="update-transport-col-qty" />
+                <col className="update-transport-col-name" />
+                <col className="update-transport-col-port" />
+                <col className="update-transport-col-terms" />
+                <col className="update-transport-col-transporter" />
+                <col className="update-transport-col-amt" />
+                <col className="update-transport-col-amt" />
+                <col className="update-transport-col-check" />
+                <col className="update-transport-col-check" />
+                <col className="update-transport-col-invoice-no" />
+                <col className="update-transport-col-tally" />
+                <col className="update-transport-col-actions" />
+              </colgroup>
+            ) : null}
           <thead>
             <tr>
+              {isUpdateLayout ? <th>Dispatch No</th> : null}
               <th>Date</th>
-              <th>Sale invoice</th>
-              <th>Lorry number</th>
-              <th className="cell-num">Loading weight</th>
-              <th className="cell-num">Receiving weight</th>
-              <th className="cell-num">Diff in weight</th>
-              <th className="report-customer-col">Customer name</th>
-              <th>Port name</th>
-              <th>Delivery terms</th>
-              <th>Transporter name</th>
-              <th className="cell-num">Freight per ton</th>
-              <th className="cell-num">Freight amount</th>
-              <th className="cell-center">Bilty hard copy</th>
-              <th className="cell-center">Invoice hard copy</th>
-              <th>Transport invoice no</th>
+              <th>{isUpdateLayout ? "Sale Invoice" : "Sale invoice"}</th>
+              <th>{isUpdateLayout ? "Lorry Number" : "Lorry number"}</th>
+              <th className="cell-num">
+                {isUpdateLayout ? "Loading Weight" : "Loading weight"}
+              </th>
+              <th className="cell-num">
+                {isUpdateLayout ? "Receiving Weight" : "Receiving weight"}
+              </th>
+              <th className="cell-num">
+                {isUpdateLayout ? "Diff in Weight" : "Diff in weight"}
+              </th>
+              <th className={isUpdateLayout ? undefined : "report-customer-col"}>
+                {isUpdateLayout ? "Customer Name" : "Customer name"}
+              </th>
+              <th>{isUpdateLayout ? "Port Name" : "Port name"}</th>
+              <th>{isUpdateLayout ? "Delivery Terms" : "Delivery terms"}</th>
+              <th>{isUpdateLayout ? "Transporter Name" : "Transporter name"}</th>
+              <th className="cell-num">
+                {isUpdateLayout ? "Freight per Ton" : "Freight per ton"}
+              </th>
+              <th className="cell-num">
+                {isUpdateLayout ? "Freight Amount" : "Freight amount"}
+              </th>
+              <th className="cell-center">
+                {isUpdateLayout ? "Bilty Hard Copy" : "Bilty hard copy"}
+              </th>
+              <th className="cell-center">
+                {isUpdateLayout ? "Invoice Hard Copy" : "Invoice hard copy"}
+              </th>
+              <th>
+                {isUpdateLayout ? "Transport Invoice No" : "Transport invoice no"}
+              </th>
               <th className="cell-center">Entry in Tally</th>
-              <th>Edit</th>
+              <th className={isUpdateLayout ? "update-transport-actions-col" : undefined}>
+                {isUpdateLayout ? null : "Edit"}
+              </th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((row) => {
-              const complete = isChecklistComplete(row);
               const lorry = formatLorryNumber(row.lorryNumber);
               return (
                 <tr key={row.id}>
+                  {isUpdateLayout ? (
+                    <td>{displayDispatchNumber(row.dispatchNumber)}</td>
+                  ) : null}
                   <td>{formatDateDdMmYyyy(row.dispatchDate)}</td>
                   <td
                     className={
@@ -393,9 +486,14 @@ export function TransportEngineClient({
                   <td
                     className={
                       row.customerName
-                        ? "report-customer-col"
-                        : "report-customer-col cell-center"
+                        ? isUpdateLayout
+                          ? "update-transport-name-cell"
+                          : "report-customer-col"
+                        : isUpdateLayout
+                          ? "update-transport-name-cell cell-center"
+                          : "report-customer-col cell-center"
                     }
+                    title={row.customerName ?? undefined}
                   >
                     {row.customerName
                       ? (capitalizeName(row.customerName) ?? row.customerName)
@@ -409,8 +507,13 @@ export function TransportEngineClient({
                   </td>
                   <td
                     className={
-                      row.transporterName ? undefined : "cell-center"
+                      row.transporterName
+                        ? isUpdateLayout
+                          ? "update-transport-transporter-cell"
+                          : undefined
+                        : "cell-center"
                     }
+                    title={row.transporterName ?? undefined}
                   >
                     {row.transporterName
                       ? (capitalizeName(row.transporterName) ??
@@ -445,26 +548,49 @@ export function TransportEngineClient({
                   <td className="cell-center">
                     {formatChecklistYes(row.entryInTally)}
                   </td>
-                  <td>
-                    <button
-                      type="button"
-                      className={`btn btn-sm ${
-                        complete
-                          ? "btn-checklist-complete"
-                          : "btn-checklist-pending"
-                      }`}
-                      onClick={() => openEdit(row)}
-                      disabled={pending && saving}
-                    >
-                      Edit
-                    </button>
+                  <td className={isUpdateLayout ? "update-transport-actions-col" : undefined}>
+                    <div className="dispatch-edit-actions">
+                      <EditTransportChecklistButton
+                        dispatchId={row.id}
+                        biltyHardCopy={row.biltyHardCopy}
+                        transportInvoiceNo={row.transportInvoiceNo}
+                        invoiceHardCopy={row.invoiceHardCopy}
+                        softCopyStatus={row.softCopyStatus}
+                        entryInTally={row.entryInTally}
+                        buttonLabel={
+                          isUpdateLayout ? "Transport edit" : "Edit"
+                        }
+                        rowSummary={
+                          isUpdateLayout
+                            ? buildTransportEditRowSummary(row)
+                            : undefined
+                        }
+                        onUpdated={(result) => {
+                          setRows((prev) =>
+                            prev.map((item) =>
+                              item.id === row.id
+                                ? {
+                                    ...item,
+                                    biltyHardCopy: result.biltyHardCopy,
+                                    transportInvoiceNo:
+                                      result.transportInvoiceNo,
+                                    invoiceHardCopy: result.invoiceHardCopy,
+                                    softCopyStatus: result.softCopyStatus,
+                                    entryInTally: result.entryInTally,
+                                  }
+                                : item,
+                            ),
+                          );
+                        }}
+                      />
+                    </div>
                   </td>
                 </tr>
               );
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={17}>
+                <td colSpan={isUpdateLayout ? 18 : 17}>
                   {rows.length === 0
                     ? "No dispatches yet."
                     : "No dispatches match these filters."}
@@ -472,68 +598,9 @@ export function TransportEngineClient({
               </tr>
             )}
           </tbody>
-        </table></div>
+        </table>
+        </div>
       </div>
-
-      <Modal
-        open={editRow != null}
-        title="Transport checklist"
-        onClose={closeEdit}
-      >
-        {error && <div className="error-box">{error}</div>}
-        <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-          <label htmlFor="te-bilty">Bilty hard copy</label>
-          <input
-            id="te-bilty"
-            type="checkbox"
-            className="dispatch-bool-toggle"
-            checked={biltyHardCopy}
-            onChange={(e) => setBiltyHardCopy(e.target.checked)}
-          />
-
-          <label htmlFor="te-invoice-no">Transport invoice no.</label>
-          <input
-            id="te-invoice-no"
-            value={transportInvoiceNo}
-            onChange={(e) => setTransportInvoiceNo(e.target.value)}
-            placeholder="Transport invoice number"
-            autoFocus
-          />
-
-          <label htmlFor="te-hard">Invoice hard copy</label>
-          <input
-            id="te-hard"
-            type="checkbox"
-            className="dispatch-bool-toggle"
-            checked={invoiceHardCopy}
-            onChange={(e) => setInvoiceHardCopy(e.target.checked)}
-          />
-
-          <label htmlFor="te-tally">Entry in Tally</label>
-          <input
-            id="te-tally"
-            type="checkbox"
-            className="dispatch-bool-toggle"
-            checked={entryInTally}
-            onChange={(e) => setEntryInTally(e.target.checked)}
-          />
-
-          <div />
-          <div className="modal-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={closeEdit}
-              disabled={saving}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="btn" disabled={saving}>
-              {saving ? "Saving…" : "Save"}
-            </button>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 }

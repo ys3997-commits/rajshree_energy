@@ -49,7 +49,7 @@ export function PendingReceiptsClient({ initial }: { initial: Row[] }) {
               <th>PO</th>
               <th>Vessel</th>
               <th>Importer</th>
-              <th className="num">Dispatched (MT)</th>
+              <th className="num">Dispatched</th>
               <th>Lorry</th>
               <th />
             </tr>

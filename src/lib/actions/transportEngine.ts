@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 
 export type TransportEngineRow = {
   id: string;
+  dispatchNumber: string | null;
   dispatchDate: string;
   saleInvoiceNumber: string | null;
   lorryNumber: string | null;
@@ -43,6 +44,7 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
   const rows = await prisma.dispatch.findMany({
     select: {
       id: true,
+      dispatchNumber: true,
       dispatchDate: true,
       saleInvoiceNumber: true,
       lorryNumber: true,
@@ -82,6 +84,7 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
 
     return {
       id: row.id,
+      dispatchNumber: row.dispatchNumber,
       dispatchDate: row.dispatchDate.toISOString().slice(0, 10),
       saleInvoiceNumber: row.saleInvoiceNumber,
       lorryNumber: row.lorryNumber,

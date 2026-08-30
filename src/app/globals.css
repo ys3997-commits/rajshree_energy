@@ -1289,6 +1289,9 @@ table.data td.col-actions {
 .table-wrap.orders-table-wrap,
 .table-wrap.purchase-orders-table-wrap,
 .table-wrap.dispatches-table-wrap,
+.table-wrap.update-purchase-table-wrap,
+.table-wrap.update-sale-table-wrap,
+.table-wrap.update-transport-table-wrap,
 .table-wrap.dispatch-register-table-wrap,
 .table-wrap.dispatch-analysis-table-wrap,
 .table-wrap.transport-engine-table-wrap {
@@ -1314,6 +1317,9 @@ table.data.purchase-orders-table tbody td {
 table.data.orders-table tbody tr:hover td,
 table.data.purchase-orders-table tbody tr:hover td,
 table.data.report-table-dispatches tbody tr:hover td,
+table.data.update-purchase-table tbody tr:hover td,
+table.data.update-sale-table tbody tr:hover td,
+table.data.update-transport-table tbody tr:hover td,
 table.data.dispatch-register-table tbody tr:hover td,
 table.data.dispatch-analysis-table tbody tr:hover td {
   background: #f7faf9;
@@ -2122,6 +2128,46 @@ table.data tr.month-divider:hover td {
   gap: 0.75rem;
   align-items: center;
   white-space: nowrap;
+}
+
+.purchase-edit-summary {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.purchase-edit-section-title {
+  margin: 0 0 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.purchase-edit-summary-grid {
+  margin-bottom: 0;
+}
+
+.purchase-edit-summary-label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.purchase-edit-summary-value {
+  color: var(--ink);
+  font-size: 0.92rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.purchase-edit-summary-grid .purchase-edit-summary-value.cell-num,
+.purchase-edit-summary-value.cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:last-child,
@@ -4457,6 +4503,22 @@ table.data.sales-engine-table tbody tr.collection-row-due-call .collection-date-
   text-align: right;
 }
 
+/* Update screens — title case table headers */
+.update-page table.data thead th,
+.update-page table.data thead th.cell-num,
+.update-page table.data thead th.cell-center {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.update-page table.data thead th.cell-num,
+.update-page table.data thead th.cell-num button.th-sort {
+  text-align: right;
+}
+
 .bill-status {
   display: inline-flex;
   align-items: center;
@@ -4706,6 +4768,303 @@ table.data.report-screen-table td.col-amt {
 table.data.report-screen-table th.col-status,
 table.data.report-screen-table td.col-status {
   min-width: 6rem;
+}
+
+table.data.update-purchase-table {
+  table-layout: fixed;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.data.update-purchase-table col.update-purchase-col-dispatch {
+  width: 5rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-date {
+  width: 7rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-invoice {
+  width: 8.5rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-lorry {
+  width: 7.5rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-qty {
+  width: 6.75rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-amt {
+  width: 5.75rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-vendor {
+  width: 13rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-gst-state {
+  width: 7.5rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-tally {
+  width: 8rem;
+}
+
+table.data.update-purchase-table col.update-purchase-col-actions {
+  width: 8.5rem;
+}
+
+table.data.update-purchase-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 0.75rem 0.85rem;
+  line-height: 1.35;
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  vertical-align: bottom;
+  word-break: break-word;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+table.data.update-purchase-table tbody td {
+  padding: 0.55rem 0.85rem;
+  line-height: 1.35;
+  background: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table.data.update-purchase-table .update-purchase-vendor-cell {
+  max-width: 13rem;
+}
+
+table.data.update-purchase-table th.update-purchase-actions-col,
+table.data.update-purchase-table td.update-purchase-actions-col {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+table.data.update-purchase-table .dispatch-edit-actions {
+  gap: 0;
+}
+
+table.data.update-sale-table {
+  table-layout: fixed;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.data.update-sale-table col.update-sale-col-dispatch {
+  width: 5rem;
+}
+
+table.data.update-sale-table col.update-sale-col-date {
+  width: 7rem;
+}
+
+table.data.update-sale-table col.update-sale-col-invoice {
+  width: 7rem;
+}
+
+table.data.update-sale-table col.update-sale-col-lorry {
+  width: 7.5rem;
+}
+
+table.data.update-sale-table col.update-sale-col-qty {
+  width: 6.75rem;
+}
+
+table.data.update-sale-table col.update-sale-col-amt {
+  width: 5.75rem;
+}
+
+table.data.update-sale-table col.update-sale-col-customer {
+  width: 11rem;
+}
+
+table.data.update-sale-table col.update-sale-col-terms {
+  width: 7rem;
+}
+
+table.data.update-sale-table col.update-sale-col-transporter {
+  width: 11rem;
+}
+
+table.data.update-sale-table col.update-sale-col-actions {
+  width: 8.5rem;
+}
+
+table.data.update-sale-table thead th,
+table.data.update-sale-table thead th.cell-num {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 0.75rem 0.85rem;
+  line-height: 1.35;
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  vertical-align: bottom;
+  word-break: break-word;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+table.data.update-sale-table tbody td {
+  padding: 0.55rem 0.85rem;
+  line-height: 1.35;
+  background: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table.data.update-sale-table .update-sale-transporter-cell {
+  max-width: 11rem;
+}
+
+table.data.update-sale-table .update-sale-customer-cell {
+  max-width: 11rem;
+}
+
+table.data.update-sale-table th.update-sale-actions-col,
+table.data.update-sale-table td.update-sale-actions-col {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+table.data.update-sale-table .dispatch-edit-actions {
+  gap: 0;
+}
+
+table.data.update-transport-table {
+  table-layout: fixed;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.data.update-transport-table col.update-transport-col-dispatch {
+  width: 5rem;
+}
+
+table.data.update-transport-table col.update-transport-col-date {
+  width: 7rem;
+}
+
+table.data.update-transport-table col.update-transport-col-invoice {
+  width: 7rem;
+}
+
+table.data.update-transport-table col.update-transport-col-lorry {
+  width: 7.5rem;
+}
+
+table.data.update-transport-table col.update-transport-col-qty {
+  width: 6.75rem;
+}
+
+table.data.update-transport-table col.update-transport-col-name {
+  width: 13rem;
+}
+
+table.data.update-transport-table col.update-transport-col-transporter {
+  width: 11rem;
+}
+
+table.data.update-transport-table col.update-transport-col-port {
+  width: 8rem;
+}
+
+table.data.update-transport-table col.update-transport-col-terms {
+  width: 7rem;
+}
+
+table.data.update-transport-table col.update-transport-col-amt {
+  width: 5.75rem;
+}
+
+table.data.update-transport-table col.update-transport-col-check {
+  width: 6.5rem;
+}
+
+table.data.update-transport-table col.update-transport-col-invoice-no {
+  width: 8rem;
+}
+
+table.data.update-transport-table col.update-transport-col-tally {
+  width: 7rem;
+}
+
+table.data.update-transport-table col.update-transport-col-actions {
+  width: 8.5rem;
+}
+
+table.data.update-transport-table thead th,
+table.data.update-transport-table thead th.cell-num,
+table.data.update-transport-table thead th.cell-center {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 0.75rem 0.85rem;
+  line-height: 1.35;
+  background: #f8fafb;
+  box-shadow: inset 0 -1px 0 var(--line);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  vertical-align: bottom;
+  word-break: break-word;
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+table.data.update-transport-table tbody td {
+  padding: 0.55rem 0.85rem;
+  line-height: 1.35;
+  background: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+table.data.update-transport-table .update-transport-name-cell {
+  max-width: 13rem;
+}
+
+table.data.update-transport-table .update-transport-transporter-cell {
+  max-width: 11rem;
+}
+
+table.data.update-transport-table th.update-transport-actions-col,
+table.data.update-transport-table td.update-transport-actions-col {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+table.data.update-transport-table .dispatch-edit-actions {
+  gap: 0;
 }
 
 table.data.collection-table.report-screen-table {

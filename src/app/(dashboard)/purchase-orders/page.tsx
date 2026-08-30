@@ -3,6 +3,8 @@ import {
   suggestNextPurchasePoNumber,
 } from "@/lib/actions/purchaseOrders";
 import { listCustomers } from "@/lib/actions/customers";
+import { listPortOptions } from "@/lib/actions/ports";
+import { listQualityClasses } from "@/lib/actions/qualities";
 import { listVessels } from "@/lib/actions/vessels";
 import { formatRs } from "@/lib/domain/computations";
 import {
@@ -26,6 +28,8 @@ type SearchParams = Promise<{
   status?: string;
   importerId?: string;
   vesselId?: string;
+  qualityClassId?: string;
+  portId?: string;
 }>;
 
 export default async function PurchaseOrdersPage({
@@ -36,14 +40,19 @@ export default async function PurchaseOrdersPage({
   const sp = await searchParams;
   const statusFilter = resolveOrderListStatusFilter(sp.status);
 
-  const [orders, customers, vessels, suggestedPo] = await Promise.all([
+  const [orders, customers, vessels, ports, qualityClasses, suggestedPo] =
+    await Promise.all([
     listPurchaseOrders({
       status: statusFilter,
       importerId: sp.importerId || "",
       vesselId: sp.vesselId || "",
+      qualityClassId: sp.qualityClassId || "",
+      portId: sp.portId || "",
     }),
     listCustomers({ activeOnly: true }),
     listVessels(),
+    listPortOptions(),
+    listQualityClasses(),
     suggestNextPurchasePoNumber(),
   ]);
 
@@ -135,6 +144,31 @@ export default async function PurchaseOrdersPage({
             {vessels.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.vesselName}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Quality class
+          <select
+            name="qualityClassId"
+            defaultValue={sp.qualityClassId ?? ""}
+          >
+            <option value="">All</option>
+            {qualityClasses.map((qc) => (
+              <option key={qc.id} value={qc.id}>
+                {formatQualityClass(qc)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Port
+          <select name="portId" defaultValue={sp.portId ?? ""}>
+            <option value="">All</option>
+            {ports.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
               </option>
             ))}
           </select>

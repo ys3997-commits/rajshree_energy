@@ -1,4 +1,4 @@
-import { DispatchListView } from "../../dispatches/DispatchListView";
+import { UpdatePurchaseListView } from "./UpdatePurchaseListView";
 import {
   loadDispatchListData,
   type DispatchSearchParams,
@@ -15,18 +15,11 @@ export default async function UpdatePurchasePage({
   const data = await loadDispatchListData(sp);
 
   return (
-    <div>
+    <div className="update-page">
       <div className="page-header">
-        <h1 className="page-title">Update</h1>
+        <h1 className="page-title">Update - Purchases</h1>
       </div>
-      <DispatchListView
-        filterPath="/update/purchase"
-        linkPoNumbers={false}
-        showCreateButton={false}
-        exportTitle="Update — Purchase"
-        exportFilenameBase="update-purchase"
-        data={data}
-      />
+      <UpdatePurchaseListView data={data} />
     </div>
   );
 }

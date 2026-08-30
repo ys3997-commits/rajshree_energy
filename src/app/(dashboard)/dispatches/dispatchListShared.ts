@@ -18,22 +18,29 @@ import {
   formatDispatchTerms,
   formatLorryNumber,
   formatQualityClass,
+  formatAmount,
   formatRs,
 } from "@/lib/domain/format";
+import { computeGst, toDecimal } from "@/lib/domain/computations";
 import {
   parsePurchaseOrderSequence,
   parseSaleOrderSequence,
 } from "@/lib/domain/orderNumbers";
+import { PURCHASE_TCS_RATE } from "@/lib/domain/purchaseRate";
 import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
 
 export type DispatchSearchParams = {
   receiptStatus?: string;
+  purchaseUpdateStatus?: string;
+  saleUpdateStatus?: string;
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
   vendorId?: string;
   customerId?: string;
   dispatchDate?: string;
+  dispatchDateStart?: string;
+  dispatchDateEnd?: string;
 };
 
 export function displayOrderDigits(
@@ -48,11 +55,59 @@ export function displayOrderDigits(
   return poNumber.replace(/^(SO|PO)\s+/i, "").trim() || poNumber;
 }
 
+export function formatPurchaseBasicAmount(
+  weight: { toString(): string } | number | string,
+  basicRate: { toString(): string } | number | string | null | undefined,
+): string {
+  if (basicRate == null) return "—";
+  return formatAmount(toDecimal(weight).mul(basicRate));
+}
+
+export function formatPurchaseGstAmount(
+  weight: { toString(): string } | number | string,
+  basicRate: { toString(): string } | number | string | null | undefined,
+): string {
+  const gst = computeGst({
+    rate: basicRate != null ? toDecimal(basicRate) : null,
+    quantity: toDecimal(weight),
+  });
+  if (gst == null) return "—";
+  return formatAmount(gst);
+}
+
+export function formatPurchaseTcsAmount(
+  weight: { toString(): string } | number | string,
+  basicRate: { toString(): string } | number | string | null | undefined,
+): string {
+  const gst = computeGst({
+    rate: basicRate != null ? toDecimal(basicRate) : null,
+    quantity: toDecimal(weight),
+  });
+  if (gst == null || basicRate == null) return "—";
+  const tcs = toDecimal(weight).mul(basicRate).plus(gst).mul(PURCHASE_TCS_RATE);
+  return formatAmount(tcs);
+}
+
+export function formatPurchaseTotalAmount(
+  weight: { toString(): string } | number | string,
+  basicRate: { toString(): string } | number | string | null | undefined,
+): string {
+  if (basicRate == null) return "—";
+  const basicAmount = toDecimal(weight).mul(basicRate);
+  const gst = computeGst({
+    rate: toDecimal(basicRate),
+    quantity: toDecimal(weight),
+  });
+  if (gst == null) return "—";
+  const tcs = basicAmount.plus(gst).mul(PURCHASE_TCS_RATE);
+  return formatAmount(basicAmount.plus(gst).plus(tcs));
+}
+
 export const dispatchExportColumns = [
   { key: "dispatchNumber", header: "Dispatch no" },
   { key: "date", header: "Date" },
   { key: "lorryNumber", header: "Lorry no" },
-  { key: "weight", header: "Weight (MT)", align: "right" as const },
+  { key: "weight", header: "Weight", align: "right" as const },
   { key: "vesselName", header: "Vessel name" },
   { key: "quality", header: "Quality" },
   { key: "gstState", header: "GST state" },
@@ -61,12 +116,12 @@ export const dispatchExportColumns = [
   { key: "vendor", header: "Vendor" },
   {
     key: "purchaseBasic",
-    header: "Purchase basic price (Rs)",
+    header: "Purchase basic price",
     align: "right" as const,
   },
   {
     key: "purchaseTotal",
-    header: "Purchase total price (Rs)",
+    header: "Purchase total price",
     align: "right" as const,
   },
   { key: "salePo", header: "SO no" },
@@ -74,31 +129,145 @@ export const dispatchExportColumns = [
   { key: "customer", header: "Customer name" },
   {
     key: "saleBasic",
-    header: "Sale basic price (Rs)",
+    header: "Sale basic price",
     align: "right" as const,
   },
   {
     key: "saleTotal",
-    header: "Sale total price (Rs)",
+    header: "Sale total price",
     align: "right" as const,
   },
   { key: "deliveryTerms", header: "Delivery terms" },
   { key: "transporter", header: "Transporter name" },
-  { key: "freightPmt", header: "Freight PMT (Rs)", align: "right" as const },
+  { key: "freightPmt", header: "Freight PMT", align: "right" as const },
   {
     key: "freightAmount",
-    header: "Freight amount (Rs)",
+    header: "Freight amount",
     align: "right" as const,
   },
-  { key: "profit", header: "Profit (Rs)", align: "right" as const },
-  { key: "received", header: "Received (MT)", align: "right" as const },
-  { key: "diff", header: "Diff (MT)", align: "right" as const },
+  { key: "profit", header: "Profit", align: "right" as const },
+  { key: "received", header: "Received", align: "right" as const },
+  { key: "diff", header: "Diff", align: "right" as const },
   { key: "purchaseInTally", header: "Purchase in tally" },
 ];
+
+export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
+  const columns = [...dispatchExportColumns];
+  const moveColumn = (key: string, afterKey: string) => {
+    const columnIndex = columns.findIndex((column) => column.key === key);
+    const [column] = columns.splice(columnIndex, 1);
+    const afterIndex = columns.findIndex((column) => column.key === afterKey);
+    columns.splice(afterIndex + 1, 0, column);
+  };
+  moveColumn("purchaseInvoice", "date");
+  moveColumn("purchaseBasic", "weight");
+  const purchaseBasicIndex = columns.findIndex(
+    (column) => column.key === "purchaseBasic",
+  );
+  columns.splice(purchaseBasicIndex + 1, 0, {
+    key: "purchaseBasicAmount",
+    header: "Basic Amount",
+    align: "right" as const,
+  });
+  columns.splice(purchaseBasicIndex + 2, 0, {
+    key: "purchaseGstAmount",
+    header: "GST",
+    align: "right" as const,
+  });
+  columns.splice(purchaseBasicIndex + 3, 0, {
+    key: "purchaseTcsAmount",
+    header: "TCS",
+    align: "right" as const,
+  });
+  columns.splice(purchaseBasicIndex + 4, 0, {
+    key: "purchaseTotalAmount",
+    header: "Total amount",
+    align: "right" as const,
+  });
+  moveColumn("vendor", "purchaseTotalAmount");
+  moveColumn("gstState", "vendor");
+  const hiddenKeys = new Set([
+    "salePo",
+    "saleInvoice",
+    "customer",
+    "saleBasic",
+    "saleTotal",
+    "deliveryTerms",
+    "transporter",
+    "freightPmt",
+    "freightAmount",
+    "profit",
+    "purchaseTotal",
+    "received",
+    "diff",
+    "vesselName",
+    "quality",
+    "purchasePo",
+  ]);
+  return columns
+    .filter((column) => !hiddenKeys.has(column.key))
+    .map((column) => {
+      let header = column.header
+        .replace(/\s*\(MT\)/gi, "")
+        .replace(/\s*\(Rs\)/gi, "")
+        .trim();
+      if (column.key === "purchaseBasic") {
+        header = "Basic price";
+      }
+      return { ...column, header };
+    });
+})();
 
 export type DispatchRow = Awaited<ReturnType<typeof listDispatches>>[number];
 
 export type DispatchListData = Awaited<ReturnType<typeof loadDispatchListData>>;
+
+export function buildUpdatePurchaseExportRows(dispatches: DispatchRow[]) {
+  return buildDispatchExportRows(dispatches).map((row, index) => ({
+    ...row,
+    purchaseBasic: formatAmount(dispatches[index].purchaseBasicRate),
+  }));
+}
+
+export const dispatchExportColumnsUpdateSale = [
+  { key: "dispatchNumber", header: "Dispatch no" },
+  { key: "date", header: "Date" },
+  { key: "saleInvoice", header: "Sale invoice" },
+  { key: "lorryNumber", header: "Lorry no" },
+  { key: "weight", header: "Weight", align: "right" as const },
+  {
+    key: "saleBasic",
+    header: "Basic price",
+    align: "right" as const,
+  },
+  {
+    key: "saleTotal",
+    header: "Total price",
+    align: "right" as const,
+  },
+  { key: "customer", header: "Customer" },
+  { key: "deliveryTerms", header: "Delivery terms" },
+  { key: "transporter", header: "Transporter name" },
+  { key: "received", header: "Received", align: "right" as const },
+  { key: "diff", header: "Diff", align: "right" as const },
+];
+
+export function buildUpdateSaleExportRows(dispatches: DispatchRow[]) {
+  return buildDispatchExportRows(dispatches).map((row, index) => ({
+    dispatchNumber: row.dispatchNumber,
+    date: row.date,
+    saleInvoice: row.saleInvoice,
+    lorryNumber: row.lorryNumber,
+    weight: row.weight,
+    saleBasic: formatAmount(dispatches[index].saleBasicRate),
+    saleTotal: formatAmount(dispatches[index].saleTotalRate),
+    customer: row.customer,
+    deliveryTerms: row.deliveryTerms,
+    transporter: row.transporter,
+    received: row.received,
+    diff: row.diff,
+  }));
+}
 
 export function buildDispatchExportRows(dispatches: DispatchRow[]) {
   return dispatches.map((row) => {
@@ -121,6 +290,22 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
       purchaseInvoice: row.purchaseInvoiceNumber ?? "—",
       vendor: row.vendorName ?? "—",
       purchaseBasic: formatRs(row.purchaseBasicRate),
+      purchaseBasicAmount: formatPurchaseBasicAmount(
+        row.dispatchedQuantity,
+        row.purchaseBasicRate,
+      ),
+      purchaseGstAmount: formatPurchaseGstAmount(
+        row.dispatchedQuantity,
+        row.purchaseBasicRate,
+      ),
+      purchaseTcsAmount: formatPurchaseTcsAmount(
+        row.dispatchedQuantity,
+        row.purchaseBasicRate,
+      ),
+      purchaseTotalAmount: formatPurchaseTotalAmount(
+        row.dispatchedQuantity,
+        row.purchaseBasicRate,
+      ),
       purchaseTotal: formatRs(row.purchaseTotalRate),
       salePo: displayOrderDigits(row.salePoNumber, "sale"),
       saleInvoice: row.saleInvoiceNumber ?? "—",
@@ -140,14 +325,28 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
 }
 
 export async function loadDispatchListData(sp: DispatchSearchParams) {
+  const purchaseUpdateStatus =
+    sp.purchaseUpdateStatus === "PENDING" ||
+    sp.purchaseUpdateStatus === "RECEIVED"
+      ? sp.purchaseUpdateStatus
+      : "";
+  const saleUpdateStatus =
+    sp.saleUpdateStatus === "PENDING" || sp.saleUpdateStatus === "RECEIVED"
+      ? sp.saleUpdateStatus
+      : "";
+
   const filters = {
     receiptStatus: (sp.receiptStatus as ReceiptStatus) || "",
+    purchaseUpdateStatus,
+    saleUpdateStatus,
     poNumber: sp.poNumber || "",
     purchasePoNumber: sp.purchasePoNumber || "",
     vesselId: sp.vesselId || "",
     vendorId: sp.vendorId || "",
     customerId: sp.customerId || "",
     dispatchDate: sp.dispatchDate || "",
+    dispatchDateStart: sp.dispatchDateStart || "",
+    dispatchDateEnd: sp.dispatchDateEnd || "",
   };
 
   const [

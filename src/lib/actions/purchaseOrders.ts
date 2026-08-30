@@ -29,6 +29,8 @@ export type PurchaseOrderFilters = {
   status?: PurchaseOrderStatus | "";
   importerId?: string;
   vesselId?: string;
+  qualityClassId?: string;
+  portId?: string;
 };
 
 /**
@@ -64,6 +66,8 @@ export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
   if (filters.status) Object.assign(where, purchaseOrderStatusWhere(filters.status));
   if (filters.importerId) where.importerId = filters.importerId;
   if (filters.vesselId) where.vesselId = filters.vesselId;
+  if (filters.qualityClassId) where.qualityClassId = filters.qualityClassId;
+  if (filters.portId) where.vessel = { portId: filters.portId };
 
   const rows = await prisma.purchaseOrder.findMany({
     where,

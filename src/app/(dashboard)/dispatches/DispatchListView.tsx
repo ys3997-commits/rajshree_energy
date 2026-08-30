@@ -27,6 +27,7 @@ export function DispatchListView({
   showCreateButton,
   exportTitle,
   exportFilenameBase,
+  exportColumns = dispatchExportColumns,
   data,
 }: {
   filterPath: string;
@@ -34,6 +35,7 @@ export function DispatchListView({
   showCreateButton: boolean;
   exportTitle: string;
   exportFilenameBase: string;
+  exportColumns?: typeof dispatchExportColumns;
   data: DispatchListData;
 }) {
   const {
@@ -148,217 +150,219 @@ export function DispatchListView({
         <TableDownloadButtons
           title={exportTitle}
           filenameBase={exportFilenameBase}
-          columns={dispatchExportColumns}
+          columns={exportColumns}
           rows={exportRows}
         />
       </form>
 
       <div className="table-wrap table-wrap-scroll dispatches-table-wrap">
-        <div className="table-h-scroll"><table className="data report-table report-table-dispatches">
-          <thead>
-            <tr className="report-group-row">
-              <th colSpan={7}>Dispatch</th>
-              <th colSpan={5}>Purchase</th>
-              <th colSpan={5}>Sale</th>
-              <th colSpan={4}>Transport</th>
-              <th colSpan={1}>Margin</th>
-              <th colSpan={3}>Status</th>
-              <th colSpan={1}></th>
-            </tr>
-            <tr>
-              <th>Dispatch no</th>
-              <th>Date</th>
-              <th>Lorry no</th>
-              <th className="cell-num">Weight (MT)</th>
-              <th>Vessel name</th>
-              <th>Quality</th>
-              <th>GST state</th>
-              <th>PO no</th>
-              <th>Purchase invoice</th>
-              <th>Vendor</th>
-              <th className="cell-num">Basic price (Rs)</th>
-              <th className="cell-num">Total price (Rs)</th>
-              <th>SO no</th>
-              <th>Sale invoice</th>
-              <th>Customer name</th>
-              <th className="cell-num">Basic price (Rs)</th>
-              <th className="cell-num">Total price (Rs)</th>
-              <th>Delivery terms</th>
-              <th>Transporter name</th>
-              <th className="cell-num">Freight PMT (Rs)</th>
-              <th className="cell-num">Freight amount (Rs)</th>
-              <th className="cell-num">Profit (Rs)</th>
-              <th className="cell-num">Received (MT)</th>
-              <th className="cell-num">Diff (MT)</th>
-              <th className="cell-center">Purchase in tally</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {dispatches.map((row) => {
-              const isExPort = row.dispatchTerms === DispatchTerms.EX_PORT;
-              const receivedQty = isExPort
-                ? row.dispatchedQuantity
-                : row.receivingQuantity;
-              const diffQty = isExPort ? 0 : row.diffInQuantity;
-              const purchasePoLabel = displayOrderDigits(
-                row.purchasePoNumber,
-                "purchase",
-              );
-              const salePoLabel = displayOrderDigits(row.salePoNumber, "sale");
-
-              return (
-                <tr key={row.id}>
-                  <td>{displayDispatchNumber(row.dispatchNumber)}</td>
-                  <td>
-                    {formatDateDdMmYyyy(
-                      new Date(row.dispatchDate).toISOString().slice(0, 10),
-                    )}
-                  </td>
-                  <td className={row.lorryNumber ? undefined : "cell-center"}>
-                    {formatLorryNumber(row.lorryNumber) ?? "—"}
-                  </td>
-                  <td className="cell-num">
-                    {formatDispatchMt(row.dispatchedQuantity)}
-                  </td>
-                  <td>{row.vesselName}</td>
-                  <td>{formatQualityClass(row.qualityClass)}</td>
-                  <td className={row.gstState ? undefined : "cell-center"}>
-                    {row.gstState ?? "—"}
-                  </td>
-                  <td>
-                    {linkPoNumbers && row.purchaseOrderId ? (
-                      <Link
-                        href={`/purchase-orders/${row.purchaseOrderId}`}
-                        className="font-medium"
-                      >
-                        {purchasePoLabel}
-                      </Link>
-                    ) : (
-                      purchasePoLabel
-                    )}
-                  </td>
-                  <td
-                    className={
-                      row.purchaseInvoiceNumber ? undefined : "cell-center"
-                    }
-                  >
-                    {row.purchaseInvoiceNumber ?? "—"}
-                  </td>
-                  <td className={row.vendorName ? undefined : "cell-center"}>
-                    {row.vendorName ?? "—"}
-                  </td>
-                  <td className="cell-num">
-                    {formatRs(row.purchaseBasicRate)}
-                  </td>
-                  <td className="cell-num">
-                    {formatRs(row.purchaseTotalRate)}
-                  </td>
-                  <td>
-                    {linkPoNumbers && row.orderId ? (
-                      <Link
-                        href={`/orders/${row.orderId}`}
-                        className="font-medium"
-                      >
-                        {salePoLabel}
-                      </Link>
-                    ) : (
-                      salePoLabel
-                    )}
-                  </td>
-                  <td
-                    className={
-                      row.saleInvoiceNumber ? undefined : "cell-center"
-                    }
-                  >
-                    {row.saleInvoiceNumber ?? "—"}
-                  </td>
-                  <td className={row.customerName ? undefined : "cell-center"}>
-                    {row.customerName ?? "—"}
-                  </td>
-                  <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
-                  <td className="cell-num">{formatRs(row.saleTotalRate)}</td>
-                  <td>{formatDispatchTerms(row.dispatchTerms)}</td>
-                  <td
-                    className={row.transporterName ? undefined : "cell-center"}
-                  >
-                    {row.transporterName ?? "—"}
-                  </td>
-                  <td className="cell-num">{formatRs(row.freight)}</td>
-                  <td className="cell-num">{formatRs(row.freightAmount)}</td>
-                  <td className="cell-num">{formatRs(row.lineProfit)}</td>
-                  <td
-                    className={
-                      receivedQty != null ? "cell-num" : "cell-center"
-                    }
-                  >
-                    {formatDispatchMt(receivedQty)}
-                  </td>
-                  <td
-                    className={diffQty != null ? "cell-num" : "cell-center"}
-                  >
-                    {formatDispatchMt(diffQty)}
-                  </td>
-                  <td className="cell-center">
-                    {row.entryInTally ? "Yes" : "—"}
-                  </td>
-                  <td>
-                    <div className="dispatch-edit-actions">
-                      <EditDispatchButton
-                        dispatchId={row.id}
-                        dispatchDate={new Date(row.dispatchDate)
-                          .toISOString()
-                          .slice(0, 10)}
-                        lorryNumber={row.lorryNumber}
-                        dispatchedQuantity={row.dispatchedQuantity.toString()}
-                        purchasePoNumber={row.purchasePoNumber}
-                        salePoNumber={row.salePoNumber}
-                        dispatchTerms={row.dispatchTerms}
-                        transporterId={row.transporterId}
-                        freight={row.freight?.toString() ?? null}
-                        saleInvoiceNumber={row.saleInvoiceNumber}
-                        purchaseInvoiceNumber={row.purchaseInvoiceNumber}
-                        receivingQuantity={
-                          row.receivingQuantity?.toString() ?? null
-                        }
-                        entryInTally={row.entryInTally}
-                        currentSaleCustomerName={row.customerName}
-                        currentPurchaseVendorName={row.vendorName}
-                        currentVesselName={row.vesselName}
-                        orders={balanceOrders}
-                        purchaseOrders={balancePurchases}
-                        transporters={transporters}
-                        customers={customerOpts}
-                        vessels={activeVessels}
-                        suggestedPo={suggestedPo}
-                        suggestedPurchasePo={suggestedPurchasePo}
-                      />
-                      <EditDispatchPurchaseButton
-                        dispatchId={row.id}
-                        purchaseInvoiceNumber={row.purchaseInvoiceNumber}
-                        entryInTally={row.entryInTally}
-                      />
-                      <EditDispatchSaleButton
-                        dispatchId={row.id}
-                        saleInvoiceNumber={row.saleInvoiceNumber}
-                        dispatchedQuantity={row.dispatchedQuantity.toString()}
-                        receivingQuantity={
-                          row.receivingQuantity?.toString() ?? null
-                        }
-                        dispatchTerms={row.dispatchTerms}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-            {dispatches.length === 0 && (
-              <tr>
-                <td colSpan={26}>No dispatches match filters.</td>
+        <div className="table-h-scroll">
+          <table className="data report-table report-table-dispatches">
+            <thead>
+              <tr className="report-group-row">
+                <th colSpan={7}>Dispatch</th>
+                <th colSpan={5}>Purchase</th>
+                <th colSpan={5}>Sale</th>
+                <th colSpan={4}>Transport</th>
+                <th colSpan={1}>Margin</th>
+                <th colSpan={3}>Status</th>
+                <th colSpan={1}></th>
               </tr>
-            )}
-          </tbody>
-        </table></div>
+              <tr>
+                <th>Dispatch no</th>
+                <th>Date</th>
+                <th>Lorry no</th>
+                <th className="cell-num">Weight</th>
+                <th>Vessel name</th>
+                <th>Quality</th>
+                <th>GST state</th>
+                <th>PO no</th>
+                <th>Purchase invoice</th>
+                <th>Vendor</th>
+                <th className="cell-num">Basic price</th>
+                <th className="cell-num">Total price</th>
+                <th>SO no</th>
+                <th>Sale invoice</th>
+                <th>Customer name</th>
+                <th className="cell-num">Basic price</th>
+                <th className="cell-num">Total price</th>
+                <th>Delivery terms</th>
+                <th>Transporter name</th>
+                <th className="cell-num">Freight PMT</th>
+                <th className="cell-num">Freight amount</th>
+                <th className="cell-num">Profit</th>
+                <th className="cell-num">Received</th>
+                <th className="cell-num">Diff</th>
+                <th className="cell-center">Purchase in tally</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {dispatches.map((row) => {
+                const isExPort = row.dispatchTerms === DispatchTerms.EX_PORT;
+                const receivedQty = isExPort
+                  ? row.dispatchedQuantity
+                  : row.receivingQuantity;
+                const diffQty = isExPort ? 0 : row.diffInQuantity;
+                const purchasePoLabel = displayOrderDigits(
+                  row.purchasePoNumber,
+                  "purchase",
+                );
+                const salePoLabel = displayOrderDigits(row.salePoNumber, "sale");
+
+                return (
+                  <tr key={row.id}>
+                    <td>{displayDispatchNumber(row.dispatchNumber)}</td>
+                    <td>
+                      {formatDateDdMmYyyy(
+                        new Date(row.dispatchDate).toISOString().slice(0, 10),
+                      )}
+                    </td>
+                    <td className={row.lorryNumber ? undefined : "cell-center"}>
+                      {formatLorryNumber(row.lorryNumber) ?? "—"}
+                    </td>
+                    <td className="cell-num">
+                      {formatDispatchMt(row.dispatchedQuantity)}
+                    </td>
+                    <td>{row.vesselName}</td>
+                    <td>{formatQualityClass(row.qualityClass)}</td>
+                    <td className={row.gstState ? undefined : "cell-center"}>
+                      {row.gstState ?? "—"}
+                    </td>
+                    <td>
+                      {linkPoNumbers && row.purchaseOrderId ? (
+                        <Link
+                          href={`/purchase-orders/${row.purchaseOrderId}`}
+                          className="font-medium"
+                        >
+                          {purchasePoLabel}
+                        </Link>
+                      ) : (
+                        purchasePoLabel
+                      )}
+                    </td>
+                    <td
+                      className={
+                        row.purchaseInvoiceNumber ? undefined : "cell-center"
+                      }
+                    >
+                      {row.purchaseInvoiceNumber ?? "—"}
+                    </td>
+                    <td className={row.vendorName ? undefined : "cell-center"}>
+                      {row.vendorName ?? "—"}
+                    </td>
+                    <td className="cell-num">
+                      {formatRs(row.purchaseBasicRate)}
+                    </td>
+                    <td className="cell-num">
+                      {formatRs(row.purchaseTotalRate)}
+                    </td>
+                    <td>
+                      {linkPoNumbers && row.orderId ? (
+                        <Link
+                          href={`/orders/${row.orderId}`}
+                          className="font-medium"
+                        >
+                          {salePoLabel}
+                        </Link>
+                      ) : (
+                        salePoLabel
+                      )}
+                    </td>
+                    <td
+                      className={
+                        row.saleInvoiceNumber ? undefined : "cell-center"
+                      }
+                    >
+                      {row.saleInvoiceNumber ?? "—"}
+                    </td>
+                    <td className={row.customerName ? undefined : "cell-center"}>
+                      {row.customerName ?? "—"}
+                    </td>
+                    <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
+                    <td className="cell-num">{formatRs(row.saleTotalRate)}</td>
+                    <td>{formatDispatchTerms(row.dispatchTerms)}</td>
+                    <td
+                      className={row.transporterName ? undefined : "cell-center"}
+                    >
+                      {row.transporterName ?? "—"}
+                    </td>
+                    <td className="cell-num">{formatRs(row.freight)}</td>
+                    <td className="cell-num">{formatRs(row.freightAmount)}</td>
+                    <td className="cell-num">{formatRs(row.lineProfit)}</td>
+                    <td
+                      className={
+                        receivedQty != null ? "cell-num" : "cell-center"
+                      }
+                    >
+                      {formatDispatchMt(receivedQty)}
+                    </td>
+                    <td
+                      className={diffQty != null ? "cell-num" : "cell-center"}
+                    >
+                      {formatDispatchMt(diffQty)}
+                    </td>
+                    <td className="cell-center">
+                      {row.entryInTally ? "Yes" : "—"}
+                    </td>
+                    <td>
+                      <div className="dispatch-edit-actions">
+                        <EditDispatchButton
+                          dispatchId={row.id}
+                          dispatchDate={new Date(row.dispatchDate)
+                            .toISOString()
+                            .slice(0, 10)}
+                          lorryNumber={row.lorryNumber}
+                          dispatchedQuantity={row.dispatchedQuantity.toString()}
+                          purchasePoNumber={row.purchasePoNumber}
+                          salePoNumber={row.salePoNumber}
+                          dispatchTerms={row.dispatchTerms}
+                          transporterId={row.transporterId}
+                          freight={row.freight?.toString() ?? null}
+                          saleInvoiceNumber={row.saleInvoiceNumber}
+                          purchaseInvoiceNumber={row.purchaseInvoiceNumber}
+                          receivingQuantity={
+                            row.receivingQuantity?.toString() ?? null
+                          }
+                          entryInTally={row.entryInTally}
+                          currentSaleCustomerName={row.customerName}
+                          currentPurchaseVendorName={row.vendorName}
+                          currentVesselName={row.vesselName}
+                          orders={balanceOrders}
+                          purchaseOrders={balancePurchases}
+                          transporters={transporters}
+                          customers={customerOpts}
+                          vessels={activeVessels}
+                          suggestedPo={suggestedPo}
+                          suggestedPurchasePo={suggestedPurchasePo}
+                        />
+                        <EditDispatchPurchaseButton
+                          dispatchId={row.id}
+                          purchaseInvoiceNumber={row.purchaseInvoiceNumber}
+                          entryInTally={row.entryInTally}
+                        />
+                        <EditDispatchSaleButton
+                          dispatchId={row.id}
+                          saleInvoiceNumber={row.saleInvoiceNumber}
+                          dispatchedQuantity={row.dispatchedQuantity.toString()}
+                          receivingQuantity={
+                            row.receivingQuantity?.toString() ?? null
+                          }
+                          dispatchTerms={row.dispatchTerms}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {dispatches.length === 0 && (
+                <tr>
+                  <td colSpan={26}>No dispatches match filters.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

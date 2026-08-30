@@ -20,9 +20,9 @@ export default async function ReconciliationPage() {
               <th>Importer</th>
               <th>Dispatch date</th>
               <th>Receipt date</th>
-              <th className="num">Dispatched (MT)</th>
-              <th className="num">Received (MT)</th>
-              <th className="num">Diff (MT)</th>
+              <th className="num">Dispatched</th>
+              <th className="num">Received</th>
+              <th className="num">Diff</th>
               <th>Lorry</th>
             </tr>
           </thead>

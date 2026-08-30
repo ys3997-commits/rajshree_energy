@@ -85,8 +85,8 @@ const reportLinks: ReportItem[] = [
 ].sort((a, b) => a.label.localeCompare(b.label));
 
 const updateLinks: ReportLeaf[] = [
-  { href: "/update/purchase", label: "Purchase" },
-  { href: "/update/sale", label: "Sale" },
+  { href: "/update/purchase", label: "Purchases" },
+  { href: "/update/sale", label: "Sales" },
   { href: "/update/transport", label: "Transport" },
 ];
 

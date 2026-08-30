@@ -5,6 +5,20 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
 
+export type PurchaseEditRowSummary = {
+  dispatchNumber: string;
+  date: string;
+  lorryNumber: string;
+  weight: string;
+  basicPrice: string;
+  basicAmount: string;
+  gst: string;
+  tcs: string;
+  totalAmount: string;
+  vendor: string;
+  gstState: string;
+};
+
 function isPurchaseComplete(input: {
   purchaseInvoiceNumber: string | null;
   entryInTally: boolean;
@@ -14,14 +28,25 @@ function isPurchaseComplete(input: {
   );
 }
 
+function SummaryField({ label, value }: { label: string; value: string }) {
+  return (
+    <>
+      <span className="purchase-edit-summary-label">{label}</span>
+      <span className="purchase-edit-summary-value">{value}</span>
+    </>
+  );
+}
+
 export function EditDispatchPurchaseButton({
   dispatchId,
   purchaseInvoiceNumber,
   entryInTally,
+  rowSummary,
 }: {
   dispatchId: string;
   purchaseInvoiceNumber: string | null;
   entryInTally: boolean;
+  rowSummary?: PurchaseEditRowSummary;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -76,12 +101,48 @@ export function EditDispatchPurchaseButton({
       <Modal
         open={open}
         title="Purchase edit"
+        wide={Boolean(rowSummary)}
         onClose={() => {
           if (!saving) setOpen(false);
         }}
       >
         {error && <div className="error-box">{error}</div>}
+        {rowSummary ? (
+          <section className="purchase-edit-summary">
+            <h3 className="purchase-edit-section-title">Dispatch details</h3>
+            <div className="form-grid form-grid-plain purchase-edit-summary-grid">
+              <SummaryField
+                label="Dispatch no"
+                value={rowSummary.dispatchNumber}
+              />
+              <SummaryField label="Date" value={rowSummary.date} />
+              <SummaryField label="Lorry no" value={rowSummary.lorryNumber} />
+              <SummaryField label="Weight" value={rowSummary.weight} />
+              <SummaryField label="Basic price" value={rowSummary.basicPrice} />
+              <SummaryField
+                label="Basic Amount"
+                value={rowSummary.basicAmount}
+              />
+              <SummaryField label="GST" value={rowSummary.gst} />
+              <SummaryField label="TCS" value={rowSummary.tcs} />
+              <SummaryField
+                label="Total amount"
+                value={rowSummary.totalAmount}
+              />
+              <SummaryField label="Vendor" value={rowSummary.vendor} />
+              <SummaryField label="GST state" value={rowSummary.gstState} />
+            </div>
+          </section>
+        ) : null}
         <form onSubmit={onSubmit} className="form-grid form-grid-plain">
+          {rowSummary ? (
+            <h3
+              className="purchase-edit-section-title"
+              style={{ gridColumn: "1 / -1" }}
+            >
+              Update purchase
+            </h3>
+          ) : null}
           <label htmlFor={`purchase-invoice-${dispatchId}`}>
             Purchase invoice number
           </label>
@@ -90,7 +151,7 @@ export function EditDispatchPurchaseButton({
             value={purchaseInvoice}
             onChange={(e) => setPurchaseInvoice(e.target.value)}
             placeholder="Purchase invoice number"
-            autoFocus
+            autoFocus={!rowSummary}
           />
 
           <label htmlFor={`tally-${dispatchId}`}>Recorded in Tally</label>
