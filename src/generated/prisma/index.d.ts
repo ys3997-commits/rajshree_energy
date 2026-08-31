@@ -2705,12 +2705,18 @@ export namespace Prisma {
     dealByCustomers: number
     orders: number
     bills: number
+    createdPayments: number
+    createdDiscounts: number
+    createdDispatches: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     dealByCustomers?: boolean | StaffCountOutputTypeCountDealByCustomersArgs
     orders?: boolean | StaffCountOutputTypeCountOrdersArgs
     bills?: boolean | StaffCountOutputTypeCountBillsArgs
+    createdPayments?: boolean | StaffCountOutputTypeCountCreatedPaymentsArgs
+    createdDiscounts?: boolean | StaffCountOutputTypeCountCreatedDiscountsArgs
+    createdDispatches?: boolean | StaffCountOutputTypeCountCreatedDispatchesArgs
   }
 
   // Custom InputTypes
@@ -2743,6 +2749,27 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountBillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BillWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DiscountWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DispatchWhereInput
   }
 
 
@@ -3186,6 +3213,7 @@ export namespace Prisma {
     pageKeys: number
     collectionSalesExecs: number
     salesEngineSalesExecs: number
+    saleOrderSalesExecs: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3218,6 +3246,7 @@ export namespace Prisma {
     pageKeys?: true
     collectionSalesExecs?: true
     salesEngineSalesExecs?: true
+    saleOrderSalesExecs?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3303,6 +3332,7 @@ export namespace Prisma {
     pageKeys: string[]
     collectionSalesExecs: string[]
     salesEngineSalesExecs: string[]
+    saleOrderSalesExecs: string[]
     createdAt: Date
     updatedAt: Date
     _count: StaffCountAggregateOutputType | null
@@ -3332,11 +3362,15 @@ export namespace Prisma {
     pageKeys?: boolean
     collectionSalesExecs?: boolean
     salesEngineSalesExecs?: boolean
+    saleOrderSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
     orders?: boolean | Staff$ordersArgs<ExtArgs>
     bills?: boolean | Staff$billsArgs<ExtArgs>
+    createdPayments?: boolean | Staff$createdPaymentsArgs<ExtArgs>
+    createdDiscounts?: boolean | Staff$createdDiscountsArgs<ExtArgs>
+    createdDispatches?: boolean | Staff$createdDispatchesArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -3348,6 +3382,7 @@ export namespace Prisma {
     pageKeys?: boolean
     collectionSalesExecs?: boolean
     salesEngineSalesExecs?: boolean
+    saleOrderSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["staff"]>
@@ -3360,6 +3395,7 @@ export namespace Prisma {
     pageKeys?: boolean
     collectionSalesExecs?: boolean
     salesEngineSalesExecs?: boolean
+    saleOrderSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -3368,6 +3404,9 @@ export namespace Prisma {
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
     orders?: boolean | Staff$ordersArgs<ExtArgs>
     bills?: boolean | Staff$billsArgs<ExtArgs>
+    createdPayments?: boolean | Staff$createdPaymentsArgs<ExtArgs>
+    createdDiscounts?: boolean | Staff$createdDiscountsArgs<ExtArgs>
+    createdDispatches?: boolean | Staff$createdDispatchesArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StaffIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3378,6 +3417,9 @@ export namespace Prisma {
       dealByCustomers: Prisma.$CustomerPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
       bills: Prisma.$BillPayload<ExtArgs>[]
+      createdPayments: Prisma.$PaymentPayload<ExtArgs>[]
+      createdDiscounts: Prisma.$DiscountPayload<ExtArgs>[]
+      createdDispatches: Prisma.$DispatchPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3399,6 +3441,10 @@ export namespace Prisma {
        * Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
        */
       salesEngineSalesExecs: string[]
+      /**
+       * Sales executives visible on Sale orders. ["*"] = all; else executive names.
+       */
+      saleOrderSalesExecs: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["staff"]>
@@ -3768,6 +3814,9 @@ export namespace Prisma {
     dealByCustomers<T extends Staff$dealByCustomersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$dealByCustomersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany"> | Null>
     orders<T extends Staff$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany"> | Null>
     bills<T extends Staff$billsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany"> | Null>
+    createdPayments<T extends Staff$createdPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    createdDiscounts<T extends Staff$createdDiscountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdDiscountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany"> | Null>
+    createdDispatches<T extends Staff$createdDispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdDispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3804,6 +3853,7 @@ export namespace Prisma {
     readonly pageKeys: FieldRef<"Staff", 'String[]'>
     readonly collectionSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly salesEngineSalesExecs: FieldRef<"Staff", 'String[]'>
+    readonly saleOrderSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly createdAt: FieldRef<"Staff", 'DateTime'>
     readonly updatedAt: FieldRef<"Staff", 'DateTime'>
   }
@@ -4177,6 +4227,66 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdPayments
+   */
+  export type Staff$createdPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
+    cursor?: PaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdDiscounts
+   */
+  export type Staff$createdDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Discount
+     */
+    select?: DiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DiscountInclude<ExtArgs> | null
+    where?: DiscountWhereInput
+    orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
+    cursor?: DiscountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DiscountScalarFieldEnum | DiscountScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdDispatches
+   */
+  export type Staff$createdDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dispatch
+     */
+    select?: DispatchSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchInclude<ExtArgs> | null
+    where?: DispatchWhereInput
+    orderBy?: DispatchOrderByWithRelationInput | DispatchOrderByWithRelationInput[]
+    cursor?: DispatchWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DispatchScalarFieldEnum | DispatchScalarFieldEnum[]
   }
 
   /**
@@ -19376,8 +19486,13 @@ export namespace Prisma {
     biltyHardCopy: boolean | null
     transportInvoiceNo: string | null
     invoiceHardCopy: boolean | null
+    transportEntryInTally: boolean | null
     saleInvoiceNumber: string | null
     purchaseInvoiceNumber: string | null
+    purchaseChecklistCompletedAt: Date | null
+    saleChecklistCompletedAt: Date | null
+    transportChecklistCompletedAt: Date | null
+    createdByStaffId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -19403,8 +19518,13 @@ export namespace Prisma {
     biltyHardCopy: boolean | null
     transportInvoiceNo: string | null
     invoiceHardCopy: boolean | null
+    transportEntryInTally: boolean | null
     saleInvoiceNumber: string | null
     purchaseInvoiceNumber: string | null
+    purchaseChecklistCompletedAt: Date | null
+    saleChecklistCompletedAt: Date | null
+    transportChecklistCompletedAt: Date | null
+    createdByStaffId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -19430,8 +19550,13 @@ export namespace Prisma {
     biltyHardCopy: number
     transportInvoiceNo: number
     invoiceHardCopy: number
+    transportEntryInTally: number
     saleInvoiceNumber: number
     purchaseInvoiceNumber: number
+    purchaseChecklistCompletedAt: number
+    saleChecklistCompletedAt: number
+    transportChecklistCompletedAt: number
+    createdByStaffId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -19471,8 +19596,13 @@ export namespace Prisma {
     biltyHardCopy?: true
     transportInvoiceNo?: true
     invoiceHardCopy?: true
+    transportEntryInTally?: true
     saleInvoiceNumber?: true
     purchaseInvoiceNumber?: true
+    purchaseChecklistCompletedAt?: true
+    saleChecklistCompletedAt?: true
+    transportChecklistCompletedAt?: true
+    createdByStaffId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -19498,8 +19628,13 @@ export namespace Prisma {
     biltyHardCopy?: true
     transportInvoiceNo?: true
     invoiceHardCopy?: true
+    transportEntryInTally?: true
     saleInvoiceNumber?: true
     purchaseInvoiceNumber?: true
+    purchaseChecklistCompletedAt?: true
+    saleChecklistCompletedAt?: true
+    transportChecklistCompletedAt?: true
+    createdByStaffId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -19525,8 +19660,13 @@ export namespace Prisma {
     biltyHardCopy?: true
     transportInvoiceNo?: true
     invoiceHardCopy?: true
+    transportEntryInTally?: true
     saleInvoiceNumber?: true
     purchaseInvoiceNumber?: true
+    purchaseChecklistCompletedAt?: true
+    saleChecklistCompletedAt?: true
+    transportChecklistCompletedAt?: true
+    createdByStaffId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -19639,8 +19779,13 @@ export namespace Prisma {
     biltyHardCopy: boolean
     transportInvoiceNo: string | null
     invoiceHardCopy: boolean
+    transportEntryInTally: boolean
     saleInvoiceNumber: string | null
     purchaseInvoiceNumber: string | null
+    purchaseChecklistCompletedAt: Date | null
+    saleChecklistCompletedAt: Date | null
+    transportChecklistCompletedAt: Date | null
+    createdByStaffId: string | null
     createdAt: Date
     updatedAt: Date
     _count: DispatchCountAggregateOutputType | null
@@ -19685,8 +19830,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: boolean
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: boolean
     purchaseInvoiceNumber?: boolean
+    purchaseChecklistCompletedAt?: boolean
+    saleChecklistCompletedAt?: boolean
+    transportChecklistCompletedAt?: boolean
+    createdByStaffId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -19694,6 +19844,7 @@ export namespace Prisma {
     vessel?: boolean | VesselDefaultArgs<ExtArgs>
     transporter?: boolean | Dispatch$transporterArgs<ExtArgs>
     importer?: boolean | Dispatch$importerArgs<ExtArgs>
+    createdByStaff?: boolean | Dispatch$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["dispatch"]>
 
   export type DispatchSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -19717,8 +19868,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: boolean
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: boolean
     purchaseInvoiceNumber?: boolean
+    purchaseChecklistCompletedAt?: boolean
+    saleChecklistCompletedAt?: boolean
+    transportChecklistCompletedAt?: boolean
+    createdByStaffId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -19726,6 +19882,7 @@ export namespace Prisma {
     vessel?: boolean | VesselDefaultArgs<ExtArgs>
     transporter?: boolean | Dispatch$transporterArgs<ExtArgs>
     importer?: boolean | Dispatch$importerArgs<ExtArgs>
+    createdByStaff?: boolean | Dispatch$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["dispatch"]>
 
   export type DispatchSelectScalar = {
@@ -19749,8 +19906,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: boolean
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: boolean
     purchaseInvoiceNumber?: boolean
+    purchaseChecklistCompletedAt?: boolean
+    saleChecklistCompletedAt?: boolean
+    transportChecklistCompletedAt?: boolean
+    createdByStaffId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -19761,6 +19923,7 @@ export namespace Prisma {
     vessel?: boolean | VesselDefaultArgs<ExtArgs>
     transporter?: boolean | Dispatch$transporterArgs<ExtArgs>
     importer?: boolean | Dispatch$importerArgs<ExtArgs>
+    createdByStaff?: boolean | Dispatch$createdByStaffArgs<ExtArgs>
   }
   export type DispatchIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -19768,6 +19931,7 @@ export namespace Prisma {
     vessel?: boolean | VesselDefaultArgs<ExtArgs>
     transporter?: boolean | Dispatch$transporterArgs<ExtArgs>
     importer?: boolean | Dispatch$importerArgs<ExtArgs>
+    createdByStaff?: boolean | Dispatch$createdByStaffArgs<ExtArgs>
   }
 
   export type $DispatchPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -19778,6 +19942,7 @@ export namespace Prisma {
       vessel: Prisma.$VesselPayload<ExtArgs>
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
       importer: Prisma.$CustomerPayload<ExtArgs> | null
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -19802,6 +19967,9 @@ export namespace Prisma {
       receiptDate: Date | null
       receiptStatus: $Enums.ReceiptStatus
       softCopyStatus: boolean
+      /**
+       * Purchase checklist — purchase invoice recorded in Tally accounting software.
+       */
       entryInTally: boolean
       /**
        * Transport checklist — bilty (goods receipt) hard copy received.
@@ -19816,6 +19984,10 @@ export namespace Prisma {
        */
       invoiceHardCopy: boolean
       /**
+       * Transport checklist — transport invoice recorded in Tally accounting software.
+       */
+      transportEntryInTally: boolean
+      /**
        * Sale (customer) invoice number — often filled after dispatch.
        */
       saleInvoiceNumber: string | null
@@ -19823,6 +19995,10 @@ export namespace Prisma {
        * Purchase (supplier) invoice number — often filled after dispatch.
        */
       purchaseInvoiceNumber: string | null
+      purchaseChecklistCompletedAt: Date | null
+      saleChecklistCompletedAt: Date | null
+      transportChecklistCompletedAt: Date | null
+      createdByStaffId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["dispatch"]>
@@ -20194,6 +20370,7 @@ export namespace Prisma {
     vessel<T extends VesselDefaultArgs<ExtArgs> = {}>(args?: Subset<T, VesselDefaultArgs<ExtArgs>>): Prisma__VesselClient<$Result.GetResult<Prisma.$VesselPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     transporter<T extends Dispatch$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     importer<T extends Dispatch$importerArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$importerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdByStaff<T extends Dispatch$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -20243,8 +20420,13 @@ export namespace Prisma {
     readonly biltyHardCopy: FieldRef<"Dispatch", 'Boolean'>
     readonly transportInvoiceNo: FieldRef<"Dispatch", 'String'>
     readonly invoiceHardCopy: FieldRef<"Dispatch", 'Boolean'>
+    readonly transportEntryInTally: FieldRef<"Dispatch", 'Boolean'>
     readonly saleInvoiceNumber: FieldRef<"Dispatch", 'String'>
     readonly purchaseInvoiceNumber: FieldRef<"Dispatch", 'String'>
+    readonly purchaseChecklistCompletedAt: FieldRef<"Dispatch", 'DateTime'>
+    readonly saleChecklistCompletedAt: FieldRef<"Dispatch", 'DateTime'>
+    readonly transportChecklistCompletedAt: FieldRef<"Dispatch", 'DateTime'>
+    readonly createdByStaffId: FieldRef<"Dispatch", 'String'>
     readonly createdAt: FieldRef<"Dispatch", 'DateTime'>
     readonly updatedAt: FieldRef<"Dispatch", 'DateTime'>
   }
@@ -20595,6 +20777,21 @@ export namespace Prisma {
   }
 
   /**
+   * Dispatch.createdByStaff
+   */
+  export type Dispatch$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
    * Dispatch without action
    */
   export type DispatchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20634,6 +20831,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
     createdAt: Date | null
@@ -20645,6 +20843,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
     createdAt: Date | null
@@ -20656,6 +20855,7 @@ export namespace Prisma {
     date: number
     customerId: number
     transporterId: number
+    createdByStaffId: number
     direction: number
     amount: number
     createdAt: number
@@ -20677,6 +20877,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    createdByStaffId?: true
     direction?: true
     amount?: true
     createdAt?: true
@@ -20688,6 +20889,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    createdByStaffId?: true
     direction?: true
     amount?: true
     createdAt?: true
@@ -20699,6 +20901,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    createdByStaffId?: true
     direction?: true
     amount?: true
     createdAt?: true
@@ -20797,6 +21000,7 @@ export namespace Prisma {
     date: Date
     customerId: string | null
     transporterId: string | null
+    createdByStaffId: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal
     createdAt: Date
@@ -20827,12 +21031,14 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -20840,12 +21046,14 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectScalar = {
@@ -20853,6 +21061,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
     createdAt?: boolean
@@ -20862,10 +21071,12 @@ export namespace Prisma {
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }
 
   export type $PaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20873,12 +21084,14 @@ export namespace Prisma {
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs> | null
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       date: Date
       customerId: string | null
       transporterId: string | null
+      createdByStaffId: string | null
       direction: $Enums.PaymentDirection
       amount: Prisma.Decimal
       createdAt: Date
@@ -21249,6 +21462,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends Payment$customerArgs<ExtArgs> = {}>(args?: Subset<T, Payment$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     transporter<T extends Payment$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Payment$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdByStaff<T extends Payment$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Payment$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -21282,6 +21496,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Payment", 'DateTime'>
     readonly customerId: FieldRef<"Payment", 'String'>
     readonly transporterId: FieldRef<"Payment", 'String'>
+    readonly createdByStaffId: FieldRef<"Payment", 'String'>
     readonly direction: FieldRef<"Payment", 'PaymentDirection'>
     readonly amount: FieldRef<"Payment", 'Decimal'>
     readonly createdAt: FieldRef<"Payment", 'DateTime'>
@@ -21634,6 +21849,21 @@ export namespace Prisma {
   }
 
   /**
+   * Payment.createdByStaff
+   */
+  export type Payment$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
    * Payment without action
    */
   export type PaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21673,6 +21903,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    createdByStaffId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
     coalOrigin: $Enums.CoalOrigin | null
@@ -21686,6 +21917,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    createdByStaffId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
     coalOrigin: $Enums.CoalOrigin | null
@@ -21699,6 +21931,7 @@ export namespace Prisma {
     date: number
     customerId: number
     transporterId: number
+    createdByStaffId: number
     status: number
     amount: number
     coalOrigin: number
@@ -21722,6 +21955,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    createdByStaffId?: true
     status?: true
     amount?: true
     coalOrigin?: true
@@ -21735,6 +21969,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    createdByStaffId?: true
     status?: true
     amount?: true
     coalOrigin?: true
@@ -21748,6 +21983,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    createdByStaffId?: true
     status?: true
     amount?: true
     coalOrigin?: true
@@ -21848,6 +22084,7 @@ export namespace Prisma {
     date: Date
     customerId: string | null
     transporterId: string | null
+    createdByStaffId: string | null
     status: $Enums.DiscountStatus
     amount: Decimal
     coalOrigin: $Enums.CoalOrigin | null
@@ -21880,6 +22117,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    createdByStaffId?: boolean
     status?: boolean
     amount?: boolean
     coalOrigin?: boolean
@@ -21888,6 +22126,7 @@ export namespace Prisma {
     updatedAt?: boolean
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["discount"]>
 
   export type DiscountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -21895,6 +22134,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    createdByStaffId?: boolean
     status?: boolean
     amount?: boolean
     coalOrigin?: boolean
@@ -21903,6 +22143,7 @@ export namespace Prisma {
     updatedAt?: boolean
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["discount"]>
 
   export type DiscountSelectScalar = {
@@ -21910,6 +22151,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    createdByStaffId?: boolean
     status?: boolean
     amount?: boolean
     coalOrigin?: boolean
@@ -21921,10 +22163,12 @@ export namespace Prisma {
   export type DiscountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }
   export type DiscountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }
 
   export type $DiscountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21932,12 +22176,14 @@ export namespace Prisma {
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs> | null
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       date: Date
       customerId: string | null
       transporterId: string | null
+      createdByStaffId: string | null
       status: $Enums.DiscountStatus
       amount: Prisma.Decimal
       /**
@@ -22313,6 +22559,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends Discount$customerArgs<ExtArgs> = {}>(args?: Subset<T, Discount$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     transporter<T extends Discount$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Discount$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdByStaff<T extends Discount$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Discount$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -22346,6 +22593,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Discount", 'DateTime'>
     readonly customerId: FieldRef<"Discount", 'String'>
     readonly transporterId: FieldRef<"Discount", 'String'>
+    readonly createdByStaffId: FieldRef<"Discount", 'String'>
     readonly status: FieldRef<"Discount", 'DiscountStatus'>
     readonly amount: FieldRef<"Discount", 'Decimal'>
     readonly coalOrigin: FieldRef<"Discount", 'CoalOrigin'>
@@ -22697,6 +22945,21 @@ export namespace Prisma {
      */
     include?: TransporterInclude<ExtArgs> | null
     where?: TransporterWhereInput
+  }
+
+  /**
+   * Discount.createdByStaff
+   */
+  export type Discount$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
   }
 
   /**
@@ -24849,6 +25112,7 @@ export namespace Prisma {
     pageKeys: 'pageKeys',
     collectionSalesExecs: 'collectionSalesExecs',
     salesEngineSalesExecs: 'salesEngineSalesExecs',
+    saleOrderSalesExecs: 'saleOrderSalesExecs',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -25096,8 +25360,13 @@ export namespace Prisma {
     biltyHardCopy: 'biltyHardCopy',
     transportInvoiceNo: 'transportInvoiceNo',
     invoiceHardCopy: 'invoiceHardCopy',
+    transportEntryInTally: 'transportEntryInTally',
     saleInvoiceNumber: 'saleInvoiceNumber',
     purchaseInvoiceNumber: 'purchaseInvoiceNumber',
+    purchaseChecklistCompletedAt: 'purchaseChecklistCompletedAt',
+    saleChecklistCompletedAt: 'saleChecklistCompletedAt',
+    transportChecklistCompletedAt: 'transportChecklistCompletedAt',
+    createdByStaffId: 'createdByStaffId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -25110,6 +25379,7 @@ export namespace Prisma {
     date: 'date',
     customerId: 'customerId',
     transporterId: 'transporterId',
+    createdByStaffId: 'createdByStaffId',
     direction: 'direction',
     amount: 'amount',
     createdAt: 'createdAt',
@@ -25124,6 +25394,7 @@ export namespace Prisma {
     date: 'date',
     customerId: 'customerId',
     transporterId: 'transporterId',
+    createdByStaffId: 'createdByStaffId',
     status: 'status',
     amount: 'amount',
     coalOrigin: 'coalOrigin',
@@ -25456,11 +25727,15 @@ export namespace Prisma {
     pageKeys?: StringNullableListFilter<"Staff">
     collectionSalesExecs?: StringNullableListFilter<"Staff">
     salesEngineSalesExecs?: StringNullableListFilter<"Staff">
+    saleOrderSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
     orders?: OrderListRelationFilter
     bills?: BillListRelationFilter
+    createdPayments?: PaymentListRelationFilter
+    createdDiscounts?: DiscountListRelationFilter
+    createdDispatches?: DispatchListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -25471,11 +25746,15 @@ export namespace Prisma {
     pageKeys?: SortOrder
     collectionSalesExecs?: SortOrder
     salesEngineSalesExecs?: SortOrder
+    saleOrderSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealByCustomers?: CustomerOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
     bills?: BillOrderByRelationAggregateInput
+    createdPayments?: PaymentOrderByRelationAggregateInput
+    createdDiscounts?: DiscountOrderByRelationAggregateInput
+    createdDispatches?: DispatchOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -25489,11 +25768,15 @@ export namespace Prisma {
     pageKeys?: StringNullableListFilter<"Staff">
     collectionSalesExecs?: StringNullableListFilter<"Staff">
     salesEngineSalesExecs?: StringNullableListFilter<"Staff">
+    saleOrderSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
     orders?: OrderListRelationFilter
     bills?: BillListRelationFilter
+    createdPayments?: PaymentListRelationFilter
+    createdDiscounts?: DiscountListRelationFilter
+    createdDispatches?: DispatchListRelationFilter
   }, "id">
 
   export type StaffOrderByWithAggregationInput = {
@@ -25504,6 +25787,7 @@ export namespace Prisma {
     pageKeys?: SortOrder
     collectionSalesExecs?: SortOrder
     salesEngineSalesExecs?: SortOrder
+    saleOrderSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: StaffCountOrderByAggregateInput
@@ -25522,6 +25806,7 @@ export namespace Prisma {
     pageKeys?: StringNullableListFilter<"Staff">
     collectionSalesExecs?: StringNullableListFilter<"Staff">
     salesEngineSalesExecs?: StringNullableListFilter<"Staff">
+    saleOrderSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
   }
@@ -26702,8 +26987,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportEntryInTally?: BoolFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
+    purchaseChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    saleChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    transportChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
     order?: XOR<OrderRelationFilter, OrderWhereInput>
@@ -26711,6 +27001,7 @@ export namespace Prisma {
     vessel?: XOR<VesselRelationFilter, VesselWhereInput>
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     importer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
   export type DispatchOrderByWithRelationInput = {
@@ -26734,8 +27025,13 @@ export namespace Prisma {
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrderInput | SortOrder
     invoiceHardCopy?: SortOrder
+    transportEntryInTally?: SortOrder
     saleInvoiceNumber?: SortOrderInput | SortOrder
     purchaseInvoiceNumber?: SortOrderInput | SortOrder
+    purchaseChecklistCompletedAt?: SortOrderInput | SortOrder
+    saleChecklistCompletedAt?: SortOrderInput | SortOrder
+    transportChecklistCompletedAt?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     order?: OrderOrderByWithRelationInput
@@ -26743,6 +27039,7 @@ export namespace Prisma {
     vessel?: VesselOrderByWithRelationInput
     transporter?: TransporterOrderByWithRelationInput
     importer?: CustomerOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
   }
 
   export type DispatchWhereUniqueInput = Prisma.AtLeast<{
@@ -26769,8 +27066,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportEntryInTally?: BoolFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
+    purchaseChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    saleChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    transportChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
     order?: XOR<OrderRelationFilter, OrderWhereInput>
@@ -26778,6 +27080,7 @@ export namespace Prisma {
     vessel?: XOR<VesselRelationFilter, VesselWhereInput>
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     importer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id" | "dispatchNumber">
 
   export type DispatchOrderByWithAggregationInput = {
@@ -26801,8 +27104,13 @@ export namespace Prisma {
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrderInput | SortOrder
     invoiceHardCopy?: SortOrder
+    transportEntryInTally?: SortOrder
     saleInvoiceNumber?: SortOrderInput | SortOrder
     purchaseInvoiceNumber?: SortOrderInput | SortOrder
+    purchaseChecklistCompletedAt?: SortOrderInput | SortOrder
+    saleChecklistCompletedAt?: SortOrderInput | SortOrder
+    transportChecklistCompletedAt?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: DispatchCountOrderByAggregateInput
@@ -26836,8 +27144,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolWithAggregatesFilter<"Dispatch"> | boolean
+    transportEntryInTally?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     saleInvoiceNumber?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     purchaseInvoiceNumber?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
+    purchaseChecklistCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
+    saleChecklistCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
+    transportChecklistCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
+    createdByStaffId?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Dispatch"> | Date | string
   }
@@ -26850,12 +27163,14 @@ export namespace Prisma {
     date?: DateTimeFilter<"Payment"> | Date | string
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
+    createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
   export type PaymentOrderByWithRelationInput = {
@@ -26863,12 +27178,14 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
     transporter?: TransporterOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -26879,12 +27196,14 @@ export namespace Prisma {
     date?: DateTimeFilter<"Payment"> | Date | string
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
+    createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
 
   export type PaymentOrderByWithAggregationInput = {
@@ -26892,6 +27211,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -26911,6 +27231,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     customerId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     transporterId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    createdByStaffId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionWithAggregatesFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalWithAggregatesFilter<"Payment"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
@@ -26925,6 +27246,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Discount"> | Date | string
     customerId?: StringNullableFilter<"Discount"> | string | null
     transporterId?: StringNullableFilter<"Discount"> | string | null
+    createdByStaffId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
     coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
@@ -26933,6 +27255,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
   export type DiscountOrderByWithRelationInput = {
@@ -26940,6 +27263,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
     coalOrigin?: SortOrderInput | SortOrder
@@ -26948,6 +27272,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
     transporter?: TransporterOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
   }
 
   export type DiscountWhereUniqueInput = Prisma.AtLeast<{
@@ -26958,6 +27283,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Discount"> | Date | string
     customerId?: StringNullableFilter<"Discount"> | string | null
     transporterId?: StringNullableFilter<"Discount"> | string | null
+    createdByStaffId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
     coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
@@ -26966,6 +27292,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
 
   export type DiscountOrderByWithAggregationInput = {
@@ -26973,6 +27300,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
     coalOrigin?: SortOrderInput | SortOrder
@@ -26994,6 +27322,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
     customerId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     transporterId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
+    createdByStaffId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     status?: EnumDiscountStatusWithAggregatesFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalWithAggregatesFilter<"Discount"> | Decimal | DecimalJsLike | number | string
     coalOrigin?: EnumCoalOriginNullableWithAggregatesFilter<"Discount"> | $Enums.CoalOrigin | null
@@ -27182,11 +27511,15 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
     orders?: OrderCreateNestedManyWithoutOrderByInput
     bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -27197,11 +27530,15 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
     bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUpdateInput = {
@@ -27212,11 +27549,15 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
     orders?: OrderUpdateManyWithoutOrderByNestedInput
     bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -27227,11 +27568,15 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -27242,6 +27587,7 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27254,6 +27600,7 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27266,6 +27613,7 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28568,8 +28916,12 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -28577,6 +28929,7 @@ export namespace Prisma {
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
   }
 
   export type DispatchUncheckedCreateInput = {
@@ -28600,8 +28953,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28622,8 +28980,12 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -28631,6 +28993,7 @@ export namespace Prisma {
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
   }
 
   export type DispatchUncheckedUpdateInput = {
@@ -28654,8 +29017,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28681,8 +29049,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -28703,8 +29076,12 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28730,8 +29107,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28745,6 +29127,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
   export type PaymentUncheckedCreateInput = {
@@ -28752,6 +29135,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -28767,6 +29151,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
@@ -28774,6 +29159,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28785,6 +29171,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -28805,6 +29192,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -28822,6 +29210,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutDiscountsInput
     transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
   }
 
   export type DiscountUncheckedCreateInput = {
@@ -28829,6 +29218,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -28848,6 +29238,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutDiscountsNestedInput
     transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
   }
 
   export type DiscountUncheckedUpdateInput = {
@@ -28855,6 +29246,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -28868,6 +29260,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -28892,6 +29285,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -29158,6 +29552,24 @@ export namespace Prisma {
     none?: BillWhereInput
   }
 
+  export type PaymentListRelationFilter = {
+    every?: PaymentWhereInput
+    some?: PaymentWhereInput
+    none?: PaymentWhereInput
+  }
+
+  export type DiscountListRelationFilter = {
+    every?: DiscountWhereInput
+    some?: DiscountWhereInput
+    none?: DiscountWhereInput
+  }
+
+  export type DispatchListRelationFilter = {
+    every?: DispatchWhereInput
+    some?: DispatchWhereInput
+    none?: DispatchWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -29175,6 +29587,18 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type PaymentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DiscountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DispatchOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type StaffCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -29183,6 +29607,7 @@ export namespace Prisma {
     pageKeys?: SortOrder
     collectionSalesExecs?: SortOrder
     salesEngineSalesExecs?: SortOrder
+    saleOrderSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29264,36 +29689,6 @@ export namespace Prisma {
     gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-  }
-
-  export type DispatchListRelationFilter = {
-    every?: DispatchWhereInput
-    some?: DispatchWhereInput
-    none?: DispatchWhereInput
-  }
-
-  export type PaymentListRelationFilter = {
-    every?: PaymentWhereInput
-    some?: PaymentWhereInput
-    none?: PaymentWhereInput
-  }
-
-  export type DiscountListRelationFilter = {
-    every?: DiscountWhereInput
-    some?: DiscountWhereInput
-    none?: DiscountWhereInput
-  }
-
-  export type DispatchOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type PaymentOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type DiscountOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type TransporterCountOrderByAggregateInput = {
@@ -30210,8 +30605,13 @@ export namespace Prisma {
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrder
     invoiceHardCopy?: SortOrder
+    transportEntryInTally?: SortOrder
     saleInvoiceNumber?: SortOrder
     purchaseInvoiceNumber?: SortOrder
+    purchaseChecklistCompletedAt?: SortOrder
+    saleChecklistCompletedAt?: SortOrder
+    transportChecklistCompletedAt?: SortOrder
+    createdByStaffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30243,8 +30643,13 @@ export namespace Prisma {
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrder
     invoiceHardCopy?: SortOrder
+    transportEntryInTally?: SortOrder
     saleInvoiceNumber?: SortOrder
     purchaseInvoiceNumber?: SortOrder
+    purchaseChecklistCompletedAt?: SortOrder
+    saleChecklistCompletedAt?: SortOrder
+    transportChecklistCompletedAt?: SortOrder
+    createdByStaffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30270,8 +30675,13 @@ export namespace Prisma {
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrder
     invoiceHardCopy?: SortOrder
+    transportEntryInTally?: SortOrder
     saleInvoiceNumber?: SortOrder
     purchaseInvoiceNumber?: SortOrder
+    purchaseChecklistCompletedAt?: SortOrder
+    saleChecklistCompletedAt?: SortOrder
+    transportChecklistCompletedAt?: SortOrder
+    createdByStaffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -30314,6 +30724,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -30329,6 +30740,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -30340,6 +30752,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
     createdAt?: SortOrder
@@ -30379,6 +30792,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    createdByStaffId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
     coalOrigin?: SortOrder
@@ -30396,6 +30810,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    createdByStaffId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
     coalOrigin?: SortOrder
@@ -30409,6 +30824,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    createdByStaffId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
     coalOrigin?: SortOrder
@@ -30631,6 +31047,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type StaffCreatesaleOrderSalesExecsInput = {
+    set: string[]
+  }
+
   export type CustomerCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -30650,6 +31070,27 @@ export namespace Prisma {
     connectOrCreate?: BillCreateOrConnectWithoutStaffInput | BillCreateOrConnectWithoutStaffInput[]
     createMany?: BillCreateManyStaffInputEnvelope
     connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
+  export type PaymentCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<PaymentCreateWithoutCreatedByStaffInput, PaymentUncheckedCreateWithoutCreatedByStaffInput> | PaymentCreateWithoutCreatedByStaffInput[] | PaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutCreatedByStaffInput | PaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: PaymentCreateManyCreatedByStaffInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type DiscountCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<DiscountCreateWithoutCreatedByStaffInput, DiscountUncheckedCreateWithoutCreatedByStaffInput> | DiscountCreateWithoutCreatedByStaffInput[] | DiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutCreatedByStaffInput | DiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: DiscountCreateManyCreatedByStaffInputEnvelope
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+  }
+
+  export type DispatchCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<DispatchCreateWithoutCreatedByStaffInput, DispatchUncheckedCreateWithoutCreatedByStaffInput> | DispatchCreateWithoutCreatedByStaffInput[] | DispatchUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCreateOrConnectWithoutCreatedByStaffInput | DispatchCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: DispatchCreateManyCreatedByStaffInputEnvelope
+    connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
   }
 
   export type CustomerUncheckedCreateNestedManyWithoutDealByInput = {
@@ -30673,6 +31114,27 @@ export namespace Prisma {
     connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
   }
 
+  export type PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<PaymentCreateWithoutCreatedByStaffInput, PaymentUncheckedCreateWithoutCreatedByStaffInput> | PaymentCreateWithoutCreatedByStaffInput[] | PaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutCreatedByStaffInput | PaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: PaymentCreateManyCreatedByStaffInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<DiscountCreateWithoutCreatedByStaffInput, DiscountUncheckedCreateWithoutCreatedByStaffInput> | DiscountCreateWithoutCreatedByStaffInput[] | DiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutCreatedByStaffInput | DiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: DiscountCreateManyCreatedByStaffInputEnvelope
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+  }
+
+  export type DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<DispatchCreateWithoutCreatedByStaffInput, DispatchUncheckedCreateWithoutCreatedByStaffInput> | DispatchCreateWithoutCreatedByStaffInput[] | DispatchUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCreateOrConnectWithoutCreatedByStaffInput | DispatchCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: DispatchCreateManyCreatedByStaffInputEnvelope
+    connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -30692,6 +31154,11 @@ export namespace Prisma {
   }
 
   export type StaffUpdatesalesEngineSalesExecsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type StaffUpdatesaleOrderSalesExecsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -30742,6 +31209,48 @@ export namespace Prisma {
     deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
   }
 
+  export type PaymentUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<PaymentCreateWithoutCreatedByStaffInput, PaymentUncheckedCreateWithoutCreatedByStaffInput> | PaymentCreateWithoutCreatedByStaffInput[] | PaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutCreatedByStaffInput | PaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput | PaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: PaymentCreateManyCreatedByStaffInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput | PaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutCreatedByStaffInput | PaymentUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type DiscountUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<DiscountCreateWithoutCreatedByStaffInput, DiscountUncheckedCreateWithoutCreatedByStaffInput> | DiscountCreateWithoutCreatedByStaffInput[] | DiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutCreatedByStaffInput | DiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: DiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput | DiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: DiscountCreateManyCreatedByStaffInputEnvelope
+    set?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    disconnect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    delete?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    update?: DiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput | DiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: DiscountUpdateManyWithWhereWithoutCreatedByStaffInput | DiscountUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+  }
+
+  export type DispatchUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<DispatchCreateWithoutCreatedByStaffInput, DispatchUncheckedCreateWithoutCreatedByStaffInput> | DispatchCreateWithoutCreatedByStaffInput[] | DispatchUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCreateOrConnectWithoutCreatedByStaffInput | DispatchCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: DispatchUpsertWithWhereUniqueWithoutCreatedByStaffInput | DispatchUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: DispatchCreateManyCreatedByStaffInputEnvelope
+    set?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    disconnect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    delete?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    update?: DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput | DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: DispatchUpdateManyWithWhereWithoutCreatedByStaffInput | DispatchUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
+  }
+
   export type CustomerUncheckedUpdateManyWithoutDealByNestedInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -30782,6 +31291,48 @@ export namespace Prisma {
     update?: BillUpdateWithWhereUniqueWithoutStaffInput | BillUpdateWithWhereUniqueWithoutStaffInput[]
     updateMany?: BillUpdateManyWithWhereWithoutStaffInput | BillUpdateManyWithWhereWithoutStaffInput[]
     deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<PaymentCreateWithoutCreatedByStaffInput, PaymentUncheckedCreateWithoutCreatedByStaffInput> | PaymentCreateWithoutCreatedByStaffInput[] | PaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutCreatedByStaffInput | PaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput | PaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: PaymentCreateManyCreatedByStaffInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput | PaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutCreatedByStaffInput | PaymentUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<DiscountCreateWithoutCreatedByStaffInput, DiscountUncheckedCreateWithoutCreatedByStaffInput> | DiscountCreateWithoutCreatedByStaffInput[] | DiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutCreatedByStaffInput | DiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: DiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput | DiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: DiscountCreateManyCreatedByStaffInputEnvelope
+    set?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    disconnect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    delete?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    update?: DiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput | DiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: DiscountUpdateManyWithWhereWithoutCreatedByStaffInput | DiscountUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+  }
+
+  export type DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<DispatchCreateWithoutCreatedByStaffInput, DispatchUncheckedCreateWithoutCreatedByStaffInput> | DispatchCreateWithoutCreatedByStaffInput[] | DispatchUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCreateOrConnectWithoutCreatedByStaffInput | DispatchCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: DispatchUpsertWithWhereUniqueWithoutCreatedByStaffInput | DispatchUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: DispatchCreateManyCreatedByStaffInputEnvelope
+    set?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    disconnect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    delete?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+    update?: DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput | DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: DispatchUpdateManyWithWhereWithoutCreatedByStaffInput | DispatchUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
   }
 
   export type DispatchCreateNestedManyWithoutTransporterInput = {
@@ -31850,6 +32401,12 @@ export namespace Prisma {
     connect?: CustomerWhereUniqueInput
   }
 
+  export type StaffCreateNestedOneWithoutCreatedDispatchesInput = {
+    create?: XOR<StaffCreateWithoutCreatedDispatchesInput, StaffUncheckedCreateWithoutCreatedDispatchesInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedDispatchesInput
+    connect?: StaffWhereUniqueInput
+  }
+
   export type EnumDispatchTermsFieldUpdateOperationsInput = {
     set?: $Enums.DispatchTerms
   }
@@ -31902,6 +32459,16 @@ export namespace Prisma {
     update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutDispatchesInput, CustomerUpdateWithoutDispatchesInput>, CustomerUncheckedUpdateWithoutDispatchesInput>
   }
 
+  export type StaffUpdateOneWithoutCreatedDispatchesNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedDispatchesInput, StaffUncheckedCreateWithoutCreatedDispatchesInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedDispatchesInput
+    upsert?: StaffUpsertWithoutCreatedDispatchesInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedDispatchesInput, StaffUpdateWithoutCreatedDispatchesInput>, StaffUncheckedUpdateWithoutCreatedDispatchesInput>
+  }
+
   export type CustomerCreateNestedOneWithoutPaymentsInput = {
     create?: XOR<CustomerCreateWithoutPaymentsInput, CustomerUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutPaymentsInput
@@ -31912,6 +32479,12 @@ export namespace Prisma {
     create?: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: TransporterCreateOrConnectWithoutPaymentsInput
     connect?: TransporterWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedPaymentsInput = {
+    create?: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedPaymentsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type EnumPaymentDirectionFieldUpdateOperationsInput = {
@@ -31938,6 +32511,16 @@ export namespace Prisma {
     update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutPaymentsInput, TransporterUpdateWithoutPaymentsInput>, TransporterUncheckedUpdateWithoutPaymentsInput>
   }
 
+  export type StaffUpdateOneWithoutCreatedPaymentsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedPaymentsInput
+    upsert?: StaffUpsertWithoutCreatedPaymentsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedPaymentsInput, StaffUpdateWithoutCreatedPaymentsInput>, StaffUncheckedUpdateWithoutCreatedPaymentsInput>
+  }
+
   export type CustomerCreateNestedOneWithoutDiscountsInput = {
     create?: XOR<CustomerCreateWithoutDiscountsInput, CustomerUncheckedCreateWithoutDiscountsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutDiscountsInput
@@ -31948,6 +32531,12 @@ export namespace Prisma {
     create?: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
     connectOrCreate?: TransporterCreateOrConnectWithoutDiscountsInput
     connect?: TransporterWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedDiscountsInput = {
+    create?: XOR<StaffCreateWithoutCreatedDiscountsInput, StaffUncheckedCreateWithoutCreatedDiscountsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedDiscountsInput
+    connect?: StaffWhereUniqueInput
   }
 
   export type EnumDiscountStatusFieldUpdateOperationsInput = {
@@ -31976,6 +32565,16 @@ export namespace Prisma {
     delete?: TransporterWhereInput | boolean
     connect?: TransporterWhereUniqueInput
     update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutDiscountsInput, TransporterUpdateWithoutDiscountsInput>, TransporterUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedDiscountsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedDiscountsInput, StaffUncheckedCreateWithoutCreatedDiscountsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedDiscountsInput
+    upsert?: StaffUpsertWithoutCreatedDiscountsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedDiscountsInput, StaffUpdateWithoutCreatedDiscountsInput>, StaffUncheckedUpdateWithoutCreatedDiscountsInput>
   }
 
   export type StaffCreateNestedOneWithoutBillsInput = {
@@ -32728,6 +33327,146 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type PaymentCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateOrConnectWithoutCreatedByStaffInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutCreatedByStaffInput, PaymentUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type PaymentCreateManyCreatedByStaffInputEnvelope = {
+    data: PaymentCreateManyCreatedByStaffInput | PaymentCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DiscountCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutDiscountsInput
+    transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+  }
+
+  export type DiscountUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DiscountCreateOrConnectWithoutCreatedByStaffInput = {
+    where: DiscountWhereUniqueInput
+    create: XOR<DiscountCreateWithoutCreatedByStaffInput, DiscountUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type DiscountCreateManyCreatedByStaffInputEnvelope = {
+    data: DiscountCreateManyCreatedByStaffInput | DiscountCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DispatchCreateWithoutCreatedByStaffInput = {
+    id?: string
+    dispatchNumber?: string | null
+    dispatchDate: Date | string
+    dispatchedQuantity: Decimal | DecimalJsLike | number | string
+    lorryNumber?: string | null
+    dispatchTerms?: $Enums.DispatchTerms
+    freight?: Decimal | DecimalJsLike | number | string | null
+    receivingQuantity?: Decimal | DecimalJsLike | number | string | null
+    receiptDate?: Date | string | null
+    receiptStatus?: $Enums.ReceiptStatus
+    softCopyStatus?: boolean
+    entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
+    saleInvoiceNumber?: string | null
+    purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutDispatchesInput
+    purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
+    vessel: VesselCreateNestedOneWithoutDispatchesInput
+    transporter?: TransporterCreateNestedOneWithoutDispatchesInput
+    importer?: CustomerCreateNestedOneWithoutDispatchesInput
+  }
+
+  export type DispatchUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    dispatchNumber?: string | null
+    poNumber: string
+    purchasePoNumber: string
+    vesselId: string
+    dispatchDate: Date | string
+    dispatchedQuantity: Decimal | DecimalJsLike | number | string
+    lorryNumber?: string | null
+    dispatchTerms?: $Enums.DispatchTerms
+    freight?: Decimal | DecimalJsLike | number | string | null
+    transporterId?: string | null
+    importerId?: string | null
+    receivingQuantity?: Decimal | DecimalJsLike | number | string | null
+    receiptDate?: Date | string | null
+    receiptStatus?: $Enums.ReceiptStatus
+    softCopyStatus?: boolean
+    entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
+    saleInvoiceNumber?: string | null
+    purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCreateOrConnectWithoutCreatedByStaffInput = {
+    where: DispatchWhereUniqueInput
+    create: XOR<DispatchCreateWithoutCreatedByStaffInput, DispatchUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchCreateManyCreatedByStaffInputEnvelope = {
+    data: DispatchCreateManyCreatedByStaffInput | DispatchCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithWhereUniqueWithoutDealByInput = {
     where: CustomerWhereUniqueInput
     update: XOR<CustomerUpdateWithoutDealByInput, CustomerUncheckedUpdateWithoutDealByInput>
@@ -32860,6 +33599,121 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
   }
 
+  export type PaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: PaymentWhereUniqueInput
+    update: XOR<PaymentUpdateWithoutCreatedByStaffInput, PaymentUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<PaymentCreateWithoutCreatedByStaffInput, PaymentUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type PaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: PaymentWhereUniqueInput
+    data: XOR<PaymentUpdateWithoutCreatedByStaffInput, PaymentUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type PaymentUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: PaymentScalarWhereInput
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type PaymentScalarWhereInput = {
+    AND?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+    OR?: PaymentScalarWhereInput[]
+    NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+    id?: StringFilter<"Payment"> | string
+    date?: DateTimeFilter<"Payment"> | Date | string
+    customerId?: StringNullableFilter<"Payment"> | string | null
+    transporterId?: StringNullableFilter<"Payment"> | string | null
+    createdByStaffId?: StringNullableFilter<"Payment"> | string | null
+    direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
+    amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"Payment"> | Date | string
+    updatedAt?: DateTimeFilter<"Payment"> | Date | string
+  }
+
+  export type DiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: DiscountWhereUniqueInput
+    update: XOR<DiscountUpdateWithoutCreatedByStaffInput, DiscountUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<DiscountCreateWithoutCreatedByStaffInput, DiscountUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type DiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: DiscountWhereUniqueInput
+    data: XOR<DiscountUpdateWithoutCreatedByStaffInput, DiscountUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type DiscountUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: DiscountScalarWhereInput
+    data: XOR<DiscountUpdateManyMutationInput, DiscountUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type DiscountScalarWhereInput = {
+    AND?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+    OR?: DiscountScalarWhereInput[]
+    NOT?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+    id?: StringFilter<"Discount"> | string
+    date?: DateTimeFilter<"Discount"> | Date | string
+    customerId?: StringNullableFilter<"Discount"> | string | null
+    transporterId?: StringNullableFilter<"Discount"> | string | null
+    createdByStaffId?: StringNullableFilter<"Discount"> | string | null
+    status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
+    amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
+    coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
+    remarks?: StringFilter<"Discount"> | string
+    createdAt?: DateTimeFilter<"Discount"> | Date | string
+    updatedAt?: DateTimeFilter<"Discount"> | Date | string
+  }
+
+  export type DispatchUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: DispatchWhereUniqueInput
+    update: XOR<DispatchUpdateWithoutCreatedByStaffInput, DispatchUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<DispatchCreateWithoutCreatedByStaffInput, DispatchUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: DispatchWhereUniqueInput
+    data: XOR<DispatchUpdateWithoutCreatedByStaffInput, DispatchUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: DispatchScalarWhereInput
+    data: XOR<DispatchUpdateManyMutationInput, DispatchUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchScalarWhereInput = {
+    AND?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
+    OR?: DispatchScalarWhereInput[]
+    NOT?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
+    id?: StringFilter<"Dispatch"> | string
+    dispatchNumber?: StringNullableFilter<"Dispatch"> | string | null
+    poNumber?: StringFilter<"Dispatch"> | string
+    purchasePoNumber?: StringFilter<"Dispatch"> | string
+    vesselId?: StringFilter<"Dispatch"> | string
+    dispatchDate?: DateTimeFilter<"Dispatch"> | Date | string
+    dispatchedQuantity?: DecimalFilter<"Dispatch"> | Decimal | DecimalJsLike | number | string
+    lorryNumber?: StringNullableFilter<"Dispatch"> | string | null
+    dispatchTerms?: EnumDispatchTermsFilter<"Dispatch"> | $Enums.DispatchTerms
+    freight?: DecimalNullableFilter<"Dispatch"> | Decimal | DecimalJsLike | number | string | null
+    transporterId?: StringNullableFilter<"Dispatch"> | string | null
+    importerId?: StringNullableFilter<"Dispatch"> | string | null
+    receivingQuantity?: DecimalNullableFilter<"Dispatch"> | Decimal | DecimalJsLike | number | string | null
+    receiptDate?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
+    softCopyStatus?: BoolFilter<"Dispatch"> | boolean
+    entryInTally?: BoolFilter<"Dispatch"> | boolean
+    biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
+    invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
+    transportEntryInTally?: BoolFilter<"Dispatch"> | boolean
+    saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
+    purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
+    purchaseChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    saleChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    transportChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
+    createdAt?: DateTimeFilter<"Dispatch"> | Date | string
+    updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
+  }
+
   export type DispatchCreateWithoutTransporterInput = {
     id?: string
     dispatchNumber?: string | null
@@ -32876,14 +33730,19 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
     purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
   }
 
   export type DispatchUncheckedCreateWithoutTransporterInput = {
@@ -32906,8 +33765,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32930,12 +33794,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutTransporterInput = {
     id?: string
     date: Date | string
     customerId?: string | null
+    createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -32962,12 +33828,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutDiscountsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
   }
 
   export type DiscountUncheckedCreateWithoutTransporterInput = {
     id?: string
     date: Date | string
     customerId?: string | null
+    createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -33002,36 +33870,6 @@ export namespace Prisma {
     data: XOR<DispatchUpdateManyMutationInput, DispatchUncheckedUpdateManyWithoutTransporterInput>
   }
 
-  export type DispatchScalarWhereInput = {
-    AND?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
-    OR?: DispatchScalarWhereInput[]
-    NOT?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
-    id?: StringFilter<"Dispatch"> | string
-    dispatchNumber?: StringNullableFilter<"Dispatch"> | string | null
-    poNumber?: StringFilter<"Dispatch"> | string
-    purchasePoNumber?: StringFilter<"Dispatch"> | string
-    vesselId?: StringFilter<"Dispatch"> | string
-    dispatchDate?: DateTimeFilter<"Dispatch"> | Date | string
-    dispatchedQuantity?: DecimalFilter<"Dispatch"> | Decimal | DecimalJsLike | number | string
-    lorryNumber?: StringNullableFilter<"Dispatch"> | string | null
-    dispatchTerms?: EnumDispatchTermsFilter<"Dispatch"> | $Enums.DispatchTerms
-    freight?: DecimalNullableFilter<"Dispatch"> | Decimal | DecimalJsLike | number | string | null
-    transporterId?: StringNullableFilter<"Dispatch"> | string | null
-    importerId?: StringNullableFilter<"Dispatch"> | string | null
-    receivingQuantity?: DecimalNullableFilter<"Dispatch"> | Decimal | DecimalJsLike | number | string | null
-    receiptDate?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
-    receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
-    softCopyStatus?: BoolFilter<"Dispatch"> | boolean
-    entryInTally?: BoolFilter<"Dispatch"> | boolean
-    biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
-    transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
-    invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
-    saleInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
-    purchaseInvoiceNumber?: StringNullableFilter<"Dispatch"> | string | null
-    createdAt?: DateTimeFilter<"Dispatch"> | Date | string
-    updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
-  }
-
   export type PaymentUpsertWithWhereUniqueWithoutTransporterInput = {
     where: PaymentWhereUniqueInput
     update: XOR<PaymentUpdateWithoutTransporterInput, PaymentUncheckedUpdateWithoutTransporterInput>
@@ -33048,20 +33886,6 @@ export namespace Prisma {
     data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutTransporterInput>
   }
 
-  export type PaymentScalarWhereInput = {
-    AND?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
-    OR?: PaymentScalarWhereInput[]
-    NOT?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
-    id?: StringFilter<"Payment"> | string
-    date?: DateTimeFilter<"Payment"> | Date | string
-    customerId?: StringNullableFilter<"Payment"> | string | null
-    transporterId?: StringNullableFilter<"Payment"> | string | null
-    direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
-    amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
-    createdAt?: DateTimeFilter<"Payment"> | Date | string
-    updatedAt?: DateTimeFilter<"Payment"> | Date | string
-  }
-
   export type DiscountUpsertWithWhereUniqueWithoutTransporterInput = {
     where: DiscountWhereUniqueInput
     update: XOR<DiscountUpdateWithoutTransporterInput, DiscountUncheckedUpdateWithoutTransporterInput>
@@ -33076,22 +33900,6 @@ export namespace Prisma {
   export type DiscountUpdateManyWithWhereWithoutTransporterInput = {
     where: DiscountScalarWhereInput
     data: XOR<DiscountUpdateManyMutationInput, DiscountUncheckedUpdateManyWithoutTransporterInput>
-  }
-
-  export type DiscountScalarWhereInput = {
-    AND?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
-    OR?: DiscountScalarWhereInput[]
-    NOT?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
-    id?: StringFilter<"Discount"> | string
-    date?: DateTimeFilter<"Discount"> | Date | string
-    customerId?: StringNullableFilter<"Discount"> | string | null
-    transporterId?: StringNullableFilter<"Discount"> | string | null
-    status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
-    amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
-    coalOrigin?: EnumCoalOriginNullableFilter<"Discount"> | $Enums.CoalOrigin | null
-    remarks?: StringFilter<"Discount"> | string
-    createdAt?: DateTimeFilter<"Discount"> | Date | string
-    updatedAt?: DateTimeFilter<"Discount"> | Date | string
   }
 
   export type QualityClassCreateWithoutOriginInput = {
@@ -33630,10 +34438,14 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutOrderByInput
     bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutDealByCustomersInput = {
@@ -33644,10 +34456,14 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
     bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutDealByCustomersInput = {
@@ -33771,14 +34587,19 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
     purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
   }
 
   export type DispatchUncheckedCreateWithoutImporterInput = {
@@ -33801,8 +34622,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -33825,12 +34651,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutCustomerInput = {
     id?: string
     date: Date | string
     transporterId?: string | null
+    createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -33857,12 +34685,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
   }
 
   export type DiscountUncheckedCreateWithoutCustomerInput = {
     id?: string
     date: Date | string
     transporterId?: string | null
+    createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -33900,10 +34730,14 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutOrderByNestedInput
     bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDealByCustomersInput = {
@@ -33914,10 +34748,14 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -34112,14 +34950,19 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
     purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
   }
 
   export type DispatchUncheckedCreateWithoutVesselInput = {
@@ -34142,8 +34985,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34345,10 +35193,14 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
     bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutOrdersInput = {
@@ -34359,10 +35211,14 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
     bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutOrdersInput = {
@@ -34436,14 +35292,19 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
   }
 
   export type DispatchUncheckedCreateWithoutOrderInput = {
@@ -34466,8 +35327,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34592,10 +35458,14 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
     bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutOrdersInput = {
@@ -34606,10 +35476,14 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type PortOptionUpsertWithoutOrdersInput = {
@@ -34845,14 +35719,19 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
   }
 
   export type DispatchUncheckedCreateWithoutPurchaseOrderInput = {
@@ -34875,8 +35754,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -35303,6 +36187,47 @@ export namespace Prisma {
     create: XOR<CustomerCreateWithoutDispatchesInput, CustomerUncheckedCreateWithoutDispatchesInput>
   }
 
+  export type StaffCreateWithoutCreatedDispatchesInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedDispatchesInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedDispatchesInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedDispatchesInput, StaffUncheckedCreateWithoutCreatedDispatchesInput>
+  }
+
   export type OrderUpsertWithoutDispatchesInput = {
     update: XOR<OrderUpdateWithoutDispatchesInput, OrderUncheckedUpdateWithoutDispatchesInput>
     create: XOR<OrderCreateWithoutDispatchesInput, OrderUncheckedCreateWithoutDispatchesInput>
@@ -35572,6 +36497,53 @@ export namespace Prisma {
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
+  export type StaffUpsertWithoutCreatedDispatchesInput = {
+    update: XOR<StaffUpdateWithoutCreatedDispatchesInput, StaffUncheckedUpdateWithoutCreatedDispatchesInput>
+    create: XOR<StaffCreateWithoutCreatedDispatchesInput, StaffUncheckedCreateWithoutCreatedDispatchesInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedDispatchesInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedDispatchesInput, StaffUncheckedUpdateWithoutCreatedDispatchesInput>
+  }
+
+  export type StaffUpdateWithoutCreatedDispatchesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedDispatchesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
   export type CustomerCreateWithoutPaymentsInput = {
     id?: string
     name: string
@@ -35692,6 +36664,47 @@ export namespace Prisma {
   export type TransporterCreateOrConnectWithoutPaymentsInput = {
     where: TransporterWhereUniqueInput
     create: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
+  }
+
+  export type StaffCreateWithoutCreatedPaymentsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedPaymentsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedPaymentsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
   }
 
   export type CustomerUpsertWithoutPaymentsInput = {
@@ -35828,6 +36841,53 @@ export namespace Prisma {
     discounts?: DiscountUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
+  export type StaffUpsertWithoutCreatedPaymentsInput = {
+    update: XOR<StaffUpdateWithoutCreatedPaymentsInput, StaffUncheckedUpdateWithoutCreatedPaymentsInput>
+    create: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedPaymentsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedPaymentsInput, StaffUncheckedUpdateWithoutCreatedPaymentsInput>
+  }
+
+  export type StaffUpdateWithoutCreatedPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
   export type CustomerCreateWithoutDiscountsInput = {
     id?: string
     name: string
@@ -35948,6 +37008,47 @@ export namespace Prisma {
   export type TransporterCreateOrConnectWithoutDiscountsInput = {
     where: TransporterWhereUniqueInput
     create: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
+  }
+
+  export type StaffCreateWithoutCreatedDiscountsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedDiscountsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedDiscountsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedDiscountsInput, StaffUncheckedCreateWithoutCreatedDiscountsInput>
   }
 
   export type CustomerUpsertWithoutDiscountsInput = {
@@ -36084,6 +37185,53 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
+  export type StaffUpsertWithoutCreatedDiscountsInput = {
+    update: XOR<StaffUpdateWithoutCreatedDiscountsInput, StaffUncheckedUpdateWithoutCreatedDiscountsInput>
+    create: XOR<StaffCreateWithoutCreatedDiscountsInput, StaffUncheckedCreateWithoutCreatedDiscountsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedDiscountsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedDiscountsInput, StaffUncheckedUpdateWithoutCreatedDiscountsInput>
+  }
+
+  export type StaffUpdateWithoutCreatedDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
   export type StaffCreateWithoutBillsInput = {
     id?: string
     name: string
@@ -36092,10 +37240,14 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
     orders?: OrderCreateNestedManyWithoutOrderByInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutBillsInput = {
@@ -36106,10 +37258,14 @@ export namespace Prisma {
     pageKeys?: StaffCreatepageKeysInput | string[]
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutBillsInput = {
@@ -36164,10 +37320,14 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
     orders?: OrderUpdateManyWithoutOrderByNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutBillsInput = {
@@ -36178,10 +37338,14 @@ export namespace Prisma {
     pageKeys?: StaffUpdatepageKeysInput | string[]
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type BillFileUpsertWithWhereUniqueWithoutBillInput = {
@@ -36365,6 +37529,61 @@ export namespace Prisma {
     reviewRemark?: string
     accountVoucherNo?: string
     reviewedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DiscountCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCreateManyCreatedByStaffInput = {
+    id?: string
+    dispatchNumber?: string | null
+    poNumber: string
+    purchasePoNumber: string
+    vesselId: string
+    dispatchDate: Date | string
+    dispatchedQuantity: Decimal | DecimalJsLike | number | string
+    lorryNumber?: string | null
+    dispatchTerms?: $Enums.DispatchTerms
+    freight?: Decimal | DecimalJsLike | number | string | null
+    transporterId?: string | null
+    importerId?: string | null
+    receivingQuantity?: Decimal | DecimalJsLike | number | string | null
+    receiptDate?: Date | string | null
+    receiptStatus?: $Enums.ReceiptStatus
+    softCopyStatus?: boolean
+    entryInTally?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
+    saleInvoiceNumber?: string | null
+    purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36599,6 +37818,171 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DiscountUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutDiscountsNestedInput
+    transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+  }
+
+  export type DiscountUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DiscountUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchTerms?: EnumDispatchTermsFieldUpdateOperationsInput | $Enums.DispatchTerms
+    freight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receivingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receiptDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
+    softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
+    entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
+    saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
+    purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
+    vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
+    transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
+    importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+  }
+
+  export type DispatchUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: StringFieldUpdateOperationsInput | string
+    purchasePoNumber?: StringFieldUpdateOperationsInput | string
+    vesselId?: StringFieldUpdateOperationsInput | string
+    dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchTerms?: EnumDispatchTermsFieldUpdateOperationsInput | $Enums.DispatchTerms
+    freight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    importerId?: NullableStringFieldUpdateOperationsInput | string | null
+    receivingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receiptDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
+    softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
+    entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
+    saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: StringFieldUpdateOperationsInput | string
+    purchasePoNumber?: StringFieldUpdateOperationsInput | string
+    vesselId?: StringFieldUpdateOperationsInput | string
+    dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchTerms?: EnumDispatchTermsFieldUpdateOperationsInput | $Enums.DispatchTerms
+    freight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    importerId?: NullableStringFieldUpdateOperationsInput | string | null
+    receivingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receiptDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
+    softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
+    entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
+    saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DispatchCreateManyTransporterInput = {
     id?: string
     dispatchNumber?: string | null
@@ -36619,8 +38003,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36629,6 +38018,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     customerId?: string | null
+    createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -36639,6 +38029,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     customerId?: string | null
+    createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -36663,14 +38054,19 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
     purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutTransporterInput = {
@@ -36693,8 +38089,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36719,8 +38120,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36733,12 +38139,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutTransporterInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36749,6 +38157,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36765,12 +38174,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutDiscountsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
   }
 
   export type DiscountUncheckedUpdateWithoutTransporterInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -36783,6 +38194,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -37247,8 +38659,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37257,6 +38674,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     transporterId?: string | null
+    createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -37267,6 +38685,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     transporterId?: string | null
+    createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -37409,14 +38828,19 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
     purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutImporterInput = {
@@ -37439,8 +38863,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37465,8 +38894,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37479,12 +38913,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37495,6 +38931,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37511,12 +38948,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
   }
 
   export type DiscountUncheckedUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -37529,6 +38968,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -37574,8 +39014,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37649,14 +39094,19 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
     purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutVesselInput = {
@@ -37679,8 +39129,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37705,8 +39160,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37731,8 +39191,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37753,14 +39218,19 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutOrderInput = {
@@ -37783,8 +39253,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37809,8 +39284,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37835,8 +39315,13 @@ export namespace Prisma {
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
     saleInvoiceNumber?: string | null
     purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37857,14 +39342,19 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutPurchaseOrderInput = {
@@ -37887,8 +39377,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37913,8 +39408,13 @@ export namespace Prisma {
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
     saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
     purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

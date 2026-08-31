@@ -8,6 +8,12 @@ import {
   toDecimal,
 } from "@/lib/domain/computations";
 import { ensureDispatchNumbers } from "@/lib/actions/dispatch";
+import { getCurrentAccess } from "@/lib/auth/access";
+import {
+  canEditPurchaseChecklist,
+  canEditSaleChecklist,
+} from "@/lib/auth/checklistEditAccess";
+import { sameDayEntryPermissions } from "@/lib/auth/sameDayEntryModify";
 
 const qualityClassInclude = {
   origin: { select: { id: true, name: true } },
@@ -30,6 +36,8 @@ export type DispatchFilters = {
 
 export async function listDispatches(filters: DispatchFilters = {}) {
   await ensureDispatchNumbers();
+  const access = await getCurrentAccess();
+  if (access.kind === "none") return [];
 
   const where: Prisma.DispatchWhereInput = {};
   if (filters.receiptStatus) where.receiptStatus = filters.receiptStatus;
@@ -145,6 +153,8 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       id: row.id,
       dispatchNumber: row.dispatchNumber,
       dispatchDate: row.dispatchDate,
+      createdAt: row.createdAt,
+      createdByStaffId: row.createdByStaffId,
       lorryNumber: row.lorryNumber,
       dispatchedQuantity: row.dispatchedQuantity,
       receivingQuantity: row.receivingQuantity,
@@ -179,6 +189,9 @@ export async function listDispatches(filters: DispatchFilters = {}) {
         dispatchTerms: row.dispatchTerms,
         freight: row.freight,
       }),
+      ...sameDayEntryPermissions(access, row),
+      canEditPurchase: canEditPurchaseChecklist(access, row),
+      canEditSale: canEditSaleChecklist(access, row),
     };
   });
 }

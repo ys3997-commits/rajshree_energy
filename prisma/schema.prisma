@@ -82,12 +82,17 @@ model Staff {
   collectionSalesExecs String[] @default([])
   /// Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
   salesEngineSalesExecs String[] @default([])
+  /// Sales executives visible on Sale orders. ["*"] = all; else executive names.
+  saleOrderSalesExecs String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   dealByCustomers Customer[] @relation("DealBy")
   orders          Order[]
   bills           Bill[]
+  createdPayments   Payment[]  @relation("PaymentCreatedBy")
+  createdDiscounts  Discount[] @relation("DiscountCreatedBy")
+  createdDispatches Dispatch[] @relation("DispatchCreatedBy")
 }
 
 model Transporter {
@@ -358,6 +363,7 @@ model Dispatch {
   receiptDate         DateTime?
   receiptStatus       ReceiptStatus @default(PENDING)
   softCopyStatus      Boolean       @default(false)
+  /// Purchase checklist — purchase invoice recorded in Tally accounting software.
   entryInTally        Boolean       @default(false)
   /// Transport checklist — bilty (goods receipt) hard copy received.
   biltyHardCopy       Boolean       @default(false)
@@ -365,22 +371,30 @@ model Dispatch {
   transportInvoiceNo  String?
   /// Transport checklist — sale/transport invoice hard copy received.
   invoiceHardCopy     Boolean       @default(false)
+  /// Transport checklist — transport invoice recorded in Tally accounting software.
+  transportEntryInTally Boolean     @default(false)
   /// Sale (customer) invoice number — often filled after dispatch.
   saleInvoiceNumber     String?
   /// Purchase (supplier) invoice number — often filled after dispatch.
   purchaseInvoiceNumber String?
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  purchaseChecklistCompletedAt DateTime?
+  saleChecklistCompletedAt     DateTime?
+  transportChecklistCompletedAt DateTime?
+  createdByStaffId      String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
-  order         Order         @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
-  purchaseOrder PurchaseOrder @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
-  vessel        Vessel        @relation(fields: [vesselId], references: [id])
-  transporter   Transporter?  @relation(fields: [transporterId], references: [id])
-  importer      Customer?     @relation("DispatchImporter", fields: [importerId], references: [id])
+  order          Order         @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
+  purchaseOrder  PurchaseOrder @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
+  vessel         Vessel        @relation(fields: [vesselId], references: [id])
+  transporter    Transporter?  @relation(fields: [transporterId], references: [id])
+  importer       Customer?     @relation("DispatchImporter", fields: [importerId], references: [id])
+  createdByStaff Staff?        @relation("DispatchCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([receiptStatus])
   @@index([vesselId])
   @@index([purchasePoNumber])
+  @@index([createdByStaffId])
 }
 
 /// Money received from or sent to a customer or transporter.
@@ -389,6 +403,7 @@ model Payment {
   date          DateTime
   customerId    String?
   transporterId String?
+  createdByStaffId String?
   direction     PaymentDirection
   amount        Decimal          @db.Decimal(18, 2)
   createdAt     DateTime         @default(now())
@@ -396,9 +411,11 @@ model Payment {
 
   customer    Customer?    @relation(fields: [customerId], references: [id])
   transporter Transporter? @relation(fields: [transporterId], references: [id])
+  createdByStaff Staff?    @relation("PaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([createdByStaffId])
   @@index([date])
 }
 
@@ -408,6 +425,7 @@ model Discount {
   date          DateTime
   customerId    String?
   transporterId String?
+  createdByStaffId String?
   status        DiscountStatus
   amount        Decimal        @db.Decimal(18, 2)
   /// Domestic coal vs imported coal. Null on older rows.
@@ -418,9 +436,11 @@ model Discount {
 
   customer    Customer?    @relation(fields: [customerId], references: [id])
   transporter Transporter? @relation(fields: [transporterId], references: [id])
+  createdByStaff Staff?    @relation("DiscountCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([createdByStaffId])
   @@index([date])
 }
 

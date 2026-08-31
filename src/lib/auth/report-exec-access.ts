@@ -1,13 +1,16 @@
+import type { Prisma } from "@/generated/prisma";
 import type { Access } from "@/lib/auth/types";
 
 export const REPORT_EXEC_ALL = "*";
 
 export const COLLECTION_ENGINE_PAGE_KEY = "reports-collection";
 export const SALES_ENGINE_PAGE_KEY = "reports-sales-engine";
+export const SALE_ORDERS_PAGE_KEY = "orders";
 
 export const EXEC_SCOPED_REPORT_PAGES = [
   COLLECTION_ENGINE_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
+  SALE_ORDERS_PAGE_KEY,
 ] as const;
 
 export type ExecScopedReportPage = (typeof EXEC_SCOPED_REPORT_PAGES)[number];
@@ -73,6 +76,32 @@ export function resolveExecScopeFilter(scope: string[]): ExecScopeFilter {
   return scope;
 }
 
+/** Prisma filter on Customer.saleExecutive for order list queries. */
+export function execScopeToCustomerWhere(
+  scope: ExecScopeFilter,
+): Prisma.CustomerWhereInput | undefined {
+  if (scope === "all") return undefined;
+  if (scope.length === 0) return { id: { equals: "__none__" } };
+  return {
+    OR: scope.map((name) => ({
+      saleExecutive: { equals: name.trim(), mode: "insensitive" },
+    })),
+  };
+}
+
+export function mergeOrderCustomerFilter(
+  where: Prisma.OrderWhereInput,
+  customerFilter: Prisma.CustomerWhereInput | undefined,
+): void {
+  if (!customerFilter) return;
+  const existing = where.customer;
+  if (!existing) {
+    where.customer = customerFilter;
+    return;
+  }
+  where.customer = { AND: [existing, customerFilter] };
+}
+
 export function filterRowsByExecScope<
   T extends { saleExecutive: string | null },
 >(rows: T[], scope: ExecScopeFilter): T[] {
@@ -91,7 +120,9 @@ export function getStaffReportExecScope(
   const stored =
     pageKey === COLLECTION_ENGINE_PAGE_KEY
       ? access.collectionSalesExecs
-      : access.salesEngineSalesExecs;
+      : pageKey === SALES_ENGINE_PAGE_KEY
+        ? access.salesEngineSalesExecs
+        : access.saleOrderSalesExecs;
 
   return resolveExecScopeFilter(normalizeStoredExecScope(stored, true));
 }

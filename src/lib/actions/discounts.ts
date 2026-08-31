@@ -15,6 +15,7 @@ import {
 } from "@/lib/domain/paymentParty";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
 
 const DISCOUNTS_PAGE_SIZE = 35;
 
@@ -38,6 +39,8 @@ export type DiscountRow = {
   amount: string;
   coalOrigin: "DOMESTIC" | "IMPORTED" | null;
   remarks: string;
+  canEdit: boolean;
+  canDelete: boolean;
 };
 
 export type DiscountFlowTotals = {
@@ -79,18 +82,49 @@ function parseDate(value: string): Date {
   return date;
 }
 
-function toDiscountRow(row: {
-  id: string;
-  date: Date;
-  customerId: string | null;
-  transporterId: string | null;
-  status: DiscountStatus;
-  amount: { toString(): string };
-  coalOrigin: CoalOrigin | null;
-  remarks: string;
-  customer: { name: string } | null;
-  transporter: { name: string } | null;
-}): DiscountRow {
+const IST_DAY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Kolkata",
+});
+
+function dayKeyInIst(value: Date): string {
+  return IST_DAY_FORMATTER.format(value);
+}
+
+function canStaffModifyEntry(
+  access: Extract<Access, { kind: "staff" }>,
+  row: { createdAt: Date; createdByStaffId: string | null },
+): boolean {
+  if (!row.createdByStaffId) return false;
+  if (row.createdByStaffId !== access.id) return false;
+  return dayKeyInIst(row.createdAt) === dayKeyInIst(new Date());
+}
+
+function canModifyEntry(
+  access: Exclude<Access, { kind: "none" }>,
+  row: { createdAt: Date; createdByStaffId: string | null },
+): boolean {
+  if (access.kind === "owner") return true;
+  return canStaffModifyEntry(access, row);
+}
+
+function toDiscountRow(
+  row: {
+    id: string;
+    date: Date;
+    createdAt: Date;
+    createdByStaffId: string | null;
+    customerId: string | null;
+    transporterId: string | null;
+    status: DiscountStatus;
+    amount: { toString(): string };
+    coalOrigin: CoalOrigin | null;
+    remarks: string;
+    customer: { name: string } | null;
+    transporter: { name: string } | null;
+  },
+  access: Exclude<Access, { kind: "none" }>,
+): DiscountRow {
+  const canModify = canModifyEntry(access, row);
   return {
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
@@ -101,6 +135,8 @@ function toDiscountRow(row: {
     amount: row.amount.toString(),
     coalOrigin: row.coalOrigin,
     remarks: row.remarks,
+    canEdit: canModify,
+    canDelete: canModify,
   };
 }
 
@@ -242,6 +278,7 @@ export async function listDiscounts(options?: {
   party?: string;
   type?: string;
 }): Promise<DiscountListResult> {
+  const access = await requirePage("payments");
   const where = discountWhere(options);
 
   if (options?.all) {
@@ -254,7 +291,7 @@ export async function listDiscounts(options?: {
       discountTotals(where, options.dateFrom, options.dateTo),
     ]);
     return {
-      rows: rows.map(toDiscountRow),
+      rows: rows.map((row) => toDiscountRow(row, access)),
       total: rows.length,
       page: 1,
       pageSize: Math.max(1, rows.length),
@@ -282,11 +319,11 @@ export async function listDiscounts(options?: {
       skip,
       take: pageSize,
     }),
-    discountTotals(where, options?.dateFrom, options?.dateTo),
+    discountTotals(where, options.dateFrom, options.dateTo),
   ]);
 
   return {
-    rows: rows.map(toDiscountRow),
+    rows: rows.map((row) => toDiscountRow(row, access)),
     total,
     page,
     pageSize,
@@ -298,6 +335,7 @@ export async function listDiscounts(options?: {
 export async function createDiscount(
   input: DiscountInput,
 ): Promise<DiscountRow> {
+  const access = await requirePage("payments");
   const data = validateDiscountInput(input);
   await assertPartyExists(data.party);
 
@@ -309,6 +347,7 @@ export async function createDiscount(
         amount: data.amount,
         coalOrigin: data.coalOrigin,
         remarks: data.remarks,
+        createdByStaffId: access.kind === "staff" ? access.id : null,
         ...partyCreateData(data.party),
       },
       include: discountInclude,
@@ -326,17 +365,34 @@ export async function createDiscount(
   });
 
   revalidateDiscountPaths(data.party);
-  return toDiscountRow(row);
+  return toDiscountRow(row, access);
 }
 
 export async function updateDiscount(
   id: string,
   input: DiscountInput,
 ): Promise<DiscountRow> {
+  const access = await requirePage("payments");
   const data = validateDiscountInput(input);
 
-  const existing = await prisma.discount.findUnique({ where: { id } });
+  const existing = await prisma.discount.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      customerId: true,
+      transporterId: true,
+      status: true,
+      amount: true,
+      createdAt: true,
+      createdByStaffId: true,
+    },
+  });
   if (!existing) throw new Error("Discount not found");
+  if (!canModifyEntry(access, existing)) {
+    throw new AccessDeniedError(
+      "You can edit only your own discount entry on the same day.",
+    );
+  }
 
   await assertPartyExists(data.party);
 
@@ -374,12 +430,29 @@ export async function updateDiscount(
   });
 
   revalidateDiscountPaths(data.party);
-  return toDiscountRow(row);
+  return toDiscountRow(row, access);
 }
 
 export async function deleteDiscount(id: string) {
-  const existing = await prisma.discount.findUnique({ where: { id } });
+  const access = await requirePage("payments");
+  const existing = await prisma.discount.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      customerId: true,
+      transporterId: true,
+      status: true,
+      amount: true,
+      createdAt: true,
+      createdByStaffId: true,
+    },
+  });
   if (!existing) throw new Error("Discount not found");
+  if (!canModifyEntry(access, existing)) {
+    throw new AccessDeniedError(
+      "You can delete only your own discount entry on the same day.",
+    );
+  }
 
   await prisma.$transaction(async (tx) => {
     if (existing.customerId) {

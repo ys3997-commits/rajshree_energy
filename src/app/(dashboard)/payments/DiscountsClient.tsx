@@ -88,6 +88,9 @@ function rowTypeClass(status: string): string {
   return status === "RECEIVED" ? "fund-row-in" : "fund-row-out";
 }
 
+const EDIT_LOCK_HINT =
+  "Staff can edit/delete only entries they created on the same day.";
+
 function formatDateDdMmYyyy(value: string | null | undefined): string {
   if (!value) return "—";
   const datePart = value.trim().slice(0, 10);
@@ -622,7 +625,8 @@ export function DiscountsClient({
                           type="button"
                           className="btn btn-secondary btn-sm"
                           onClick={() => startEdit(row)}
-                          disabled={pending}
+                          disabled={pending || !row.canEdit}
+                          title={row.canEdit ? undefined : EDIT_LOCK_HINT}
                         >
                           Edit
                         </button>
@@ -630,7 +634,8 @@ export function DiscountsClient({
                           type="button"
                           className="btn btn-danger btn-sm"
                           onClick={() => onDelete(row)}
-                          disabled={pending}
+                          disabled={pending || !row.canDelete}
+                          title={row.canDelete ? undefined : EDIT_LOCK_HINT}
                         >
                           Delete
                         </button>

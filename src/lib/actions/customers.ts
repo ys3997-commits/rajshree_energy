@@ -190,6 +190,7 @@ export type CustomerDueRow = {
   category: CustomerCategory;
   paymentInChargeName: string | null;
   paymentInChargeContact: string | null;
+  paymentInChargeRole: string | null;
   saleExecutive: string | null;
   approachForFunds: string | null;
   city: string | null;
@@ -217,6 +218,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       category: true,
       paymentInChargeName: true,
       paymentInChargeContact: true,
+      paymentInChargeRole: true,
       due: true,
       openingDue: true,
       creditDays: true,
@@ -310,6 +312,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       category: customer.category,
       paymentInChargeName: customer.paymentInChargeName,
       paymentInChargeContact: customer.paymentInChargeContact,
+      paymentInChargeRole: customer.paymentInChargeRole,
       saleExecutive: customer.saleExecutive,
       approachForFunds: customer.approachForFunds,
       city: customer.city,

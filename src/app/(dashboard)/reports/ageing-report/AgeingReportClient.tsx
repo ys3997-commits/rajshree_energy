@@ -53,8 +53,8 @@ export function AgeingReportClient({ rows }: { rows: AgeingReportRow[] }) {
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("");
   const [sectorFilter, setSectorFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
-  const [sortKey, setSortKey] = useState<SortKey>("totalDue");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {

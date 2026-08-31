@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
+import { SAME_DAY_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
 import {
   formatMt,
   formatMtNumber,
@@ -77,6 +78,7 @@ export function EditDispatchButton({
   vessels,
   suggestedPo,
   suggestedPurchasePo,
+  canEdit = true,
 }: {
   dispatchId: string;
   dispatchDate: string;
@@ -101,6 +103,7 @@ export function EditDispatchButton({
   vessels: VesselOpt[];
   suggestedPo: string;
   suggestedPurchasePo: string;
+  canEdit?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -333,6 +336,8 @@ export function EditDispatchButton({
         type="button"
         className="btn btn-sm btn-secondary"
         onClick={openModal}
+        disabled={!canEdit}
+        title={canEdit ? undefined : SAME_DAY_EDIT_LOCK_HINT}
       >
         Edit
       </button>

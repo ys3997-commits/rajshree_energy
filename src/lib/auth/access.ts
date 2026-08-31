@@ -10,13 +10,9 @@ import {
   readStaffIdFromToken,
   staffSessionCookieOptions,
 } from "@/lib/auth/staff-session";
+import { AccessDeniedError } from "@/lib/auth/errors";
 
-export class AccessDeniedError extends Error {
-  constructor(message = "You do not have access to this page") {
-    super(message);
-    this.name = "AccessDeniedError";
-  }
-}
+export { AccessDeniedError };
 
 export async function getCurrentAccess(): Promise<Access> {
   const supabase = await createClient();
@@ -42,6 +38,7 @@ export async function getCurrentAccess(): Promise<Access> {
       pageKeys: true,
       collectionSalesExecs: true,
       salesEngineSalesExecs: true,
+      saleOrderSalesExecs: true,
     },
   });
   if (!staff?.passwordHash || staff.pageKeys.length === 0) {
@@ -61,6 +58,10 @@ export async function getCurrentAccess(): Promise<Access> {
     salesEngineSalesExecs: normalizeStoredExecScope(
       staff.salesEngineSalesExecs,
       pageKeys.includes("reports-sales-engine"),
+    ),
+    saleOrderSalesExecs: normalizeStoredExecScope(
+      staff.saleOrderSalesExecs,
+      pageKeys.includes("orders"),
     ),
   };
 }

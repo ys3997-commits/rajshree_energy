@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
+import { CHECKLIST_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
+import { isSaleChecklistComplete } from "@/lib/domain/dispatchChecklist";
 import { formatMtNumber } from "@/lib/domain/format";
 
 export type SaleEditRowSummary = {
@@ -17,20 +19,6 @@ export type SaleEditRowSummary = {
   deliveryTerms: string;
   transporter: string;
 };
-
-function isSaleComplete(input: {
-  saleInvoiceNumber: string | null;
-  receivingQuantity: string | null;
-  dispatchTerms: DispatchTerms;
-}): boolean {
-  if (input.dispatchTerms === DispatchTerms.EX_PORT) {
-    return Boolean(input.saleInvoiceNumber?.trim());
-  }
-  return (
-    Boolean(input.saleInvoiceNumber?.trim()) &&
-    Boolean(input.receivingQuantity?.trim())
-  );
-}
 
 function SummaryField({ label, value }: { label: string; value: string }) {
   return (
@@ -48,6 +36,7 @@ export function EditDispatchSaleButton({
   receivingQuantity,
   dispatchTerms,
   rowSummary,
+  canEdit = true,
 }: {
   dispatchId: string;
   saleInvoiceNumber: string | null;
@@ -55,6 +44,7 @@ export function EditDispatchSaleButton({
   receivingQuantity: string | null;
   dispatchTerms: DispatchTerms;
   rowSummary?: SaleEditRowSummary;
+  canEdit?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -69,7 +59,7 @@ export function EditDispatchSaleButton({
 
   const isExPort = dispatchTerms === DispatchTerms.EX_PORT;
 
-  const complete = isSaleComplete({
+  const complete = isSaleChecklistComplete({
     saleInvoiceNumber,
     receivingQuantity,
     dispatchTerms,
@@ -123,6 +113,8 @@ export function EditDispatchSaleButton({
           complete ? "btn-checklist-complete" : "btn-checklist-pending"
         }`}
         onClick={openModal}
+        disabled={!canEdit}
+        title={canEdit ? undefined : CHECKLIST_EDIT_LOCK_HINT}
       >
         Sale edit
       </button>

@@ -16,25 +16,10 @@ import {
   formatAmount,
 } from "@/lib/domain/format";
 import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
+import { isTransportChecklistComplete } from "@/lib/domain/dispatchChecklist";
 
 function formatChecklistYes(value: boolean): string {
   return value ? "Yes" : "—";
-}
-
-function isChecklistComplete(row: {
-  biltyHardCopy: boolean;
-  transportInvoiceNo: string | null;
-  invoiceHardCopy: boolean;
-  softCopyStatus: boolean;
-  entryInTally: boolean;
-}): boolean {
-  return (
-    row.biltyHardCopy &&
-    Boolean(row.transportInvoiceNo?.trim()) &&
-    row.invoiceHardCopy &&
-    row.softCopyStatus &&
-    row.entryInTally
-  );
 }
 
 function distinctTrimmed(values: Array<string | null | undefined>): string[] {
@@ -136,7 +121,7 @@ export function TransportEngineClient({
         return false;
       }
       if (completeFilter) {
-        const complete = isChecklistComplete(row);
+        const complete = isTransportChecklistComplete(row);
         if (completeFilter === "complete" && !complete) return false;
         if (completeFilter === "pending" && complete) return false;
       }
@@ -191,7 +176,7 @@ export function TransportEngineClient({
     { key: "biltyHardCopy", header: "Bilty hard copy" },
     { key: "invoiceHardCopy", header: "Invoice hard copy" },
     { key: "transportInvoiceNo", header: "Transport invoice no" },
-    { key: "entryInTally", header: "Entry in Tally" },
+    { key: "transportEntryInTally", header: "Transport in Tally" },
     ];
     if (variant === "update") {
       return [
@@ -213,7 +198,7 @@ export function TransportEngineClient({
             biltyHardCopy: "Bilty Hard Copy",
             invoiceHardCopy: "Invoice Hard Copy",
             transportInvoiceNo: "Transport Invoice No",
-            entryInTally: "Entry in Tally",
+            transportEntryInTally: "Transport in Tally",
           };
           const header = titleCaseHeaders[column.key];
           return header ? { ...column, header } : column;
@@ -248,7 +233,7 @@ export function TransportEngineClient({
         biltyHardCopy: formatChecklistYes(row.biltyHardCopy),
         invoiceHardCopy: formatChecklistYes(row.invoiceHardCopy),
         transportInvoiceNo: row.transportInvoiceNo?.trim() || "—",
-        entryInTally: formatChecklistYes(row.entryInTally),
+        transportEntryInTally: formatChecklistYes(row.transportEntryInTally),
         };
         if (variant === "update") {
           return {
@@ -441,7 +426,7 @@ export function TransportEngineClient({
               <th>
                 {isUpdateLayout ? "Transport Invoice No" : "Transport invoice no"}
               </th>
-              <th className="cell-center">Entry in Tally</th>
+              <th className="cell-center">Transport in Tally</th>
               <th className={isUpdateLayout ? "update-transport-actions-col" : undefined}>
                 {isUpdateLayout ? null : "Edit"}
               </th>
@@ -546,7 +531,7 @@ export function TransportEngineClient({
                     {row.transportInvoiceNo?.trim() || "—"}
                   </td>
                   <td className="cell-center">
-                    {formatChecklistYes(row.entryInTally)}
+                    {formatChecklistYes(row.transportEntryInTally)}
                   </td>
                   <td className={isUpdateLayout ? "update-transport-actions-col" : undefined}>
                     <div className="dispatch-edit-actions">
@@ -556,7 +541,8 @@ export function TransportEngineClient({
                         transportInvoiceNo={row.transportInvoiceNo}
                         invoiceHardCopy={row.invoiceHardCopy}
                         softCopyStatus={row.softCopyStatus}
-                        entryInTally={row.entryInTally}
+                        transportEntryInTally={row.transportEntryInTally}
+                        canEdit={row.canEdit}
                         buttonLabel={
                           isUpdateLayout ? "Transport edit" : "Edit"
                         }
@@ -576,7 +562,8 @@ export function TransportEngineClient({
                                       result.transportInvoiceNo,
                                     invoiceHardCopy: result.invoiceHardCopy,
                                     softCopyStatus: result.softCopyStatus,
-                                    entryInTally: result.entryInTally,
+                                    transportEntryInTally:
+                                      result.transportEntryInTally,
                                   }
                                 : item,
                             ),

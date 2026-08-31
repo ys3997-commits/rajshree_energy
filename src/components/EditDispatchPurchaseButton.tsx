@@ -4,6 +4,8 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
+import { CHECKLIST_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
+import { isPurchaseChecklistComplete } from "@/lib/domain/dispatchChecklist";
 
 export type PurchaseEditRowSummary = {
   dispatchNumber: string;
@@ -19,15 +21,6 @@ export type PurchaseEditRowSummary = {
   gstState: string;
 };
 
-function isPurchaseComplete(input: {
-  purchaseInvoiceNumber: string | null;
-  entryInTally: boolean;
-}): boolean {
-  return (
-    Boolean(input.purchaseInvoiceNumber?.trim()) && input.entryInTally
-  );
-}
-
 function SummaryField({ label, value }: { label: string; value: string }) {
   return (
     <>
@@ -42,11 +35,13 @@ export function EditDispatchPurchaseButton({
   purchaseInvoiceNumber,
   entryInTally,
   rowSummary,
+  canEdit = true,
 }: {
   dispatchId: string;
   purchaseInvoiceNumber: string | null;
   entryInTally: boolean;
   rowSummary?: PurchaseEditRowSummary;
+  canEdit?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -57,7 +52,7 @@ export function EditDispatchPurchaseButton({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const complete = isPurchaseComplete({
+  const complete = isPurchaseChecklistComplete({
     purchaseInvoiceNumber,
     entryInTally,
   });
@@ -95,6 +90,8 @@ export function EditDispatchPurchaseButton({
           complete ? "btn-checklist-complete" : "btn-checklist-pending"
         }`}
         onClick={openModal}
+        disabled={!canEdit}
+        title={canEdit ? undefined : CHECKLIST_EDIT_LOCK_HINT}
       >
         Purchase edit
       </button>
@@ -154,7 +151,7 @@ export function EditDispatchPurchaseButton({
             autoFocus={!rowSummary}
           />
 
-          <label htmlFor={`tally-${dispatchId}`}>Recorded in Tally</label>
+          <label htmlFor={`tally-${dispatchId}`}>Purchase invoice in Tally</label>
           <input
             id={`tally-${dispatchId}`}
             type="checkbox"

@@ -187,6 +187,7 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                             row.receivingQuantity?.toString() ?? null
                           }
                           dispatchTerms={row.dispatchTerms}
+                          canEdit={row.canEditSale}
                           rowSummary={{
                             dispatchNumber: displayDispatchNumber(
                               row.dispatchNumber,

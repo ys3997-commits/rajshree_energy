@@ -7,7 +7,16 @@ import {
   effectiveReceivingQuantity,
   toDecimal,
 } from "@/lib/domain/computations";
+import {
+  isTransportChecklistComplete,
+  nextChecklistCompletedAt,
+} from "@/lib/domain/dispatchChecklist";
 import { prisma } from "@/lib/prisma";
+import { getCurrentAccess, requireSignedIn } from "@/lib/auth/access";
+import {
+  assertCanEditTransportChecklist,
+  canEditTransportChecklist,
+} from "@/lib/auth/checklistEditAccess";
 
 export type TransportEngineRow = {
   id: string;
@@ -28,7 +37,8 @@ export type TransportEngineRow = {
   transportInvoiceNo: string | null;
   invoiceHardCopy: boolean;
   softCopyStatus: boolean;
-  entryInTally: boolean;
+  transportEntryInTally: boolean;
+  canEdit: boolean;
 };
 
 export type TransportChecklistInput = {
@@ -36,16 +46,21 @@ export type TransportChecklistInput = {
   transportInvoiceNo: string | null;
   invoiceHardCopy: boolean;
   softCopyStatus: boolean;
-  entryInTally: boolean;
+  transportEntryInTally: boolean;
 };
 
 /** Dispatch-wise rows for the transport checklist / freight report. */
 export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
+  const access = await getCurrentAccess();
+  if (access.kind === "none") return [];
+
   const rows = await prisma.dispatch.findMany({
     select: {
       id: true,
       dispatchNumber: true,
       dispatchDate: true,
+      createdAt: true,
+      createdByStaffId: true,
       saleInvoiceNumber: true,
       lorryNumber: true,
       dispatchedQuantity: true,
@@ -56,7 +71,8 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       transportInvoiceNo: true,
       invoiceHardCopy: true,
       softCopyStatus: true,
-      entryInTally: true,
+      transportEntryInTally: true,
+      transportChecklistCompletedAt: true,
       transporter: { select: { name: true } },
       vessel: {
         select: {
@@ -101,7 +117,8 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       transportInvoiceNo: row.transportInvoiceNo,
       invoiceHardCopy: row.invoiceHardCopy,
       softCopyStatus: row.softCopyStatus,
-      entryInTally: row.entryInTally,
+      transportEntryInTally: row.transportEntryInTally,
+      canEdit: canEditTransportChecklist(access, row),
     };
   });
 }
@@ -113,16 +130,33 @@ export async function updateTransportChecklist(
 ): Promise<TransportChecklistInput> {
   if (!dispatchId) throw new Error("Dispatch is required");
 
+  const access = await requireSignedIn();
   const existing = await prisma.dispatch.findUnique({
     where: { id: dispatchId },
-    select: { id: true },
+    select: {
+      id: true,
+      biltyHardCopy: true,
+      transportInvoiceNo: true,
+      invoiceHardCopy: true,
+      softCopyStatus: true,
+      transportEntryInTally: true,
+      transportChecklistCompletedAt: true,
+    },
   });
   if (!existing) throw new Error("Dispatch not found");
+  assertCanEditTransportChecklist(access, existing);
 
   const transportInvoiceNo =
     input.transportInvoiceNo == null || input.transportInvoiceNo.trim() === ""
       ? null
       : input.transportInvoiceNo.trim();
+
+  const nextTransportComplete = isTransportChecklistComplete({
+    biltyHardCopy: Boolean(input.biltyHardCopy),
+    transportInvoiceNo,
+    invoiceHardCopy: Boolean(input.invoiceHardCopy),
+    transportEntryInTally: Boolean(input.transportEntryInTally),
+  });
 
   const row = await prisma.dispatch.update({
     where: { id: dispatchId },
@@ -131,14 +165,19 @@ export async function updateTransportChecklist(
       transportInvoiceNo,
       invoiceHardCopy: Boolean(input.invoiceHardCopy),
       softCopyStatus: Boolean(input.softCopyStatus),
-      entryInTally: Boolean(input.entryInTally),
+      transportEntryInTally: Boolean(input.transportEntryInTally),
+      transportChecklistCompletedAt: nextChecklistCompletedAt(
+        isTransportChecklistComplete(existing),
+        nextTransportComplete,
+        existing.transportChecklistCompletedAt,
+      ),
     },
     select: {
       biltyHardCopy: true,
       transportInvoiceNo: true,
       invoiceHardCopy: true,
       softCopyStatus: true,
-      entryInTally: true,
+      transportEntryInTally: true,
     },
   });
 
@@ -154,6 +193,6 @@ export async function updateTransportChecklist(
     transportInvoiceNo: row.transportInvoiceNo,
     invoiceHardCopy: row.invoiceHardCopy,
     softCopyStatus: row.softCopyStatus,
-    entryInTally: row.entryInTally,
+    transportEntryInTally: row.transportEntryInTally,
   };
 }

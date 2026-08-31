@@ -7,7 +7,9 @@ import {
   COLLECTION_ENGINE_PAGE_KEY,
   isReportExecAll,
   REPORT_EXEC_ALL,
+  SALE_ORDERS_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
+  type ExecScopedReportPage,
 } from "@/lib/auth/report-exec-access";
 import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
@@ -20,6 +22,7 @@ export type PeopleRow = {
   pageKeys: string[];
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
+  saleOrderSalesExecs: string[];
 };
 
 type SaleExecutiveOption = { id: string; name: string };
@@ -60,6 +63,7 @@ export function PeopleManager({
   const [salesEngineSalesExecs, setSalesEngineSalesExecs] = useState<string[]>(
     [],
   );
+  const [saleOrderSalesExecs, setSaleOrderSalesExecs] = useState<string[]>([]);
 
   const sortedExecutives = useMemo(
     () => [...saleExecutives].sort((a, b) => a.name.localeCompare(b.name)),
@@ -86,6 +90,7 @@ export function PeopleManager({
     setPageKeys([]);
     setCollectionSalesExecs([]);
     setSalesEngineSalesExecs([]);
+    setSaleOrderSalesExecs([]);
     setEditorOpen(true);
   }
 
@@ -98,6 +103,7 @@ export function PeopleManager({
     setPageKeys(item.pageKeys);
     setCollectionSalesExecs(item.collectionSalesExecs);
     setSalesEngineSalesExecs(item.salesEngineSalesExecs);
+    setSaleOrderSalesExecs(item.saleOrderSalesExecs);
     setEditorOpen(true);
   }
 
@@ -121,6 +127,9 @@ export function PeopleManager({
     if (key === SALES_ENGINE_PAGE_KEY) {
       setSalesEngineSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
     }
+    if (key === SALE_ORDERS_PAGE_KEY) {
+      setSaleOrderSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
+    }
   }
 
   function toggleGroup(group: (typeof PAGE_GROUPS)[number]) {
@@ -135,6 +144,9 @@ export function PeopleManager({
         }
         if (keys.includes(SALES_ENGINE_PAGE_KEY)) {
           setSalesEngineSalesExecs([]);
+        }
+        if (keys.includes(SALE_ORDERS_PAGE_KEY)) {
+          setSaleOrderSalesExecs([]);
         }
         return current.filter((key) => !keys.includes(key));
       }
@@ -151,6 +163,12 @@ export function PeopleManager({
       ) {
         setSalesEngineSalesExecs([REPORT_EXEC_ALL]);
       }
+      if (
+        keys.includes(SALE_ORDERS_PAGE_KEY) &&
+        !current.includes(SALE_ORDERS_PAGE_KEY)
+      ) {
+        setSaleOrderSalesExecs([REPORT_EXEC_ALL]);
+      }
       return next;
     });
   }
@@ -161,7 +179,7 @@ export function PeopleManager({
   const showPages = loginEnabled || Boolean(password.trim());
 
   function renderExecScope(
-    pageKey: typeof COLLECTION_ENGINE_PAGE_KEY | typeof SALES_ENGINE_PAGE_KEY,
+    pageKey: ExecScopedReportPage,
     scope: string[],
     setScope: (next: string[]) => void,
   ) {
@@ -213,6 +231,7 @@ export function PeopleManager({
             pageKeys,
             collectionSalesExecs,
             salesEngineSalesExecs,
+            saleOrderSalesExecs,
             disableLogin,
           });
           onChange(
@@ -228,6 +247,7 @@ export function PeopleManager({
             pageKeys,
             collectionSalesExecs,
             salesEngineSalesExecs,
+            saleOrderSalesExecs,
           });
           onChange(
             [...people, toRow(row)].sort((a, b) => a.name.localeCompare(b.name)),
@@ -408,7 +428,8 @@ export function PeopleManager({
                           key={page.key}
                           className={
                             page.key === COLLECTION_ENGINE_PAGE_KEY ||
-                            page.key === SALES_ENGINE_PAGE_KEY
+                            page.key === SALES_ENGINE_PAGE_KEY ||
+                            page.key === SALE_ORDERS_PAGE_KEY
                               ? "people-page-cell people-page-cell-scoped"
                               : "people-page-cell"
                           }
@@ -432,6 +453,12 @@ export function PeopleManager({
                               SALES_ENGINE_PAGE_KEY,
                               salesEngineSalesExecs,
                               setSalesEngineSalesExecs,
+                            )}
+                          {page.key === SALE_ORDERS_PAGE_KEY &&
+                            renderExecScope(
+                              SALE_ORDERS_PAGE_KEY,
+                              saleOrderSalesExecs,
+                              setSaleOrderSalesExecs,
                             )}
                         </div>
                       ))}
@@ -468,6 +495,7 @@ function toRow(row: {
   pageKeys: string[];
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
+  saleOrderSalesExecs: string[];
 }): PeopleRow {
   return {
     id: row.id,
@@ -477,5 +505,6 @@ function toRow(row: {
     pageKeys: row.pageKeys,
     collectionSalesExecs: row.collectionSalesExecs,
     salesEngineSalesExecs: row.salesEngineSalesExecs,
+    saleOrderSalesExecs: row.saleOrderSalesExecs,
   };
 }

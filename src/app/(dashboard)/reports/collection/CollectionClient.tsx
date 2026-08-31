@@ -526,6 +526,7 @@ export function CollectionClient({
               </th>
               <th>Payment In Charge</th>
               <th>Contact Number</th>
+              <th>Role</th>
               <th>Sales Executive</th>
               <th>Dealing Company</th>
               <th className="cell-num">
@@ -595,6 +596,12 @@ export function CollectionClient({
                       : "—"}
                   </td>
                   <td>{row.paymentInChargeContact ?? "—"}</td>
+                  <td>
+                    {row.paymentInChargeRole
+                      ? (capitalizeName(row.paymentInChargeRole) ??
+                        row.paymentInChargeRole)
+                      : "—"}
+                  </td>
                   <td>
                     {row.saleExecutive
                       ? (capitalizeName(row.saleExecutive) ?? row.saleExecutive)

@@ -5,6 +5,8 @@ import { listQualityClasses } from "@/lib/actions/qualities";
 import {
   lineProfit,
 } from "@/lib/domain/computations";
+import { getCurrentAccess } from "@/lib/auth/access";
+import { sameDayEntryPermissions } from "@/lib/auth/sameDayEntryModify";
 import { OrderDetailClient } from "./OrderDetailClient";
 
 export default async function OrderDetailPage({
@@ -13,12 +15,14 @@ export default async function OrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [order, qualityClasses, ports] = await Promise.all([
+  const [order, qualityClasses, ports, access] = await Promise.all([
     getOrder(id),
     listQualityClasses(),
     listPortOptions(),
+    getCurrentAccess(),
   ]);
   if (!order) notFound();
+  if (access.kind === "none") notFound();
 
   return (
     <OrderDetailClient
@@ -62,6 +66,7 @@ export default async function OrderDetailPage({
           softCopyStatus: d.softCopyStatus,
           entryInTally: d.entryInTally,
           purchasePoNumber: d.purchasePoNumber,
+          ...sameDayEntryPermissions(access, d),
           purchaseOrder: d.purchaseOrder
             ? {
                 poNumber: d.purchaseOrder.poNumber,

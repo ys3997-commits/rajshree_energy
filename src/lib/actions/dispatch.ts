@@ -35,6 +35,17 @@ import {
   normalizePurchaseOrderNumber,
   normalizeSaleOrderNumber,
 } from "@/lib/domain/orderNumbers";
+import { requireSignedIn } from "@/lib/auth/access";
+import {
+  assertCanEditPurchaseChecklist,
+  assertCanEditSaleChecklist,
+} from "@/lib/auth/checklistEditAccess";
+import { assertCanModifySameDayEntry } from "@/lib/auth/sameDayEntryModify";
+import {
+  isPurchaseChecklistComplete,
+  isSaleChecklistComplete,
+  nextChecklistCompletedAt,
+} from "@/lib/domain/dispatchChecklist";
 
 /** Create an OPEN purchase order as part of a dispatch (quantity null). */
 export type OpenPurchaseForDispatch = {
@@ -95,6 +106,25 @@ export type UpdateDispatchInput = {
   /** When set, updates received qty and marks receipt RECEIVED. Null clears receipt. */
   receivingQuantity?: DecimalLike | null;
 };
+
+type DispatchChecklistUpdateKind = "purchase" | "sale" | "full";
+
+function classifyDispatchUpdate(
+  changes: UpdateDispatchInput,
+): DispatchChecklistUpdateKind {
+  const keys = Object.keys(changes).filter(
+    (key) => changes[key as keyof UpdateDispatchInput] !== undefined,
+  );
+  const purchaseKeys = new Set(["purchaseInvoiceNumber", "entryInTally"]);
+  const saleKeys = new Set(["saleInvoiceNumber", "receivingQuantity"]);
+  if (keys.length > 0 && keys.every((key) => purchaseKeys.has(key))) {
+    return "purchase";
+  }
+  if (keys.length > 0 && keys.every((key) => saleKeys.has(key))) {
+    return "sale";
+  }
+  return "full";
+}
 
 export type CreateOpenOrderDispatchInput = {
   poNumber: string;
@@ -447,6 +477,7 @@ export async function suggestNextDispatchNumber(): Promise<string> {
 export async function createDispatch(
   input: CreateDispatchInput,
 ): Promise<{ id: string }> {
+  const access = await requireSignedIn();
   const qty = toDecimal(input.dispatchedQuantity);
   if (qty.lte(0)) {
     throw new Error("Dispatched quantity must be positive");
@@ -487,6 +518,7 @@ export async function createDispatch(
         saleInvoiceNumber: normalizeInvoiceNumber(input.saleInvoiceNumber) ?? null,
         purchaseInvoiceNumber:
           normalizeInvoiceNumber(input.purchaseInvoiceNumber) ?? null,
+        createdByStaffId: access.kind === "staff" ? access.id : null,
         ...(input.dispatchTerms === DispatchTerms.EX_PORT
           ? {
               receiptStatus: ReceiptStatus.RECEIVED,
@@ -509,6 +541,7 @@ export async function createDispatch(
 export async function createOpenOrderDispatch(
   input: CreateOpenOrderDispatchInput,
 ): Promise<{ id: string }> {
+  const access = await requireSignedIn();
   const poNumber = normalizeSaleOrderNumber(input.poNumber);
   if (!input.customerId) throw new Error("Customer is required");
 
@@ -587,6 +620,7 @@ export async function createOpenOrderDispatch(
         saleInvoiceNumber: normalizeInvoiceNumber(input.saleInvoiceNumber) ?? null,
         purchaseInvoiceNumber:
           normalizeInvoiceNumber(input.purchaseInvoiceNumber) ?? null,
+        createdByStaffId: access.kind === "staff" ? access.id : null,
         ...(input.dispatchTerms === DispatchTerms.EX_PORT
           ? {
               receiptStatus: ReceiptStatus.RECEIVED,
@@ -610,6 +644,32 @@ export async function updateDispatch(
   id: string,
   changes: UpdateDispatchInput,
 ): Promise<{ id: string }> {
+  const access = await requireSignedIn();
+  const existingForAuth = await prisma.dispatch.findUnique({
+    where: { id },
+    select: {
+      createdAt: true,
+      createdByStaffId: true,
+      purchaseInvoiceNumber: true,
+      entryInTally: true,
+      saleInvoiceNumber: true,
+      receivingQuantity: true,
+      dispatchTerms: true,
+      purchaseChecklistCompletedAt: true,
+      saleChecklistCompletedAt: true,
+    },
+  });
+  if (!existingForAuth) throw new Error("Dispatch not found");
+
+  const updateKind = classifyDispatchUpdate(changes);
+  if (updateKind === "purchase") {
+    assertCanEditPurchaseChecklist(access, existingForAuth);
+  } else if (updateKind === "sale") {
+    assertCanEditSaleChecklist(access, existingForAuth);
+  } else {
+    assertCanModifySameDayEntry(access, existingForAuth, "edit", "dispatch");
+  }
+
   const updated = await prisma.$transaction(async (tx) => {
     const existing = await tx.dispatch.findUnique({ where: { id } });
     if (!existing) throw new Error("Dispatch not found");
@@ -822,6 +882,52 @@ export async function updateDispatch(
       }
     }
 
+    const nextPurchaseInvoice =
+      changes.purchaseInvoiceNumber !== undefined
+        ? normalizeInvoiceNumber(changes.purchaseInvoiceNumber)
+        : existing.purchaseInvoiceNumber;
+    const nextEntryInTally =
+      changes.entryInTally !== undefined
+        ? changes.entryInTally
+        : existing.entryInTally;
+    const nextPurchaseComplete = isPurchaseChecklistComplete({
+      purchaseInvoiceNumber: nextPurchaseInvoice,
+      entryInTally: nextEntryInTally,
+    });
+    data.purchaseChecklistCompletedAt = nextChecklistCompletedAt(
+      isPurchaseChecklistComplete(existing),
+      nextPurchaseComplete,
+      existing.purchaseChecklistCompletedAt,
+    );
+
+    const nextSaleInvoice =
+      changes.saleInvoiceNumber !== undefined
+        ? normalizeInvoiceNumber(changes.saleInvoiceNumber)
+        : existing.saleInvoiceNumber;
+    const nextReceivingQuantity =
+      nextTerms === DispatchTerms.EX_PORT
+        ? nextQty
+        : changes.receivingQuantity !== undefined
+          ? changes.receivingQuantity === null ||
+            changes.receivingQuantity === ""
+            ? null
+            : toDecimal(changes.receivingQuantity)
+          : existing.receivingQuantity;
+    const nextSaleComplete = isSaleChecklistComplete({
+      saleInvoiceNumber: nextSaleInvoice,
+      receivingQuantity: nextReceivingQuantity,
+      dispatchTerms: nextTerms,
+    });
+    data.saleChecklistCompletedAt = nextChecklistCompletedAt(
+      isSaleChecklistComplete({
+        saleInvoiceNumber: existing.saleInvoiceNumber,
+        receivingQuantity: existing.receivingQuantity,
+        dispatchTerms: existing.dispatchTerms,
+      }),
+      nextSaleComplete,
+      existing.saleChecklistCompletedAt,
+    );
+
     return tx.dispatch.update({
       where: { id },
       data,
@@ -833,6 +939,14 @@ export async function updateDispatch(
 }
 
 export async function deleteDispatch(id: string): Promise<void> {
+  const access = await requireSignedIn();
+  const existingForAuth = await prisma.dispatch.findUnique({
+    where: { id },
+    select: { createdAt: true, createdByStaffId: true },
+  });
+  if (!existingForAuth) throw new Error("Dispatch not found");
+  assertCanModifySameDayEntry(access, existingForAuth, "delete", "dispatch");
+
   await prisma.$transaction(async (tx) => {
     const existing = await tx.dispatch.findUnique({ where: { id } });
     if (!existing) throw new Error("Dispatch not found");
@@ -927,6 +1041,14 @@ export async function confirmReceipt(
   dispatchId: string,
   receivingQuantity: DecimalLike,
 ): Promise<{ id: string }> {
+  const access = await requireSignedIn();
+  const existingForAuth = await prisma.dispatch.findUnique({
+    where: { id: dispatchId },
+    select: { createdAt: true, createdByStaffId: true },
+  });
+  if (!existingForAuth) throw new Error("Dispatch not found");
+  assertCanModifySameDayEntry(access, existingForAuth, "edit", "dispatch");
+
   const qty = toDecimal(receivingQuantity);
   if (qty.lt(0)) {
     throw new Error("Receiving quantity must be non-negative");

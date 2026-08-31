@@ -7,5 +7,6 @@ export type Access =
       pageKeys: string[];
       collectionSalesExecs: string[];
       salesEngineSalesExecs: string[];
+      saleOrderSalesExecs: string[];
     }
   | { kind: "none" };

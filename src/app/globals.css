@@ -694,7 +694,7 @@ table.data.payments-table tbody tr.payment-entry-row td {
   letter-spacing: 0.03em;
   white-space: normal;
   overflow: visible;
-  vertical-align: bottom;
+  vertical-align: middle;
   line-height: 1.2;
 }
 
@@ -1157,6 +1157,7 @@ table.data {
   z-index: 5;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
+  vertical-align: middle;
 }
 
 .app-main .table-wrap > table.data thead th button.th-sort,
@@ -1173,6 +1174,7 @@ table.data td {
 
 table.data thead th {
   padding: var(--table-head-padding-y) var(--table-cell-padding-x);
+  vertical-align: middle;
 }
 
 table.data tbody td,
@@ -1385,7 +1387,7 @@ table.data.dispatch-analysis-table tbody td {
 .orders-table th.col-days-since-order {
   white-space: normal;
   line-height: 1.25;
-  vertical-align: bottom;
+  vertical-align: middle;
 }
 
 /* Purchase orders list — wider vendor/vessel, compact days column */
@@ -1426,7 +1428,7 @@ table.data.dispatch-analysis-table tbody td {
 .purchase-orders-table th.col-days-since-order {
   white-space: normal;
   line-height: 1.25;
-  vertical-align: bottom;
+  vertical-align: middle;
 }
 
 .purchase-orders-table th.col-actions,
@@ -2191,6 +2193,7 @@ table.data.transport-engine-table thead th.cell-center {
   z-index: 6;
   background: #f8fafb;
   box-shadow: inset 0 -1px 0 var(--line);
+  vertical-align: middle;
 }
 
 table.data.transport-engine-table tbody td {
@@ -3125,6 +3128,7 @@ table.data tbody tr.payment-editing-row .customer-edit-extra select {
   color: var(--muted);
   background: rgba(31, 92, 85, 0.06);
   box-shadow: inset 0 -1px 0 var(--line);
+  vertical-align: middle;
 }
 
 .home-profit-table .home-profit-table-stub {
@@ -3952,7 +3956,7 @@ a.home-quality-row:hover {
   text-transform: capitalize;
   white-space: nowrap;
   border-bottom: 1px solid var(--line-strong);
-  vertical-align: bottom;
+  vertical-align: middle;
   box-shadow: inset 0 -1px 0 var(--line);
 }
 
@@ -4081,7 +4085,7 @@ table.data.sale-analysis-table tr.sale-analysis-product-start td {
 .ageing-table th {
   font-size: 0.62rem;
   letter-spacing: 0.02em;
-  vertical-align: bottom;
+  vertical-align: middle;
   line-height: 1.2;
   white-space: normal;
   min-width: 5.6rem;
@@ -4480,6 +4484,7 @@ table.data.sales-engine-table tbody tr.collection-row-due-call .collection-date-
   text-transform: capitalize;
   letter-spacing: 0;
   color: var(--ink-soft);
+  vertical-align: middle;
 }
 
 .report-page table.data thead th.cell-num,
@@ -4496,6 +4501,7 @@ table.data.sales-engine-table tbody tr.collection-row-due-call .collection-date-
   text-transform: capitalize;
   letter-spacing: 0;
   color: var(--ink-soft);
+  vertical-align: middle;
 }
 
 .approvals-page table.data thead th.cell-num,
@@ -4512,6 +4518,7 @@ table.data.sales-engine-table tbody tr.collection-row-due-call .collection-date-
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--ink-soft);
+  vertical-align: middle;
 }
 
 .update-page table.data thead th.cell-num,
@@ -4729,6 +4736,7 @@ table.data.report-screen-table {
 table.data.report-screen-table thead th {
   padding: var(--table-head-padding-y) var(--table-cell-padding-x);
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 table.data.report-screen-table tbody td,
@@ -4829,7 +4837,7 @@ table.data.update-purchase-table thead th {
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  vertical-align: bottom;
+  vertical-align: middle;
   word-break: break-word;
   text-transform: none;
   letter-spacing: normal;
@@ -4920,7 +4928,7 @@ table.data.update-sale-table thead th.cell-num {
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  vertical-align: bottom;
+  vertical-align: middle;
   word-break: break-word;
   text-transform: none;
   letter-spacing: normal;
@@ -5032,7 +5040,7 @@ table.data.update-transport-table thead th.cell-center {
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  vertical-align: bottom;
+  vertical-align: middle;
   word-break: break-word;
   text-transform: none;
   letter-spacing: normal;

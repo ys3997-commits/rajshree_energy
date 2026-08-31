@@ -335,11 +335,13 @@ export function DispatchListView({
                           vessels={activeVessels}
                           suggestedPo={suggestedPo}
                           suggestedPurchasePo={suggestedPurchasePo}
+                          canEdit={row.canEdit}
                         />
                         <EditDispatchPurchaseButton
                           dispatchId={row.id}
                           purchaseInvoiceNumber={row.purchaseInvoiceNumber}
                           entryInTally={row.entryInTally}
+                          canEdit={row.canEditPurchase}
                         />
                         <EditDispatchSaleButton
                           dispatchId={row.id}
@@ -349,6 +351,7 @@ export function DispatchListView({
                             row.receivingQuantity?.toString() ?? null
                           }
                           dispatchTerms={row.dispatchTerms}
+                          canEdit={row.canEditSale}
                         />
                       </div>
                     </td>

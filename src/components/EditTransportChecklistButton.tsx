@@ -7,6 +7,8 @@ import {
   updateTransportChecklist,
   type TransportChecklistInput,
 } from "@/lib/actions/transportEngine";
+import { CHECKLIST_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
+import { isTransportChecklistComplete } from "@/lib/domain/dispatchChecklist";
 
 export type TransportEditRowSummary = {
   dispatchNumber: string;
@@ -24,22 +26,6 @@ export type TransportEditRowSummary = {
   freightAmount: string;
 };
 
-function isChecklistComplete(input: {
-  biltyHardCopy: boolean;
-  transportInvoiceNo: string | null;
-  invoiceHardCopy: boolean;
-  softCopyStatus: boolean;
-  entryInTally: boolean;
-}): boolean {
-  return (
-    input.biltyHardCopy &&
-    Boolean(input.transportInvoiceNo?.trim()) &&
-    input.invoiceHardCopy &&
-    input.softCopyStatus &&
-    input.entryInTally
-  );
-}
-
 function SummaryField({ label, value }: { label: string; value: string }) {
   return (
     <>
@@ -55,20 +41,22 @@ export function EditTransportChecklistButton({
   transportInvoiceNo: initialTransportInvoiceNo,
   invoiceHardCopy: initialInvoiceHardCopy,
   softCopyStatus,
-  entryInTally: initialEntryInTally,
+  transportEntryInTally: initialTransportEntryInTally,
   rowSummary,
   buttonLabel = "Edit",
   onUpdated,
+  canEdit = true,
 }: {
   dispatchId: string;
   biltyHardCopy: boolean;
   transportInvoiceNo: string | null;
   invoiceHardCopy: boolean;
   softCopyStatus: boolean;
-  entryInTally: boolean;
+  transportEntryInTally: boolean;
   rowSummary?: TransportEditRowSummary;
   buttonLabel?: string;
   onUpdated?: (result: TransportChecklistInput) => void;
+  canEdit?: boolean;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -77,23 +65,24 @@ export function EditTransportChecklistButton({
     initialTransportInvoiceNo ?? "",
   );
   const [invoiceHardCopy, setInvoiceHardCopy] = useState(initialInvoiceHardCopy);
-  const [entryInTally, setEntryInTally] = useState(initialEntryInTally);
+  const [transportEntryInTally, setTransportEntryInTally] = useState(
+    initialTransportEntryInTally,
+  );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const complete = isChecklistComplete({
+  const complete = isTransportChecklistComplete({
     biltyHardCopy: initialBiltyHardCopy,
     transportInvoiceNo: initialTransportInvoiceNo,
     invoiceHardCopy: initialInvoiceHardCopy,
-    softCopyStatus,
-    entryInTally: initialEntryInTally,
+    transportEntryInTally: initialTransportEntryInTally,
   });
 
   function openModal() {
     setBiltyHardCopy(initialBiltyHardCopy);
     setTransportInvoiceNo(initialTransportInvoiceNo ?? "");
     setInvoiceHardCopy(initialInvoiceHardCopy);
-    setEntryInTally(initialEntryInTally);
+    setTransportEntryInTally(initialTransportEntryInTally);
     setError(null);
     setOpen(true);
   }
@@ -109,7 +98,7 @@ export function EditTransportChecklistButton({
           transportInvoiceNo.trim() === "" ? null : transportInvoiceNo,
         invoiceHardCopy,
         softCopyStatus,
-        entryInTally,
+        transportEntryInTally,
       });
       onUpdated?.(result);
       setOpen(false);
@@ -129,6 +118,8 @@ export function EditTransportChecklistButton({
           complete ? "btn-checklist-complete" : "btn-checklist-pending"
         }`}
         onClick={openModal}
+        disabled={!canEdit}
+        title={canEdit ? undefined : CHECKLIST_EDIT_LOCK_HINT}
       >
         {buttonLabel}
       </button>
@@ -223,13 +214,15 @@ export function EditTransportChecklistButton({
             onChange={(e) => setInvoiceHardCopy(e.target.checked)}
           />
 
-          <label htmlFor={`te-tally-${dispatchId}`}>Entry in Tally</label>
+          <label htmlFor={`te-tally-${dispatchId}`}>
+            Transport invoice in Tally
+          </label>
           <input
             id={`te-tally-${dispatchId}`}
             type="checkbox"
             className="dispatch-bool-toggle"
-            checked={entryInTally}
-            onChange={(e) => setEntryInTally(e.target.checked)}
+            checked={transportEntryInTally}
+            onChange={(e) => setTransportEntryInTally(e.target.checked)}
           />
 
           <div />

@@ -200,6 +200,7 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
                         dispatchId={row.id}
                         purchaseInvoiceNumber={row.purchaseInvoiceNumber}
                         entryInTally={row.entryInTally}
+                        canEdit={row.canEditPurchase}
                         rowSummary={{
                           dispatchNumber: displayDispatchNumber(
                             row.dispatchNumber,

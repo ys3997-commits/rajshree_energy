@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { getPurchaseOrder } from "@/lib/actions/purchaseOrders";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { lineProfit } from "@/lib/domain/computations";
+import { getCurrentAccess } from "@/lib/auth/access";
+import { sameDayEntryPermissions } from "@/lib/auth/sameDayEntryModify";
 import { PurchaseOrderDetailClient } from "./PurchaseOrderDetailClient";
 
 export default async function PurchaseOrderDetailPage({
@@ -10,11 +12,13 @@ export default async function PurchaseOrderDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [order, qualityClasses] = await Promise.all([
+  const [order, qualityClasses, access] = await Promise.all([
     getPurchaseOrder(id),
     listQualityClasses(),
+    getCurrentAccess(),
   ]);
   if (!order) notFound();
+  if (access.kind === "none") notFound();
 
   return (
     <PurchaseOrderDetailClient
@@ -49,6 +53,7 @@ export default async function PurchaseOrderDetailPage({
           receiptStatus: d.receiptStatus,
           softCopyStatus: d.softCopyStatus,
           entryInTally: d.entryInTally,
+          ...sameDayEntryPermissions(access, d),
           order: d.order
             ? { id: d.order.id, poNumber: d.order.poNumber }
             : null,

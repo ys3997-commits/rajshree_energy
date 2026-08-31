@@ -2,6 +2,14 @@
 
 import { DispatchTerms, OrderStatus, OrderType, type Prisma } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
+import { AccessDeniedError, getCurrentAccess } from "@/lib/auth/access";
+import {
+  execScopeToCustomerWhere,
+  getStaffReportExecScope,
+  mergeOrderCustomerFilter,
+  rowMatchesExecScope,
+  SALE_ORDERS_PAGE_KEY,
+} from "@/lib/auth/report-exec-access";
 import { prisma } from "@/lib/prisma";
 import {
   balanceOrder,
@@ -45,6 +53,31 @@ function normalizeOrderStatusFilter(
   return undefined;
 }
 
+async function saleOrderExecScopeForList() {
+  const access = await getCurrentAccess();
+  if (access.kind === "owner") return "all" as const;
+  if (access.kind === "none") return [] as const;
+  return getStaffReportExecScope(access, SALE_ORDERS_PAGE_KEY);
+}
+
+async function assertSaleOrderCustomerAccess(
+  saleExecutive: string | null | undefined,
+) {
+  const access = await getCurrentAccess();
+  if (access.kind === "owner") return;
+  if (access.kind === "none") throw new AccessDeniedError();
+  const scope = getStaffReportExecScope(access, SALE_ORDERS_PAGE_KEY);
+  if (scope === "all") return;
+  if (!rowMatchesExecScope(saleExecutive, scope)) {
+    throw new AccessDeniedError();
+  }
+}
+
+async function applySaleOrderExecScope(where: Prisma.OrderWhereInput) {
+  const scope = await saleOrderExecScopeForList();
+  mergeOrderCustomerFilter(where, execScopeToCustomerWhere(scope));
+}
+
 /**
  * Match Status column display: open orders with no quantity show Completed
  * even when stored orderStatus is still Running.
@@ -79,6 +112,8 @@ export async function listOrders(filters: OrderFilters = {}) {
   if (filters.saleExecutive) {
     where.customer = { saleExecutive: filters.saleExecutive };
   }
+
+  await applySaleOrderExecScope(where);
 
   const rows = await prisma.order.findMany({
     where,
@@ -175,12 +210,29 @@ export async function getOrder(id: string) {
     },
   });
   if (!order) return null;
+  const access = await getCurrentAccess();
+  if (access.kind === "staff") {
+    const scope = getStaffReportExecScope(access, SALE_ORDERS_PAGE_KEY);
+    if (
+      scope !== "all" &&
+      !rowMatchesExecScope(order.customer.saleExecutive, scope)
+    ) {
+      return null;
+    }
+  }
   return withOrderComputed(order);
 }
 
 export async function listOrdersWithBalance() {
+  const where: Prisma.OrderWhereInput = { orderType: OrderType.REGULAR };
+  const access = await getCurrentAccess();
+  if (access.kind === "staff" && access.pageKeys.includes(SALE_ORDERS_PAGE_KEY)) {
+    const scope = getStaffReportExecScope(access, SALE_ORDERS_PAGE_KEY);
+    mergeOrderCustomerFilter(where, execScopeToCustomerWhere(scope));
+  }
+
   const rows = await prisma.order.findMany({
-    where: { orderType: OrderType.REGULAR },
+    where,
     include: { customer: { select: { name: true, category: true } } },
     orderBy: { poNumber: "asc" },
   });
@@ -206,9 +258,10 @@ export type CreateRegularOrderInput = {
 async function resolveCustomerCategory(customerId: string) {
   const customer = await prisma.customer.findUnique({
     where: { id: customerId },
-    select: { category: true },
+    select: { category: true, saleExecutive: true },
   });
   if (!customer) throw new Error("Customer not found");
+  await assertSaleOrderCustomerAccess(customer.saleExecutive);
   return customer.category;
 }
 
@@ -280,9 +333,10 @@ export async function updateOrderFields(
 ) {
   const existing = await prisma.order.findUnique({
     where: { id },
-    include: { customer: { select: { category: true } } },
+    include: { customer: { select: { category: true, saleExecutive: true } } },
   });
   if (!existing) throw new Error("Order not found");
+  await assertSaleOrderCustomerAccess(existing.customer.saleExecutive);
 
   let poNumber = existing.poNumber;
   if (data.poNumber !== undefined) {
@@ -402,8 +456,12 @@ export async function updateOrderFields(
  * Balance becomes 0.
  */
 export async function closeOrderQuantity(id: string) {
-  const existing = await prisma.order.findUnique({ where: { id } });
+  const existing = await prisma.order.findUnique({
+    where: { id },
+    include: { customer: { select: { saleExecutive: true } } },
+  });
   if (!existing) throw new Error("Order not found");
+  await assertSaleOrderCustomerAccess(existing.customer.saleExecutive);
   if (existing.quantity == null) {
     throw new Error("Set order quantity before closing");
   }
@@ -437,9 +495,14 @@ export async function deleteOrder(id: string): Promise<void> {
   await prisma.$transaction(async (tx) => {
     const existing = await tx.order.findUnique({
       where: { id },
-      select: { id: true, dispatches: { select: { id: true }, take: 1 } },
+      select: {
+        id: true,
+        customer: { select: { saleExecutive: true } },
+        dispatches: { select: { id: true }, take: 1 },
+      },
     });
     if (!existing) throw new Error("Order not found");
+    await assertSaleOrderCustomerAccess(existing.customer.saleExecutive);
     if (existing.dispatches.length > 0) {
       throw new Error("Cannot delete an order with dispatches. Delete dispatches first.");
     }

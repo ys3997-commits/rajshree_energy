@@ -15,6 +15,7 @@ import {
 } from "@/lib/domain/paymentParty";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
 
 const PAYMENTS_PAGE_SIZE = 35;
 
@@ -34,6 +35,8 @@ export type PaymentRow = {
   customerName: string;
   direction: "RECEIVED" | "SENT";
   amount: string;
+  canEdit: boolean;
+  canDelete: boolean;
 };
 
 export type FundFlowTotals = {
@@ -68,16 +71,44 @@ function parseDate(value: string): Date {
   return date;
 }
 
+const IST_DAY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Asia/Kolkata",
+});
+
+function dayKeyInIst(value: Date): string {
+  return IST_DAY_FORMATTER.format(value);
+}
+
+function canStaffModifyPayment(
+  access: Extract<Access, { kind: "staff" }>,
+  row: { createdAt: Date; createdByStaffId: string | null },
+): boolean {
+  if (!row.createdByStaffId) return false;
+  if (row.createdByStaffId !== access.id) return false;
+  return dayKeyInIst(row.createdAt) === dayKeyInIst(new Date());
+}
+
+function canModifyPayment(
+  access: Exclude<Access, { kind: "none" }>,
+  row: { createdAt: Date; createdByStaffId: string | null },
+): boolean {
+  if (access.kind === "owner") return true;
+  return canStaffModifyPayment(access, row);
+}
+
 function toPaymentRow(row: {
   id: string;
   date: Date;
+  createdAt: Date;
+  createdByStaffId: string | null;
   customerId: string | null;
   transporterId: string | null;
   direction: PaymentDirection;
   amount: { toString(): string };
   customer: { name: string } | null;
   transporter: { name: string } | null;
-}): PaymentRow {
+}, access: Exclude<Access, { kind: "none" }>): PaymentRow {
+  const canModify = canModifyPayment(access, row);
   return {
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
@@ -86,6 +117,8 @@ function toPaymentRow(row: {
     customerName: row.customer?.name ?? row.transporter?.name ?? "—",
     direction: row.direction,
     amount: row.amount.toString(),
+    canEdit: canModify,
+    canDelete: canModify,
   };
 }
 
@@ -220,6 +253,7 @@ export async function listPayments(options?: {
   party?: string;
   type?: string;
 }): Promise<PaymentListResult> {
+  const access = await requirePage("payments");
   const where = paymentWhere(options);
 
   if (options?.all) {
@@ -232,7 +266,7 @@ export async function listPayments(options?: {
       paymentTotals(where, options.dateFrom, options.dateTo),
     ]);
     return {
-      rows: rows.map(toPaymentRow),
+      rows: rows.map((row) => toPaymentRow(row, access)),
       total: rows.length,
       page: 1,
       pageSize: Math.max(1, rows.length),
@@ -264,7 +298,7 @@ export async function listPayments(options?: {
   ]);
 
   return {
-    rows: rows.map(toPaymentRow),
+    rows: rows.map((row) => toPaymentRow(row, access)),
     total,
     page,
     pageSize,
@@ -274,6 +308,7 @@ export async function listPayments(options?: {
 }
 
 export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
+  const access = await requirePage("payments");
   const data = validatePaymentInput(input);
   await assertPartyExists(data.party);
 
@@ -283,6 +318,7 @@ export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
         date: data.date,
         direction: data.direction,
         amount: data.amount,
+        createdByStaffId: access.kind === "staff" ? access.id : null,
         ...partyCreateData(data.party),
       },
       include: paymentInclude,
@@ -300,17 +336,34 @@ export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
   });
 
   revalidatePaymentPaths(data.party);
-  return toPaymentRow(row);
+  return toPaymentRow(row, access);
 }
 
 export async function updatePayment(
   id: string,
   input: PaymentInput,
 ): Promise<PaymentRow> {
+  const access = await requirePage("payments");
   const data = validatePaymentInput(input);
 
-  const existing = await prisma.payment.findUnique({ where: { id } });
+  const existing = await prisma.payment.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      customerId: true,
+      transporterId: true,
+      direction: true,
+      amount: true,
+      createdAt: true,
+      createdByStaffId: true,
+    },
+  });
   if (!existing) throw new Error("Payment not found");
+  if (!canModifyPayment(access, existing)) {
+    throw new AccessDeniedError(
+      "You can edit only your own payment entry on the same day.",
+    );
+  }
 
   await assertPartyExists(data.party);
 
@@ -346,12 +399,29 @@ export async function updatePayment(
   });
 
   revalidatePaymentPaths(data.party);
-  return toPaymentRow(row);
+  return toPaymentRow(row, access);
 }
 
 export async function deletePayment(id: string) {
-  const existing = await prisma.payment.findUnique({ where: { id } });
+  const access = await requirePage("payments");
+  const existing = await prisma.payment.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      customerId: true,
+      transporterId: true,
+      direction: true,
+      amount: true,
+      createdAt: true,
+      createdByStaffId: true,
+    },
+  });
   if (!existing) throw new Error("Payment not found");
+  if (!canModifyPayment(access, existing)) {
+    throw new AccessDeniedError(
+      "You can delete only your own payment entry on the same day.",
+    );
+  }
 
   await prisma.$transaction(async (tx) => {
     if (existing.customerId) {

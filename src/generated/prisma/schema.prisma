@@ -82,12 +82,17 @@ model Staff {
   collectionSalesExecs  String[] @default([])
   /// Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
   salesEngineSalesExecs String[] @default([])
+  /// Sales executives visible on Sale orders. ["*"] = all; else executive names.
+  saleOrderSalesExecs   String[] @default([])
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  dealByCustomers Customer[] @relation("DealBy")
-  orders          Order[]
-  bills           Bill[]
+  dealByCustomers   Customer[] @relation("DealBy")
+  orders            Order[]
+  bills             Bill[]
+  createdPayments   Payment[]  @relation("PaymentCreatedBy")
+  createdDiscounts  Discount[] @relation("DiscountCreatedBy")
+  createdDispatches Dispatch[] @relation("DispatchCreatedBy")
 }
 
 model Transporter {
@@ -340,87 +345,102 @@ model PurchaseOrder {
 }
 
 model Dispatch {
-  id                    String        @id @default(cuid())
+  id                            String        @id @default(cuid())
   /// Sequential serial (DN 0001, DN 0002, …), assigned from the first dispatch.
-  dispatchNumber        String?       @unique
-  poNumber              String
-  purchasePoNumber      String
-  vesselId              String
-  dispatchDate          DateTime
-  dispatchedQuantity    Decimal       @db.Decimal(18, 3)
-  lorryNumber           String?
-  dispatchTerms         DispatchTerms @default(EX_PORT)
+  dispatchNumber                String?       @unique
+  poNumber                      String
+  purchasePoNumber              String
+  vesselId                      String
+  dispatchDate                  DateTime
+  dispatchedQuantity            Decimal       @db.Decimal(18, 3)
+  lorryNumber                   String?
+  dispatchTerms                 DispatchTerms @default(EX_PORT)
   /// Freight per MT (Rs/MT) — required for FOR; stripped from sale rate for profit.
-  freight               Decimal?      @db.Decimal(18, 3)
-  transporterId         String?
-  importerId            String?
-  receivingQuantity     Decimal?      @db.Decimal(18, 3)
-  receiptDate           DateTime?
-  receiptStatus         ReceiptStatus @default(PENDING)
-  softCopyStatus        Boolean       @default(false)
-  entryInTally          Boolean       @default(false)
+  freight                       Decimal?      @db.Decimal(18, 3)
+  transporterId                 String?
+  importerId                    String?
+  receivingQuantity             Decimal?      @db.Decimal(18, 3)
+  receiptDate                   DateTime?
+  receiptStatus                 ReceiptStatus @default(PENDING)
+  softCopyStatus                Boolean       @default(false)
+  /// Purchase checklist — purchase invoice recorded in Tally accounting software.
+  entryInTally                  Boolean       @default(false)
   /// Transport checklist — bilty (goods receipt) hard copy received.
-  biltyHardCopy         Boolean       @default(false)
+  biltyHardCopy                 Boolean       @default(false)
   /// Transport checklist — transporter invoice number.
-  transportInvoiceNo    String?
+  transportInvoiceNo            String?
   /// Transport checklist — sale/transport invoice hard copy received.
-  invoiceHardCopy       Boolean       @default(false)
+  invoiceHardCopy               Boolean       @default(false)
+  /// Transport checklist — transport invoice recorded in Tally accounting software.
+  transportEntryInTally         Boolean       @default(false)
   /// Sale (customer) invoice number — often filled after dispatch.
-  saleInvoiceNumber     String?
+  saleInvoiceNumber             String?
   /// Purchase (supplier) invoice number — often filled after dispatch.
-  purchaseInvoiceNumber String?
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  purchaseInvoiceNumber         String?
+  purchaseChecklistCompletedAt  DateTime?
+  saleChecklistCompletedAt      DateTime?
+  transportChecklistCompletedAt DateTime?
+  createdByStaffId              String?
+  createdAt                     DateTime      @default(now())
+  updatedAt                     DateTime      @updatedAt
 
-  order         Order         @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
-  purchaseOrder PurchaseOrder @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
-  vessel        Vessel        @relation(fields: [vesselId], references: [id])
-  transporter   Transporter?  @relation(fields: [transporterId], references: [id])
-  importer      Customer?     @relation("DispatchImporter", fields: [importerId], references: [id])
+  order          Order         @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
+  purchaseOrder  PurchaseOrder @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
+  vessel         Vessel        @relation(fields: [vesselId], references: [id])
+  transporter    Transporter?  @relation(fields: [transporterId], references: [id])
+  importer       Customer?     @relation("DispatchImporter", fields: [importerId], references: [id])
+  createdByStaff Staff?        @relation("DispatchCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([receiptStatus])
   @@index([vesselId])
   @@index([purchasePoNumber])
+  @@index([createdByStaffId])
 }
 
 /// Money received from or sent to a customer or transporter.
 model Payment {
-  id            String           @id @default(cuid())
-  date          DateTime
-  customerId    String?
-  transporterId String?
-  direction     PaymentDirection
-  amount        Decimal          @db.Decimal(18, 2)
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id               String           @id @default(cuid())
+  date             DateTime
+  customerId       String?
+  transporterId    String?
+  createdByStaffId String?
+  direction        PaymentDirection
+  amount           Decimal          @db.Decimal(18, 2)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
-  customer    Customer?    @relation(fields: [customerId], references: [id])
-  transporter Transporter? @relation(fields: [transporterId], references: [id])
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+  transporter    Transporter? @relation(fields: [transporterId], references: [id])
+  createdByStaff Staff?       @relation("PaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([createdByStaffId])
   @@index([date])
 }
 
 /// Discount received from or paid to a customer or transporter.
 model Discount {
-  id            String         @id @default(cuid())
-  date          DateTime
-  customerId    String?
-  transporterId String?
-  status        DiscountStatus
-  amount        Decimal        @db.Decimal(18, 2)
+  id               String         @id @default(cuid())
+  date             DateTime
+  customerId       String?
+  transporterId    String?
+  createdByStaffId String?
+  status           DiscountStatus
+  amount           Decimal        @db.Decimal(18, 2)
   /// Domestic coal vs imported coal. Null on older rows.
-  coalOrigin    CoalOrigin?
-  remarks       String         @default("")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  coalOrigin       CoalOrigin?
+  remarks          String         @default("")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
-  customer    Customer?    @relation(fields: [customerId], references: [id])
-  transporter Transporter? @relation(fields: [transporterId], references: [id])
+  customer       Customer?    @relation(fields: [customerId], references: [id])
+  transporter    Transporter? @relation(fields: [transporterId], references: [id])
+  createdByStaff Staff?       @relation("DiscountCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([createdByStaffId])
   @@index([date])
 }
 

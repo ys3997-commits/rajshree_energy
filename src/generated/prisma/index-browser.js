@@ -130,6 +130,7 @@ exports.Prisma.StaffScalarFieldEnum = {
   pageKeys: 'pageKeys',
   collectionSalesExecs: 'collectionSalesExecs',
   salesEngineSalesExecs: 'salesEngineSalesExecs',
+  saleOrderSalesExecs: 'saleOrderSalesExecs',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -329,8 +330,13 @@ exports.Prisma.DispatchScalarFieldEnum = {
   biltyHardCopy: 'biltyHardCopy',
   transportInvoiceNo: 'transportInvoiceNo',
   invoiceHardCopy: 'invoiceHardCopy',
+  transportEntryInTally: 'transportEntryInTally',
   saleInvoiceNumber: 'saleInvoiceNumber',
   purchaseInvoiceNumber: 'purchaseInvoiceNumber',
+  purchaseChecklistCompletedAt: 'purchaseChecklistCompletedAt',
+  saleChecklistCompletedAt: 'saleChecklistCompletedAt',
+  transportChecklistCompletedAt: 'transportChecklistCompletedAt',
+  createdByStaffId: 'createdByStaffId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -340,6 +346,7 @@ exports.Prisma.PaymentScalarFieldEnum = {
   date: 'date',
   customerId: 'customerId',
   transporterId: 'transporterId',
+  createdByStaffId: 'createdByStaffId',
   direction: 'direction',
   amount: 'amount',
   createdAt: 'createdAt',
@@ -351,6 +358,7 @@ exports.Prisma.DiscountScalarFieldEnum = {
   date: 'date',
   customerId: 'customerId',
   transporterId: 'transporterId',
+  createdByStaffId: 'createdByStaffId',
   status: 'status',
   amount: 'amount',
   coalOrigin: 'coalOrigin',

@@ -11,6 +11,7 @@ import {
   deletePurchaseOrder,
 } from "@/lib/actions/purchaseOrders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
+import { SAME_DAY_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import { formatDispatchTerms, formatOrderStatusForDisplay, formatOrderType, formatRs, formatLorryNumber, displayOrderBalance, formatSaleOrderMt } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
@@ -27,6 +28,7 @@ type DispatchRow = {
   softCopyStatus: boolean;
   entryInTally: boolean;
   lineProfit: string | null;
+  canDelete: boolean;
   order: { id: string; poNumber: string } | null;
   transporter: { name: string } | null;
 };
@@ -314,6 +316,8 @@ export function PurchaseOrderDetailClient({
                       type="button"
                       className="btn btn-danger"
                       onClick={() => onDeleteDispatch(d.id)}
+                      disabled={!d.canDelete}
+                      title={d.canDelete ? undefined : SAME_DAY_EDIT_LOCK_HINT}
                     >
                       Delete
                     </button>
