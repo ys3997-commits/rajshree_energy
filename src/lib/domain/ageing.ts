@@ -141,6 +141,7 @@ export function toAgeingReportRow(
   category: AgeingReportRow["category"],
   sector: string | null,
   state: string | null,
+  saleExecutive: string | null,
 ): AgeingReportRow {
   const buckets = Object.fromEntries(
     AGEING_BUCKETS.map((bucket) => [
@@ -155,6 +156,7 @@ export function toAgeingReportRow(
     category,
     sector,
     state,
+    saleExecutive,
     totalDue: aged.totalDue.toDecimalPlaces(2).toString(),
     ...buckets,
   };

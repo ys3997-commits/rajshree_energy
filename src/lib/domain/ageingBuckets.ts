@@ -22,6 +22,7 @@ export type AgeingReportRow = {
   category: "INDUSTRY" | "TRADER";
   sector: string | null;
   state: string | null;
+  saleExecutive: string | null;
   totalDue: string;
 } & Record<AgeingBucketKey, string>;
 

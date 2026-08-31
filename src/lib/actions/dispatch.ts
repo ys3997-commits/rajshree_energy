@@ -891,7 +891,7 @@ export async function updateDispatch(
         ? changes.entryInTally
         : existing.entryInTally;
     const nextPurchaseComplete = isPurchaseChecklistComplete({
-      purchaseInvoiceNumber: nextPurchaseInvoice,
+      purchaseInvoiceNumber: nextPurchaseInvoice ?? null,
       entryInTally: nextEntryInTally,
     });
     data.purchaseChecklistCompletedAt = nextChecklistCompletedAt(
@@ -914,7 +914,7 @@ export async function updateDispatch(
             : toDecimal(changes.receivingQuantity)
           : existing.receivingQuantity;
     const nextSaleComplete = isSaleChecklistComplete({
-      saleInvoiceNumber: nextSaleInvoice,
+      saleInvoiceNumber: nextSaleInvoice ?? null,
       receivingQuantity: nextReceivingQuantity,
       dispatchTerms: nextTerms,
     });

@@ -6,11 +6,13 @@ export const REPORT_EXEC_ALL = "*";
 export const COLLECTION_ENGINE_PAGE_KEY = "reports-collection";
 export const SALES_ENGINE_PAGE_KEY = "reports-sales-engine";
 export const SALE_ORDERS_PAGE_KEY = "orders";
+export const AGEING_REPORT_PAGE_KEY = "reports-ageing";
 
 export const EXEC_SCOPED_REPORT_PAGES = [
   COLLECTION_ENGINE_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
   SALE_ORDERS_PAGE_KEY,
+  AGEING_REPORT_PAGE_KEY,
 ] as const;
 
 export type ExecScopedReportPage = (typeof EXEC_SCOPED_REPORT_PAGES)[number];
@@ -122,7 +124,9 @@ export function getStaffReportExecScope(
       ? access.collectionSalesExecs
       : pageKey === SALES_ENGINE_PAGE_KEY
         ? access.salesEngineSalesExecs
-        : access.saleOrderSalesExecs;
+        : pageKey === SALE_ORDERS_PAGE_KEY
+          ? access.saleOrderSalesExecs
+          : access.ageingReportSalesExecs;
 
   return resolveExecScopeFilter(normalizeStoredExecScope(stored, true));
 }

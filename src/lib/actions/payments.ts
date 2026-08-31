@@ -318,7 +318,9 @@ export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
         date: data.date,
         direction: data.direction,
         amount: data.amount,
-        createdByStaffId: access.kind === "staff" ? access.id : null,
+        ...(access.kind === "staff"
+          ? { createdByStaff: { connect: { id: access.id } } }
+          : {}),
         ...partyCreateData(data.party),
       },
       include: paymentInclude,

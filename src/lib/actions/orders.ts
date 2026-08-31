@@ -9,6 +9,7 @@ import {
   mergeOrderCustomerFilter,
   rowMatchesExecScope,
   SALE_ORDERS_PAGE_KEY,
+  type ExecScopeFilter,
 } from "@/lib/auth/report-exec-access";
 import { prisma } from "@/lib/prisma";
 import {
@@ -53,10 +54,10 @@ function normalizeOrderStatusFilter(
   return undefined;
 }
 
-async function saleOrderExecScopeForList() {
+async function saleOrderExecScopeForList(): Promise<ExecScopeFilter> {
   const access = await getCurrentAccess();
-  if (access.kind === "owner") return "all" as const;
-  if (access.kind === "none") return [] as const;
+  if (access.kind === "owner") return "all";
+  if (access.kind === "none") return [];
   return getStaffReportExecScope(access, SALE_ORDERS_PAGE_KEY);
 }
 

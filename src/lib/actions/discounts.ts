@@ -319,7 +319,7 @@ export async function listDiscounts(options?: {
       skip,
       take: pageSize,
     }),
-    discountTotals(where, options.dateFrom, options.dateTo),
+    discountTotals(where, options?.dateFrom, options?.dateTo),
   ]);
 
   return {
@@ -347,7 +347,9 @@ export async function createDiscount(
         amount: data.amount,
         coalOrigin: data.coalOrigin,
         remarks: data.remarks,
-        createdByStaffId: access.kind === "staff" ? access.id : null,
+        ...(access.kind === "staff"
+          ? { createdByStaff: { connect: { id: access.id } } }
+          : {}),
         ...partyCreateData(data.party),
       },
       include: discountInclude,

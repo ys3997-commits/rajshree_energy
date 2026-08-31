@@ -53,6 +53,7 @@ export default async function OptionsPage() {
         collectionSalesExecs: row.collectionSalesExecs,
         salesEngineSalesExecs: row.salesEngineSalesExecs,
         saleOrderSalesExecs: row.saleOrderSalesExecs,
+        ageingReportSalesExecs: row.ageingReportSalesExecs,
       }))}
       owners={owners}
       dealingCompanies={dealingCompanies}

@@ -47,6 +47,7 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
       category: true,
       sector: true,
       state: true,
+      saleExecutive: true,
       openingDue: true,
     },
     orderBy: { name: "asc" },
@@ -161,6 +162,7 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
         ageingBuyerCategory(customer.category),
         customer.sector,
         customer.state,
+        customer.saleExecutive,
       ),
     );
   }

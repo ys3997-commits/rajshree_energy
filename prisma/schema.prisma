@@ -84,6 +84,8 @@ model Staff {
   salesEngineSalesExecs String[] @default([])
   /// Sales executives visible on Sale orders. ["*"] = all; else executive names.
   saleOrderSalesExecs String[] @default([])
+  /// Sales executives visible in Ageing Report. ["*"] = all; else executive names.
+  ageingReportSalesExecs String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState, useTransition } from "react";
 import { createStaff, deleteStaff, updateStaff } from "@/lib/actions/staff";
 import { GRANTABLE_PAGES, PAGE_GROUPS } from "@/lib/auth/pages";
 import {
+  AGEING_REPORT_PAGE_KEY,
   COLLECTION_ENGINE_PAGE_KEY,
   isReportExecAll,
   REPORT_EXEC_ALL,
@@ -23,6 +24,7 @@ export type PeopleRow = {
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
   saleOrderSalesExecs: string[];
+  ageingReportSalesExecs: string[];
 };
 
 type SaleExecutiveOption = { id: string; name: string };
@@ -64,6 +66,9 @@ export function PeopleManager({
     [],
   );
   const [saleOrderSalesExecs, setSaleOrderSalesExecs] = useState<string[]>([]);
+  const [ageingReportSalesExecs, setAgeingReportSalesExecs] = useState<string[]>(
+    [],
+  );
 
   const sortedExecutives = useMemo(
     () => [...saleExecutives].sort((a, b) => a.name.localeCompare(b.name)),
@@ -91,6 +96,7 @@ export function PeopleManager({
     setCollectionSalesExecs([]);
     setSalesEngineSalesExecs([]);
     setSaleOrderSalesExecs([]);
+    setAgeingReportSalesExecs([]);
     setEditorOpen(true);
   }
 
@@ -104,6 +110,7 @@ export function PeopleManager({
     setCollectionSalesExecs(item.collectionSalesExecs);
     setSalesEngineSalesExecs(item.salesEngineSalesExecs);
     setSaleOrderSalesExecs(item.saleOrderSalesExecs);
+    setAgeingReportSalesExecs(item.ageingReportSalesExecs);
     setEditorOpen(true);
   }
 
@@ -130,6 +137,9 @@ export function PeopleManager({
     if (key === SALE_ORDERS_PAGE_KEY) {
       setSaleOrderSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
     }
+    if (key === AGEING_REPORT_PAGE_KEY) {
+      setAgeingReportSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
+    }
   }
 
   function toggleGroup(group: (typeof PAGE_GROUPS)[number]) {
@@ -147,6 +157,9 @@ export function PeopleManager({
         }
         if (keys.includes(SALE_ORDERS_PAGE_KEY)) {
           setSaleOrderSalesExecs([]);
+        }
+        if (keys.includes(AGEING_REPORT_PAGE_KEY)) {
+          setAgeingReportSalesExecs([]);
         }
         return current.filter((key) => !keys.includes(key));
       }
@@ -168,6 +181,12 @@ export function PeopleManager({
         !current.includes(SALE_ORDERS_PAGE_KEY)
       ) {
         setSaleOrderSalesExecs([REPORT_EXEC_ALL]);
+      }
+      if (
+        keys.includes(AGEING_REPORT_PAGE_KEY) &&
+        !current.includes(AGEING_REPORT_PAGE_KEY)
+      ) {
+        setAgeingReportSalesExecs([REPORT_EXEC_ALL]);
       }
       return next;
     });
@@ -232,6 +251,7 @@ export function PeopleManager({
             collectionSalesExecs,
             salesEngineSalesExecs,
             saleOrderSalesExecs,
+            ageingReportSalesExecs,
             disableLogin,
           });
           onChange(
@@ -248,6 +268,7 @@ export function PeopleManager({
             collectionSalesExecs,
             salesEngineSalesExecs,
             saleOrderSalesExecs,
+            ageingReportSalesExecs,
           });
           onChange(
             [...people, toRow(row)].sort((a, b) => a.name.localeCompare(b.name)),
@@ -429,7 +450,8 @@ export function PeopleManager({
                           className={
                             page.key === COLLECTION_ENGINE_PAGE_KEY ||
                             page.key === SALES_ENGINE_PAGE_KEY ||
-                            page.key === SALE_ORDERS_PAGE_KEY
+                            page.key === SALE_ORDERS_PAGE_KEY ||
+                            page.key === AGEING_REPORT_PAGE_KEY
                               ? "people-page-cell people-page-cell-scoped"
                               : "people-page-cell"
                           }
@@ -459,6 +481,12 @@ export function PeopleManager({
                               SALE_ORDERS_PAGE_KEY,
                               saleOrderSalesExecs,
                               setSaleOrderSalesExecs,
+                            )}
+                          {page.key === AGEING_REPORT_PAGE_KEY &&
+                            renderExecScope(
+                              AGEING_REPORT_PAGE_KEY,
+                              ageingReportSalesExecs,
+                              setAgeingReportSalesExecs,
                             )}
                         </div>
                       ))}
@@ -496,6 +524,7 @@ function toRow(row: {
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
   saleOrderSalesExecs: string[];
+  ageingReportSalesExecs: string[];
 }): PeopleRow {
   return {
     id: row.id,
@@ -506,5 +535,6 @@ function toRow(row: {
     collectionSalesExecs: row.collectionSalesExecs,
     salesEngineSalesExecs: row.salesEngineSalesExecs,
     saleOrderSalesExecs: row.saleOrderSalesExecs,
+    ageingReportSalesExecs: row.ageingReportSalesExecs,
   };
 }

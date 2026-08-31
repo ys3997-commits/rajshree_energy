@@ -131,6 +131,7 @@ exports.Prisma.StaffScalarFieldEnum = {
   collectionSalesExecs: 'collectionSalesExecs',
   salesEngineSalesExecs: 'salesEngineSalesExecs',
   saleOrderSalesExecs: 'saleOrderSalesExecs',
+  ageingReportSalesExecs: 'ageingReportSalesExecs',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
