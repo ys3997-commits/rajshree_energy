@@ -299,11 +299,10 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
           </span>
           <span className="app-nav-toggle-icon" aria-hidden="true" />
         </button>
-        <div className="app-header-nav-wrap">
-          <nav
-            id="app-nav"
-            className={`app-nav${mobileNavOpen ? " is-open" : ""}`}
-          >
+        <nav
+          id="app-nav"
+          className={`app-nav${mobileNavOpen ? " is-open" : ""}`}
+        >
             {leadingLinks.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
@@ -565,7 +564,6 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
               </div>
             </div>
           </nav>
-        </div>
         <div className="app-header-user">
           <span className="app-header-who">{access.name}</span>
           <LogoutButton />
