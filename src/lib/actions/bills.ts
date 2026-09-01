@@ -2,6 +2,7 @@
 
 import { BillStatus } from "@/generated/prisma";
 import {
+  assertCanEditBillAccountVoucher,
   canEditBillAccountVoucher,
 } from "@/lib/auth/checklistEditAccess";
 import {

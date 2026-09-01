@@ -71,23 +71,25 @@ enum CollectionThrough {
 }
 
 model Staff {
-  id                     String   @id @default(cuid())
-  name                   String
-  role                   String?
+  id                      String   @id @default(cuid())
+  name                    String
+  role                    String?
   /// Set when this person may log in. Owner uses Supabase instead.
-  passwordHash           String?
+  passwordHash            String?
   /// Page keys this person may open. Ignored for the owner account.
-  pageKeys               String[] @default([])
+  pageKeys                String[] @default([])
   /// Sales executives visible in Collection Engine. ["*"] = all; else executive names.
-  collectionSalesExecs   String[] @default([])
+  collectionSalesExecs    String[] @default([])
   /// Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
-  salesEngineSalesExecs  String[] @default([])
+  salesEngineSalesExecs   String[] @default([])
   /// Sales executives visible on Sale orders. ["*"] = all; else executive names.
-  saleOrderSalesExecs    String[] @default([])
+  saleOrderSalesExecs     String[] @default([])
+  /// Sales executives visible on Purchase orders. ["*"] = all; else executive names.
+  purchaseOrderSalesExecs String[] @default([])
   /// Sales executives visible in Ageing Report. ["*"] = all; else executive names.
-  ageingReportSalesExecs String[] @default([])
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  ageingReportSalesExecs  String[] @default([])
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
   dealByCustomers   Customer[] @relation("DealBy")
   orders            Order[]
