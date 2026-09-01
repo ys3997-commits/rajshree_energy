@@ -358,7 +358,9 @@ export function OptionsClient({
       <section className="options-card">
         <div className="options-card-header">
           <div>
-            <p className="options-card-desc">{active.description}</p>
+            {active.description ? (
+              <p className="options-card-desc">{active.description}</p>
+            ) : null}
           </div>
           <label className="options-search-wrap">
             <span className="sr-only">Search {active.label}</span>

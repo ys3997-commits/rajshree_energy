@@ -62,7 +62,7 @@ export const OPTION_CATEGORIES: {
     id: "people",
     slug: "team",
     label: "Team",
-    description: "Desk people, login passwords, and page access.",
+    description: "",
     placeholder: "New person",
   },
   {

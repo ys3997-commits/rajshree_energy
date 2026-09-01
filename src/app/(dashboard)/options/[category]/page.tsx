@@ -14,7 +14,7 @@ export default async function OptionsCategoryPage({
   const categoryId = categoryFromSlug(slug);
   if (!categoryId) notFound();
 
-  const data = await loadOptionsData();
+  const data = await loadOptionsData(categoryId);
 
   return <OptionsClient categoryId={categoryId} {...data} />;
 }

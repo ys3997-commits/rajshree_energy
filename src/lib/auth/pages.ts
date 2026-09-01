@@ -26,6 +26,7 @@ export type AppPage = {
 
 export const LEGACY_UPDATE_PAGE_KEY = "update";
 export const LEGACY_BANK_PAGE_KEY = "payments";
+export const LEGACY_OPTIONS_PAGE_KEY = "options";
 
 export const UPDATE_SUB_PAGES = [
   {
@@ -413,8 +414,18 @@ export function expandLegacyBankPageKeys(pageKeys: string[]): string[] {
   return [...new Set([...withoutLegacy, ...BANK_SUB_PAGE_KEYS])];
 }
 
+export function expandLegacyOptionsPageKeys(pageKeys: string[]): string[] {
+  if (!pageKeys.includes(LEGACY_OPTIONS_PAGE_KEY)) return pageKeys;
+  const withoutLegacy = pageKeys.filter(
+    (key) => key !== LEGACY_OPTIONS_PAGE_KEY,
+  );
+  return [...new Set([...withoutLegacy, ...MASTER_OPTIONS_SUB_PAGE_KEYS])];
+}
+
 export function expandStaffPageKeys(pageKeys: string[]): string[] {
-  return expandLegacyBankPageKeys(expandLegacyUpdatePageKeys(pageKeys));
+  return expandLegacyOptionsPageKeys(
+    expandLegacyBankPageKeys(expandLegacyUpdatePageKeys(pageKeys)),
+  );
 }
 
 export function staffHasPageKey(pageKeys: string[], pageKey: string): boolean {

@@ -692,10 +692,6 @@ export function PeopleManager({
       </Modal>
 
       <div className="options-toolbar">
-        <p className="options-people-hint">
-          Add a password to let this person log in with the same email. They
-          will only see the pages you tick.
-        </p>
         <button type="button" className="btn" onClick={openCreate}>
           Add person
         </button>

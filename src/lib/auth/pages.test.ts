@@ -80,6 +80,18 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["options-origins"], "/options/team")).toBe(false);
     expect(canAccessPath("all", "/options/team")).toBe(true);
   });
+
+  it("expands legacy options key to all master option sub-pages", () => {
+    expect(canAccessPath(["options"], "/options/ports")).toBe(true);
+    expect(canAccessPath(["options"], "/options/origins")).toBe(true);
+    expect(canAccessPath(["options"], "/options/team")).toBe(false);
+  });
+
+  it("allows master entity pages when the key is granted", () => {
+    expect(canAccessPath(["customers"], "/customers")).toBe(true);
+    expect(canAccessPath(["vessels"], "/vessels")).toBe(true);
+    expect(canAccessPath(["options-ports"], "/customers")).toBe(false);
+  });
 });
 
 describe("firstAllowedPath", () => {
