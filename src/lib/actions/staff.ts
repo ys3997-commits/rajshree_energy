@@ -1,12 +1,19 @@
 "use server";
 
 import { requireOwner } from "@/lib/auth/access";
-import { GRANTABLE_PAGES } from "@/lib/auth/pages";
+import {
+  expandStaffPageKeys,
+  GRANTABLE_PAGES,
+  LEGACY_BANK_PAGE_KEY,
+  LEGACY_UPDATE_PAGE_KEY,
+  UPDATE_SUB_PAGE_KEYS,
+} from "@/lib/auth/pages";
 import {
   AGEING_REPORT_PAGE_KEY,
   COLLECTION_ENGINE_PAGE_KEY,
   normalizeExecScopeForSave,
   normalizeStoredExecScope,
+  PURCHASE_ORDERS_PAGE_KEY,
   SALE_ORDERS_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
   validateExecScopeForSave,
@@ -42,7 +49,8 @@ function publicStaff<T extends { passwordHash?: string | null }>(row: T) {
 
 function normalizePageKeys(pageKeys: string[] | undefined): string[] {
   const unique = new Set<string>();
-  for (const key of pageKeys ?? []) {
+  for (const key of expandStaffPageKeys(pageKeys ?? [])) {
+    if (key === LEGACY_UPDATE_PAGE_KEY || key === LEGACY_BANK_PAGE_KEY) continue;
     if (GRANTABLE_KEYS.has(key)) unique.add(key);
   }
   return [...unique];
@@ -53,11 +61,13 @@ function normalizeStaffExecScopes(input: {
   collectionSalesExecs?: string[];
   salesEngineSalesExecs?: string[];
   saleOrderSalesExecs?: string[];
+  purchaseOrderSalesExecs?: string[];
   ageingReportSalesExecs?: string[];
 }) {
   const hasCollection = input.pageKeys.includes(COLLECTION_ENGINE_PAGE_KEY);
   const hasSalesEngine = input.pageKeys.includes(SALES_ENGINE_PAGE_KEY);
   const hasSaleOrders = input.pageKeys.includes(SALE_ORDERS_PAGE_KEY);
+  const hasPurchaseOrders = input.pageKeys.includes(PURCHASE_ORDERS_PAGE_KEY);
   const hasAgeingReport = input.pageKeys.includes(AGEING_REPORT_PAGE_KEY);
 
   validateExecScopeForSave(
@@ -74,6 +84,11 @@ function normalizeStaffExecScopes(input: {
     input.saleOrderSalesExecs ?? [],
     hasSaleOrders,
     "Sale orders",
+  );
+  validateExecScopeForSave(
+    input.purchaseOrderSalesExecs ?? [],
+    hasPurchaseOrders,
+    "Purchase orders",
   );
   validateExecScopeForSave(
     input.ageingReportSalesExecs ?? [],
@@ -94,6 +109,10 @@ function normalizeStaffExecScopes(input: {
       input.saleOrderSalesExecs ?? [],
       hasSaleOrders,
     ),
+    purchaseOrderSalesExecs: normalizeExecScopeForSave(
+      input.purchaseOrderSalesExecs ?? [],
+      hasPurchaseOrders,
+    ),
     ageingReportSalesExecs: normalizeExecScopeForSave(
       input.ageingReportSalesExecs ?? [],
       hasAgeingReport,
@@ -106,25 +125,32 @@ function staffRow<T extends {
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
   saleOrderSalesExecs: string[];
+  purchaseOrderSalesExecs: string[];
   ageingReportSalesExecs: string[];
 }>(row: T) {
+  const pageKeys = normalizePageKeys(row.pageKeys);
   return {
     ...row,
+    pageKeys,
     collectionSalesExecs: normalizeStoredExecScope(
       row.collectionSalesExecs,
-      row.pageKeys.includes(COLLECTION_ENGINE_PAGE_KEY),
+      pageKeys.includes(COLLECTION_ENGINE_PAGE_KEY),
     ),
     salesEngineSalesExecs: normalizeStoredExecScope(
       row.salesEngineSalesExecs,
-      row.pageKeys.includes(SALES_ENGINE_PAGE_KEY),
+      pageKeys.includes(SALES_ENGINE_PAGE_KEY),
     ),
     saleOrderSalesExecs: normalizeStoredExecScope(
       row.saleOrderSalesExecs,
-      row.pageKeys.includes(SALE_ORDERS_PAGE_KEY),
+      pageKeys.includes(SALE_ORDERS_PAGE_KEY),
+    ),
+    purchaseOrderSalesExecs: normalizeStoredExecScope(
+      row.purchaseOrderSalesExecs,
+      pageKeys.includes(PURCHASE_ORDERS_PAGE_KEY),
     ),
     ageingReportSalesExecs: normalizeStoredExecScope(
       row.ageingReportSalesExecs,
-      row.pageKeys.includes(AGEING_REPORT_PAGE_KEY),
+      pageKeys.includes(AGEING_REPORT_PAGE_KEY),
     ),
   };
 }
@@ -158,6 +184,7 @@ export async function createStaff(input: {
   collectionSalesExecs?: string[];
   salesEngineSalesExecs?: string[];
   saleOrderSalesExecs?: string[];
+  purchaseOrderSalesExecs?: string[];
   ageingReportSalesExecs?: string[];
 }) {
   await requireOwner();
@@ -170,6 +197,7 @@ export async function createStaff(input: {
     collectionSalesExecs: input.collectionSalesExecs,
     salesEngineSalesExecs: input.salesEngineSalesExecs,
     saleOrderSalesExecs: input.saleOrderSalesExecs,
+    purchaseOrderSalesExecs: input.purchaseOrderSalesExecs,
     ageingReportSalesExecs: input.ageingReportSalesExecs,
   });
 
@@ -192,6 +220,7 @@ export async function createStaff(input: {
       collectionSalesExecs: passwordHash ? execScopes.collectionSalesExecs : [],
       salesEngineSalesExecs: passwordHash ? execScopes.salesEngineSalesExecs : [],
       saleOrderSalesExecs: passwordHash ? execScopes.saleOrderSalesExecs : [],
+      purchaseOrderSalesExecs: passwordHash ? execScopes.purchaseOrderSalesExecs : [],
       ageingReportSalesExecs: passwordHash ? execScopes.ageingReportSalesExecs : [],
     },
   });
@@ -209,6 +238,7 @@ export async function updateStaff(
     collectionSalesExecs?: string[];
     salesEngineSalesExecs?: string[];
     saleOrderSalesExecs?: string[];
+    purchaseOrderSalesExecs?: string[];
     ageingReportSalesExecs?: string[];
     disableLogin?: boolean;
   },
@@ -226,6 +256,7 @@ export async function updateStaff(
     collectionSalesExecs: input.collectionSalesExecs,
     salesEngineSalesExecs: input.salesEngineSalesExecs,
     saleOrderSalesExecs: input.saleOrderSalesExecs,
+    purchaseOrderSalesExecs: input.purchaseOrderSalesExecs,
     ageingReportSalesExecs: input.ageingReportSalesExecs,
   });
   let passwordHash = existing.passwordHash;
@@ -233,6 +264,7 @@ export async function updateStaff(
   let nextCollectionExecs = existing.collectionSalesExecs;
   let nextSalesEngineExecs = existing.salesEngineSalesExecs;
   let nextSaleOrderExecs = existing.saleOrderSalesExecs;
+  let nextPurchaseOrderExecs = existing.purchaseOrderSalesExecs;
   let nextAgeingReportExecs = existing.ageingReportSalesExecs;
 
   if (input.disableLogin) {
@@ -241,6 +273,7 @@ export async function updateStaff(
     nextCollectionExecs = [];
     nextSalesEngineExecs = [];
     nextSaleOrderExecs = [];
+    nextPurchaseOrderExecs = [];
     nextAgeingReportExecs = [];
   } else {
     const password = input.password?.trim() || "";
@@ -257,12 +290,14 @@ export async function updateStaff(
       nextCollectionExecs = execScopes.collectionSalesExecs;
       nextSalesEngineExecs = execScopes.salesEngineSalesExecs;
       nextSaleOrderExecs = execScopes.saleOrderSalesExecs;
+      nextPurchaseOrderExecs = execScopes.purchaseOrderSalesExecs;
       nextAgeingReportExecs = execScopes.ageingReportSalesExecs;
     } else {
       nextPages = [];
       nextCollectionExecs = [];
       nextSalesEngineExecs = [];
       nextSaleOrderExecs = [];
+      nextPurchaseOrderExecs = [];
       nextAgeingReportExecs = [];
     }
   }
@@ -277,6 +312,7 @@ export async function updateStaff(
       collectionSalesExecs: nextCollectionExecs,
       salesEngineSalesExecs: nextSalesEngineExecs,
       saleOrderSalesExecs: nextSaleOrderExecs,
+      purchaseOrderSalesExecs: nextPurchaseOrderExecs,
       ageingReportSalesExecs: nextAgeingReportExecs,
     },
   });

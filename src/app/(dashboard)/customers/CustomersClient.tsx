@@ -434,9 +434,6 @@ export function CustomersClient({
   return (
     <div>
       <h1 className="page-title">Customers</h1>
-      <p className="page-subtitle">
-        Vendors, traders, and industry buyers.
-      </p>
       <Modal open={error !== null} title="Message" onClose={() => setError(null)}>
         <p className="mb-4">{error}</p>
         <div className="modal-actions">

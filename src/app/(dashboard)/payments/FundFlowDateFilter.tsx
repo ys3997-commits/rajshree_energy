@@ -6,7 +6,7 @@ import { CustomerCategory } from "@/generated/prisma";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { formatCustomerCategory } from "@/lib/domain/format";
 import { partyKey } from "@/lib/domain/paymentParty";
-import { paymentsHref, type PaymentsTab } from "./paymentsHref";
+import { paymentsHref, type PaymentsSection } from "./paymentsHref";
 
 type PartyOpt = {
   id: string;
@@ -16,14 +16,14 @@ type PartyOpt = {
 };
 
 export function FundFlowDateFilter({
-  tab,
+  section,
   dateFrom,
   dateTo,
   party,
   type,
   parties,
 }: {
-  tab: PaymentsTab;
+  section: PaymentsSection;
   dateFrom: string;
   dateTo: string;
   party: string;
@@ -50,9 +50,6 @@ export function FundFlowDateFilter({
 
   return (
     <form className="sale-analysis-date-form" method="get">
-      {tab === "discount" ? (
-        <input type="hidden" name="tab" value="discount" />
-      ) : null}
       <input type="hidden" name="party" value={partyId} />
       <label>
         From
@@ -87,7 +84,7 @@ export function FundFlowDateFilter({
         Type
         <select name="type" defaultValue={type} className="field-input">
           <option value="">All types</option>
-          {tab === "discount" ? (
+          {section === "discount" ? (
             <>
               <option value="received">Discount Received</option>
               <option value="paid">Discount Paid</option>
@@ -104,7 +101,7 @@ export function FundFlowDateFilter({
         Apply
       </button>
       {hasFilters && (
-        <Link href={paymentsHref({ tab })} className="btn-link">
+        <Link href={paymentsHref({ section })} className="btn-link">
           Clear
         </Link>
       )}

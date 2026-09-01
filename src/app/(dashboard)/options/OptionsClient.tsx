@@ -35,83 +35,14 @@ import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
 import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
 import { PeopleManager, type PeopleRow } from "./PeopleManager";
+import {
+  categoryMeta,
+  type CategoryId,
+} from "./optionsCategories";
 
 type Opt = { id: string; name: string };
 type PortOpt = Opt & { state: string };
 type CityOpt = Opt & { state: string };
-
-type CategoryId =
-  | "origins"
-  | "qualities"
-  | "ports"
-  | "saleExecutives"
-  | "cities"
-  | "sectors"
-  | "people"
-  | "owners"
-  | "dealingCompanies";
-
-const CATEGORIES: {
-  id: CategoryId;
-  label: string;
-  description: string;
-  placeholder: string;
-}[] = [
-  {
-    id: "origins",
-    label: "Origins",
-    description: "Coal source regions used in quality classes.",
-    placeholder: "New origin, e.g. Indonesia",
-  },
-  {
-    id: "qualities",
-    label: "Qualities",
-    description: "Grade names used in quality classes.",
-    placeholder: "New quality, e.g. 6000 GCV",
-  },
-  {
-    id: "ports",
-    label: "Ports",
-    description: "Port name and GST state for vessels and orders.",
-    placeholder: "New port, e.g. Haldia Port",
-  },
-  {
-    id: "saleExecutives",
-    label: "Sales executives",
-    description: "Suggested names on customer records.",
-    placeholder: "New sales executive",
-  },
-  {
-    id: "cities",
-    label: "Cities",
-    description: "Suggested cities and states on customers and transporters.",
-    placeholder: "New city",
-  },
-  {
-    id: "sectors",
-    label: "Sectors",
-    description: "Industry sectors suggested on customers.",
-    placeholder: "New sector, e.g. Steel",
-  },
-  {
-    id: "people",
-    label: "People",
-    description: "Desk people, login passwords, and page access.",
-    placeholder: "New person",
-  },
-  {
-    id: "owners",
-    label: "Owner",
-    description: "Suggested owner names on customers and transporters.",
-    placeholder: "New owner",
-  },
-  {
-    id: "dealingCompanies",
-    label: "Dealing company",
-    description: "Companies you deal with, suggested across the app.",
-    placeholder: "New dealing company",
-  },
-];
 
 type SimpleCategoryId = Exclude<CategoryId, "people">;
 type ItemMap = {
@@ -126,6 +57,7 @@ type ItemMap = {
 };
 
 export function OptionsClient({
+  categoryId,
   origins,
   qualities,
   ports,
@@ -136,6 +68,7 @@ export function OptionsClient({
   owners,
   dealingCompanies,
 }: {
+  categoryId: CategoryId;
   origins: Opt[];
   qualities: Opt[];
   ports: PortOpt[];
@@ -157,7 +90,7 @@ export function OptionsClient({
     dealingCompanies,
   });
   const [peopleItems, setPeopleItems] = useState(people);
-  const [activeId, setActiveId] = useState<CategoryId>("origins");
+  const activeId = categoryId;
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
   const [stateDraft, setStateDraft] = useState("");
@@ -169,7 +102,7 @@ export function OptionsClient({
 
   const hasStateColumn = activeId === "ports" || activeId === "cities";
 
-  const active = CATEGORIES.find((c) => c.id === activeId) ?? CATEGORIES[0];
+  const active = categoryMeta(activeId);
 
   const filteredOptions = useMemo(() => {
     if (activeId === "people") return [];
@@ -185,15 +118,6 @@ export function OptionsClient({
     }
     return sorted.filter((item) => item.name.toLowerCase().includes(q));
   }, [activeId, items, query]);
-
-  function switchCategory(id: CategoryId) {
-    setActiveId(id);
-    setQuery("");
-    setDraft("");
-    setStateDraft("");
-    cancelEdit();
-    setError(null);
-  }
 
   function cancelEdit() {
     setEditingId(null);
@@ -414,18 +338,11 @@ export function OptionsClient({
     });
   }
 
-  function tabCount(id: CategoryId) {
-    return id === "people" ? peopleItems.length : (items[id]?.length ?? 0);
-  }
-
   return (
     <div className="options-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Options</h1>
-          <p className="page-subtitle">
-            Manage dropdown and suggestion lists used across the app.
-          </p>
+          <h1 className="page-title">{active.label}</h1>
         </div>
       </div>
 
@@ -438,24 +355,9 @@ export function OptionsClient({
         </div>
       </Modal>
 
-      <nav className="options-tabs" aria-label="Option categories">
-        {CATEGORIES.map((category) => (
-          <button
-            key={category.id}
-            type="button"
-            className={`options-tab${activeId === category.id ? " options-tab-active" : ""}`}
-            onClick={() => switchCategory(category.id)}
-          >
-            {category.label}
-            <span className="options-tab-count">{tabCount(category.id)}</span>
-          </button>
-        ))}
-      </nav>
-
       <section className="options-card">
         <div className="options-card-header">
           <div>
-            <h2 className="options-card-title">{active.label}</h2>
             <p className="options-card-desc">{active.description}</p>
           </div>
           <label className="options-search-wrap">

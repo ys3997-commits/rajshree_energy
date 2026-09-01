@@ -106,7 +106,6 @@ export function TransportersClient({
   return (
     <div>
       <h1 className="page-title">Transporters</h1>
-      <p className="page-subtitle">Logistics partners and contacts.</p>
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="mb-6 form-grid">

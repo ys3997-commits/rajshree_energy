@@ -278,7 +278,7 @@ export async function listDiscounts(options?: {
   party?: string;
   type?: string;
 }): Promise<DiscountListResult> {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-discount");
   const where = discountWhere(options);
 
   if (options?.all) {
@@ -335,7 +335,7 @@ export async function listDiscounts(options?: {
 export async function createDiscount(
   input: DiscountInput,
 ): Promise<DiscountRow> {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-discount");
   const data = validateDiscountInput(input);
   await assertPartyExists(data.party);
 
@@ -374,7 +374,7 @@ export async function updateDiscount(
   id: string,
   input: DiscountInput,
 ): Promise<DiscountRow> {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-discount");
   const data = validateDiscountInput(input);
 
   const existing = await prisma.discount.findUnique({
@@ -436,7 +436,7 @@ export async function updateDiscount(
 }
 
 export async function deleteDiscount(id: string) {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-discount");
   const existing = await prisma.discount.findUnique({
     where: { id },
     select: {

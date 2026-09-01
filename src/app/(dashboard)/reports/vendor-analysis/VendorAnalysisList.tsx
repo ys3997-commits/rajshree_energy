@@ -129,9 +129,6 @@ export function VendorAnalysisList({
             Reports
           </p>
           <h1 className="page-title">Vendor analysis</h1>
-          <p className="page-subtitle">
-            Pick a vendor to see purchase-side volume, balance, and margin.
-          </p>
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">

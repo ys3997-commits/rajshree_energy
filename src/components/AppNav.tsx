@@ -3,9 +3,15 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { Access } from "@/lib/auth/types";
-import { canAccessPath } from "@/lib/auth/pages";
+import { canAccessPath, hasAnyBankPageAccess, hasAnyUpdatePageAccess } from "@/lib/auth/pages";
 import { LockedLink } from "@/components/LockedLink";
 import { LogoutButton } from "@/components/LogoutButton";
+import {
+  OPTION_CATEGORIES,
+  optionsHref,
+  USER_MENU_CATEGORIES,
+  USER_MENU_CATEGORY_IDS,
+} from "@/app/(dashboard)/options/optionsCategories";
 
 type NavLeaf = { href: string; label: string };
 
@@ -16,19 +22,48 @@ const ordersLinks: NavLeaf[] = [
   { href: "/orders", label: "Sale orders" },
 ];
 
+const bankLinks: NavLeaf[] = [
+  { href: "/payments", label: "Transactions" },
+  { href: "/payments/discount", label: "Discount" },
+];
+
+const userMenuCategoryIdSet = new Set<string>(USER_MENU_CATEGORY_IDS);
+
+const optionsLinks: NavLeaf[] = OPTION_CATEGORIES.filter(
+  (category) => !userMenuCategoryIdSet.has(category.id),
+).map((category) => ({
+  href: optionsHref(category.id),
+  label: category.label,
+}));
+
+const usersLinks: NavLeaf[] = USER_MENU_CATEGORIES.map((category) => ({
+  href: optionsHref(category.id),
+  label: category.label,
+}));
+
 const links = [
   { href: "/dispatches", label: "Dispatches" },
-  { href: "/payments", label: "Bank" },
   { href: "/bills", label: "Approvals" },
 ];
 
-const mastersLinks: NavLeaf[] = [
+const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [
   { href: "/customers", label: "Customers" },
-  { href: "/options", label: "Options" },
+  {
+    label: "Options",
+    children: optionsLinks,
+  },
   { href: "/qualities", label: "Qualities" },
   { href: "/transporters", label: "Transporters" },
   { href: "/vessels", label: "Vessels" },
 ];
+
+type MastersGroup = { label: string; children: NavLeaf[] };
+
+function isMastersGroup(
+  item: NavLeaf | MastersGroup,
+): item is MastersGroup {
+  return "children" in item;
+}
 
 type ReportLeaf = NavLeaf;
 type ReportGroup = { label: string; children: ReportLeaf[] };
@@ -115,12 +150,46 @@ function needsExactChildMatch(group: ReportGroup, href: string) {
   );
 }
 
+function isMastersGroupActive(pathname: string, group: MastersGroup) {
+  return group.children.some((child) => isOptionsLinkActive(pathname, child.href));
+}
+
 function isMastersActive(pathname: string) {
-  return mastersLinks.some((item) => isActivePath(pathname, item.href));
+  if (isOptionsActive(pathname)) return true;
+  return mastersLinks.some((item) => {
+    if (isMastersGroup(item)) return isMastersGroupActive(pathname, item);
+    return isActivePath(pathname, item.href);
+  });
 }
 
 function isOrdersActive(pathname: string) {
   return ordersLinks.some((item) => isActivePath(pathname, item.href));
+}
+
+function isBankActive(pathname: string) {
+  return (
+    pathname === "/payments" ||
+    pathname.startsWith("/payments/") ||
+    pathname.startsWith("/payments?")
+  );
+}
+
+function isBankLinkActive(pathname: string, href: string) {
+  if (href === "/payments") return pathname === "/payments";
+  return isActivePath(pathname, href);
+}
+
+function isOptionsActive(pathname: string) {
+  if (isUsersActive(pathname)) return false;
+  return pathname === "/options" || pathname.startsWith("/options/");
+}
+
+function isOptionsLinkActive(pathname: string, href: string) {
+  return pathname === href;
+}
+
+function isUsersActive(pathname: string) {
+  return usersLinks.some((item) => isActivePath(pathname, item.href));
 }
 
 export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }) {
@@ -129,31 +198,50 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
+  const [bankOpen, setBankOpen] = useState(false);
   const [mastersOpen, setMastersOpen] = useState(false);
+  const [usersOpen, setUsersOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [openMastersSubmenu, setOpenMastersSubmenu] = useState<string | null>(
+    null,
+  );
   const reportMenuId = useId();
   const updateMenuId = useId();
   const ordersMenuId = useId();
+  const bankMenuId = useId();
   const mastersMenuId = useId();
+  const usersMenuId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
   const updateRef = useRef<HTMLDivElement>(null);
   const ordersRef = useRef<HTMLDivElement>(null);
+  const bankRef = useRef<HTMLDivElement>(null);
   const mastersRef = useRef<HTMLDivElement>(null);
+  const usersRef = useRef<HTMLDivElement>(null);
   const reportActive =
     pathname === "/reports" || pathname.startsWith("/reports/");
   const updateActive =
     pathname === "/update" || pathname.startsWith("/update/");
   const ordersActive = isOrdersActive(pathname);
+  const bankActive = isBankActive(pathname);
   const mastersActive = isMastersActive(pathname);
+  const usersActive = isUsersActive(pathname);
   const allowed = (href: string) => canAccessPath(access.pageKeys, href);
+  const showUpdateNav =
+    access.pageKeys === "all" || hasAnyUpdatePageAccess(access.pageKeys);
+  const showBankNav =
+    access.pageKeys === "all" || hasAnyBankPageAccess(access.pageKeys);
+  const showUsersNav = access.kind === "owner";
 
   useEffect(() => {
     setMobileNavOpen(false);
     setReportOpen(false);
     setUpdateOpen(false);
     setOrdersOpen(false);
+    setBankOpen(false);
     setMastersOpen(false);
+    setUsersOpen(false);
     setOpenSubmenu(null);
+    setOpenMastersSubmenu(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -224,6 +312,29 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   }, [ordersOpen]);
 
   useEffect(() => {
+    if (!bankOpen) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (bankRef.current && !bankRef.current.contains(event.target as Node)) {
+        setBankOpen(false);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setBankOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [bankOpen]);
+
+  useEffect(() => {
     if (!mastersOpen) return;
 
     function onPointerDown(event: MouseEvent) {
@@ -232,11 +343,16 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
         !mastersRef.current.contains(event.target as Node)
       ) {
         setMastersOpen(false);
+        setOpenMastersSubmenu(null);
       }
     }
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        if (openMastersSubmenu) {
+          setOpenMastersSubmenu(null);
+          return;
+        }
         setMastersOpen(false);
       }
     }
@@ -247,7 +363,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
       document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [mastersOpen]);
+  }, [mastersOpen, openMastersSubmenu]);
 
   useEffect(() => {
     if (!reportOpen) return;
@@ -280,9 +396,34 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
     };
   }, [reportOpen, openSubmenu]);
 
-  const bankIndex = links.findIndex((link) => link.href === "/payments");
-  const beforeUpdate = links.slice(0, bankIndex);
-  const afterUpdate = links.slice(bankIndex);
+  useEffect(() => {
+    if (!usersOpen) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (
+        usersRef.current &&
+        !usersRef.current.contains(event.target as Node)
+      ) {
+        setUsersOpen(false);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setUsersOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [usersOpen]);
+
+  const linksBeforeBank = links.slice(0, 1);
+  const linksAfterBank = links.slice(1);
 
   return (
     <header className={`app-header${mobileNavOpen ? " nav-open" : ""}`}>
@@ -356,7 +497,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
               </div>
             </div>
 
-            {beforeUpdate.map((link) => {
+            {linksBeforeBank.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
                 <LockedLink
@@ -370,6 +511,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
               );
             })}
 
+            {showUpdateNav && (
             <div
               className={`nav-dropdown${updateOpen ? " open" : ""}${updateActive ? " active" : ""}`}
               ref={updateRef}
@@ -408,8 +550,50 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                 })}
               </div>
             </div>
+            )}
 
-            {afterUpdate.map((link) => {
+            {showBankNav && (
+            <div
+              className={`nav-dropdown${bankOpen ? " open" : ""}${bankActive ? " active" : ""}`}
+              ref={bankRef}
+            >
+              <button
+                type="button"
+                className={`nav-dropdown-trigger${bankActive ? " active" : ""}`}
+                aria-expanded={bankOpen}
+                aria-controls={bankMenuId}
+                aria-haspopup="menu"
+                onClick={() => setBankOpen((open) => !open)}
+              >
+                Bank
+                <span className="nav-dropdown-caret" aria-hidden="true" />
+              </button>
+              <div
+                id={bankMenuId}
+                className="nav-dropdown-menu"
+                role="menu"
+                hidden={!bankOpen}
+              >
+                {bankLinks.map((item) => {
+                  const active = isBankLinkActive(pathname, item.href);
+                  return (
+                    <LockedLink
+                      key={item.href}
+                      href={item.href}
+                      allowed={allowed(item.href)}
+                      role="menuitem"
+                      className={active ? "active" : undefined}
+                      onClick={() => setBankOpen(false)}
+                    >
+                      {item.label}
+                    </LockedLink>
+                  );
+                })}
+              </div>
+            </div>
+            )}
+
+            {linksAfterBank.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
                 <LockedLink
@@ -445,6 +629,64 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                 hidden={!mastersOpen}
               >
                 {mastersLinks.map((item) => {
+                  if (isMastersGroup(item)) {
+                    const submenuOpen = openMastersSubmenu === item.label;
+                    const groupActive = isMastersGroupActive(pathname, item);
+                    const submenuId = `${mastersMenuId}-${item.label.toLowerCase()}`;
+                    return (
+                      <div
+                        key={item.label}
+                        className={`nav-submenu${submenuOpen ? " open" : ""}${groupActive ? " active" : ""}`}
+                      >
+                        <button
+                          type="button"
+                          className={`nav-submenu-trigger${groupActive ? " active" : ""}`}
+                          aria-expanded={submenuOpen}
+                          aria-controls={submenuId}
+                          aria-haspopup="menu"
+                          onClick={() =>
+                            setOpenMastersSubmenu((current) =>
+                              current === item.label ? null : item.label,
+                            )
+                          }
+                          onMouseEnter={() => setOpenMastersSubmenu(item.label)}
+                        >
+                          {item.label}
+                          <span className="nav-submenu-caret" aria-hidden="true" />
+                        </button>
+                        <div
+                          id={submenuId}
+                          className="nav-submenu-menu"
+                          role="menu"
+                          hidden={!submenuOpen}
+                          onMouseEnter={() => setOpenMastersSubmenu(item.label)}
+                        >
+                          {item.children.map((child) => {
+                            const active = isOptionsLinkActive(
+                              pathname,
+                              child.href,
+                            );
+                            return (
+                              <LockedLink
+                                key={child.href}
+                                href={child.href}
+                                allowed={allowed(child.href)}
+                                role="menuitem"
+                                className={active ? "active" : undefined}
+                                onClick={() => {
+                                  setOpenMastersSubmenu(null);
+                                  setMastersOpen(false);
+                                }}
+                              >
+                                {child.label}
+                              </LockedLink>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  }
+
                   const active = isActivePath(pathname, item.href);
                   return (
                     <LockedLink
@@ -454,6 +696,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                       role="menuitem"
                       className={active ? "active" : undefined}
                       onClick={() => setMastersOpen(false)}
+                      onMouseEnter={() => setOpenMastersSubmenu(null)}
                     >
                       {item.label}
                     </LockedLink>
@@ -563,6 +806,47 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                 })}
               </div>
             </div>
+
+            {showUsersNav && (
+            <div
+              className={`nav-dropdown${usersOpen ? " open" : ""}${usersActive ? " active" : ""}`}
+              ref={usersRef}
+            >
+              <button
+                type="button"
+                className={`nav-dropdown-trigger${usersActive ? " active" : ""}`}
+                aria-expanded={usersOpen}
+                aria-controls={usersMenuId}
+                aria-haspopup="menu"
+                onClick={() => setUsersOpen((open) => !open)}
+              >
+                Users
+                <span className="nav-dropdown-caret" aria-hidden="true" />
+              </button>
+              <div
+                id={usersMenuId}
+                className="nav-dropdown-menu"
+                role="menu"
+                hidden={!usersOpen}
+              >
+                {usersLinks.map((item) => {
+                  const active = isActivePath(pathname, item.href);
+                  return (
+                    <LockedLink
+                      key={item.href}
+                      href={item.href}
+                      allowed={allowed(item.href)}
+                      role="menuitem"
+                      className={active ? "active" : undefined}
+                      onClick={() => setUsersOpen(false)}
+                    >
+                      {item.label}
+                    </LockedLink>
+                  );
+                })}
+              </div>
+            </div>
+            )}
           </nav>
         <div className="app-header-user">
           <span className="app-header-who">{access.name}</span>

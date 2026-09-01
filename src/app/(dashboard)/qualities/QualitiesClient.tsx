@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useState, useTransition } from "react";
 import {
   createQualityClass,
@@ -74,10 +73,6 @@ export function QualitiesClient({
   return (
     <div>
       <h1 className="page-title">Quality classes</h1>
-      <p className="page-subtitle">
-        Domestic/imported, origin, and quality grade used on vessels and orders.
-        Manage origin and quality options on the <Link href="/options">Options</Link> page.
-      </p>
       <Modal
         open={error !== null}
         title="Message"
@@ -91,7 +86,6 @@ export function QualitiesClient({
         </div>
       </Modal>
 
-      <h2 className="mb-3 text-base font-semibold">Add / edit class</h2>
       <form onSubmit={onSubmitClass} className="mb-8 form-grid">
         <div
           className="option-cards"

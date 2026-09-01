@@ -246,12 +246,6 @@ export function BillsClient({
   return (
     <div className="approvals-page">
       <h1 className="page-title">Approvals</h1>
-      {!canUpload ? (
-        <p className="page-subtitle">
-          Review staff submissions. Approve or reject each pending bill with a
-          remark.
-        </p>
-      ) : null}
 
       {error && <div className="error-box">{error}</div>}
 
@@ -510,10 +504,27 @@ export function BillsClient({
                 </td>
                 <td>{row.accountVoucherNo.trim() || "—"}</td>
                 <td>
-                  <EditBillAccountVoucherButton
-                    billId={row.id}
-                    accountVoucherNo={row.accountVoucherNo}
-                  />
+                  <div className="dispatch-edit-actions">
+                    <EditBillAccountVoucherButton
+                      billId={row.id}
+                      accountVoucherNo={row.accountVoucherNo}
+                      canEdit={row.canEditAccountVoucher}
+                      rowSummary={{
+                        approvalNo: row.approvalNo || "—",
+                        date: formatDateDdMmYyyy(row.date),
+                        invoiceIssuedBy: row.invoiceIssuedBy || "—",
+                        invoiceAmount: row.invoiceAmount
+                          ? formatRs(row.invoiceAmount)
+                          : "—",
+                        approverName: row.approverName
+                          ? (capitalizeName(row.approverName) ?? row.approverName)
+                          : "—",
+                        sentBy: row.staffName,
+                        status: BILL_STATUS_LABEL[row.status as BillStatus],
+                        ownerRemark: row.reviewRemark.trim() || "—",
+                      }}
+                    />
+                  </div>
                 </td>
                 {isOwner ? (
                   <td className="space-x-2 whitespace-nowrap">

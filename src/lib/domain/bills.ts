@@ -182,6 +182,12 @@ export function canUploadBill(access: { kind: string }): boolean {
   return access.kind === "staff";
 }
 
+export function isBillAccountVoucherComplete(input: {
+  accountVoucherNo: string;
+}): boolean {
+  return Boolean(input.accountVoucherNo.trim());
+}
+
 export function canApproveBill(
   access: { kind: string },
   status: string,

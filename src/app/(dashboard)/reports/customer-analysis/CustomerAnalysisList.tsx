@@ -157,10 +157,6 @@ export function CustomerAnalysisList({
             Reports
           </p>
           <h1 className="page-title">Customer analysis</h1>
-          <p className="page-subtitle">
-            Pick a customer to see buy-side and sell-side volume, balance, and
-            margin.
-          </p>
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">
@@ -239,12 +235,6 @@ export function CustomerAnalysisList({
           rows={exportRows}
         />
       </div>
-      <p className="filter-hint">
-        Dates filter total quantities, total margin, and margin PMT. Total
-        margin is dispatch profit plus discount received minus discount paid.
-        Opening due is the carry-forward balance. Total due is as of the end
-        date when set, otherwise the current outstanding.
-      </p>
 
       {filtered.length === 0 ? (
         <p className="home-empty">No customers match your filter.</p>

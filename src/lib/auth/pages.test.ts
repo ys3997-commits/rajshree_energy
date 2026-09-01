@@ -37,8 +37,10 @@ describe("canAccessPath", () => {
 
   it("blocks options and unknown routes for staff", () => {
     expect(canAccessPath(["payments"], "/options")).toBe(false);
+    expect(canAccessPath("all", "/options/origins")).toBe(true);
     expect(canAccessPath(["payments"], "/receipts/pending")).toBe(false);
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
     expect(canAccessPath(["bills"], "/bills")).toBe(true);
     expect(canAccessPath(["payments"], "/bills")).toBe(false);
     expect(canAccessPath(["payments"], "/")).toBe(false);
@@ -48,6 +50,27 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["reports-ledger"], "/reports")).toBe(true);
     expect(canAccessPath(["payments"], "/reports")).toBe(false);
     expect(hasAnyReportAccess(["reports-ledger"])).toBe(true);
+  });
+
+  it("scopes update sub-pages separately", () => {
+    expect(canAccessPath(["update-purchase"], "/update/purchase")).toBe(true);
+    expect(canAccessPath(["update-purchase"], "/update/sale")).toBe(false);
+    expect(canAccessPath(["update"], "/update/purchase")).toBe(true);
+    expect(canAccessPath(["update-sale"], "/update/transport")).toBe(false);
+    expect(
+      canAccessPath(["reports-transport-engine"], "/update/transport"),
+    ).toBe(true);
+  });
+
+  it("scopes bank sub-pages separately", () => {
+    expect(canAccessPath(["payments-transactions"], "/payments")).toBe(true);
+    expect(canAccessPath(["payments-transactions"], "/payments/discount")).toBe(
+      false,
+    );
+    expect(canAccessPath(["payments-discount"], "/payments/discount")).toBe(true);
+    expect(canAccessPath(["payments-discount"], "/payments")).toBe(false);
+    expect(canAccessPath(["payments"], "/payments")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
   });
 });
 

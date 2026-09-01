@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useState, useTransition } from "react";
 import {
   createVessel,
@@ -106,10 +105,6 @@ export function VesselsClient({
   return (
     <div>
       <h1 className="page-title">Vessels</h1>
-      <p className="page-subtitle">
-        Vessel registry with quality class and port. Manage port options on the{" "}
-        <Link href="/options">Options</Link> page.
-      </p>
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="mb-6 form-grid">

@@ -253,7 +253,7 @@ export async function listPayments(options?: {
   party?: string;
   type?: string;
 }): Promise<PaymentListResult> {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-transactions");
   const where = paymentWhere(options);
 
   if (options?.all) {
@@ -308,7 +308,7 @@ export async function listPayments(options?: {
 }
 
 export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-transactions");
   const data = validatePaymentInput(input);
   await assertPartyExists(data.party);
 
@@ -345,7 +345,7 @@ export async function updatePayment(
   id: string,
   input: PaymentInput,
 ): Promise<PaymentRow> {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-transactions");
   const data = validatePaymentInput(input);
 
   const existing = await prisma.payment.findUnique({
@@ -405,7 +405,7 @@ export async function updatePayment(
 }
 
 export async function deletePayment(id: string) {
-  const access = await requirePage("payments");
+  const access = await requirePage("payments-transactions");
   const existing = await prisma.payment.findUnique({
     where: { id },
     select: {

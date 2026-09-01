@@ -23,7 +23,6 @@ import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { FundFlowDateFilter } from "./FundFlowDateFilter";
 import { FundFlowTotals } from "./FundFlowTotals";
 import { PartyNameLink } from "./PartyNameLink";
-import { PaymentsTabs } from "./PaymentsTabs";
 import { paymentsHref } from "./paymentsHref";
 
 type Opt = {
@@ -210,7 +209,7 @@ export function PaymentsClient({
 
   function goToPage(targetPage: number) {
     router.push(
-      paymentsHref({ tab: "payment", page: targetPage, ...listFilters }),
+      paymentsHref({ section: "transactions", page: targetPage, ...listFilters }),
     );
     router.refresh();
   }
@@ -299,9 +298,9 @@ export function PaymentsClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Fund Flow</h1>
+        <h1 className="page-title">Transactions</h1>
         <TableDownloadButtons
-          title="Fund Flow — Transactions"
+          title="Transactions"
           filenameBase="fund-flow-transactions"
           columns={downloadColumns}
           rows={downloadRows}
@@ -320,7 +319,7 @@ export function PaymentsClient({
 
       <div className="filters">
         <FundFlowDateFilter
-          tab="payment"
+          section="transactions"
           dateFrom={dateFrom}
           dateTo={dateTo}
           party={party}
@@ -328,8 +327,6 @@ export function PaymentsClient({
           parties={parties}
         />
       </div>
-
-      <PaymentsTabs active="payment" {...listFilters} />
 
       {error && <div className="error-box">{error}</div>}
 
@@ -579,7 +576,7 @@ export function PaymentsClient({
             {page > 1 && (
               <Link
                 href={paymentsHref({
-                  tab: "payment",
+                  section: "transactions",
                   page: page - 1,
                   ...listFilters,
                 })}
@@ -595,7 +592,7 @@ export function PaymentsClient({
             {page < totalPages && (
               <Link
                 href={paymentsHref({
-                  tab: "payment",
+                  section: "transactions",
                   page: page + 1,
                   ...listFilters,
                 })}

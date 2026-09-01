@@ -20,6 +20,7 @@ import {
   validateAccountVoucherNo,
   validateInvoiceAmount,
   validateInvoiceIssuedBy,
+  isBillAccountVoucherComplete,
 } from "./bills";
 
 describe("parseBillStatusFilter", () => {
@@ -127,6 +128,15 @@ describe("bill remarks and files", () => {
         { name: "b.jpg", type: "image/jpeg", size: 200 },
       ]),
     ).toThrow(/only one document/i);
+  });
+});
+
+describe("bill account voucher", () => {
+  it("marks voucher complete when non-empty", () => {
+    expect(isBillAccountVoucherComplete({ accountVoucherNo: " PV-1 " })).toBe(
+      true,
+    );
+    expect(isBillAccountVoucherComplete({ accountVoucherNo: "  " })).toBe(false);
   });
 });
 

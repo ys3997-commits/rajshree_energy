@@ -1,5 +1,8 @@
-export type PaymentsTab = "payment" | "discount";
+export type PaymentsSection = "transactions" | "discount";
 export type FundFlowType = "received" | "paid";
+
+/** @deprecated use PaymentsSection */
+export type PaymentsTab = PaymentsSection;
 
 export function parseFundFlowType(value?: string | null): FundFlowType | "" {
   const v = value?.trim().toLowerCase() ?? "";
@@ -7,15 +10,19 @@ export function parseFundFlowType(value?: string | null): FundFlowType | "" {
 }
 
 export function paymentsHref(opts: {
-  tab?: PaymentsTab;
+  section?: PaymentsSection;
+  /** @deprecated use section */
+  tab?: PaymentsSection;
   page?: number;
   dateFrom?: string;
   dateTo?: string;
   party?: string;
   type?: string;
 }): string {
+  const section = opts.section ?? opts.tab ?? "transactions";
+  const base =
+    section === "discount" ? "/payments/discount" : "/payments";
   const q = new URLSearchParams();
-  if (opts.tab === "discount") q.set("tab", "discount");
   const dateFrom = opts.dateFrom?.trim() ?? "";
   const dateTo = opts.dateTo?.trim() ?? "";
   const party = opts.party?.trim() ?? "";
@@ -26,5 +33,5 @@ export function paymentsHref(opts: {
   if (type) q.set("type", type);
   if (opts.page && opts.page > 1) q.set("page", String(opts.page));
   const s = q.toString();
-  return s ? `/payments?${s}` : "/payments";
+  return s ? `${base}?${s}` : base;
 }

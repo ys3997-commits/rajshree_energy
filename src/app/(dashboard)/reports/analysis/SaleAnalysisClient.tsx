@@ -186,10 +186,6 @@ export function SaleAnalysisClient({
             Sale Analysis
           </p>
           <h1 className="page-title">Sale Analysis</h1>
-          <p className="page-subtitle">
-            Sale-side dispatched quantity by product, with state and city share
-            of each product total.
-          </p>
         </div>
       </div>
 

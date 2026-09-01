@@ -2,6 +2,9 @@
 
 import { BillStatus } from "@/generated/prisma";
 import {
+  canEditBillAccountVoucher,
+} from "@/lib/auth/checklistEditAccess";
+import {
   AccessDeniedError,
   requireOwner,
   requireSignedIn,
@@ -74,6 +77,7 @@ export type BillRow = {
   status: BillStatusName;
   reviewRemark: string;
   accountVoucherNo: string;
+  canEditAccountVoucher: boolean;
   reviewedAt: string | null;
   staffId: string;
   staffName: string;
@@ -106,7 +110,9 @@ function parseDate(value: string): Date {
   return date;
 }
 
-function toBillRow(row: {
+function toBillRow(
+  access: Awaited<ReturnType<typeof requireBillsAccess>>,
+  row: {
   id: string;
   approvalNo: string | null;
   date: Date;
@@ -121,7 +127,8 @@ function toBillRow(row: {
   staffId: string;
   staff: { name: string };
   files: { id: string; fileName: string; fileMime: string }[];
-}): BillRow {
+},
+): BillRow {
   return {
     id: row.id,
     approvalNo: row.approvalNo,
@@ -138,9 +145,10 @@ function toBillRow(row: {
     status: row.status,
     reviewRemark: row.reviewRemark,
     accountVoucherNo: row.accountVoucherNo,
+    canEditAccountVoucher: canEditBillAccountVoucher(access, row),
     reviewedAt: row.reviewedAt?.toISOString() ?? null,
     staffId: row.staffId,
-    staffName: row.staff.name,
+    staffName: capitalizeName(row.staff.name) ?? row.staff.name,
   };
 }
 
@@ -289,7 +297,7 @@ export async function listBills(options?: {
   });
 
   return {
-    rows: rows.map(toBillRow),
+    rows: rows.map((row) => toBillRow(access, row)),
     total,
     page,
     pageSize,
@@ -363,7 +371,7 @@ export async function createBill(formData: FormData): Promise<BillRow> {
   });
 
   revalidatePath("/bills");
-  return toBillRow(row);
+  return toBillRow(access, row);
 }
 
 export async function reviewBill(
@@ -401,7 +409,7 @@ export async function reviewBill(
   });
 
   revalidatePath("/bills");
-  return toBillRow(row);
+  return toBillRow(access, row);
 }
 
 export async function updateBillAccountVoucherNo(
@@ -411,12 +419,16 @@ export async function updateBillAccountVoucherNo(
   const access = await requireBillsAccess();
   const existing = await prisma.bill.findUnique({
     where: { id },
-    select: { staffId: true },
+    select: {
+      staffId: true,
+      accountVoucherNo: true,
+    },
   });
   if (!existing) throw new Error("Bill not found");
   if (!canViewBill(access, existing.staffId)) {
     throw new AccessDeniedError();
   }
+  assertCanEditBillAccountVoucher(access, existing);
 
   const row = await prisma.bill.update({
     where: { id },
@@ -427,7 +439,7 @@ export async function updateBillAccountVoucherNo(
   });
 
   revalidatePath("/bills");
-  return toBillRow(row);
+  return toBillRow(access, row);
 }
 
 export async function getBillFile(id: string): Promise<{

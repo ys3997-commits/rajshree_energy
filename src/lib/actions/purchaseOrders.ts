@@ -6,6 +6,15 @@ import {
   type Prisma,
 } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
+import { AccessDeniedError, getCurrentAccess } from "@/lib/auth/access";
+import {
+  execScopeToCustomerWhere,
+  getStaffReportExecScope,
+  mergePurchaseOrderImporterFilter,
+  PURCHASE_ORDERS_PAGE_KEY,
+  rowMatchesExecScope,
+  type ExecScopeFilter,
+} from "@/lib/auth/report-exec-access";
 import { prisma } from "@/lib/prisma";
 import {
   balanceOrder,
@@ -32,6 +41,33 @@ export type PurchaseOrderFilters = {
   qualityClassId?: string;
   portId?: string;
 };
+
+async function purchaseOrderExecScopeForList(): Promise<ExecScopeFilter> {
+  const access = await getCurrentAccess();
+  if (access.kind === "owner") return "all";
+  if (access.kind === "none") return [];
+  return getStaffReportExecScope(access, PURCHASE_ORDERS_PAGE_KEY);
+}
+
+async function assertPurchaseOrderImporterAccess(
+  saleExecutive: string | null | undefined,
+) {
+  const access = await getCurrentAccess();
+  if (access.kind === "owner") return;
+  if (access.kind === "none") throw new AccessDeniedError();
+  const scope = getStaffReportExecScope(access, PURCHASE_ORDERS_PAGE_KEY);
+  if (scope === "all") return;
+  if (!rowMatchesExecScope(saleExecutive, scope)) {
+    throw new AccessDeniedError();
+  }
+}
+
+async function applyPurchaseOrderExecScope(
+  where: Prisma.PurchaseOrderWhereInput,
+) {
+  const scope = await purchaseOrderExecScopeForList();
+  mergePurchaseOrderImporterFilter(where, execScopeToCustomerWhere(scope));
+}
 
 /**
  * Match Status column display: open POs with no quantity show Completed
@@ -68,6 +104,8 @@ export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
   if (filters.vesselId) where.vesselId = filters.vesselId;
   if (filters.qualityClassId) where.qualityClassId = filters.qualityClassId;
   if (filters.portId) where.vessel = { portId: filters.portId };
+
+  await applyPurchaseOrderExecScope(where);
 
   const rows = await prisma.purchaseOrder.findMany({
     where,
@@ -118,12 +156,31 @@ export async function getPurchaseOrder(id: string) {
     },
   });
   if (!order) return null;
+  const access = await getCurrentAccess();
+  if (access.kind === "staff") {
+    const scope = getStaffReportExecScope(access, PURCHASE_ORDERS_PAGE_KEY);
+    if (
+      scope !== "all" &&
+      !rowMatchesExecScope(order.importer.saleExecutive, scope)
+    ) {
+      return null;
+    }
+  }
   return withPurchaseOrderComputed(order);
 }
 
 export async function listPurchaseOrdersWithBalance() {
+  const where: Prisma.PurchaseOrderWhereInput = { orderType: OrderType.REGULAR };
+  const access = await getCurrentAccess();
+  if (
+    access.kind === "staff" &&
+    access.pageKeys.includes(PURCHASE_ORDERS_PAGE_KEY)
+  ) {
+    const scope = getStaffReportExecScope(access, PURCHASE_ORDERS_PAGE_KEY);
+    mergePurchaseOrderImporterFilter(where, execScopeToCustomerWhere(scope));
+  }
+
   const rows = await prisma.purchaseOrder.findMany({
-    where: { orderType: OrderType.REGULAR },
     include: {
       importer: { select: { name: true } },
       vessel: { select: { vesselName: true } },
@@ -150,6 +207,15 @@ export async function suggestNextPurchasePoNumber(): Promise<string> {
   return nextPurchaseOrderNumber(rows.map((row) => row.poNumber));
 }
 
+async function assertImporterPurchaseOrderAccess(importerId: string) {
+  const importer = await prisma.customer.findUnique({
+    where: { id: importerId },
+    select: { saleExecutive: true },
+  });
+  if (!importer) throw new Error("Importer not found");
+  await assertPurchaseOrderImporterAccess(importer.saleExecutive);
+}
+
 export type CreateRegularPurchaseOrderInput = {
   poNumber: string;
   importerId: string;
@@ -165,6 +231,8 @@ export async function createRegularPurchaseOrder(
 ) {
   const quantity = toDecimal(input.quantity);
   if (quantity.lt(0)) throw new Error("Quantity must be non-negative");
+
+  await assertImporterPurchaseOrderAccess(input.importerId);
 
   const vessel = await prisma.vessel.findUnique({
     where: { id: input.vesselId },
@@ -221,6 +289,8 @@ export type CreateOpenPurchaseOrderInput = {
 export async function createOpenPurchaseOrder(
   input: CreateOpenPurchaseOrderInput,
 ) {
+  await assertImporterPurchaseOrderAccess(input.importerId);
+
   const vessel = await prisma.vessel.findUnique({
     where: { id: input.vesselId },
   });
@@ -266,8 +336,12 @@ export async function updatePurchaseOrderFields(
     qualityClassId?: string | null;
   },
 ) {
-  const existing = await prisma.purchaseOrder.findUnique({ where: { id } });
+  const existing = await prisma.purchaseOrder.findUnique({
+    where: { id },
+    include: { importer: { select: { saleExecutive: true } } },
+  });
   if (!existing) throw new Error("Purchase order not found");
+  await assertPurchaseOrderImporterAccess(existing.importer.saleExecutive);
 
   let poNumber = existing.poNumber;
   if (data.poNumber !== undefined) {
@@ -356,8 +430,12 @@ export async function completeOpenPurchaseOrder(
   }
 
   await prisma.$transaction(async (tx) => {
-    const order = await tx.purchaseOrder.findUnique({ where: { id: orderId } });
+    const order = await tx.purchaseOrder.findUnique({
+      where: { id: orderId },
+      include: { importer: { select: { saleExecutive: true } } },
+    });
     if (!order) throw new Error("Purchase order not found");
+    await assertPurchaseOrderImporterAccess(order.importer.saleExecutive);
     if (order.orderType !== OrderType.OPEN) {
       throw new Error("Only OPEN purchase orders can be completed this way");
     }
@@ -415,8 +493,12 @@ export async function completeOpenPurchaseOrder(
  * Write off the remaining balance as closingQuantity and mark the PO completed.
  */
 export async function closePurchaseOrderQuantity(id: string) {
-  const existing = await prisma.purchaseOrder.findUnique({ where: { id } });
+  const existing = await prisma.purchaseOrder.findUnique({
+    where: { id },
+    include: { importer: { select: { saleExecutive: true } } },
+  });
   if (!existing) throw new Error("Purchase order not found");
+  await assertPurchaseOrderImporterAccess(existing.importer.saleExecutive);
   if (existing.quantity == null) {
     throw new Error("Set purchase order quantity before closing");
   }
@@ -450,9 +532,14 @@ export async function deletePurchaseOrder(id: string): Promise<void> {
   await prisma.$transaction(async (tx) => {
     const existing = await tx.purchaseOrder.findUnique({
       where: { id },
-      select: { id: true, dispatches: { select: { id: true }, take: 1 } },
+      select: {
+        id: true,
+        importer: { select: { saleExecutive: true } },
+        dispatches: { select: { id: true }, take: 1 },
+      },
     });
     if (!existing) throw new Error("Purchase order not found");
+    await assertPurchaseOrderImporterAccess(existing.importer.saleExecutive);
     if (existing.dispatches.length > 0) {
       throw new Error(
         "Cannot delete a purchase order with dispatches. Delete dispatches first.",

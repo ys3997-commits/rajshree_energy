@@ -8,6 +8,7 @@ export type Access =
       collectionSalesExecs: string[];
       salesEngineSalesExecs: string[];
       saleOrderSalesExecs: string[];
+      purchaseOrderSalesExecs: string[];
       ageingReportSalesExecs: string[];
     }
   | { kind: "none" };

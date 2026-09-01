@@ -24,7 +24,6 @@ import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { FundFlowDateFilter } from "./FundFlowDateFilter";
 import { FundFlowTotals } from "./FundFlowTotals";
 import { PartyNameLink } from "./PartyNameLink";
-import { PaymentsTabs } from "./PaymentsTabs";
 import { paymentsHref } from "./paymentsHref";
 
 type Opt = {
@@ -227,7 +226,7 @@ export function DiscountsClient({
 
   function goToPage(targetPage: number) {
     router.push(
-      paymentsHref({ tab: "discount", page: targetPage, ...listFilters }),
+      paymentsHref({ section: "discount", page: targetPage, ...listFilters }),
     );
     router.refresh();
   }
@@ -316,9 +315,9 @@ export function DiscountsClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Fund Flow</h1>
+        <h1 className="page-title">Discount</h1>
         <TableDownloadButtons
-          title="Fund Flow — Discount"
+          title="Discount"
           filenameBase="fund-flow-discount"
           columns={downloadColumns}
           rows={downloadRows}
@@ -337,7 +336,7 @@ export function DiscountsClient({
 
       <div className="filters">
         <FundFlowDateFilter
-          tab="discount"
+          section="discount"
           dateFrom={dateFrom}
           dateTo={dateTo}
           party={party}
@@ -345,8 +344,6 @@ export function DiscountsClient({
           parties={parties}
         />
       </div>
-
-      <PaymentsTabs active="discount" {...listFilters} />
 
       {error && <div className="error-box">{error}</div>}
 
@@ -668,7 +665,7 @@ export function DiscountsClient({
             {page > 1 && (
               <Link
                 href={paymentsHref({
-                  tab: "discount",
+                  section: "discount",
                   page: page - 1,
                   ...listFilters,
                 })}
@@ -684,7 +681,7 @@ export function DiscountsClient({
             {page < totalPages && (
               <Link
                 href={paymentsHref({
-                  tab: "discount",
+                  section: "discount",
                   page: page + 1,
                   ...listFilters,
                 })}

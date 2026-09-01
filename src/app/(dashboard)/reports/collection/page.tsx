@@ -26,9 +26,6 @@ export default async function CollectionReportPage() {
             Collection Engine
           </p>
           <h1 className="page-title">Collection Engine</h1>
-          <p className="page-subtitle">
-            Buyer collection balances and planned calls.
-          </p>
         </div>
       </div>
 

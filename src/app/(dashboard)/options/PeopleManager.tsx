@@ -1,13 +1,28 @@
 "use client";
 
-import { FormEvent, useMemo, useState, useTransition } from "react";
+import { FormEvent, useMemo, useState, useTransition, type ReactNode } from "react";
 import { createStaff, deleteStaff, updateStaff } from "@/lib/actions/staff";
-import { GRANTABLE_PAGES, PAGE_GROUPS } from "@/lib/auth/pages";
+import {
+  BANK_SUB_PAGES,
+  BANK_SUB_PAGE_KEYS,
+  expandStaffPageKeys,
+  MASTER_SUB_PAGES,
+  MASTER_SUB_PAGE_KEYS,
+  orderedPagesTeamAccess,
+  REPORT_ACCESS_ITEMS,
+  REPORT_SUB_PAGE_KEYS,
+  reportKeysForAccessGroup,
+  type ReportAccessGroup,
+  TEAM_ACCESS_PAGES,
+  UPDATE_SUB_PAGES,
+  UPDATE_SUB_PAGE_KEYS,
+} from "@/lib/auth/pages";
 import {
   AGEING_REPORT_PAGE_KEY,
   COLLECTION_ENGINE_PAGE_KEY,
   isReportExecAll,
   REPORT_EXEC_ALL,
+  PURCHASE_ORDERS_PAGE_KEY,
   SALE_ORDERS_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
   type ExecScopedReportPage,
@@ -24,6 +39,7 @@ export type PeopleRow = {
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
   saleOrderSalesExecs: string[];
+  purchaseOrderSalesExecs: string[];
   ageingReportSalesExecs: string[];
 };
 
@@ -66,9 +82,19 @@ export function PeopleManager({
     [],
   );
   const [saleOrderSalesExecs, setSaleOrderSalesExecs] = useState<string[]>([]);
+  const [purchaseOrderSalesExecs, setPurchaseOrderSalesExecs] = useState<string[]>(
+    [],
+  );
   const [ageingReportSalesExecs, setAgeingReportSalesExecs] = useState<string[]>(
     [],
   );
+  const [updateExpanded, setUpdateExpanded] = useState(false);
+  const [bankExpanded, setBankExpanded] = useState(false);
+  const [masterExpanded, setMasterExpanded] = useState(false);
+  const [reportsExpanded, setReportsExpanded] = useState(false);
+  const [reportGroupsExpanded, setReportGroupsExpanded] = useState<
+    Record<string, boolean>
+  >({});
 
   const sortedExecutives = useMemo(
     () => [...saleExecutives].sort((a, b) => a.name.localeCompare(b.name)),
@@ -96,7 +122,13 @@ export function PeopleManager({
     setCollectionSalesExecs([]);
     setSalesEngineSalesExecs([]);
     setSaleOrderSalesExecs([]);
+    setPurchaseOrderSalesExecs([]);
     setAgeingReportSalesExecs([]);
+    setUpdateExpanded(false);
+    setBankExpanded(false);
+    setMasterExpanded(false);
+    setReportsExpanded(false);
+    setReportGroupsExpanded({});
     setEditorOpen(true);
   }
 
@@ -106,10 +138,34 @@ export function PeopleManager({
     setRole(item.role ?? "");
     setPassword("");
     setDisableLogin(false);
-    setPageKeys(item.pageKeys);
+    setPageKeys(expandStaffPageKeys(item.pageKeys));
+    setUpdateExpanded(
+      UPDATE_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)) ||
+        item.pageKeys.includes("update"),
+    );
+    setBankExpanded(
+      BANK_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)) ||
+        item.pageKeys.includes("payments"),
+    );
+    setMasterExpanded(
+      MASTER_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
+    );
+    setReportsExpanded(
+      REPORT_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
+    );
+    setReportGroupsExpanded(
+      Object.fromEntries(
+        REPORT_ACCESS_ITEMS.filter((entry) => entry.kind === "group")
+          .filter((entry) =>
+            entry.pages.some((page) => item.pageKeys.includes(page.key)),
+          )
+          .map((entry) => [entry.id, true]),
+      ),
+    );
     setCollectionSalesExecs(item.collectionSalesExecs);
     setSalesEngineSalesExecs(item.salesEngineSalesExecs);
     setSaleOrderSalesExecs(item.saleOrderSalesExecs);
+    setPurchaseOrderSalesExecs(item.purchaseOrderSalesExecs);
     setAgeingReportSalesExecs(item.ageingReportSalesExecs);
     setEditorOpen(true);
   }
@@ -119,6 +175,235 @@ export function PeopleManager({
     setEditing(null);
     setPassword("");
     setDisableLogin(false);
+  }
+
+  function toggleUpdateParent() {
+    const turningOn = !updateExpanded;
+    setUpdateExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !UPDATE_SUB_PAGE_KEYS.includes(key)),
+      );
+    }
+  }
+
+  function toggleUpdateAll() {
+    const allOn = UPDATE_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !UPDATE_SUB_PAGE_KEYS.includes(key));
+      return allOn ? without : [...without, ...UPDATE_SUB_PAGE_KEYS];
+    });
+  }
+
+  function toggleUpdateSubPage(key: string) {
+    const allOn = UPDATE_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    if (allOn) return;
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  const updateAllOn = UPDATE_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+
+  function toggleBankParent() {
+    const turningOn = !bankExpanded;
+    setBankExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !BANK_SUB_PAGE_KEYS.includes(key)),
+      );
+    }
+  }
+
+  function toggleBankAll() {
+    const allOn = BANK_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !BANK_SUB_PAGE_KEYS.includes(key));
+      return allOn ? without : [...without, ...BANK_SUB_PAGE_KEYS];
+    });
+  }
+
+  function toggleBankSubPage(key: string) {
+    const allOn = BANK_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    if (allOn) return;
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  const bankAllOn = BANK_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+
+  function toggleMasterParent() {
+    const turningOn = !masterExpanded;
+    setMasterExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !MASTER_SUB_PAGE_KEYS.includes(key)),
+      );
+    }
+  }
+
+  function toggleMasterAll() {
+    const allOn = MASTER_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !MASTER_SUB_PAGE_KEYS.includes(key));
+      return allOn ? without : [...without, ...MASTER_SUB_PAGE_KEYS];
+    });
+  }
+
+  function toggleMasterSubPage(key: string) {
+    const allOn = MASTER_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    if (allOn) return;
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  const masterAllOn = MASTER_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+
+  function applyExecScopeDefault(key: string) {
+    if (key === COLLECTION_ENGINE_PAGE_KEY) {
+      setCollectionSalesExecs([REPORT_EXEC_ALL]);
+    }
+    if (key === SALES_ENGINE_PAGE_KEY) {
+      setSalesEngineSalesExecs([REPORT_EXEC_ALL]);
+    }
+    if (key === SALE_ORDERS_PAGE_KEY) {
+      setSaleOrderSalesExecs([REPORT_EXEC_ALL]);
+    }
+    if (key === PURCHASE_ORDERS_PAGE_KEY) {
+      setPurchaseOrderSalesExecs([REPORT_EXEC_ALL]);
+    }
+    if (key === AGEING_REPORT_PAGE_KEY) {
+      setAgeingReportSalesExecs([REPORT_EXEC_ALL]);
+    }
+  }
+
+  function clearExecScope(key: string) {
+    if (key === COLLECTION_ENGINE_PAGE_KEY) {
+      setCollectionSalesExecs([]);
+    }
+    if (key === SALES_ENGINE_PAGE_KEY) {
+      setSalesEngineSalesExecs([]);
+    }
+    if (key === SALE_ORDERS_PAGE_KEY) {
+      setSaleOrderSalesExecs([]);
+    }
+    if (key === PURCHASE_ORDERS_PAGE_KEY) {
+      setPurchaseOrderSalesExecs([]);
+    }
+    if (key === AGEING_REPORT_PAGE_KEY) {
+      setAgeingReportSalesExecs([]);
+    }
+  }
+
+  function toggleReportsParent() {
+    const turningOn = !reportsExpanded;
+    setReportsExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !REPORT_SUB_PAGE_KEYS.includes(key)),
+      );
+      for (const key of REPORT_SUB_PAGE_KEYS) {
+        clearExecScope(key);
+      }
+      setReportGroupsExpanded({});
+    }
+  }
+
+  function toggleReportsAll() {
+    const allOn = REPORT_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !REPORT_SUB_PAGE_KEYS.includes(key));
+      if (allOn) {
+        for (const key of REPORT_SUB_PAGE_KEYS) {
+          if (current.includes(key)) clearExecScope(key);
+        }
+        return without;
+      }
+      for (const key of REPORT_SUB_PAGE_KEYS) {
+        if (!current.includes(key)) applyExecScopeDefault(key);
+      }
+      return [...without, ...REPORT_SUB_PAGE_KEYS];
+    });
+  }
+
+  function toggleReportGroupParent(group: ReportAccessGroup) {
+    const turningOn = !(reportGroupsExpanded[group.id] ?? false);
+    setReportGroupsExpanded((current) => ({ ...current, [group.id]: turningOn }));
+    if (!turningOn) {
+      const keys = reportKeysForAccessGroup(group);
+      setPageKeys((current) => current.filter((key) => !keys.includes(key)));
+      for (const key of keys) {
+        clearExecScope(key);
+      }
+    }
+  }
+
+  function toggleReportGroupAll(group: ReportAccessGroup) {
+    const keys = reportKeysForAccessGroup(group);
+    const allOn = keys.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !keys.includes(key));
+      if (allOn) {
+        for (const key of keys) {
+          if (current.includes(key)) clearExecScope(key);
+        }
+        return without;
+      }
+      for (const key of keys) {
+        if (!current.includes(key)) applyExecScopeDefault(key);
+      }
+      return [...new Set([...without, ...keys])];
+    });
+  }
+
+  function toggleReportSubPage(key: string, parentAllOn: boolean) {
+    if (parentAllOn) return;
+    const turningOn = !pageKeys.includes(key);
+    setPageKeys((current) =>
+      turningOn
+        ? [...current, key]
+        : current.filter((item) => item !== key),
+    );
+    if (turningOn) {
+      applyExecScopeDefault(key);
+    } else {
+      clearExecScope(key);
+    }
+  }
+
+  const reportsAllOn = REPORT_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+
+  function renderReportExecScope(key: string) {
+    if (key === COLLECTION_ENGINE_PAGE_KEY) {
+      return renderExecScope(
+        COLLECTION_ENGINE_PAGE_KEY,
+        collectionSalesExecs,
+        setCollectionSalesExecs,
+      );
+    }
+    if (key === SALES_ENGINE_PAGE_KEY) {
+      return renderExecScope(
+        SALES_ENGINE_PAGE_KEY,
+        salesEngineSalesExecs,
+        setSalesEngineSalesExecs,
+      );
+    }
+    if (key === AGEING_REPORT_PAGE_KEY) {
+      return renderExecScope(
+        AGEING_REPORT_PAGE_KEY,
+        ageingReportSalesExecs,
+        setAgeingReportSalesExecs,
+      );
+    }
+    return null;
   }
 
   function togglePage(key: string) {
@@ -137,15 +422,29 @@ export function PeopleManager({
     if (key === SALE_ORDERS_PAGE_KEY) {
       setSaleOrderSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
     }
+    if (key === PURCHASE_ORDERS_PAGE_KEY) {
+      setPurchaseOrderSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
+    }
     if (key === AGEING_REPORT_PAGE_KEY) {
       setAgeingReportSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
     }
   }
 
   function toggleGroup(group: (typeof PAGE_GROUPS)[number]) {
-    const keys = GRANTABLE_PAGES.filter((page) => page.group === group).map(
-      (page) => page.key,
-    );
+    const keys = [
+      ...TEAM_ACCESS_PAGES.filter((page) => page.group === group).map(
+        (page) => page.key,
+      ),
+      ...(group === "Pages"
+        ? [
+            ...UPDATE_SUB_PAGE_KEYS,
+            ...BANK_SUB_PAGE_KEYS,
+            ...MASTER_SUB_PAGE_KEYS,
+          ]
+        : group === "Reports"
+          ? REPORT_SUB_PAGE_KEYS
+          : []),
+    ];
     const allOn = keys.every((key) => pageKeys.includes(key));
     setPageKeys((current) => {
       if (allOn) {
@@ -158,8 +457,20 @@ export function PeopleManager({
         if (keys.includes(SALE_ORDERS_PAGE_KEY)) {
           setSaleOrderSalesExecs([]);
         }
+        if (keys.includes(PURCHASE_ORDERS_PAGE_KEY)) {
+          setPurchaseOrderSalesExecs([]);
+        }
         if (keys.includes(AGEING_REPORT_PAGE_KEY)) {
           setAgeingReportSalesExecs([]);
+        }
+        if (group === "Pages") {
+          setUpdateExpanded(false);
+          setBankExpanded(false);
+          setMasterExpanded(false);
+        }
+        if (group === "Reports") {
+          setReportsExpanded(false);
+          setReportGroupsExpanded({});
         }
         return current.filter((key) => !keys.includes(key));
       }
@@ -183,10 +494,31 @@ export function PeopleManager({
         setSaleOrderSalesExecs([REPORT_EXEC_ALL]);
       }
       if (
+        keys.includes(PURCHASE_ORDERS_PAGE_KEY) &&
+        !current.includes(PURCHASE_ORDERS_PAGE_KEY)
+      ) {
+        setPurchaseOrderSalesExecs([REPORT_EXEC_ALL]);
+      }
+      if (
         keys.includes(AGEING_REPORT_PAGE_KEY) &&
         !current.includes(AGEING_REPORT_PAGE_KEY)
       ) {
         setAgeingReportSalesExecs([REPORT_EXEC_ALL]);
+      }
+      if (group === "Pages") {
+        setUpdateExpanded(true);
+        setBankExpanded(true);
+        setMasterExpanded(true);
+      }
+      if (group === "Reports") {
+        setReportsExpanded(true);
+        setReportGroupsExpanded(
+          Object.fromEntries(
+            REPORT_ACCESS_ITEMS.filter((entry) => entry.kind === "group").map(
+              (entry) => [entry.id, true],
+            ),
+          ),
+        );
       }
       return next;
     });
@@ -251,6 +583,7 @@ export function PeopleManager({
             collectionSalesExecs,
             salesEngineSalesExecs,
             saleOrderSalesExecs,
+            purchaseOrderSalesExecs,
             ageingReportSalesExecs,
             disableLogin,
           });
@@ -268,6 +601,7 @@ export function PeopleManager({
             collectionSalesExecs,
             salesEngineSalesExecs,
             saleOrderSalesExecs,
+            purchaseOrderSalesExecs,
             ageingReportSalesExecs,
           });
           onChange(
@@ -428,72 +762,215 @@ export function PeopleManager({
           {showPages && !disableLogin && (
             <fieldset className="people-pages">
               <legend>Page access</legend>
-              {PAGE_GROUPS.map((group) => {
-                const pages = GRANTABLE_PAGES.filter((page) => page.group === group);
-                const allOn = pages.every((page) => pageKeys.includes(page.key));
-                return (
-                  <div key={group} className="people-page-group">
-                    <div className="people-page-group-head">
-                      <h3>{group}</h3>
+
+              <div className="people-page-group">
+                <div className="people-page-group-head">
+                  <h3>Pages</h3>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => toggleGroup("Pages")}
+                  >
+                    {[
+                      ...orderedPagesTeamAccess().map((page) => page.key),
+                      ...UPDATE_SUB_PAGE_KEYS,
+                      ...BANK_SUB_PAGE_KEYS,
+                      ...MASTER_SUB_PAGE_KEYS,
+                    ].every((key) => pageKeys.includes(key))
+                      ? "Clear"
+                      : "Select all"}
+                  </button>
+                </div>
+
+                <div className="people-access-simple-grid">
+                  {orderedPagesTeamAccess().map((page) => {
+                    const scoped =
+                      page.key === SALE_ORDERS_PAGE_KEY ||
+                      page.key === PURCHASE_ORDERS_PAGE_KEY;
+                    return (
+                      <div
+                        key={page.key}
+                        className={scoped ? "people-access-scoped" : undefined}
+                      >
+                        <AccessCheckbox
+                          checked={pageKeys.includes(page.key)}
+                          onChange={() => togglePage(page.key)}
+                          label={page.label}
+                        />
+                        {page.key === SALE_ORDERS_PAGE_KEY &&
+                          renderExecScope(
+                            SALE_ORDERS_PAGE_KEY,
+                            saleOrderSalesExecs,
+                            setSaleOrderSalesExecs,
+                          )}
+                        {page.key === PURCHASE_ORDERS_PAGE_KEY &&
+                          renderExecScope(
+                            PURCHASE_ORDERS_PAGE_KEY,
+                            purchaseOrderSalesExecs,
+                            setPurchaseOrderSalesExecs,
+                          )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="people-access-panels">
+                  <AccessPanel
+                    title="Update"
+                    expanded={updateExpanded}
+                    onToggleExpanded={toggleUpdateParent}
+                    allOn={updateAllOn}
+                    onToggleAll={toggleUpdateAll}
+                  >
+                    {UPDATE_SUB_PAGES.map((subPage) => (
+                      <AccessCheckbox
+                        key={subPage.key}
+                        checked={pageKeys.includes(subPage.key)}
+                        disabled={updateAllOn}
+                        onChange={() => toggleUpdateSubPage(subPage.key)}
+                        label={subPage.label}
+                      />
+                    ))}
+                  </AccessPanel>
+
+                  <AccessPanel
+                    title="Bank"
+                    expanded={bankExpanded}
+                    onToggleExpanded={toggleBankParent}
+                    allOn={bankAllOn}
+                    onToggleAll={toggleBankAll}
+                  >
+                    {BANK_SUB_PAGES.map((subPage) => (
+                      <AccessCheckbox
+                        key={subPage.key}
+                        checked={pageKeys.includes(subPage.key)}
+                        disabled={bankAllOn}
+                        onChange={() => toggleBankSubPage(subPage.key)}
+                        label={subPage.label}
+                      />
+                    ))}
+                  </AccessPanel>
+
+                  <AccessPanel
+                    title="Master"
+                    expanded={masterExpanded}
+                    onToggleExpanded={toggleMasterParent}
+                    allOn={masterAllOn}
+                    onToggleAll={toggleMasterAll}
+                  >
+                    {MASTER_SUB_PAGES.map((subPage) => (
+                      <AccessCheckbox
+                        key={subPage.key}
+                        checked={pageKeys.includes(subPage.key)}
+                        disabled={masterAllOn}
+                        onChange={() => toggleMasterSubPage(subPage.key)}
+                        label={subPage.label}
+                      />
+                    ))}
+                  </AccessPanel>
+                </div>
+              </div>
+
+              <div className="people-page-group">
+                <div className="people-access-panels">
+                  <AccessPanel
+                    title="Reports"
+                    expanded={reportsExpanded}
+                    onToggleExpanded={toggleReportsParent}
+                    allOn={reportsAllOn}
+                    onToggleAll={toggleReportsAll}
+                    action={
                       <button
                         type="button"
                         className="btn btn-secondary"
-                        onClick={() => toggleGroup(group)}
+                        onClick={() => toggleGroup("Reports")}
                       >
-                        {allOn ? "Clear" : "Select all"}
+                        {REPORT_SUB_PAGE_KEYS.every((key) =>
+                          pageKeys.includes(key),
+                        )
+                          ? "Clear"
+                          : "Select all"}
                       </button>
-                    </div>
-                    <div className="people-page-grid">
-                      {pages.map((page) => (
-                        <div
-                          key={page.key}
-                          className={
-                            page.key === COLLECTION_ENGINE_PAGE_KEY ||
-                            page.key === SALES_ENGINE_PAGE_KEY ||
-                            page.key === SALE_ORDERS_PAGE_KEY ||
-                            page.key === AGEING_REPORT_PAGE_KEY
-                              ? "people-page-cell people-page-cell-scoped"
-                              : "people-page-cell"
-                          }
-                        >
-                          <label className="people-page-item">
+                    }
+                  >
+                    {REPORT_ACCESS_ITEMS.map((item) => {
+                      if (item.kind === "leaf") {
+                        return (
+                          <AccessCheckbox
+                            key={item.key}
+                            checked={pageKeys.includes(item.key)}
+                            disabled={reportsAllOn}
+                            onChange={() =>
+                              toggleReportSubPage(item.key, reportsAllOn)
+                            }
+                            label={item.label}
+                          />
+                        );
+                      }
+
+                      const groupAllOn = item.pages.every((page) =>
+                        pageKeys.includes(page.key),
+                      );
+                      const groupExpanded = reportGroupsExpanded[item.id] ?? false;
+
+                      return (
+                        <div key={item.id} className="people-access-subpanel">
+                          <label className="people-access-subpanel-head">
                             <input
                               type="checkbox"
-                              checked={pageKeys.includes(page.key)}
-                              onChange={() => togglePage(page.key)}
+                              checked={groupExpanded}
+                              onChange={() => toggleReportGroupParent(item)}
                             />
-                            {page.label}
+                            {item.label}
                           </label>
-                          {page.key === COLLECTION_ENGINE_PAGE_KEY &&
-                            renderExecScope(
-                              COLLECTION_ENGINE_PAGE_KEY,
-                              collectionSalesExecs,
-                              setCollectionSalesExecs,
-                            )}
-                          {page.key === SALES_ENGINE_PAGE_KEY &&
-                            renderExecScope(
-                              SALES_ENGINE_PAGE_KEY,
-                              salesEngineSalesExecs,
-                              setSalesEngineSalesExecs,
-                            )}
-                          {page.key === SALE_ORDERS_PAGE_KEY &&
-                            renderExecScope(
-                              SALE_ORDERS_PAGE_KEY,
-                              saleOrderSalesExecs,
-                              setSaleOrderSalesExecs,
-                            )}
-                          {page.key === AGEING_REPORT_PAGE_KEY &&
-                            renderExecScope(
-                              AGEING_REPORT_PAGE_KEY,
-                              ageingReportSalesExecs,
-                              setAgeingReportSalesExecs,
-                            )}
+                          {groupExpanded && (
+                            <div className="people-access-panel-body-nested">
+                              <label className="people-access-all">
+                                <input
+                                  type="checkbox"
+                                  checked={groupAllOn}
+                                  disabled={reportsAllOn}
+                                  onChange={() => toggleReportGroupAll(item)}
+                                />
+                                ALL
+                              </label>
+                              {item.pages.map((page) => {
+                                const scoped =
+                                  page.key === COLLECTION_ENGINE_PAGE_KEY ||
+                                  page.key === SALES_ENGINE_PAGE_KEY ||
+                                  page.key === AGEING_REPORT_PAGE_KEY;
+                                return (
+                                  <div
+                                    key={page.key}
+                                    className={
+                                      scoped
+                                        ? "people-access-report-page people-access-scoped"
+                                        : "people-access-report-page"
+                                    }
+                                  >
+                                    <AccessCheckbox
+                                      checked={pageKeys.includes(page.key)}
+                                      disabled={reportsAllOn || groupAllOn}
+                                      onChange={() =>
+                                        toggleReportSubPage(
+                                          page.key,
+                                          reportsAllOn || groupAllOn,
+                                        )
+                                      }
+                                      label={page.label}
+                                    />
+                                    {renderReportExecScope(page.key)}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
+                      );
+                    })}
+                  </AccessPanel>
+                </div>
+              </div>
             </fieldset>
           )}
 
@@ -515,6 +992,76 @@ export function PeopleManager({
   );
 }
 
+function AccessCheckbox({
+  checked,
+  disabled,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  disabled?: boolean;
+  onChange: () => void;
+  label: string;
+}) {
+  return (
+    <label className="people-access-item">
+      <input
+        type="checkbox"
+        checked={checked}
+        disabled={disabled}
+        onChange={onChange}
+      />
+      {label}
+    </label>
+  );
+}
+
+function AccessPanel({
+  title,
+  expanded,
+  onToggleExpanded,
+  allOn,
+  onToggleAll,
+  allDisabled,
+  action,
+  children,
+}: {
+  title: string;
+  expanded: boolean;
+  onToggleExpanded: () => void;
+  allOn: boolean;
+  onToggleAll: () => void;
+  allDisabled?: boolean;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="people-access-panel">
+      <div className="people-access-panel-toolbar">
+        <label className="people-access-panel-head">
+          <input type="checkbox" checked={expanded} onChange={onToggleExpanded} />
+          {title}
+        </label>
+        {action}
+      </div>
+      {expanded && (
+        <div className="people-access-panel-body">
+          <label className="people-access-all">
+            <input
+              type="checkbox"
+              checked={allOn}
+              disabled={allDisabled}
+              onChange={onToggleAll}
+            />
+            ALL
+          </label>
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function toRow(row: {
   id: string;
   name: string;
@@ -524,6 +1071,7 @@ function toRow(row: {
   collectionSalesExecs: string[];
   salesEngineSalesExecs: string[];
   saleOrderSalesExecs: string[];
+  purchaseOrderSalesExecs: string[];
   ageingReportSalesExecs: string[];
 }): PeopleRow {
   return {
@@ -535,6 +1083,7 @@ function toRow(row: {
     collectionSalesExecs: row.collectionSalesExecs,
     salesEngineSalesExecs: row.salesEngineSalesExecs,
     saleOrderSalesExecs: row.saleOrderSalesExecs,
+    purchaseOrderSalesExecs: row.purchaseOrderSalesExecs,
     ageingReportSalesExecs: row.ageingReportSalesExecs,
   };
 }

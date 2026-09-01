@@ -6,12 +6,14 @@ export const REPORT_EXEC_ALL = "*";
 export const COLLECTION_ENGINE_PAGE_KEY = "reports-collection";
 export const SALES_ENGINE_PAGE_KEY = "reports-sales-engine";
 export const SALE_ORDERS_PAGE_KEY = "orders";
+export const PURCHASE_ORDERS_PAGE_KEY = "purchase-orders";
 export const AGEING_REPORT_PAGE_KEY = "reports-ageing";
 
 export const EXEC_SCOPED_REPORT_PAGES = [
   COLLECTION_ENGINE_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
   SALE_ORDERS_PAGE_KEY,
+  PURCHASE_ORDERS_PAGE_KEY,
   AGEING_REPORT_PAGE_KEY,
 ] as const;
 
@@ -104,6 +106,19 @@ export function mergeOrderCustomerFilter(
   where.customer = { AND: [existing, customerFilter] };
 }
 
+export function mergePurchaseOrderImporterFilter(
+  where: Prisma.PurchaseOrderWhereInput,
+  customerFilter: Prisma.CustomerWhereInput | undefined,
+): void {
+  if (!customerFilter) return;
+  const existing = where.importer;
+  if (!existing) {
+    where.importer = customerFilter;
+    return;
+  }
+  where.importer = { AND: [existing, customerFilter] };
+}
+
 export function filterRowsByExecScope<
   T extends { saleExecutive: string | null },
 >(rows: T[], scope: ExecScopeFilter): T[] {
@@ -126,7 +141,9 @@ export function getStaffReportExecScope(
         ? access.salesEngineSalesExecs
         : pageKey === SALE_ORDERS_PAGE_KEY
           ? access.saleOrderSalesExecs
-          : access.ageingReportSalesExecs;
+          : pageKey === PURCHASE_ORDERS_PAGE_KEY
+            ? access.purchaseOrderSalesExecs
+            : access.ageingReportSalesExecs;
 
   return resolveExecScopeFilter(normalizeStoredExecScope(stored, true));
 }

@@ -3214,6 +3214,7 @@ export namespace Prisma {
     collectionSalesExecs: number
     salesEngineSalesExecs: number
     saleOrderSalesExecs: number
+    purchaseOrderSalesExecs: number
     ageingReportSalesExecs: number
     createdAt: number
     updatedAt: number
@@ -3248,6 +3249,7 @@ export namespace Prisma {
     collectionSalesExecs?: true
     salesEngineSalesExecs?: true
     saleOrderSalesExecs?: true
+    purchaseOrderSalesExecs?: true
     ageingReportSalesExecs?: true
     createdAt?: true
     updatedAt?: true
@@ -3335,6 +3337,7 @@ export namespace Prisma {
     collectionSalesExecs: string[]
     salesEngineSalesExecs: string[]
     saleOrderSalesExecs: string[]
+    purchaseOrderSalesExecs: string[]
     ageingReportSalesExecs: string[]
     createdAt: Date
     updatedAt: Date
@@ -3366,6 +3369,7 @@ export namespace Prisma {
     collectionSalesExecs?: boolean
     salesEngineSalesExecs?: boolean
     saleOrderSalesExecs?: boolean
+    purchaseOrderSalesExecs?: boolean
     ageingReportSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3387,6 +3391,7 @@ export namespace Prisma {
     collectionSalesExecs?: boolean
     salesEngineSalesExecs?: boolean
     saleOrderSalesExecs?: boolean
+    purchaseOrderSalesExecs?: boolean
     ageingReportSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3401,6 +3406,7 @@ export namespace Prisma {
     collectionSalesExecs?: boolean
     salesEngineSalesExecs?: boolean
     saleOrderSalesExecs?: boolean
+    purchaseOrderSalesExecs?: boolean
     ageingReportSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3451,6 +3457,10 @@ export namespace Prisma {
        * Sales executives visible on Sale orders. ["*"] = all; else executive names.
        */
       saleOrderSalesExecs: string[]
+      /**
+       * Sales executives visible on Purchase orders. ["*"] = all; else executive names.
+       */
+      purchaseOrderSalesExecs: string[]
       /**
        * Sales executives visible in Ageing Report. ["*"] = all; else executive names.
        */
@@ -3864,6 +3874,7 @@ export namespace Prisma {
     readonly collectionSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly salesEngineSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly saleOrderSalesExecs: FieldRef<"Staff", 'String[]'>
+    readonly purchaseOrderSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly ageingReportSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly createdAt: FieldRef<"Staff", 'DateTime'>
     readonly updatedAt: FieldRef<"Staff", 'DateTime'>
@@ -25124,6 +25135,7 @@ export namespace Prisma {
     collectionSalesExecs: 'collectionSalesExecs',
     salesEngineSalesExecs: 'salesEngineSalesExecs',
     saleOrderSalesExecs: 'saleOrderSalesExecs',
+    purchaseOrderSalesExecs: 'purchaseOrderSalesExecs',
     ageingReportSalesExecs: 'ageingReportSalesExecs',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -25740,6 +25752,7 @@ export namespace Prisma {
     collectionSalesExecs?: StringNullableListFilter<"Staff">
     salesEngineSalesExecs?: StringNullableListFilter<"Staff">
     saleOrderSalesExecs?: StringNullableListFilter<"Staff">
+    purchaseOrderSalesExecs?: StringNullableListFilter<"Staff">
     ageingReportSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
@@ -25760,6 +25773,7 @@ export namespace Prisma {
     collectionSalesExecs?: SortOrder
     salesEngineSalesExecs?: SortOrder
     saleOrderSalesExecs?: SortOrder
+    purchaseOrderSalesExecs?: SortOrder
     ageingReportSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25783,6 +25797,7 @@ export namespace Prisma {
     collectionSalesExecs?: StringNullableListFilter<"Staff">
     salesEngineSalesExecs?: StringNullableListFilter<"Staff">
     saleOrderSalesExecs?: StringNullableListFilter<"Staff">
+    purchaseOrderSalesExecs?: StringNullableListFilter<"Staff">
     ageingReportSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
@@ -25803,6 +25818,7 @@ export namespace Prisma {
     collectionSalesExecs?: SortOrder
     salesEngineSalesExecs?: SortOrder
     saleOrderSalesExecs?: SortOrder
+    purchaseOrderSalesExecs?: SortOrder
     ageingReportSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25823,6 +25839,7 @@ export namespace Prisma {
     collectionSalesExecs?: StringNullableListFilter<"Staff">
     salesEngineSalesExecs?: StringNullableListFilter<"Staff">
     saleOrderSalesExecs?: StringNullableListFilter<"Staff">
+    purchaseOrderSalesExecs?: StringNullableListFilter<"Staff">
     ageingReportSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
@@ -27529,6 +27546,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27549,6 +27567,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27569,6 +27588,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27589,6 +27609,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27609,6 +27630,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27623,6 +27645,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27637,6 +27660,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29632,6 +29656,7 @@ export namespace Prisma {
     collectionSalesExecs?: SortOrder
     salesEngineSalesExecs?: SortOrder
     saleOrderSalesExecs?: SortOrder
+    purchaseOrderSalesExecs?: SortOrder
     ageingReportSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -31076,6 +31101,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type StaffCreatepurchaseOrderSalesExecsInput = {
+    set: string[]
+  }
+
   export type StaffCreateageingReportSalesExecsInput = {
     set: string[]
   }
@@ -31188,6 +31217,11 @@ export namespace Prisma {
   }
 
   export type StaffUpdatesaleOrderSalesExecsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type StaffUpdatepurchaseOrderSalesExecsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -34473,6 +34507,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -34492,6 +34527,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -34767,6 +34803,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34786,6 +34823,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35232,6 +35270,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35251,6 +35290,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -35499,6 +35539,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35518,6 +35559,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36238,6 +36280,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36257,6 +36300,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36561,6 +36605,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36580,6 +36625,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36721,6 +36767,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36740,6 +36787,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -36909,6 +36957,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36928,6 +36977,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37069,6 +37119,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37088,6 +37139,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37257,6 +37309,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37276,6 +37329,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37295,6 +37349,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37314,6 +37369,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37377,6 +37433,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37396,6 +37453,7 @@ export namespace Prisma {
     collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
     salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

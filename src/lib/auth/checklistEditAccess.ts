@@ -1,5 +1,6 @@
 import { AccessDeniedError } from "@/lib/auth/errors";
 import type { Access } from "@/lib/auth/types";
+import { isBillAccountVoucherComplete } from "@/lib/domain/bills";
 import {
   canStaffEditChecklist,
   isPurchaseChecklistComplete,
@@ -8,6 +9,28 @@ import {
 } from "@/lib/domain/dispatchChecklist";
 import type { DispatchTerms } from "@/generated/prisma";
 import type { DecimalLike } from "@/lib/domain/computations";
+
+export function canEditBillAccountVoucher(
+  access: Exclude<Access, { kind: "none" }>,
+  row: {
+    accountVoucherNo: string;
+  },
+): boolean {
+  if (access.kind === "owner") return true;
+  return !isBillAccountVoucherComplete(row);
+}
+
+export function assertCanEditBillAccountVoucher(
+  access: Exclude<Access, { kind: "none" }>,
+  row: {
+    accountVoucherNo: string;
+  },
+): void {
+  if (canEditBillAccountVoucher(access, row)) return;
+  throw new AccessDeniedError(
+    "Account voucher can no longer be edited after it has been completed.",
+  );
+}
 
 export function canEditPurchaseChecklist(
   access: Exclude<Access, { kind: "none" }>,

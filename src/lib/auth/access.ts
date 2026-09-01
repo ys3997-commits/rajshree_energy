@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
-import { canAccessPath, firstAllowedPath } from "@/lib/auth/pages";
+import { canAccessPath, firstAllowedPath, staffHasPageKey } from "@/lib/auth/pages";
 import { normalizeStoredExecScope } from "@/lib/auth/report-exec-access";
 import type { Access } from "@/lib/auth/types";
 import {
@@ -39,6 +39,7 @@ export async function getCurrentAccess(): Promise<Access> {
       collectionSalesExecs: true,
       salesEngineSalesExecs: true,
       saleOrderSalesExecs: true,
+      purchaseOrderSalesExecs: true,
       ageingReportSalesExecs: true,
     },
   });
@@ -63,6 +64,10 @@ export async function getCurrentAccess(): Promise<Access> {
     saleOrderSalesExecs: normalizeStoredExecScope(
       staff.saleOrderSalesExecs,
       pageKeys.includes("orders"),
+    ),
+    purchaseOrderSalesExecs: normalizeStoredExecScope(
+      staff.purchaseOrderSalesExecs,
+      pageKeys.includes("purchase-orders"),
     ),
     ageingReportSalesExecs: normalizeStoredExecScope(
       staff.ageingReportSalesExecs,
@@ -90,7 +95,7 @@ export async function requirePage(
 ): Promise<Exclude<Access, { kind: "none" }>> {
   const access = await requireSignedIn();
   if (access.pageKeys === "all") return access;
-  if (pageKey === "options" || !access.pageKeys.includes(pageKey)) {
+  if (pageKey === "options" || !staffHasPageKey(access.pageKeys, pageKey)) {
     throw new AccessDeniedError();
   }
   return access;

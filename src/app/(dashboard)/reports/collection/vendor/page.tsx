@@ -17,9 +17,6 @@ export default async function VendorCollectionReportPage() {
             Vendor Collection
           </p>
           <h1 className="page-title">Vendor Collection</h1>
-          <p className="page-subtitle">
-            Supplier collection balances and outstanding dues.
-          </p>
         </div>
       </div>
 
