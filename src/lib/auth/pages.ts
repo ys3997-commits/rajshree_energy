@@ -1,3 +1,8 @@
+import {
+  MASTER_OPTION_CATEGORIES,
+  optionsHref,
+} from "@/app/(dashboard)/options/optionsCategories";
+
 export type PageGroup = "Pages" | "Reports";
 
 export type AppPage = {
@@ -13,6 +18,8 @@ export type AppPage = {
   bankSubPage?: boolean;
   /** Shown under Master on the Team access page, not as a top-level row. */
   masterSubPage?: boolean;
+  /** Shown under Master → Options on the Team access page. */
+  masterOptionsSubPage?: boolean;
   /** Shown under Reports on the Team access page, not as a top-level row. */
   reportSubPage?: boolean;
 };
@@ -97,6 +104,34 @@ export const MASTER_SUB_PAGES = [
 ] satisfies AppPage[];
 
 export const MASTER_SUB_PAGE_KEYS = MASTER_SUB_PAGES.map((page) => page.key);
+
+export const MASTER_OPTIONS_SUB_PAGES = MASTER_OPTION_CATEGORIES.map(
+  (category) => ({
+    key: `options-${category.slug}`,
+    href: optionsHref(category.id),
+    label: category.label,
+    group: "Pages" as const,
+    masterOptionsSubPage: true,
+  }),
+) satisfies AppPage[];
+
+export const MASTER_OPTIONS_SUB_PAGE_KEYS = MASTER_OPTIONS_SUB_PAGES.map(
+  (page) => page.key,
+);
+
+export const MASTER_ALL_SUB_PAGE_KEYS = [
+  ...MASTER_SUB_PAGE_KEYS,
+  ...MASTER_OPTIONS_SUB_PAGE_KEYS,
+];
+
+export const MASTER_OPTIONS_GROUP = {
+  id: "options",
+  label: "Options",
+  pages: MASTER_OPTIONS_SUB_PAGES.map((page) => ({
+    key: page.key,
+    label: page.label,
+  })),
+};
 
 export const REPORT_SUB_PAGES = [
   {
@@ -326,6 +361,7 @@ export const APP_PAGES: AppPage[] = [
   ...BANK_SUB_PAGES,
   { key: "bills", href: "/bills", label: "Approvals", group: "Pages" },
   ...MASTER_SUB_PAGES,
+  ...MASTER_OPTIONS_SUB_PAGES,
   { key: "options", href: "/options", label: "Options", group: "Pages", ownerOnly: true },
   ...REPORT_SUB_PAGES,
 ];
@@ -338,6 +374,7 @@ export const TEAM_ACCESS_PAGES = GRANTABLE_PAGES.filter(
     !page.updateSubPage &&
     !page.bankSubPage &&
     !page.masterSubPage &&
+    !page.masterOptionsSubPage &&
     !page.reportSubPage,
 );
 
@@ -392,6 +429,35 @@ export function hasAnyUpdatePageAccess(pageKeys: string[]): boolean {
 export function hasAnyBankPageAccess(pageKeys: string[]): boolean {
   const expanded = expandLegacyBankPageKeys(pageKeys);
   return BANK_SUB_PAGE_KEYS.some((key) => expanded.includes(key));
+}
+
+const OWNER_ONLY_OPTIONS_PATHS = ["/options/team", "/options/owners"] as const;
+
+function isOwnerOnlyOptionsPath(pathname: string): boolean {
+  const path = canonicalPath(pathname);
+  return OWNER_ONLY_OPTIONS_PATHS.some(
+    (href) => path === href || path.startsWith(`${href}/`),
+  );
+}
+
+function masterOptionsSubPageKeyForPath(pathname: string): string | null {
+  const path = canonicalPath(pathname);
+  const matches = MASTER_OPTIONS_SUB_PAGES.filter((page) =>
+    pathMatchesHref(path, page.href),
+  ).sort((a, b) => b.href.length - a.href.length);
+  return matches[0]?.key ?? null;
+}
+
+function canAccessMasterOptionsPath(pageKeys: string[], pathname: string): boolean {
+  if (isOwnerOnlyOptionsPath(pathname)) return false;
+  const path = canonicalPath(pathname);
+  const expanded = expandStaffPageKeys(pageKeys);
+  const subKey = masterOptionsSubPageKeyForPath(pathname);
+  if (subKey) return expanded.includes(subKey);
+  if (path === "/options" || path.startsWith("/options/")) {
+    return MASTER_OPTIONS_SUB_PAGE_KEYS.some((key) => expanded.includes(key));
+  }
+  return false;
 }
 
 function updateSubPageKeyForPath(pathname: string): string | null {
@@ -492,6 +558,7 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
   if (path === "/reports") return hasAnyReportAccess(pageKeys);
   if (canAccessUpdatePath(pageKeys, pathname)) return true;
   if (canAccessBankPath(pageKeys, pathname)) return true;
+  if (canAccessMasterOptionsPath(pageKeys, pathname)) return true;
   const page = pageForPath(path);
   if (!page || page.ownerOnly) return false;
   return pageKeys.includes(page.key);

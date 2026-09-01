@@ -7,7 +7,9 @@ import {
   BANK_SUB_PAGE_KEYS,
   expandStaffPageKeys,
   MASTER_SUB_PAGES,
-  MASTER_SUB_PAGE_KEYS,
+  MASTER_ALL_SUB_PAGE_KEYS,
+  MASTER_OPTIONS_GROUP,
+  MASTER_OPTIONS_SUB_PAGE_KEYS,
   orderedPagesTeamAccess,
   PAGE_GROUPS,
   REPORT_ACCESS_ITEMS,
@@ -92,6 +94,7 @@ export function PeopleManager({
   const [updateExpanded, setUpdateExpanded] = useState(false);
   const [bankExpanded, setBankExpanded] = useState(false);
   const [masterExpanded, setMasterExpanded] = useState(false);
+  const [masterOptionsExpanded, setMasterOptionsExpanded] = useState(false);
   const [reportsExpanded, setReportsExpanded] = useState(false);
   const [reportGroupsExpanded, setReportGroupsExpanded] = useState<
     Record<string, boolean>
@@ -128,6 +131,7 @@ export function PeopleManager({
     setUpdateExpanded(false);
     setBankExpanded(false);
     setMasterExpanded(false);
+    setMasterOptionsExpanded(false);
     setReportsExpanded(false);
     setReportGroupsExpanded({});
     setEditorOpen(true);
@@ -149,7 +153,10 @@ export function PeopleManager({
         item.pageKeys.includes("payments"),
     );
     setMasterExpanded(
-      MASTER_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
+      MASTER_ALL_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
+    );
+    setMasterOptionsExpanded(
+      MASTER_OPTIONS_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
     );
     setReportsExpanded(
       REPORT_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
@@ -243,21 +250,25 @@ export function PeopleManager({
     setMasterExpanded(turningOn);
     if (!turningOn) {
       setPageKeys((current) =>
-        current.filter((key) => !MASTER_SUB_PAGE_KEYS.includes(key)),
+        current.filter((key) => !MASTER_ALL_SUB_PAGE_KEYS.includes(key)),
       );
+      setMasterOptionsExpanded(false);
     }
   }
 
   function toggleMasterAll() {
-    const allOn = MASTER_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    const allOn = MASTER_ALL_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
     setPageKeys((current) => {
-      const without = current.filter((key) => !MASTER_SUB_PAGE_KEYS.includes(key));
-      return allOn ? without : [...without, ...MASTER_SUB_PAGE_KEYS];
+      const without = current.filter((key) => !MASTER_ALL_SUB_PAGE_KEYS.includes(key));
+      return allOn ? without : [...without, ...MASTER_ALL_SUB_PAGE_KEYS];
     });
+    if (!allOn) {
+      setMasterOptionsExpanded(true);
+    }
   }
 
   function toggleMasterSubPage(key: string) {
-    const allOn = MASTER_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    const allOn = MASTER_ALL_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
     if (allOn) return;
     setPageKeys((current) =>
       current.includes(key)
@@ -266,7 +277,44 @@ export function PeopleManager({
     );
   }
 
-  const masterAllOn = MASTER_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+  function toggleMasterOptionsParent() {
+    const turningOn = !masterOptionsExpanded;
+    setMasterOptionsExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !MASTER_OPTIONS_SUB_PAGE_KEYS.includes(key)),
+      );
+    }
+  }
+
+  function toggleMasterOptionsAll() {
+    const keys = MASTER_OPTIONS_SUB_PAGE_KEYS;
+    const allOn = keys.every((key) => pageKeys.includes(key));
+    const masterAllOn = MASTER_ALL_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !keys.includes(key));
+      return allOn ? without : [...without, ...keys];
+    });
+    if (!allOn && !masterAllOn) {
+      setMasterOptionsExpanded(true);
+    }
+  }
+
+  function toggleMasterOptionsSubPage(key: string) {
+    const groupAllOn = MASTER_OPTIONS_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    const masterAllOn = MASTER_ALL_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    if (groupAllOn || masterAllOn) return;
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  const masterAllOn = MASTER_ALL_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+  const masterOptionsAllOn = MASTER_OPTIONS_SUB_PAGE_KEYS.every((key) =>
+    pageKeys.includes(key),
+  );
 
   function applyExecScopeDefault(key: string) {
     if (key === COLLECTION_ENGINE_PAGE_KEY) {
@@ -440,7 +488,7 @@ export function PeopleManager({
         ? [
             ...UPDATE_SUB_PAGE_KEYS,
             ...BANK_SUB_PAGE_KEYS,
-            ...MASTER_SUB_PAGE_KEYS,
+            ...MASTER_ALL_SUB_PAGE_KEYS,
           ]
         : group === "Reports"
           ? REPORT_SUB_PAGE_KEYS
@@ -468,6 +516,7 @@ export function PeopleManager({
           setUpdateExpanded(false);
           setBankExpanded(false);
           setMasterExpanded(false);
+          setMasterOptionsExpanded(false);
         }
         if (group === "Reports") {
           setReportsExpanded(false);
@@ -510,6 +559,7 @@ export function PeopleManager({
         setUpdateExpanded(true);
         setBankExpanded(true);
         setMasterExpanded(true);
+        setMasterOptionsExpanded(true);
       }
       if (group === "Reports") {
         setReportsExpanded(true);
@@ -776,7 +826,7 @@ export function PeopleManager({
                       ...orderedPagesTeamAccess().map((page) => page.key),
                       ...UPDATE_SUB_PAGE_KEYS,
                       ...BANK_SUB_PAGE_KEYS,
-                      ...MASTER_SUB_PAGE_KEYS,
+                      ...MASTER_ALL_SUB_PAGE_KEYS,
                     ].every((key) => pageKeys.includes(key))
                       ? "Clear"
                       : "Select all"}
@@ -868,6 +918,38 @@ export function PeopleManager({
                         label={subPage.label}
                       />
                     ))}
+                    <div className="people-access-subpanel">
+                      <label className="people-access-subpanel-head">
+                        <input
+                          type="checkbox"
+                          checked={masterOptionsExpanded}
+                          onChange={toggleMasterOptionsParent}
+                        />
+                        {MASTER_OPTIONS_GROUP.label}
+                      </label>
+                      {masterOptionsExpanded && (
+                        <div className="people-access-panel-body-nested">
+                          <label className="people-access-all">
+                            <input
+                              type="checkbox"
+                              checked={masterOptionsAllOn}
+                              disabled={masterAllOn}
+                              onChange={toggleMasterOptionsAll}
+                            />
+                            ALL
+                          </label>
+                          {MASTER_OPTIONS_GROUP.pages.map((page) => (
+                            <AccessCheckbox
+                              key={page.key}
+                              checked={pageKeys.includes(page.key)}
+                              disabled={masterAllOn || masterOptionsAllOn}
+                              onChange={() => toggleMasterOptionsSubPage(page.key)}
+                              label={page.label}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </AccessPanel>
                 </div>
               </div>

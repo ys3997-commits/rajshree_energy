@@ -89,6 +89,11 @@ export const USER_MENU_CATEGORIES = OPTION_CATEGORIES.filter((category) =>
   userMenuCategoryIdSet.has(category.id),
 );
 
+/** Option lists under Masters → Options (excludes Team/Owner in Users menu). */
+export const MASTER_OPTION_CATEGORIES = OPTION_CATEGORIES.filter(
+  (category) => !userMenuCategoryIdSet.has(category.id),
+);
+
 const slugById = new Map(
   OPTION_CATEGORIES.map((category) => [category.id, category.slug]),
 );

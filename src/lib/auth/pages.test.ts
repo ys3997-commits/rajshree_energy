@@ -72,6 +72,14 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
   });
+
+  it("scopes master options sub-pages separately", () => {
+    expect(canAccessPath(["options-origins"], "/options/origins")).toBe(true);
+    expect(canAccessPath(["options-origins"], "/options/ports")).toBe(false);
+    expect(canAccessPath(["options-ports"], "/options/ports")).toBe(true);
+    expect(canAccessPath(["options-origins"], "/options/team")).toBe(false);
+    expect(canAccessPath("all", "/options/team")).toBe(true);
+  });
 });
 
 describe("firstAllowedPath", () => {
