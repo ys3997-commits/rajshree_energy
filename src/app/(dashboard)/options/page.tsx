@@ -5,7 +5,7 @@ import { OPTION_CATEGORIES } from "./optionsCategories";
 
 export default async function OptionsPage() {
   const access = await getCurrentAccess();
-  if (access.kind === "staff" && access.pageKeys !== "all") {
+  if (access.kind === "staff") {
     const firstAllowed = MASTER_OPTIONS_SUB_PAGES.find((page) =>
       canAccessPath(access.pageKeys, page.href),
     );
