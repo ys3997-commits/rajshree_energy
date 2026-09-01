@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   billDateRange,
-  canReviewBill,
+  canApproveBill,
+  canRejectBill,
   canUploadBill,
   canViewBill,
   parseBillStatusFilter,
@@ -135,15 +136,20 @@ describe("bill access", () => {
     expect(canUploadBill(staff)).toBe(true);
     expect(canViewBill(staff, "s1")).toBe(true);
     expect(canViewBill(staff, "s2")).toBe(false);
-    expect(canReviewBill(staff, "PENDING")).toBe(false);
+    expect(canApproveBill(staff, "PENDING")).toBe(false);
+    expect(canRejectBill(staff, "PENDING")).toBe(false);
   });
 
-  it("lets the owner see all bills and review pending ones", () => {
+  it("lets the owner approve pending or rejected bills and reject only pending", () => {
     const owner = { kind: "owner" };
     expect(canUploadBill(owner)).toBe(false);
     expect(canViewBill(owner, "s1")).toBe(true);
-    expect(canReviewBill(owner, "PENDING")).toBe(true);
-    expect(canReviewBill(owner, "REJECTED")).toBe(false);
+    expect(canApproveBill(owner, "PENDING")).toBe(true);
+    expect(canRejectBill(owner, "PENDING")).toBe(true);
+    expect(canApproveBill(owner, "REJECTED")).toBe(true);
+    expect(canRejectBill(owner, "REJECTED")).toBe(false);
+    expect(canApproveBill(owner, "APPROVED")).toBe(false);
+    expect(canRejectBill(owner, "APPROVED")).toBe(false);
   });
 });
 

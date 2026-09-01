@@ -9,7 +9,8 @@ import {
 import { toDecimal } from "@/lib/domain/computations";
 import {
   billDateRange,
-  canReviewBill,
+  canApproveBill,
+  canRejectBill,
   canUploadBill,
   canViewBill,
   parseBillStatusFilter,
@@ -381,8 +382,12 @@ export async function reviewBill(
     select: { id: true, status: true },
   });
   if (!existing) throw new Error("Bill not found");
-  if (!canReviewBill(access, existing.status)) {
-    throw new Error("This bill has already been reviewed");
+  const allowed =
+    status === "APPROVED"
+      ? canApproveBill(access, existing.status)
+      : canRejectBill(access, existing.status);
+  if (!allowed) {
+    throw new Error("This bill cannot be reviewed in its current state");
   }
 
   const row = await prisma.bill.update({

@@ -517,25 +517,25 @@ export function BillsClient({
                 </td>
                 {isOwner ? (
                   <td className="space-x-2 whitespace-nowrap">
+                    {row.status === "PENDING" || row.status === "REJECTED" ? (
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        disabled={pending}
+                        onClick={() => openReview(row, "APPROVED")}
+                      >
+                        Approve
+                      </button>
+                    ) : null}
                     {row.status === "PENDING" ? (
-                      <>
-                        <button
-                          type="button"
-                          className="btn btn-sm"
-                          disabled={pending}
-                          onClick={() => openReview(row, "APPROVED")}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-sm"
-                          disabled={pending}
-                          onClick={() => openReview(row, "REJECTED")}
-                        >
-                          Reject
-                        </button>
-                      </>
+                      <button
+                        type="button"
+                        className="btn btn-danger btn-sm"
+                        disabled={pending}
+                        onClick={() => openReview(row, "REJECTED")}
+                      >
+                        Reject
+                      </button>
                     ) : null}
                   </td>
                 ) : null}

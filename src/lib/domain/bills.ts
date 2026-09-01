@@ -182,7 +182,17 @@ export function canUploadBill(access: { kind: string }): boolean {
   return access.kind === "staff";
 }
 
-export function canReviewBill(
+export function canApproveBill(
+  access: { kind: string },
+  status: string,
+): boolean {
+  return (
+    access.kind === "owner" &&
+    (status === "PENDING" || status === "REJECTED")
+  );
+}
+
+export function canRejectBill(
   access: { kind: string },
   status: string,
 ): boolean {
