@@ -125,6 +125,7 @@ function isOrdersActive(pathname: string) {
 
 export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }) {
   const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
@@ -147,12 +148,28 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const allowed = (href: string) => canAccessPath(access.pageKeys, href);
 
   useEffect(() => {
+    setMobileNavOpen(false);
     setReportOpen(false);
     setUpdateOpen(false);
     setOrdersOpen(false);
     setMastersOpen(false);
     setOpenSubmenu(null);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMobileNavOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [mobileNavOpen]);
 
   useEffect(() => {
     if (!updateOpen) return;
@@ -268,10 +285,25 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const afterUpdate = links.slice(bankIndex);
 
   return (
-    <header className="app-header">
+    <header className={`app-header${mobileNavOpen ? " nav-open" : ""}`}>
       <div className="app-header-inner">
-        <div className="flex min-w-0 flex-1 items-center gap-8">
-          <nav className="app-nav">
+        <button
+          type="button"
+          className="app-nav-toggle"
+          aria-expanded={mobileNavOpen}
+          aria-controls="app-nav"
+          onClick={() => setMobileNavOpen((open) => !open)}
+        >
+          <span className="sr-only">
+            {mobileNavOpen ? "Close menu" : "Open menu"}
+          </span>
+          <span className="app-nav-toggle-icon" aria-hidden="true" />
+        </button>
+        <div className="app-header-nav-wrap">
+          <nav
+            id="app-nav"
+            className={`app-nav${mobileNavOpen ? " is-open" : ""}`}
+          >
             {leadingLinks.map((link) => {
               const active = isActivePath(pathname, link.href);
               return (
