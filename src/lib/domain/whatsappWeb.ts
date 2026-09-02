@@ -3,6 +3,8 @@ export const WHATSAPP_WEB_WINDOW_NAME = "rajshree_whatsapp_web";
 
 const TAB_GLOBAL_KEY = "__rajshreeWhatsAppWebTab";
 const WEB_OPENED_KEY = "rajshree_whatsapp_web_opened";
+/** Wait briefly to see if the WhatsApp app takes focus before opening Web. */
+const APP_HANDOFF_MS = 350;
 
 type WindowWithWhatsAppTab = Window & {
   [TAB_GLOBAL_KEY]?: Window | null;
@@ -81,22 +83,34 @@ function openWhatsAppWebTab(webUrl: string): boolean {
   return false;
 }
 
+function tryAppThenWeb(links: { app: string; web: string }): boolean {
+  let appHandedOff = false;
+  const onBlur = () => {
+    appHandedOff = true;
+  };
+  window.addEventListener("blur", onBlur);
+  tryWhatsAppApp(links.app);
+
+  window.setTimeout(() => {
+    window.removeEventListener("blur", onBlur);
+    if (!appHandedOff) {
+      openWhatsAppWebTab(links.web);
+    }
+  }, APP_HANDOFF_MS);
+
+  return true;
+}
+
 /**
- * Send a WhatsApp message through WhatsApp Web (preferred) or the desktop app.
- * Reuses the same Web tab on every click — no new tab when Web is already open.
+ * Send a WhatsApp message: try the desktop/mobile app first, then WhatsApp Web.
+ * Reuses the same Web tab when the app is not installed or does not take focus.
  */
 export function openWhatsAppMessage(links: {
   app: string;
   web: string;
 }): boolean {
   if (typeof window === "undefined") return false;
-
-  if (openWhatsAppWebTab(links.web)) {
-    return true;
-  }
-
-  tryWhatsAppApp(links.app);
-  return false;
+  return tryAppThenWeb(links);
 }
 
 /** @deprecated Use openWhatsAppMessage — kept for tests and simple web-only callers. */
