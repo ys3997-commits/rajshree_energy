@@ -2,7 +2,7 @@
 export const WHATSAPP_WEB_WINDOW_NAME = "rajshree_whatsapp_web";
 
 const TAB_GLOBAL_KEY = "__rajshreeWhatsAppWebTab";
-const APP_HANDOFF_MS = 800;
+const WEB_OPENED_KEY = "rajshree_whatsapp_web_opened";
 
 type WindowWithWhatsAppTab = Window & {
   [TAB_GLOBAL_KEY]?: Window | null;
@@ -20,21 +20,25 @@ function setStoredTab(tab: Window | null): void {
   (window as WindowWithWhatsAppTab)[TAB_GLOBAL_KEY] = tab;
 }
 
-function openWhatsAppWebTab(webUrl: string): Window | null {
-  const tab = window.open(webUrl, WHATSAPP_WEB_WINDOW_NAME);
-  if (tab) {
-    setStoredTab(tab);
-    tab.focus();
-    return tab;
+function markWebOpened(): void {
+  try {
+    sessionStorage.setItem(WEB_OPENED_KEY, "1");
+  } catch {
+    // Ignore private-mode / storage errors.
   }
+}
 
-  const existing = getStoredTab();
-  if (existing) {
-    existing.focus();
-    return existing;
+function hasOpenedWebBefore(): boolean {
+  try {
+    return sessionStorage.getItem(WEB_OPENED_KEY) === "1";
+  } catch {
+    return false;
   }
+}
 
-  return null;
+/** Same-origin URL that redirects into WhatsApp Web (keeps the named tab reusable). */
+export function buildWhatsAppLaunchUrl(webUrl: string): string {
+  return `/whatsapp-launch?to=${encodeURIComponent(webUrl)}`;
 }
 
 function tryWhatsAppApp(appUrl: string): void {
@@ -47,8 +51,39 @@ function tryWhatsAppApp(appUrl: string): void {
 }
 
 /**
- * Send a WhatsApp message via an existing Web tab or the desktop/mobile app.
- * Opens WhatsApp Web only once; later clicks reuse the same tab.
+ * Open or reuse one WhatsApp Web tab via our redirect page so the browser keeps
+ * the same named window across sends (direct web.whatsapp.com links break reuse).
+ */
+function openWhatsAppWebTab(webUrl: string): boolean {
+  const launchUrl = buildWhatsAppLaunchUrl(webUrl);
+  const existing = getStoredTab();
+
+  const tab = window.open(launchUrl, WHATSAPP_WEB_WINDOW_NAME);
+  if (tab) {
+    if (existing && !existing.closed && existing !== tab) {
+      existing.close();
+    }
+    setStoredTab(tab);
+    markWebOpened();
+    tab.focus();
+    return true;
+  }
+
+  if (existing && !existing.closed) {
+    existing.focus();
+    return true;
+  }
+
+  if (hasOpenedWebBefore()) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Send a WhatsApp message through WhatsApp Web (preferred) or the desktop app.
+ * Reuses the same Web tab on every click — no new tab when Web is already open.
  */
 export function openWhatsAppMessage(links: {
   app: string;
@@ -56,29 +91,16 @@ export function openWhatsAppMessage(links: {
 }): boolean {
   if (typeof window === "undefined") return false;
 
-  const existingWeb = getStoredTab();
-  if (existingWeb) {
-    return openWhatsAppWebTab(links.web) != null;
+  if (openWhatsAppWebTab(links.web)) {
+    return true;
   }
 
-  let handedOffToApp = false;
-  const onBlur = () => {
-    handedOffToApp = true;
-  };
-  window.addEventListener("blur", onBlur);
   tryWhatsAppApp(links.app);
-
-  window.setTimeout(() => {
-    window.removeEventListener("blur", onBlur);
-    if (!handedOffToApp) {
-      openWhatsAppWebTab(links.web);
-    }
-  }, APP_HANDOFF_MS);
-
-  return true;
+  return false;
 }
 
 /** @deprecated Use openWhatsAppMessage — kept for tests and simple web-only callers. */
 export function openWhatsAppWeb(webUrl: string): Window | null {
-  return openWhatsAppWebTab(webUrl);
+  if (!openWhatsAppWebTab(webUrl)) return null;
+  return getStoredTab();
 }
