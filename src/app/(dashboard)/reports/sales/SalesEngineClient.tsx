@@ -2,12 +2,21 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { Modal } from "@/components/Modal";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
   updatePlannedSaleCall,
+  updateSalesOfferFreight,
+  updateSalesOfferPrice,
+  updateSalesSmsType,
   type SalesEngineRow,
 } from "@/lib/actions/salesEngine";
+import {
+  salesWhatsAppDisabledReason,
+  salesWhatsAppLinks,
+} from "@/lib/domain/salesWhatsApp";
+import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
 import {
   capitalizeName,
@@ -15,7 +24,10 @@ import {
   formatCreditPeriod,
   formatCustomerCategory,
   formatDateDdMmYyyy,
+  formatIndianAmountTyping,
   formatMt,
+  formatRs,
+  parseAmountInput,
 } from "@/lib/domain/format";
 
 type PlannedCallFilter =
@@ -126,6 +138,92 @@ function sortIndicator(active: boolean, dir: SortDir): string {
   return dir === "asc" ? " ↑" : " ↓";
 }
 
+type OfferField = "offerPrice" | "offerFreight";
+type SalesSmsTypeValue = "DELIVERED" | "EX_PORT" | "REQUIREMENT";
+
+const SMS_TYPE_OPTIONS: { value: SalesSmsTypeValue; label: string }[] = [
+  { value: "DELIVERED", label: "Delivered" },
+  { value: "EX_PORT", label: "Ex-Port" },
+  { value: "REQUIREMENT", label: "Requirement" },
+];
+
+function formatSalesSmsType(
+  value: SalesSmsTypeValue | null | undefined,
+): string {
+  if (!value) return "";
+  return SMS_TYPE_OPTIONS.find((option) => option.value === value)?.label ?? value;
+}
+
+function formatOfferAmountDisplay(value: string | null | undefined): string {
+  if (!value?.trim()) return "";
+  return formatIndianAmountTyping(value, 3);
+}
+
+function normalizeOfferDraft(value: string): string | null {
+  const trimmed = parseAmountInput(value).replace(/[^\d.]/g, "");
+  return trimmed === "" ? null : trimmed;
+}
+
+function isValidOfferDraft(value: string): boolean {
+  const trimmed = parseAmountInput(value).replace(/[^\d.]/g, "");
+  if (trimmed === "") return true;
+  return /^\d*\.?\d{0,3}$/.test(trimmed);
+}
+
+function OfferAmountInput({
+  customerName,
+  field,
+  value,
+  disabled,
+  onSave,
+}: {
+  customerName: string;
+  field: OfferField;
+  value: string | null;
+  disabled: boolean;
+  onSave: (value: string | null) => void;
+}) {
+  const [draft, setDraft] = useState(formatOfferAmountDisplay(value));
+
+  useEffect(() => {
+    setDraft(formatOfferAmountDisplay(value));
+  }, [value]);
+
+  const label =
+    field === "offerPrice"
+      ? `Offer price for ${customerName}`
+      : `Offer freight for ${customerName}`;
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      className="field-input sales-offer-input"
+      aria-label={label}
+      value={draft}
+      disabled={disabled}
+      onChange={(e) => {
+        const raw = parseAmountInput(e.target.value).replace(/[^\d.]/g, "");
+        if (raw === "") {
+          setDraft("");
+          return;
+        }
+        if (!isValidOfferDraft(raw)) return;
+        setDraft(formatIndianAmountTyping(raw, 3));
+      }}
+      onBlur={() => {
+        const next = normalizeOfferDraft(draft);
+        const current = value?.trim() ? value.trim() : null;
+        if (next === current) {
+          setDraft(formatOfferAmountDisplay(next));
+          return;
+        }
+        onSave(next);
+      }}
+    />
+  );
+}
+
 export function SalesEngineClient({
   initialRows,
   allowedSaleExecutives,
@@ -135,15 +233,19 @@ export function SalesEngineClient({
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
-  const [prevInitial, setPrevInitial] = useState(initialRows);
-  if (initialRows !== prevInitial) {
-    setPrevInitial(initialRows);
+
+  useEffect(() => {
     setRows(initialRows);
-  }
+  }, [initialRows]);
 
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [savingCallId, setSavingCallId] = useState<string | null>(null);
+  const [savingOffer, setSavingOffer] = useState<{
+    id: string;
+    field: OfferField;
+  } | null>(null);
+  const [savingSmsTypeId, setSavingSmsTypeId] = useState<string | null>(null);
 
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
@@ -276,6 +378,9 @@ export function SalesEngineClient({
     { key: "overdue", header: "Overdue", align: "right" as const },
     { key: "creditPeriod", header: "Credit Period", align: "right" as const },
     { key: "plannedCall", header: "Planned Call" },
+    { key: "offerPrice", header: "Offer Price", align: "right" as const },
+    { key: "offerFreight", header: "Offer Freight", align: "right" as const },
+    { key: "smsType", header: "SMS Type" },
   ];
 
   const exportRows = useMemo(
@@ -297,6 +402,9 @@ export function SalesEngineClient({
         overdue: formatAmount(row.overdue),
         creditPeriod: formatCreditPeriod(row.creditDays),
         plannedCall: formatDateDdMmYyyy(row.plannedSaleCallDate),
+        offerPrice: row.offerPrice ? formatRs(row.offerPrice) : "",
+        offerFreight: row.offerFreight ? formatRs(row.offerFreight) : "",
+        smsType: formatSalesSmsType(row.smsType),
       })),
     [filtered, today],
   );
@@ -334,9 +442,87 @@ export function SalesEngineClient({
     });
   }
 
+  function onOfferFieldSave(
+    customerId: string,
+    field: OfferField,
+    value: string | null,
+  ) {
+    setError(null);
+    setRows((prev) =>
+      prev.map((row) => (row.id === customerId ? { ...row, [field]: value } : row)),
+    );
+    setSavingOffer({ id: customerId, field });
+    startTransition(async () => {
+      try {
+        const result =
+          field === "offerPrice"
+            ? await updateSalesOfferPrice(customerId, value)
+            : await updateSalesOfferFreight(customerId, value);
+        setRows((prev) =>
+          prev.map((row) =>
+            row.id === customerId ? { ...row, ...result } : row,
+          ),
+        );
+        router.refresh();
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : `Failed to save ${field === "offerPrice" ? "offer price" : "offer freight"}`,
+        );
+        router.refresh();
+      } finally {
+        setSavingOffer(null);
+      }
+    });
+  }
+
+  function onSmsTypeChange(customerId: string, value: string) {
+    const nextSmsType =
+      value === "DELIVERED" || value === "EX_PORT" || value === "REQUIREMENT"
+        ? value
+        : null;
+    setError(null);
+    setRows((prev) =>
+      prev.map((row) =>
+        row.id === customerId ? { ...row, smsType: nextSmsType } : row,
+      ),
+    );
+    setSavingSmsTypeId(customerId);
+    startTransition(async () => {
+      try {
+        const result = await updateSalesSmsType(customerId, nextSmsType);
+        setRows((prev) =>
+          prev.map((row) =>
+            row.id === customerId ? { ...row, smsType: result.smsType } : row,
+          ),
+        );
+        router.refresh();
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to save SMS type",
+        );
+        router.refresh();
+      } finally {
+        setSavingSmsTypeId(null);
+      }
+    });
+  }
+
   return (
     <div>
-      {error && <p className="form-error">{error}</p>}
+      <Modal
+        open={error !== null}
+        title="Message"
+        onClose={() => setError(null)}
+      >
+        <p className="mb-4">{error}</p>
+        <div className="modal-actions">
+          <button type="button" className="btn" onClick={() => setError(null)}>
+            OK
+          </button>
+        </div>
+      </Modal>
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
@@ -521,12 +707,29 @@ export function SalesEngineClient({
                 </button>
               </th>
               <th className="cell-num">Credit Period</th>
-              <th>Planned Call</th>
+              <th className="collection-date-col">Planned Call</th>
+              <th className="cell-num sales-offer-col">Offer Price</th>
+              <th className="cell-num sales-offer-col">Offer Freight</th>
+              <th className="sales-sms-type-col">SMS Type</th>
+              <th className="collection-whatsapp-col" aria-label="WhatsApp" />
             </tr>
           </thead>
           <tbody>
             {filtered.map((row) => {
               const rowClass = rowHighlightClass(row.plannedSaleCallDate, today);
+              const waDisabledReason = salesWhatsAppDisabledReason({
+                purchaserContact: row.purchaserContact,
+                smsType: row.smsType,
+                offerPrice: row.offerPrice,
+                offerFreight: row.offerFreight,
+              });
+              const waLinks = salesWhatsAppLinks({
+                purchaserName: row.purchaserName,
+                purchaserContact: row.purchaserContact,
+                smsType: row.smsType,
+                offerPrice: row.offerPrice,
+                offerFreight: row.offerFreight,
+              });
               return (
                 <tr key={row.id} className={rowClass}>
                   <td className="report-customer-col">
@@ -559,7 +762,7 @@ export function SalesEngineClient({
                   <td className="cell-num">
                     {formatCreditPeriod(row.creditDays)}
                   </td>
-                  <td>
+                  <td className="collection-date-col">
                     <input
                       type="date"
                       lang="en-GB"
@@ -572,12 +775,99 @@ export function SalesEngineClient({
                       }
                     />
                   </td>
+                  <td className="cell-num sales-offer-col">
+                    <OfferAmountInput
+                      customerName={row.name}
+                      field="offerPrice"
+                      value={row.offerPrice}
+                      disabled={
+                        pending ||
+                        (savingOffer?.id === row.id &&
+                          savingOffer.field === "offerPrice")
+                      }
+                      onSave={(value) =>
+                        onOfferFieldSave(row.id, "offerPrice", value)
+                      }
+                    />
+                  </td>
+                  <td className="cell-num sales-offer-col">
+                    <OfferAmountInput
+                      customerName={row.name}
+                      field="offerFreight"
+                      value={row.offerFreight}
+                      disabled={
+                        pending ||
+                        (savingOffer?.id === row.id &&
+                          savingOffer.field === "offerFreight")
+                      }
+                      onSave={(value) =>
+                        onOfferFieldSave(row.id, "offerFreight", value)
+                      }
+                    />
+                  </td>
+                  <td className="sales-sms-type-col">
+                    <select
+                      className="field-input sales-sms-type-select"
+                      aria-label={`SMS type for ${row.name}`}
+                      value={row.smsType ?? ""}
+                      disabled={savingSmsTypeId === row.id || pending}
+                      onChange={(e) => onSmsTypeChange(row.id, e.target.value)}
+                    >
+                      <option value="" />
+                      {SMS_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="collection-whatsapp-col">
+                    <a
+                      className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
+                      href={waLinks?.web}
+                      rel="noopener noreferrer"
+                      aria-disabled={!waLinks}
+                      aria-label={
+                        waLinks
+                          ? `WhatsApp ${row.purchaserName ?? row.name}`
+                          : (waDisabledReason ?? "WhatsApp unavailable")
+                      }
+                      tabIndex={waLinks ? undefined : -1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (!waLinks) {
+                          setError(
+                            waDisabledReason ??
+                              "WhatsApp is unavailable for this row.",
+                          );
+                          return;
+                        }
+                        const opened = openWhatsAppMessage(waLinks);
+                        if (!opened) {
+                          setError("Open WhatsApp First");
+                          return;
+                        }
+                      }}
+                      title={
+                        waLinks
+                          ? "Open WhatsApp with sales message"
+                          : (waDisabledReason ?? "WhatsApp unavailable")
+                      }
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path
+                          fill="currentColor"
+                          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                        />
+                      </svg>
+                    </a>
+                  </td>
                 </tr>
               );
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={12}>
+                <td colSpan={16}>
                   {rows.length === 0
                     ? "No active customers."
                     : "No customers match these filters."}

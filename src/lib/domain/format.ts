@@ -42,7 +42,10 @@ export function parseAmountInput(value: string): string {
  * Format a partially typed amount with Indian commas (e.g. 10,00,000.50).
  * Keeps a trailing decimal point while typing.
  */
-export function formatIndianAmountTyping(value: string): string {
+export function formatIndianAmountTyping(
+  value: string,
+  maxFractionDigits = 2,
+): string {
   const cleaned = parseAmountInput(value).replace(/[^\d.]/g, "");
   if (!cleaned) return "";
 
@@ -50,7 +53,7 @@ export function formatIndianAmountTyping(value: string): string {
   let intDigits = dot === -1 ? cleaned : cleaned.slice(0, dot);
   let fracDigits = dot === -1 ? null : cleaned.slice(dot + 1).replace(/\./g, "");
 
-  if (fracDigits != null) fracDigits = fracDigits.slice(0, 2);
+  if (fracDigits != null) fracDigits = fracDigits.slice(0, maxFractionDigits);
   // Avoid leading zeros like 0001 → 1, but keep a lone 0.
   intDigits = intDigits.replace(/^0+(?=\d)/, "");
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
 import { updatePlannedCollectionCall, updateCollectionThrough } from "@/lib/actions/collection";
 import type { CustomerDueRow } from "@/lib/actions/customers";
@@ -15,8 +15,8 @@ import {
 import {
   collectionWhatsAppDisabledReason,
   collectionWhatsAppLinks,
-  openCollectionWhatsAppWeb,
 } from "@/lib/domain/collectionWhatsApp";
+import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 import { Modal } from "@/components/Modal";
 import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
 
@@ -132,11 +132,10 @@ export function CollectionClient({
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
-  const [prevInitialRows, setPrevInitialRows] = useState(initialRows);
-  if (initialRows !== prevInitialRows) {
-    setPrevInitialRows(initialRows);
+
+  useEffect(() => {
     setRows(initialRows);
-  }
+  }, [initialRows]);
 
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -674,21 +673,11 @@ export function CollectionClient({
                             return;
                           }
                           // One named tab for Web — later clicks reuse it.
-                          const opened = openCollectionWhatsAppWeb(waLinks.web);
+                          const opened = openWhatsAppMessage(waLinks);
                           if (!opened) {
                             setError("Open WhatsApp First");
                             return;
                           }
-                          // Also try the Desktop/mobile app.
-                          const appUrl = waLinks.app;
-                          window.setTimeout(() => {
-                            const appLink = document.createElement("a");
-                            appLink.href = appUrl;
-                            appLink.style.display = "none";
-                            document.body.appendChild(appLink);
-                            appLink.click();
-                            appLink.remove();
-                          }, 0);
                         }}
                         title={
                           waLinks

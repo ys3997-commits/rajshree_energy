@@ -1,6 +1,6 @@
 "use server";
 
-import { CustomerCategory } from "@/generated/prisma";
+import { CustomerCategory, SalesSmsType } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { balanceOrder } from "@/lib/domain/computations";
@@ -35,6 +35,9 @@ export type SalesEngineRow = {
   due: string;
   overdue: string;
   plannedSaleCallDate: string | null;
+  offerPrice: string | null;
+  offerFreight: string | null;
+  smsType: "DELIVERED" | "EX_PORT" | "REQUIREMENT" | null;
 };
 
 function parseOptionalDate(value: string | null): Date | null {
@@ -46,6 +49,49 @@ function parseOptionalDate(value: string | null): Date | null {
   const date = new Date(`${trimmed}T00:00:00.000Z`);
   if (Number.isNaN(date.getTime())) throw new Error("Invalid planned call date");
   return date;
+}
+
+function parseOptionalRate(value: string | null): Decimal | null {
+  if (value == null || value.trim() === "") return null;
+  const trimmed = value.trim().replace(/,/g, "");
+  if (!/^\d+(\.\d{1,3})?$/.test(trimmed)) {
+    throw new Error("Invalid amount");
+  }
+  return new Decimal(trimmed);
+}
+
+function parseSalesSmsType(
+  value: string | null,
+): "DELIVERED" | "EX_PORT" | "REQUIREMENT" | null {
+  if (value == null || value.trim() === "") return null;
+  if (
+    value === SalesSmsType.DELIVERED ||
+    value === SalesSmsType.EX_PORT ||
+    value === SalesSmsType.REQUIREMENT
+  ) {
+    return value;
+  }
+  throw new Error("Invalid SMS type");
+}
+
+async function assertSalesEngineCustomerAccess(customerId: string) {
+  const access = await requirePage(SALES_ENGINE_PAGE_KEY);
+
+  const existing = await prisma.customer.findUnique({
+    where: { id: customerId },
+    select: { id: true, saleExecutive: true },
+  });
+  if (!existing) throw new Error("Customer not found");
+
+  const scope = getStaffReportExecScope(access, SALES_ENGINE_PAGE_KEY);
+  if (
+    scope !== "all" &&
+    !rowMatchesExecScope(existing.saleExecutive, scope)
+  ) {
+    throw new AccessDeniedError();
+  }
+
+  return existing;
 }
 
 function sumOrderInHand(
@@ -88,6 +134,9 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
       due: true,
       openingDue: true,
       plannedSaleCallDate: true,
+      offerPrice: true,
+      offerFreight: true,
+      smsType: true,
     },
     orderBy: { name: "asc" },
   });
@@ -199,6 +248,9 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
       plannedSaleCallDate: customer.plannedSaleCallDate
         ? customer.plannedSaleCallDate.toISOString().slice(0, 10)
         : null,
+      offerPrice: customer.offerPrice?.toString() ?? null,
+      offerFreight: customer.offerFreight?.toString() ?? null,
+      smsType: customer.smsType,
     };
   });
 }
@@ -210,21 +262,7 @@ export async function updatePlannedSaleCall(
 ): Promise<{ plannedSaleCallDate: string | null }> {
   if (!customerId) throw new Error("Customer is required");
 
-  const access = await requirePage(SALES_ENGINE_PAGE_KEY);
-
-  const existing = await prisma.customer.findUnique({
-    where: { id: customerId },
-    select: { id: true, saleExecutive: true },
-  });
-  if (!existing) throw new Error("Customer not found");
-
-  const scope = getStaffReportExecScope(access, SALES_ENGINE_PAGE_KEY);
-  if (
-    scope !== "all" &&
-    !rowMatchesExecScope(existing.saleExecutive, scope)
-  ) {
-    throw new AccessDeniedError();
-  }
+  await assertSalesEngineCustomerAccess(customerId);
 
   const plannedSaleCallDate = parseOptionalDate(date);
 
@@ -242,4 +280,70 @@ export async function updatePlannedSaleCall(
       ? row.plannedSaleCallDate.toISOString().slice(0, 10)
       : null,
   };
+}
+
+/** Set or clear the offer price (Rs/MT) for a customer on Sales Engine. */
+export async function updateSalesOfferPrice(
+  customerId: string,
+  value: string | null,
+): Promise<{ offerPrice: string | null }> {
+  if (!customerId) throw new Error("Customer is required");
+
+  await assertSalesEngineCustomerAccess(customerId);
+
+  const offerPrice = parseOptionalRate(value);
+
+  const row = await prisma.customer.update({
+    where: { id: customerId },
+    data: { offerPrice },
+    select: { offerPrice: true },
+  });
+
+  revalidatePath("/reports/sales");
+
+  return { offerPrice: row.offerPrice?.toString() ?? null };
+}
+
+/** Set or clear the offer freight (Rs/MT) for a customer on Sales Engine. */
+export async function updateSalesOfferFreight(
+  customerId: string,
+  value: string | null,
+): Promise<{ offerFreight: string | null }> {
+  if (!customerId) throw new Error("Customer is required");
+
+  await assertSalesEngineCustomerAccess(customerId);
+
+  const offerFreight = parseOptionalRate(value);
+
+  const row = await prisma.customer.update({
+    where: { id: customerId },
+    data: { offerFreight },
+    select: { offerFreight: true },
+  });
+
+  revalidatePath("/reports/sales");
+
+  return { offerFreight: row.offerFreight?.toString() ?? null };
+}
+
+/** Set or clear the SMS type for a customer on Sales Engine. */
+export async function updateSalesSmsType(
+  customerId: string,
+  value: string | null,
+): Promise<{ smsType: "DELIVERED" | "EX_PORT" | "REQUIREMENT" | null }> {
+  if (!customerId) throw new Error("Customer is required");
+
+  await assertSalesEngineCustomerAccess(customerId);
+
+  const smsType = parseSalesSmsType(value);
+
+  const row = await prisma.customer.update({
+    where: { id: customerId },
+    data: { smsType },
+    select: { smsType: true },
+  });
+
+  revalidatePath("/reports/sales");
+
+  return { smsType: row.smsType };
 }

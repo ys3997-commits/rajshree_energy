@@ -4783,6 +4783,60 @@ table.data.collection-engine-table tbody tr.collection-row-due-call .collection-
   word-break: break-word;
 }
 
+table.data.sales-engine-table th.sales-offer-col,
+table.data.sales-engine-table td.sales-offer-col {
+  width: 7.5rem;
+  min-width: 7.5rem;
+  max-width: 7.5rem;
+}
+
+table.data.sales-engine-table td.sales-offer-col .sales-offer-input {
+  width: 100%;
+  min-width: 0;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+table.data.sales-engine-table th.sales-sms-type-col,
+table.data.sales-engine-table td.sales-sms-type-col {
+  width: 8.5rem;
+  min-width: 8.5rem;
+  max-width: 8.5rem;
+}
+
+table.data.sales-engine-table td.sales-sms-type-col .sales-sms-type-select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.35rem 0.45rem;
+  font-size: 0.8125rem;
+}
+
+table.data.sales-engine-table th.collection-date-col,
+table.data.sales-engine-table td.collection-date-col {
+  width: 10.5rem;
+  min-width: 10.5rem;
+  max-width: 10.5rem;
+}
+
+table.data.sales-engine-table th.collection-whatsapp-col,
+table.data.sales-engine-table td.collection-whatsapp-col {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  max-width: 2.75rem;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+}
+
+table.data.sales-engine-table td.collection-date-col .collection-date-input {
+  display: block;
+  flex: 1 1 auto;
+  width: auto;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 table.data.sales-engine-table td .collection-date-input {
   width: 9.5rem;
   min-width: 0;

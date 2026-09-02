@@ -257,6 +257,9 @@ exports.Prisma.CustomerScalarFieldEnum = {
   plannedCollectionCallDate: 'plannedCollectionCallDate',
   collectionThrough: 'collectionThrough',
   plannedSaleCallDate: 'plannedSaleCallDate',
+  offerPrice: 'offerPrice',
+  offerFreight: 'offerFreight',
+  smsType: 'smsType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -419,6 +422,12 @@ exports.CustomerCategory = exports.$Enums.CustomerCategory = {
 exports.CollectionThrough = exports.$Enums.CollectionThrough = {
   CALL: 'CALL',
   SMS: 'SMS'
+};
+
+exports.SalesSmsType = exports.$Enums.SalesSmsType = {
+  DELIVERED: 'DELIVERED',
+  EX_PORT: 'EX_PORT',
+  REQUIREMENT: 'REQUIREMENT'
 };
 
 exports.OrderType = exports.$Enums.OrderType = {

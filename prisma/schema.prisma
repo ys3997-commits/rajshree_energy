@@ -70,6 +70,12 @@ enum CollectionThrough {
   SMS
 }
 
+enum SalesSmsType {
+  DELIVERED
+  EX_PORT
+  REQUIREMENT
+}
+
 model Staff {
   id           String   @id @default(cuid())
   name         String
@@ -257,6 +263,12 @@ model Customer {
   collectionThrough         CollectionThrough?
   /// Next planned sales call date (calendar day) — separate from collection.
   plannedSaleCallDate      DateTime?
+  /// Latest offer price (Rs/MT) noted on Sales Engine.
+  offerPrice               Decimal?         @db.Decimal(18, 3)
+  /// Latest offer freight (Rs/MT) noted on Sales Engine.
+  offerFreight             Decimal?         @db.Decimal(18, 3)
+  /// SMS template type for Sales Engine follow-up.
+  smsType                  SalesSmsType?
   createdAt                DateTime         @default(now())
   updatedAt                DateTime         @updatedAt
 
