@@ -11,7 +11,7 @@ import {
   deletePurchaseOrder,
 } from "@/lib/actions/purchaseOrders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
-import { SAME_DAY_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
+import { DISPATCH_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import { formatDispatchTerms, formatOrderStatusForDisplay, formatOrderType, formatRs, formatLorryNumber, displayOrderBalance, formatSaleOrderMt } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
@@ -317,7 +317,7 @@ export function PurchaseOrderDetailClient({
                       className="btn btn-danger"
                       onClick={() => onDeleteDispatch(d.id)}
                       disabled={!d.canDelete}
-                      title={d.canDelete ? undefined : SAME_DAY_EDIT_LOCK_HINT}
+                      title={d.canDelete ? undefined : DISPATCH_EDIT_LOCK_HINT}
                     >
                       Delete
                     </button>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
-import { SAME_DAY_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
+import { DISPATCH_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
 import {
   formatMt,
   formatMtNumber,
@@ -337,7 +337,7 @@ export function EditDispatchButton({
         className="btn btn-sm btn-secondary"
         onClick={openModal}
         disabled={!canEdit}
-        title={canEdit ? undefined : SAME_DAY_EDIT_LOCK_HINT}
+        title={canEdit ? undefined : DISPATCH_EDIT_LOCK_HINT}
       >
         Edit
       </button>

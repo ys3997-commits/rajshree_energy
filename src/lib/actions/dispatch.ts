@@ -40,7 +40,10 @@ import {
   assertCanEditPurchaseChecklist,
   assertCanEditSaleChecklist,
 } from "@/lib/auth/checklistEditAccess";
-import { assertCanModifySameDayEntry } from "@/lib/auth/sameDayEntryModify";
+import {
+  assertCanModifySameDayEntry,
+  DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+} from "@/lib/auth/sameDayEntryModify";
 import {
   isPurchaseChecklistComplete,
   isSaleChecklistComplete,
@@ -667,7 +670,9 @@ export async function updateDispatch(
   } else if (updateKind === "sale") {
     assertCanEditSaleChecklist(access, existingForAuth);
   } else {
-    assertCanModifySameDayEntry(access, existingForAuth, "edit", "dispatch");
+    assertCanModifySameDayEntry(access, existingForAuth, "edit", "dispatch", {
+      extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+    });
   }
 
   const updated = await prisma.$transaction(async (tx) => {
@@ -945,7 +950,9 @@ export async function deleteDispatch(id: string): Promise<void> {
     select: { createdAt: true, createdByStaffId: true },
   });
   if (!existingForAuth) throw new Error("Dispatch not found");
-  assertCanModifySameDayEntry(access, existingForAuth, "delete", "dispatch");
+  assertCanModifySameDayEntry(access, existingForAuth, "delete", "dispatch", {
+    extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+  });
 
   await prisma.$transaction(async (tx) => {
     const existing = await tx.dispatch.findUnique({ where: { id } });
@@ -1047,7 +1054,9 @@ export async function confirmReceipt(
     select: { createdAt: true, createdByStaffId: true },
   });
   if (!existingForAuth) throw new Error("Dispatch not found");
-  assertCanModifySameDayEntry(access, existingForAuth, "edit", "dispatch");
+  assertCanModifySameDayEntry(access, existingForAuth, "edit", "dispatch", {
+    extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+  });
 
   const qty = toDecimal(receivingQuantity);
   if (qty.lt(0)) {

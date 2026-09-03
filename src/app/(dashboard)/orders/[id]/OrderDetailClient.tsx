@@ -6,7 +6,7 @@ import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
 import { deleteOrder, updateOrderFields } from "@/lib/actions/orders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
-import { SAME_DAY_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
+import { DISPATCH_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
 import { formatDispatchTerms, formatLorryNumber, formatOrderStatusForDisplay, formatOrderType, formatRs, displayOrderBalance, formatSaleOrderMt } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
@@ -416,7 +416,7 @@ export function OrderDetailClient({
                       className="btn btn-danger"
                       onClick={() => onDeleteDispatch(d.id)}
                       disabled={!d.canDelete}
-                      title={d.canDelete ? undefined : SAME_DAY_EDIT_LOCK_HINT}
+                      title={d.canDelete ? undefined : DISPATCH_EDIT_LOCK_HINT}
                     >
                       Delete
                     </button>

@@ -3,7 +3,10 @@ import { getPurchaseOrder } from "@/lib/actions/purchaseOrders";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { lineProfit } from "@/lib/domain/computations";
 import { getCurrentAccess } from "@/lib/auth/access";
-import { sameDayEntryPermissions } from "@/lib/auth/sameDayEntryModify";
+import {
+  DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+  sameDayEntryPermissions,
+} from "@/lib/auth/sameDayEntryModify";
 import { PurchaseOrderDetailClient } from "./PurchaseOrderDetailClient";
 
 export default async function PurchaseOrderDetailPage({
@@ -53,7 +56,9 @@ export default async function PurchaseOrderDetailPage({
           receiptStatus: d.receiptStatus,
           softCopyStatus: d.softCopyStatus,
           entryInTally: d.entryInTally,
-          ...sameDayEntryPermissions(access, d),
+          ...sameDayEntryPermissions(access, d, {
+            extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+          }),
           order: d.order
             ? { id: d.order.id, poNumber: d.order.poNumber }
             : null,

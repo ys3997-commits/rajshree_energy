@@ -13,7 +13,10 @@ import {
   canEditPurchaseChecklist,
   canEditSaleChecklist,
 } from "@/lib/auth/checklistEditAccess";
-import { sameDayEntryPermissions } from "@/lib/auth/sameDayEntryModify";
+import {
+  DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+  sameDayEntryPermissions,
+} from "@/lib/auth/sameDayEntryModify";
 
 const qualityClassInclude = {
   origin: { select: { id: true, name: true } },
@@ -193,7 +196,9 @@ export async function listDispatches(filters: DispatchFilters = {}) {
         dispatchTerms: row.dispatchTerms,
         freight: row.freight,
       }),
-      ...sameDayEntryPermissions(access, row),
+      ...sameDayEntryPermissions(access, row, {
+        extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+      }),
       canEditPurchase: canEditPurchaseChecklist(access, row),
       canEditSale: canEditSaleChecklist(access, row),
     };

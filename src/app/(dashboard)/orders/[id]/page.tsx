@@ -6,7 +6,10 @@ import {
   lineProfit,
 } from "@/lib/domain/computations";
 import { getCurrentAccess } from "@/lib/auth/access";
-import { sameDayEntryPermissions } from "@/lib/auth/sameDayEntryModify";
+import {
+  DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+  sameDayEntryPermissions,
+} from "@/lib/auth/sameDayEntryModify";
 import { OrderDetailClient } from "./OrderDetailClient";
 
 export default async function OrderDetailPage({
@@ -66,7 +69,9 @@ export default async function OrderDetailPage({
           softCopyStatus: d.softCopyStatus,
           entryInTally: d.entryInTally,
           purchasePoNumber: d.purchasePoNumber,
-          ...sameDayEntryPermissions(access, d),
+          ...sameDayEntryPermissions(access, d, {
+            extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+          }),
           purchaseOrder: d.purchaseOrder
             ? {
                 poNumber: d.purchaseOrder.poNumber,
