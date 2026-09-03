@@ -1459,18 +1459,6 @@ table.data td.col-actions {
   background: #ffffff;
 }
 
-/* Horizontal scroller for sticky Dispatch No / Date (top sticky still tracks .app-main) */
-.table-wrap.update-purchase-table-wrap > .table-h-scroll,
-.table-wrap.update-sale-table-wrap > .table-h-scroll,
-.table-wrap.update-transport-table-wrap > .table-h-scroll {
-  display: block;
-  overflow-x: auto;
-  overflow-y: clip;
-  width: 100%;
-  max-width: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-
 table.data.orders-table thead th,
 table.data.purchase-orders-table thead th {
   position: sticky;
@@ -5009,6 +4997,26 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
 .update-page table.data thead th.cell-num,
 .update-page table.data thead th.cell-num button.th-sort {
   text-align: right;
+}
+
+/* Full-bleed update tables — sticky header sits flush under the menu bar */
+.update-page .table-wrap.update-purchase-table-wrap,
+.update-page .table-wrap.update-sale-table-wrap,
+.update-page .table-wrap.update-transport-table-wrap {
+  margin-inline: -2rem;
+  width: calc(100% + 4rem);
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+
+@media (max-width: 768px) {
+  .update-page .table-wrap.update-purchase-table-wrap,
+  .update-page .table-wrap.update-sale-table-wrap,
+  .update-page .table-wrap.update-transport-table-wrap {
+    margin-inline: -1rem;
+    width: calc(100% + 2rem);
+  }
 }
 
 .bill-status {
