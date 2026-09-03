@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { Modal } from "@/components/Modal";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
+  clearAllSalesOffers,
   updatePlannedSaleCall,
   updateSalesOfferFreight,
   updateSalesOfferPrice,
@@ -246,6 +247,7 @@ export function SalesEngineClient({
     field: OfferField;
   } | null>(null);
   const [savingSmsTypeId, setSavingSmsTypeId] = useState<string | null>(null);
+  const [clearingAllOffers, setClearingAllOffers] = useState(false);
 
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
@@ -309,6 +311,17 @@ export function SalesEngineClient({
       stateFilter ||
       categoryFilter ||
       sectorFilter,
+  );
+
+  const hasAnyOfferData = useMemo(
+    () =>
+      rows.some(
+        (row) =>
+          Boolean(row.offerPrice?.trim()) ||
+          Boolean(row.offerFreight?.trim()) ||
+          row.smsType != null,
+      ),
+    [rows],
   );
 
   const filtered = useMemo(() => {
@@ -509,6 +522,32 @@ export function SalesEngineClient({
     });
   }
 
+  function onClearAllOffers() {
+    setError(null);
+    setRows((prev) =>
+      prev.map((row) => ({
+        ...row,
+        offerPrice: null,
+        offerFreight: null,
+        smsType: null,
+      })),
+    );
+    setClearingAllOffers(true);
+    startTransition(async () => {
+      try {
+        await clearAllSalesOffers();
+        router.refresh();
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to clear offers",
+        );
+        router.refresh();
+      } finally {
+        setClearingAllOffers(false);
+      }
+    });
+  }
+
   return (
     <div>
       <Modal
@@ -629,6 +668,21 @@ export function SalesEngineClient({
             Clear
           </button>
         )}
+        <button
+          type="button"
+          className="btn btn-secondary"
+          disabled={
+            pending ||
+            clearingAllOffers ||
+            !hasAnyOfferData ||
+            savingCallId !== null ||
+            savingOffer !== null ||
+            savingSmsTypeId !== null
+          }
+          onClick={onClearAllOffers}
+        >
+          Clear Offer
+        </button>
         <TableDownloadButtons
           title="Sales Engine Report"
           filenameBase="sales"
@@ -638,11 +692,11 @@ export function SalesEngineClient({
         />
       </form>
 
-      <div className="table-wrap">
+      <div className="table-wrap sales-engine-table-wrap">
         <div className="table-h-scroll"><table className="data sales-engine-table">
           <thead>
             <tr>
-              <th className="report-customer-col">
+              <th className="sales-engine-customer-col">
                 <button
                   type="button"
                   className="th-sort"
@@ -732,7 +786,7 @@ export function SalesEngineClient({
               });
               return (
                 <tr key={row.id} className={rowClass}>
-                  <td className="report-customer-col">
+                  <td className="sales-engine-customer-col">
                     <Link
                       href={`/reports/customer-analysis/${row.id}`}
                       className="btn-link"

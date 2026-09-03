@@ -1643,3 +1643,40 @@ export async function listProfitAnalysisReport(
     }));
 }
 
+export async function listProfitAnalysisMonthReport(
+  filters: CustomerAnalysisFilters = {},
+): Promise<ProfitAnalysisRow[]> {
+  const dailyRows = await listProfitAnalysisReport(filters);
+  const byMonth = new Map<string, ReturnType<typeof emptyProfitDay>>();
+
+  for (const row of dailyRows) {
+    const month = row.date.slice(0, 7);
+    let agg = byMonth.get(month);
+    if (!agg) {
+      agg = emptyProfitDay();
+      byMonth.set(month, agg);
+    }
+    agg.domesticQty = agg.domesticQty.plus(row.domesticQuantity);
+    agg.importedQty = agg.importedQty.plus(row.importedQuantity);
+    agg.domesticProfit = agg.domesticProfit.plus(row.domesticProfit);
+    agg.importedProfit = agg.importedProfit.plus(row.importedProfit);
+    agg.trucks += Number(row.truckCount) || 0;
+  }
+
+  return [...byMonth.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([month, agg]) => ({
+      date: month,
+      domesticQuantity: agg.domesticQty.toString(),
+      domesticProfit: agg.domesticProfit.toDecimalPlaces(2).toString(),
+      importedQuantity: agg.importedQty.toString(),
+      importedProfit: agg.importedProfit.toDecimalPlaces(2).toString(),
+      totalQuantity: agg.domesticQty.plus(agg.importedQty).toString(),
+      totalProfit: agg.domesticProfit
+        .plus(agg.importedProfit)
+        .toDecimalPlaces(2)
+        .toString(),
+      truckCount: String(agg.trucks),
+    }));
+}
+

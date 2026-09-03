@@ -43,8 +43,8 @@ const nextConfig: NextConfig = {
     return [
       { source: "/orders/new", destination: "/orders", permanent: false },
       {
-        source: "/dispatches/new",
-        destination: "/dispatches",
+        source: "/reports/profit-analysis/monthly-wise",
+        destination: "/reports/profit-analysis/month-wise",
         permanent: false,
       },
     ];

@@ -29,7 +29,7 @@ export function HomeKpiStrip({
     {
       label: "Yesterday's profit",
       value: formatRs(profit),
-      href: `/reports/profit-analysis?dateFrom=${date}&dateTo=${date}`,
+      href: `/reports/profit-analysis/daily?dateFrom=${date}&dateTo=${date}`,
     },
     {
       label: "Yesterday's fund received",

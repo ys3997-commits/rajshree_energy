@@ -354,6 +354,7 @@ export async function getHomeDispatchCharts(): Promise<{
   profitMonths: DispatchSplitBucket[];
   profitDays: DispatchSplitBucket[];
   profitMonthDiscount: ProfitDiscountSplit;
+  profitCurrentMonthDiscount: ProfitDiscountSplit;
   profitDayDiscount: ProfitDiscountSplit;
 }> {
   const today = startOfLocalDay(new Date());
@@ -458,12 +459,15 @@ export async function getHomeDispatchCharts(): Promise<{
     };
   });
 
+  const currentMonthKeys = monthKeys.filter((k) => k.isCurrent);
+
   return {
     months: buildBuckets(monthQty, monthKeys),
     days: buildBuckets(dayQty, dayKeys),
     profitMonths: buildBuckets(monthProfit, monthKeys),
     profitDays: buildBuckets(dayProfit, dayKeys),
     profitMonthDiscount: sumSplit(monthDiscount, monthKeys),
+    profitCurrentMonthDiscount: sumSplit(monthDiscount, currentMonthKeys),
     profitDayDiscount: sumSplit(dayDiscount, dayKeys),
   };
 }

@@ -364,6 +364,23 @@ export function formatDateDdMmYyyy(
   return `${day}/${month}/${year}`;
 }
 
+/** ISO month (YYYY-MM) → e.g. "Aug 2026" for display. */
+export function formatMonthYear(value: string | null | undefined): string {
+  if (!value) return "—";
+  const monthPart = value.trim().slice(0, 7);
+  const match = /^(\d{4})-(\d{2})$/.exec(monthPart);
+  if (!match) return value;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  if (!Number.isFinite(year) || month < 1 || month > 12) return value;
+  const date = new Date(year, month - 1, 1);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("en-IN", {
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 /** e.g. "30 days" */
 export function formatCreditPeriod(
   days: number | null | undefined,

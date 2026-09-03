@@ -210,6 +210,8 @@ function revalidateDiscountPaths(party?: PaymentParty) {
   revalidatePath("/reports/collection");
   revalidatePath("/reports/collection/vendor");
   revalidatePath("/reports/profit-analysis");
+  revalidatePath("/reports/profit-analysis/daily");
+  revalidatePath("/reports/profit-analysis/month-wise");
   if (!party || party.kind === "transporter") {
     revalidatePath("/transporters");
     revalidatePath("/reports/transport/due");

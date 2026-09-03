@@ -104,10 +104,13 @@ export default async function HomePage() {
   ]);
 
   const monthlyDispatches = dispatchCharts.months;
+  const currentMonthDispatch = monthlyDispatches.filter((b) => b.isCurrent);
   const dailyDispatches = dispatchCharts.days;
   const monthlyProfit = dispatchCharts.profitMonths;
+  const currentMonthProfit = monthlyProfit.filter((b) => b.isCurrent);
   const dailyProfit = dispatchCharts.profitDays;
   const monthlyProfitDiscount = dispatchCharts.profitMonthDiscount;
+  const currentMonthProfitDiscount = dispatchCharts.profitCurrentMonthDiscount;
   const dailyProfitDiscount = dispatchCharts.profitDayDiscount;
   const dailyFundsReceived = fundCharts.days;
   const dailyOverdue = overdueCharts.days;
@@ -216,10 +219,11 @@ export default async function HomePage() {
 
       <div className="home-dispatch-grid">
         <HomeDispatchSplitChart
-          eyebrow="Last 6 months"
+          eyebrow="Last 6 months · totals this month"
           title="Monthly Dispatch"
           buckets={monthlyDispatches}
-          ariaLabel="Month-wise domestic and imported dispatch totals"
+          statsBuckets={currentMonthDispatch}
+          ariaLabel="Month-wise domestic and imported dispatch totals for the last six months"
         />
         <HomeDispatchSplitChart
           eyebrow="Last 7 days"
@@ -231,12 +235,14 @@ export default async function HomePage() {
 
       <div className="home-dispatch-grid">
         <HomeDispatchSplitChart
-          eyebrow="Last 6 months · basic-rate margin"
+          eyebrow="Last 6 months · totals this month · basic-rate margin"
           title="Monthly Profit"
           buckets={monthlyProfit}
+          statsBuckets={currentMonthProfit}
           valueKind="rupees"
           discountSplit={monthlyProfitDiscount}
-          ariaLabel="Month-wise domestic and imported profit totals"
+          statsDiscountSplit={currentMonthProfitDiscount}
+          ariaLabel="Month-wise domestic and imported profit totals for the last six months"
         />
         <HomeDispatchSplitChart
           eyebrow="Last 7 days · basic-rate margin"

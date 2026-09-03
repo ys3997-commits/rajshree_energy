@@ -35,6 +35,10 @@ type Props = {
    * then net profit — instead of folding discount into the bars.
    */
   discountSplit?: ProfitDiscountSplit;
+  /** Header totals from these buckets; chart still uses `buckets`. */
+  statsBuckets?: DispatchSplitBucket[];
+  /** Header discount split when `statsBuckets` is set (profit charts). */
+  statsDiscountSplit?: ProfitDiscountSplit;
 };
 
 const DEFAULT_SERIES: SeriesLabels = {
@@ -177,6 +181,8 @@ export function HomeDispatchSplitChart({
   totalMode = "sum",
   hideTotals = false,
   discountSplit,
+  statsBuckets,
+  statsDiscountSplit,
 }: Props) {
   const labels: SeriesLabels = {
     ...DEFAULT_SERIES,
@@ -186,8 +192,9 @@ export function HomeDispatchSplitChart({
     seriesLabels != null &&
     (seriesLabels.right == null || seriesLabels.right === "");
 
-  const leftTotal = sumField(buckets, "domestic");
-  const rightTotal = sumField(buckets, "imported");
+  const totalsBuckets = statsBuckets ?? buckets;
+  const leftTotal = sumField(totalsBuckets, "domestic");
+  const rightTotal = sumField(totalsBuckets, "imported");
   const headerTotal =
     totalMode === "net"
       ? leftTotal - rightTotal
@@ -206,8 +213,9 @@ export function HomeDispatchSplitChart({
     0,
   );
 
-  const domesticDiscount = Number(discountSplit?.domestic) || 0;
-  const importedDiscount = Number(discountSplit?.imported) || 0;
+  const activeDiscount = statsDiscountSplit ?? discountSplit;
+  const domesticDiscount = Number(activeDiscount?.domestic) || 0;
+  const importedDiscount = Number(activeDiscount?.imported) || 0;
 
   return (
     <section className="home-panel home-panel-dispatch">

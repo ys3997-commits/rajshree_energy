@@ -66,11 +66,24 @@ function isMastersGroup(
 }
 
 type ReportLeaf = NavLeaf;
-type ReportGroup = { label: string; children: ReportLeaf[] };
-type ReportItem = ReportLeaf | ReportGroup;
+type ReportGroup = { label: string; children: ReportNode[] };
+type ReportNode = ReportLeaf | ReportGroup;
+type ReportItem = ReportNode;
 
-function isReportGroup(item: ReportItem): item is ReportGroup {
+function isReportGroup(item: ReportNode): item is ReportGroup {
   return "children" in item;
+}
+
+function reportGroupLeaves(group: ReportGroup): ReportLeaf[] {
+  const leaves: ReportLeaf[] = [];
+  for (const child of group.children) {
+    if (isReportGroup(child)) {
+      leaves.push(...reportGroupLeaves(child));
+      continue;
+    }
+    leaves.push(child);
+  }
+  return leaves;
 }
 
 /** Sorted alphabetically by label. */
@@ -87,7 +100,16 @@ const reportLinks: ReportItem[] = [
     children: [
       { href: "/reports/ageing-report", label: "Ageing Report" },
       { href: "/reports/customer-analysis", label: "Customer Analysis" },
-      { href: "/reports/profit-analysis", label: "Profit Analysis" },
+      {
+        label: "Profit Analysis",
+        children: [
+          { href: "/reports/profit-analysis/daily", label: "Daily wise" },
+          {
+            href: "/reports/profit-analysis/month-wise",
+            label: "Monthly wise",
+          },
+        ],
+      },
       { href: "/reports/analysis", label: "Sale Analysis" },
       { href: "/reports/vendor-analysis", label: "Vendor Analysis" },
     ],
@@ -139,15 +161,106 @@ function isActivePath(pathname: string, href: string, exact = false) {
 }
 
 function isGroupActive(pathname: string, group: ReportGroup) {
-  return group.children.some((child) =>
+  return reportGroupLeaves(group).some((child) =>
     isActivePath(pathname, child.href, needsExactChildMatch(group, child.href)),
   );
 }
 
+function isSubmenuPathOpen(
+  openSubmenuPath: string | null,
+  path: string,
+): boolean {
+  return (
+    openSubmenuPath === path ||
+    (openSubmenuPath?.startsWith(`${path}/`) ?? false)
+  );
+}
+
 function needsExactChildMatch(group: ReportGroup, href: string) {
-  return group.children.some(
+  const leaves = reportGroupLeaves(group);
+  return leaves.some(
     (other) => other.href !== href && other.href.startsWith(`${href}/`),
   );
+}
+
+function renderReportSubmenuNodes(
+  nodes: ReportNode[],
+  pathname: string,
+  parentGroup: ReportGroup,
+  parentPath: string,
+  menuId: string,
+  openSubmenuPath: string | null,
+  setOpenSubmenuPath: (path: string | null) => void,
+  allowed: (href: string) => boolean,
+  onNavigate: () => void,
+) {
+  return nodes.map((node) => {
+    if (isReportGroup(node)) {
+      const nestedPath = `${parentPath}/${node.label}`;
+      const nestedOpen = openSubmenuPath === nestedPath;
+      const nestedActive = isGroupActive(pathname, node);
+      const nestedMenuId = `${menuId}-${node.label.toLowerCase().replace(/\s+/g, "-")}`;
+      return (
+        <div
+          key={nestedPath}
+          className={`nav-submenu nav-submenu-nested-flyout${nestedOpen ? " open" : ""}${nestedActive ? " active" : ""}`}
+        >
+          <button
+            type="button"
+            className={`nav-submenu-trigger${nestedActive ? " active" : ""}`}
+            aria-expanded={nestedOpen}
+            aria-controls={nestedMenuId}
+            aria-haspopup="menu"
+            onClick={() =>
+              setOpenSubmenuPath(openSubmenuPath === nestedPath ? parentPath : nestedPath)
+            }
+            onMouseEnter={() => setOpenSubmenuPath(nestedPath)}
+          >
+            {node.label}
+            <span className="nav-submenu-caret" aria-hidden="true" />
+          </button>
+          <div
+            id={nestedMenuId}
+            className="nav-submenu-menu"
+            role="menu"
+            hidden={!nestedOpen}
+            onMouseEnter={() => setOpenSubmenuPath(nestedPath)}
+          >
+            {renderReportSubmenuNodes(
+              node.children,
+              pathname,
+              node,
+              nestedPath,
+              nestedMenuId,
+              openSubmenuPath,
+              setOpenSubmenuPath,
+              allowed,
+              onNavigate,
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    const active = isActivePath(
+      pathname,
+      node.href,
+      needsExactChildMatch(parentGroup, node.href),
+    );
+    return (
+      <LockedLink
+        key={node.href}
+        href={node.href}
+        allowed={allowed(node.href)}
+        role="menuitem"
+        className={active ? "active" : undefined}
+        onClick={onNavigate}
+        onMouseEnter={() => setOpenSubmenuPath(parentPath)}
+      >
+        {node.label}
+      </LockedLink>
+    );
+  });
 }
 
 function isMastersGroupActive(pathname: string, group: MastersGroup) {
@@ -201,7 +314,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const [bankOpen, setBankOpen] = useState(false);
   const [mastersOpen, setMastersOpen] = useState(false);
   const [usersOpen, setUsersOpen] = useState(false);
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [openSubmenuPath, setOpenSubmenuPath] = useState<string | null>(null);
   const [openMastersSubmenu, setOpenMastersSubmenu] = useState<string | null>(
     null,
   );
@@ -240,7 +353,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
     setBankOpen(false);
     setMastersOpen(false);
     setUsersOpen(false);
-    setOpenSubmenu(null);
+    setOpenSubmenuPath(null);
     setOpenMastersSubmenu(null);
   }, [pathname]);
 
@@ -374,14 +487,17 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
         !reportRef.current.contains(event.target as Node)
       ) {
         setReportOpen(false);
-        setOpenSubmenu(null);
+        setOpenSubmenuPath(null);
       }
     }
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        if (openSubmenu) {
-          setOpenSubmenu(null);
+        if (openSubmenuPath) {
+          const slash = openSubmenuPath.lastIndexOf("/");
+          setOpenSubmenuPath(
+            slash === -1 ? null : openSubmenuPath.slice(0, slash),
+          );
           return;
         }
         setReportOpen(false);
@@ -394,7 +510,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
       document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [reportOpen, openSubmenu]);
+  }, [reportOpen, openSubmenuPath]);
 
   useEffect(() => {
     if (!usersOpen) return;
@@ -728,7 +844,11 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
               >
                 {reportLinks.map((item) => {
                   if (isReportGroup(item)) {
-                    const submenuOpen = openSubmenu === item.label;
+                    const submenuPath = item.label;
+                    const submenuOpen = isSubmenuPathOpen(
+                      openSubmenuPath,
+                      submenuPath,
+                    );
                     const groupActive = isGroupActive(pathname, item);
                     const submenuId = `${reportMenuId}-${item.label.toLowerCase()}`;
                     return (
@@ -743,11 +863,11 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                           aria-controls={submenuId}
                           aria-haspopup="menu"
                           onClick={() =>
-                            setOpenSubmenu((current) =>
-                              current === item.label ? null : item.label,
+                            setOpenSubmenuPath(
+                              openSubmenuPath === submenuPath ? null : submenuPath,
                             )
                           }
-                          onMouseEnter={() => setOpenSubmenu(item.label)}
+                          onMouseEnter={() => setOpenSubmenuPath(submenuPath)}
                         >
                           {item.label}
                           <span className="nav-submenu-caret" aria-hidden="true" />
@@ -757,30 +877,22 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                           className="nav-submenu-menu"
                           role="menu"
                           hidden={!submenuOpen}
-                          onMouseEnter={() => setOpenSubmenu(item.label)}
+                          onMouseEnter={() => setOpenSubmenuPath(submenuPath)}
                         >
-                          {item.children.map((child) => {
-                            const active = isActivePath(
-                              pathname,
-                              child.href,
-                              needsExactChildMatch(item, child.href),
-                            );
-                            return (
-                              <LockedLink
-                                key={child.href}
-                                href={child.href}
-                                allowed={allowed(child.href)}
-                                role="menuitem"
-                                className={active ? "active" : undefined}
-                                onClick={() => {
-                                  setOpenSubmenu(null);
-                                  setReportOpen(false);
-                                }}
-                              >
-                                {child.label}
-                              </LockedLink>
-                            );
-                          })}
+                          {renderReportSubmenuNodes(
+                            item.children,
+                            pathname,
+                            item,
+                            submenuPath,
+                            submenuId,
+                            openSubmenuPath,
+                            setOpenSubmenuPath,
+                            allowed,
+                            () => {
+                              setOpenSubmenuPath(null);
+                              setReportOpen(false);
+                            },
+                          )}
                         </div>
                       </div>
                     );
@@ -795,10 +907,10 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                       role="menuitem"
                       className={active ? "active" : undefined}
                       onClick={() => {
-                        setOpenSubmenu(null);
+                        setOpenSubmenuPath(null);
                         setReportOpen(false);
                       }}
-                      onMouseEnter={() => setOpenSubmenu(null)}
+                      onMouseEnter={() => setOpenSubmenuPath(null)}
                     >
                       {item.label}
                     </LockedLink>

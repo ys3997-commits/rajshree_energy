@@ -9,7 +9,10 @@ import {
   formatDispatchMt,
   formatIndianNumber,
   formatAmount,
+  formatMonthYear,
 } from "@/lib/domain/format";
+
+type ProfitAnalysisView = "daily" | "month";
 
 type SortKey =
   | "date"
@@ -21,6 +24,35 @@ type SortKey =
   | "totalProfit"
   | "truckCount";
 type SortDir = "asc" | "desc";
+
+const VIEW_CONFIG: Record<
+  ProfitAnalysisView,
+  {
+    title: string;
+    basePath: string;
+    periodLabel: string;
+    exportTitle: string;
+    exportFilename: string;
+    formatPeriod: (value: string) => string;
+  }
+> = {
+  daily: {
+    title: "Daily wise",
+    basePath: "/reports/profit-analysis/daily",
+    periodLabel: "Date",
+    exportTitle: "Profit analysis — daily wise",
+    exportFilename: "profit-analysis-daily",
+    formatPeriod: formatDateDdMmYyyy,
+  },
+  month: {
+    title: "Monthly wise",
+    basePath: "/reports/profit-analysis/month-wise",
+    periodLabel: "Month",
+    exportTitle: "Profit analysis — monthly wise",
+    exportFilename: "profit-analysis-month-wise",
+    formatPeriod: formatMonthYear,
+  },
+};
 
 function numericValue(value: string | null | undefined): number {
   if (value == null || value === "") return 0;
@@ -34,14 +66,17 @@ function sortIndicator(active: boolean, dir: SortDir): string {
 }
 
 export function ProfitAnalysisList({
+  view,
   rows,
   dateFrom,
   dateTo,
 }: {
+  view: ProfitAnalysisView;
   rows: ProfitAnalysisRow[];
   dateFrom: string;
   dateTo: string;
 }) {
+  const config = VIEW_CONFIG[view];
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -87,7 +122,7 @@ export function ProfitAnalysisList({
   }, [rows, sortKey, sortDir]);
 
   const exportColumns = [
-    { key: "date", header: "Date" },
+    { key: "date", header: config.periodLabel },
     {
       key: "totalQuantity",
       header: "Total quantity",
@@ -124,7 +159,7 @@ export function ProfitAnalysisList({
   const exportRows = useMemo(
     () =>
       filtered.map((row) => ({
-        date: formatDateDdMmYyyy(row.date),
+        date: config.formatPeriod(row.date),
         domesticQuantity: formatDispatchMt(row.domesticQuantity),
         domesticProfit: formatAmount(row.domesticProfit),
         importedQuantity: formatDispatchMt(row.importedQuantity),
@@ -133,7 +168,7 @@ export function ProfitAnalysisList({
         totalQuantity: formatDispatchMt(row.totalQuantity),
         totalProfit: formatAmount(row.totalProfit),
       })),
-    [filtered],
+    [filtered, config],
   );
 
   return (
@@ -145,11 +180,12 @@ export function ProfitAnalysisList({
             <span aria-hidden="true"> · </span>
             Analysis
             <span aria-hidden="true"> · </span>
-            Dispatch Analysis
-            <span aria-hidden="true"> · </span>
             Profit Analysis
+            <span aria-hidden="true"> · </span>
+            {config.title}
           </p>
-          <h1 className="page-title">Profit analysis</h1>
+          <h1 className="page-title">{config.title}</h1>
+          <p className="page-subtitle">Profit analysis</p>
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">
@@ -191,6 +227,29 @@ export function ProfitAnalysisList({
         </div>
       </div>
 
+      <div
+        className="segment-control"
+        role="tablist"
+        aria-label="Profit analysis view"
+      >
+        <Link
+          href="/reports/profit-analysis/daily"
+          className={`segment-option${view === "daily" ? " segment-option-selected" : ""}`}
+          role="tab"
+          aria-selected={view === "daily"}
+        >
+          Daily wise
+        </Link>
+        <Link
+          href="/reports/profit-analysis/month-wise"
+          className={`segment-option${view === "month" ? " segment-option-selected" : ""}`}
+          role="tab"
+          aria-selected={view === "month"}
+        >
+          Monthly wise
+        </Link>
+      </div>
+
       <div className="filters">
         <form className="sale-analysis-date-form" method="get">
           <label>
@@ -215,14 +274,14 @@ export function ProfitAnalysisList({
             Apply dates
           </button>
           {(dateFrom || dateTo) && (
-            <Link href="/reports/profit-analysis" className="btn-link">
+            <Link href={config.basePath} className="btn-link">
               Clear
             </Link>
           )}
         </form>
         <TableDownloadButtons
-          title="Profit analysis"
-          filenameBase="profit-analysis"
+          title={config.exportTitle}
+          filenameBase={config.exportFilename}
           columns={exportColumns}
           rows={exportRows}
         />
@@ -234,116 +293,120 @@ export function ProfitAnalysisList({
         </p>
       ) : (
         <div className="table-wrap">
-          <div className="table-h-scroll"><table className="data">
-            <thead>
-              <tr>
-                <th>
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("date")}
-                  >
-                    Date
-                    {sortIndicator(sortKey === "date", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("totalQuantity")}
-                  >
-                    Total quantity
-                    {sortIndicator(sortKey === "totalQuantity", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("totalProfit")}
-                  >
-                    Total profit
-                    {sortIndicator(sortKey === "totalProfit", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("domesticQuantity")}
-                  >
-                    Domestic quantity
-                    {sortIndicator(sortKey === "domesticQuantity", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("domesticProfit")}
-                  >
-                    Domestic profit
-                    {sortIndicator(sortKey === "domesticProfit", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("importedQuantity")}
-                  >
-                    Imported quantity
-                    {sortIndicator(sortKey === "importedQuantity", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("importedProfit")}
-                  >
-                    Imported profit
-                    {sortIndicator(sortKey === "importedProfit", sortDir)}
-                  </button>
-                </th>
-                <th className="cell-num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("truckCount")}
-                  >
-                    Trucks
-                    {sortIndicator(sortKey === "truckCount", sortDir)}
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((row) => (
-                <tr key={row.date}>
-                  <td>
-                    {formatDateDdMmYyyy(row.date)}
-                  </td>
-                  <td className="cell-num">
-                    {formatDispatchMt(row.totalQuantity)}
-                  </td>
-                  <td className="cell-num">{formatAmount(row.totalProfit)}</td>
-                  <td className="cell-num">
-                    {formatDispatchMt(row.domesticQuantity)}
-                  </td>
-                  <td className="cell-num">{formatAmount(row.domesticProfit)}</td>
-                  <td className="cell-num">
-                    {formatDispatchMt(row.importedQuantity)}
-                  </td>
-                  <td className="cell-num">{formatAmount(row.importedProfit)}</td>
-                  <td className="cell-num">
-                    {formatIndianNumber(row.truckCount)}
-                  </td>
+          <div className="table-h-scroll">
+            <table className="data">
+              <thead>
+                <tr>
+                  <th>
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("date")}
+                    >
+                      {config.periodLabel}
+                      {sortIndicator(sortKey === "date", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("totalQuantity")}
+                    >
+                      Total quantity
+                      {sortIndicator(sortKey === "totalQuantity", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("totalProfit")}
+                    >
+                      Total profit
+                      {sortIndicator(sortKey === "totalProfit", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("domesticQuantity")}
+                    >
+                      Domestic quantity
+                      {sortIndicator(sortKey === "domesticQuantity", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("domesticProfit")}
+                    >
+                      Domestic profit
+                      {sortIndicator(sortKey === "domesticProfit", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("importedQuantity")}
+                    >
+                      Imported quantity
+                      {sortIndicator(sortKey === "importedQuantity", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("importedProfit")}
+                    >
+                      Imported profit
+                      {sortIndicator(sortKey === "importedProfit", sortDir)}
+                    </button>
+                  </th>
+                  <th className="cell-num">
+                    <button
+                      type="button"
+                      className="th-sort"
+                      onClick={() => toggleSort("truckCount")}
+                    >
+                      Trucks
+                      {sortIndicator(sortKey === "truckCount", sortDir)}
+                    </button>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table></div>
+              </thead>
+              <tbody>
+                {filtered.map((row) => (
+                  <tr key={row.date}>
+                    <td>{config.formatPeriod(row.date)}</td>
+                    <td className="cell-num">
+                      {formatDispatchMt(row.totalQuantity)}
+                    </td>
+                    <td className="cell-num">{formatAmount(row.totalProfit)}</td>
+                    <td className="cell-num">
+                      {formatDispatchMt(row.domesticQuantity)}
+                    </td>
+                    <td className="cell-num">
+                      {formatAmount(row.domesticProfit)}
+                    </td>
+                    <td className="cell-num">
+                      {formatDispatchMt(row.importedQuantity)}
+                    </td>
+                    <td className="cell-num">
+                      {formatAmount(row.importedProfit)}
+                    </td>
+                    <td className="cell-num">
+                      {formatIndianNumber(row.truckCount)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

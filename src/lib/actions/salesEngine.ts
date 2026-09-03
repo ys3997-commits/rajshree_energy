@@ -12,6 +12,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage } from "@/lib/auth/access";
 import {
+  execScopeToCustomerWhere,
   getStaffReportExecScope,
   rowMatchesExecScope,
   SALES_ENGINE_PAGE_KEY,
@@ -346,4 +347,42 @@ export async function updateSalesSmsType(
   revalidatePath("/reports/sales");
 
   return { smsType: row.smsType };
+}
+
+/** Clear offer price, freight, and SMS type for all Sales Engine customers in scope. */
+export async function clearAllSalesOffers(): Promise<{ clearedCount: number }> {
+  const access = await requirePage(SALES_ENGINE_PAGE_KEY);
+  const execScope = getStaffReportExecScope(access, SALES_ENGINE_PAGE_KEY);
+  const execFilter = execScopeToCustomerWhere(execScope);
+
+  const where = {
+    active: true,
+    category: {
+      in: [CustomerCategory.TRADER, CustomerCategory.INDUSTRY],
+    },
+    AND: [
+      ...(execFilter ? [execFilter] : []),
+      {
+        OR: [
+          { offerPrice: { not: null } },
+          { offerFreight: { not: null } },
+          { smsType: { not: null } },
+        ],
+      },
+    ],
+  };
+
+  const result = await prisma.customer.updateMany({
+    where,
+    data: {
+      offerPrice: null,
+      offerFreight: null,
+      smsType: null,
+    },
+  });
+
+  revalidatePath("/reports/sales");
+  revalidatePath("/");
+
+  return { clearedCount: result.count };
 }
