@@ -523,11 +523,11 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "name", sortDir)}
                 </button>
               </th>
-              <th>Payment In Charge</th>
-              <th>Contact Number</th>
+              <th>Payment<br />In Charge</th>
+              <th>Contact<br />Number</th>
               <th>Role</th>
-              <th>Sales Executive</th>
-              <th>Dealing Company</th>
+              <th>Sales<br />Executive</th>
+              <th>Dealing<br />Company</th>
               <th className="cell-num">
                 <button
                   type="button"
@@ -548,10 +548,10 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "overdue", sortDir)}
                 </button>
               </th>
-              <th>Last Payment Date</th>
-              <th className="cell-num">Last Payment Amount</th>
-              <th className="cell-num">Credit Period</th>
-              <th className="collection-date-col">Planned Call Date</th>
+              <th>Last Payment<br />Date</th>
+              <th className="cell-num">Last Payment<br />Amount</th>
+              <th className="cell-num">Credit<br />Period</th>
+              <th className="collection-date-col">Planned Call<br />Date</th>
               <th className="collection-through-col">Through</th>
               <th className="collection-whatsapp-col" aria-label="WhatsApp" />
             </tr>

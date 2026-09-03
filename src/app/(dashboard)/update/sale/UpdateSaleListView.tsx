@@ -106,8 +106,8 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
             </colgroup>
             <thead>
               <tr>
-                <th>Dispatch No</th>
-                <th>Date</th>
+                <th className="update-sale-dispatch-col">Dispatch No</th>
+                <th className="update-sale-date-col">Date</th>
                 <th>Sale Invoice</th>
                 <th>Lorry No</th>
                 <th className="cell-num">Weight</th>
@@ -131,8 +131,10 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
 
                 return (
                   <tr key={row.id}>
-                    <td>{displayDispatchNumber(row.dispatchNumber)}</td>
-                    <td>
+                    <td className="update-sale-dispatch-col">
+                      {displayDispatchNumber(row.dispatchNumber)}
+                    </td>
+                    <td className="update-sale-date-col">
                       {formatDateDdMmYyyy(
                         new Date(row.dispatchDate).toISOString().slice(0, 10),
                       )}

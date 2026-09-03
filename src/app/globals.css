@@ -1459,6 +1459,18 @@ table.data td.col-actions {
   background: #ffffff;
 }
 
+/* Horizontal scroller for sticky Dispatch No / Date (top sticky still tracks .app-main) */
+.table-wrap.update-purchase-table-wrap > .table-h-scroll,
+.table-wrap.update-sale-table-wrap > .table-h-scroll,
+.table-wrap.update-transport-table-wrap > .table-h-scroll {
+  display: block;
+  overflow-x: auto;
+  overflow-y: clip;
+  width: 100%;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
 table.data.orders-table thead th,
 table.data.purchase-orders-table thead th {
   position: sticky;
@@ -4593,6 +4605,10 @@ table.data.collection-engine-table {
 table.data.collection-engine-table thead th,
 table.data.collection-engine-table thead th button.th-sort {
   background: #ffffff;
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.25;
+  vertical-align: middle;
 }
 
 table.data.collection-engine-table tbody td {
@@ -5323,6 +5339,57 @@ table.data.update-purchase-table tbody td {
   white-space: nowrap;
 }
 
+/* Sticky Dispatch No + Date when scrolling horizontally */
+table.data.update-purchase-table th.update-purchase-dispatch-col,
+table.data.update-purchase-table td.update-purchase-dispatch-col {
+  position: sticky;
+  left: 0;
+  width: 5rem;
+  min-width: 5rem;
+  max-width: 5rem;
+  isolation: isolate;
+}
+
+table.data.update-purchase-table th.update-purchase-date-col,
+table.data.update-purchase-table td.update-purchase-date-col {
+  position: sticky;
+  left: 5rem;
+  width: 7rem;
+  min-width: 7rem;
+  max-width: 7rem;
+  isolation: isolate;
+  box-shadow:
+    1px 0 0 var(--line),
+    4px 0 8px -2px rgba(20, 23, 28, 0.08);
+}
+
+.app-main .table-h-scroll > table.data.update-purchase-table thead th.update-purchase-dispatch-col,
+.app-main .table-wrap > table.data.update-purchase-table thead th.update-purchase-dispatch-col {
+  top: 0;
+  left: 0;
+  z-index: 8;
+  background: #f8fafb;
+}
+
+.app-main .table-h-scroll > table.data.update-purchase-table thead th.update-purchase-date-col,
+.app-main .table-wrap > table.data.update-purchase-table thead th.update-purchase-date-col {
+  top: 0;
+  left: 5rem;
+  z-index: 7;
+  background: #f8fafb;
+}
+
+table.data.update-purchase-table td.update-purchase-dispatch-col,
+table.data.update-purchase-table td.update-purchase-date-col {
+  z-index: 4;
+  background: #ffffff;
+}
+
+table.data.update-purchase-table tbody tr:hover td.update-purchase-dispatch-col,
+table.data.update-purchase-table tbody tr:hover td.update-purchase-date-col {
+  background: #f7faf9;
+}
+
 table.data.update-purchase-table .update-purchase-vendor-cell {
   max-width: 13rem;
 }
@@ -5412,6 +5479,57 @@ table.data.update-sale-table tbody td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Sticky Dispatch No + Date when scrolling horizontally */
+table.data.update-sale-table th.update-sale-dispatch-col,
+table.data.update-sale-table td.update-sale-dispatch-col {
+  position: sticky;
+  left: 0;
+  width: 5rem;
+  min-width: 5rem;
+  max-width: 5rem;
+  isolation: isolate;
+}
+
+table.data.update-sale-table th.update-sale-date-col,
+table.data.update-sale-table td.update-sale-date-col {
+  position: sticky;
+  left: 5rem;
+  width: 7rem;
+  min-width: 7rem;
+  max-width: 7rem;
+  isolation: isolate;
+  box-shadow:
+    1px 0 0 var(--line),
+    4px 0 8px -2px rgba(20, 23, 28, 0.08);
+}
+
+.app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-dispatch-col,
+.app-main .table-wrap > table.data.update-sale-table thead th.update-sale-dispatch-col {
+  top: 0;
+  left: 0;
+  z-index: 8;
+  background: #f8fafb;
+}
+
+.app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-date-col,
+.app-main .table-wrap > table.data.update-sale-table thead th.update-sale-date-col {
+  top: 0;
+  left: 5rem;
+  z-index: 7;
+  background: #f8fafb;
+}
+
+table.data.update-sale-table td.update-sale-dispatch-col,
+table.data.update-sale-table td.update-sale-date-col {
+  z-index: 4;
+  background: #ffffff;
+}
+
+table.data.update-sale-table tbody tr:hover td.update-sale-dispatch-col,
+table.data.update-sale-table tbody tr:hover td.update-sale-date-col {
+  background: #f7faf9;
 }
 
 table.data.update-sale-table .update-sale-transporter-cell {
@@ -5524,6 +5642,57 @@ table.data.update-transport-table tbody td {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Sticky Dispatch No + Date when scrolling horizontally */
+table.data.update-transport-table th.update-transport-dispatch-col,
+table.data.update-transport-table td.update-transport-dispatch-col {
+  position: sticky;
+  left: 0;
+  width: 5rem;
+  min-width: 5rem;
+  max-width: 5rem;
+  isolation: isolate;
+}
+
+table.data.update-transport-table th.update-transport-date-col,
+table.data.update-transport-table td.update-transport-date-col {
+  position: sticky;
+  left: 5rem;
+  width: 7rem;
+  min-width: 7rem;
+  max-width: 7rem;
+  isolation: isolate;
+  box-shadow:
+    1px 0 0 var(--line),
+    4px 0 8px -2px rgba(20, 23, 28, 0.08);
+}
+
+.app-main .table-h-scroll > table.data.update-transport-table thead th.update-transport-dispatch-col,
+.app-main .table-wrap > table.data.update-transport-table thead th.update-transport-dispatch-col {
+  top: 0;
+  left: 0;
+  z-index: 8;
+  background: #f8fafb;
+}
+
+.app-main .table-h-scroll > table.data.update-transport-table thead th.update-transport-date-col,
+.app-main .table-wrap > table.data.update-transport-table thead th.update-transport-date-col {
+  top: 0;
+  left: 5rem;
+  z-index: 7;
+  background: #f8fafb;
+}
+
+table.data.update-transport-table td.update-transport-dispatch-col,
+table.data.update-transport-table td.update-transport-date-col {
+  z-index: 4;
+  background: #ffffff;
+}
+
+table.data.update-transport-table tbody tr:hover td.update-transport-dispatch-col,
+table.data.update-transport-table tbody tr:hover td.update-transport-date-col {
+  background: #f7faf9;
 }
 
 table.data.update-transport-table .update-transport-name-cell {

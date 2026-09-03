@@ -392,8 +392,12 @@ export function TransportEngineClient({
             ) : null}
           <thead>
             <tr>
-              {isUpdateLayout ? <th>Dispatch No</th> : null}
-              <th>Date</th>
+              {isUpdateLayout ? (
+                <th className="update-transport-dispatch-col">Dispatch No</th>
+              ) : null}
+              <th className={isUpdateLayout ? "update-transport-date-col" : undefined}>
+                Date
+              </th>
               <th>{isUpdateLayout ? "Sale Invoice" : "Sale invoice"}</th>
               <th>{isUpdateLayout ? "Lorry Number" : "Lorry number"}</th>
               <th className="cell-num">
@@ -438,9 +442,17 @@ export function TransportEngineClient({
               return (
                 <tr key={row.id}>
                   {isUpdateLayout ? (
-                    <td>{displayDispatchNumber(row.dispatchNumber)}</td>
+                    <td className="update-transport-dispatch-col">
+                      {displayDispatchNumber(row.dispatchNumber)}
+                    </td>
                   ) : null}
-                  <td>{formatDateDdMmYyyy(row.dispatchDate)}</td>
+                  <td
+                    className={
+                      isUpdateLayout ? "update-transport-date-col" : undefined
+                    }
+                  >
+                    {formatDateDdMmYyyy(row.dispatchDate)}
+                  </td>
                   <td
                     className={
                       row.saleInvoiceNumber ? undefined : "cell-center"
