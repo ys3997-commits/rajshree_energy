@@ -66,6 +66,14 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
             ))}
           </select>
         </label>
+        <label>
+          Delivery Terms
+          <select name="dispatchTerms" defaultValue={filters.dispatchTerms}>
+            <option value="">All</option>
+            <option value={DispatchTerms.FOR}>FOR</option>
+            <option value={DispatchTerms.EX_PORT}>Ex-Port</option>
+          </select>
+        </label>
         <button type="submit" className="btn btn-secondary">
           Filter
         </button>

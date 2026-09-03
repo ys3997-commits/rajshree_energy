@@ -38,6 +38,7 @@ export type DispatchSearchParams = {
   vesselId?: string;
   vendorId?: string;
   customerId?: string;
+  dispatchTerms?: string;
   dispatchDate?: string;
   dispatchDateStart?: string;
   dispatchDateEnd?: string;
@@ -337,6 +338,11 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     sp.saleUpdateStatus === "PENDING" || sp.saleUpdateStatus === "RECEIVED"
       ? sp.saleUpdateStatus
       : "";
+  const dispatchTerms: DispatchFilters["dispatchTerms"] =
+    sp.dispatchTerms === DispatchTerms.FOR ||
+    sp.dispatchTerms === DispatchTerms.EX_PORT
+      ? sp.dispatchTerms
+      : "";
 
   const filters: DispatchFilters = {
     receiptStatus: (sp.receiptStatus as ReceiptStatus) || "",
@@ -347,6 +353,7 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     vesselId: sp.vesselId || "",
     vendorId: sp.vendorId || "",
     customerId: sp.customerId || "",
+    dispatchTerms,
     dispatchDate: sp.dispatchDate || "",
     dispatchDateStart: sp.dispatchDateStart || "",
     dispatchDateEnd: sp.dispatchDateEnd || "",

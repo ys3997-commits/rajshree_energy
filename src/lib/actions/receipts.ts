@@ -1,6 +1,6 @@
 "use server";
 
-import { ReceiptStatus, type Prisma } from "@/generated/prisma";
+import { DispatchTerms, ReceiptStatus, type Prisma } from "@/generated/prisma";
 import { prisma } from "@/lib/prisma";
 import {
   diffInQuantity,
@@ -29,6 +29,7 @@ export type DispatchFilters = {
   vesselId?: string;
   vendorId?: string;
   customerId?: string;
+  dispatchTerms?: DispatchTerms | "";
   dispatchDate?: string;
   dispatchDateStart?: string;
   dispatchDateEnd?: string;
@@ -80,6 +81,9 @@ export async function listDispatches(filters: DispatchFilters = {}) {
   if (filters.vendorId) where.importerId = filters.vendorId;
   if (filters.customerId) {
     where.order = { customerId: filters.customerId };
+  }
+  if (filters.dispatchTerms) {
+    where.dispatchTerms = filters.dispatchTerms;
   }
   if (filters.dispatchDateStart || filters.dispatchDateEnd) {
     where.dispatchDate = {};
