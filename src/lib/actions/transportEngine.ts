@@ -149,7 +149,7 @@ export async function updateTransportChecklist(
   const transportInvoiceNo =
     input.transportInvoiceNo == null || input.transportInvoiceNo.trim() === ""
       ? null
-      : input.transportInvoiceNo.trim();
+      : input.transportInvoiceNo.trim().toUpperCase();
 
   const nextTransportComplete = isTransportChecklistComplete({
     biltyHardCopy: Boolean(input.biltyHardCopy),

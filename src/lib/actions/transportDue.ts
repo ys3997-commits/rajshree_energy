@@ -26,8 +26,32 @@ export type TransportDueRow = {
   lastFundPaidAmount: string | null;
 };
 
+export type TransportDueDateRange = {
+  dateStart?: string;
+  dateEnd?: string;
+};
+
+function isoDay(value: Date): string {
+  return value.toISOString().slice(0, 10);
+}
+
+function inDateRange(
+  day: string,
+  dateStart?: string,
+  dateEnd?: string,
+): boolean {
+  if (dateStart && day < dateStart) return false;
+  if (dateEnd && day > dateEnd) return false;
+  return true;
+}
+
 /** Transporters with a non-zero net due, highest due first. */
-export async function listTransportDueRows(): Promise<TransportDueRow[]> {
+export async function listTransportDueRows(
+  range: TransportDueDateRange = {},
+): Promise<TransportDueRow[]> {
+  const dateStart = range.dateStart?.trim() || undefined;
+  const dateEnd = range.dateEnd?.trim() || undefined;
+
   const [transporters, dispatches, payments] = await Promise.all([
     prisma.transporter.findMany({
       select: {
@@ -51,6 +75,7 @@ export async function listTransportDueRows(): Promise<TransportDueRow[]> {
         transporterId: true,
         freight: true,
         dispatchedQuantity: true,
+        dispatchDate: true,
       },
     }),
     prisma.payment.findMany({
@@ -69,6 +94,7 @@ export async function listTransportDueRows(): Promise<TransportDueRow[]> {
   const freightByTransporter = new Map<string, ReturnType<typeof toDecimal>>();
   for (const row of dispatches) {
     if (!row.transporterId) continue;
+    if (!inDateRange(isoDay(row.dispatchDate), dateStart, dateEnd)) continue;
     const billed = freightBilledAmount(row.freight, row.dispatchedQuantity);
     const current = freightByTransporter.get(row.transporterId) ?? toDecimal(0);
     freightByTransporter.set(row.transporterId, current.plus(billed));
@@ -77,6 +103,7 @@ export async function listTransportDueRows(): Promise<TransportDueRow[]> {
   const paymentsByTransporter = new Map<string, typeof payments>();
   for (const payment of payments) {
     if (!payment.transporterId) continue;
+    if (!inDateRange(isoDay(payment.date), dateStart, dateEnd)) continue;
     const list = paymentsByTransporter.get(payment.transporterId) ?? [];
     list.push(payment);
     paymentsByTransporter.set(payment.transporterId, list);

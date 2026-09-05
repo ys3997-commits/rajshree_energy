@@ -4253,6 +4253,64 @@ a.home-quality-row:hover {
   border-left: 1px solid var(--line-strong);
 }
 
+/* Transport ledger: wider Dispatch, compact Funds */
+.ledger-panels-transport {
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem);
+}
+
+.ledger-panels-transport .ledger-panel-title {
+  height: 2.6rem;
+  min-height: 2.6rem;
+  max-height: 2.6rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  box-sizing: border-box;
+}
+
+.ledger-panels-transport .ledger-panel-body .table-h-scroll {
+  display: block;
+  overflow-x: auto;
+}
+
+.ledger-panels-transport .ledger-panel-body table.data thead th {
+  height: 3.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  vertical-align: middle;
+  white-space: normal;
+  line-height: 1.15;
+  box-sizing: border-box;
+}
+
+.ledger-panels-transport .ledger-th-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 2.5rem;
+  max-height: 2.5rem;
+  line-height: 1.15;
+}
+
+.ledger-panels-transport .ledger-th-inner > span {
+  display: block;
+  line-height: 1.15;
+}
+
+.ledger-panels-transport .ledger-panel-body table.data thead th.cell-num .ledger-th-inner {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data td,
+.ledger-panels-transport .ledger-panel-funds table.data td {
+  white-space: nowrap;
+}
+
+.ledger-panels-transport .ledger-panel-funds table.data th:nth-child(2),
+.ledger-panels-transport .ledger-panel-funds table.data td:nth-child(2) {
+  width: 100%;
+}
+
 .ledger-panel-title {
   margin: 0;
   padding: 0.7rem 1rem;
@@ -4318,7 +4376,8 @@ a.home-quality-row:hover {
 }
 
 @media (max-width: 1100px) {
-  .ledger-panels {
+  .ledger-panels,
+  .ledger-panels-transport {
     grid-template-columns: 1fr;
   }
 
@@ -4963,6 +5022,15 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
 .report-page table.data thead th.cell-num,
 .report-page table.data thead th.cell-num button.th-sort {
   text-align: right;
+}
+
+.report-page .customer-analysis-list table.data.customer-analysis-table tbody td {
+  padding: 0.7rem var(--table-cell-padding-x);
+  line-height: 1.25;
+}
+
+.report-page .customer-analysis-list table.data.customer-analysis-table tbody tr {
+  height: 3rem;
 }
 
 .approvals-page table.data thead th,

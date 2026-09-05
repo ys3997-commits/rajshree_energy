@@ -115,23 +115,25 @@ function toTransporterData(input: TransporterInput) {
 }
 
 export async function createTransporter(input: TransporterInput) {
-  const row = await prisma.transporter.create({
+  await prisma.transporter.create({
     data: toTransporterData(input),
+    select: { id: true },
   });
   revalidatePath("/transporters");
   revalidatePath("/reports/transport/due");
-  return row;
+  revalidatePath("/reports/transport/ledger");
 }
 
 export async function updateTransporter(id: string, input: TransporterInput) {
-  const row = await prisma.transporter.update({
+  await prisma.transporter.update({
     where: { id },
     data: toTransporterData(input),
+    select: { id: true },
   });
   revalidatePath("/transporters");
   revalidatePath(`/transporters/${id}`);
   revalidatePath("/reports/transport/due");
-  return row;
+  revalidatePath("/reports/transport/ledger");
 }
 
 export async function deleteTransporter(id: string) {
@@ -153,4 +155,5 @@ export async function deleteTransporter(id: string) {
   await prisma.transporter.delete({ where: { id } });
   revalidatePath("/transporters");
   revalidatePath("/reports/transport/due");
+  revalidatePath("/reports/transport/ledger");
 }

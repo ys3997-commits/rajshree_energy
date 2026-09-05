@@ -12,17 +12,20 @@ describe("transporter freight billed", () => {
 });
 
 describe("computeTransporterDue", () => {
-  it("is opening due + total freight − fund paid + fund received", () => {
+  it("is −opening due + total freight − fund paid + fund received", () => {
     expect(computeTransporterDue(1000, 10000, 3000, 200).toString()).toBe(
-      "8200",
+      "6200",
+    );
+    expect(computeTransporterDue(-453145, 692172.5, 1203145, 0).toString()).toBe(
+      "-57827.5",
     );
   });
 });
 
 describe("computeTransporterPayableDue", () => {
-  it("is opening due + freight × 0.99 − paid + received", () => {
+  it("is −opening due + freight × 0.99 − paid + received", () => {
     expect(
       computeTransporterPayableDue(1000, 10000, 3000, 200).toString(),
-    ).toBe("8100");
+    ).toBe("6100");
   });
 });

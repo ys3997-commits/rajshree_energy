@@ -600,13 +600,15 @@ export function NewDispatchForm({
         <label>Sale invoice</label>
         <input
           value={saleInvoiceNumber}
-          onChange={(e) => setSaleInvoiceNumber(e.target.value)}
+          onChange={(e) => setSaleInvoiceNumber(e.target.value.toUpperCase())}
         />
 
         <label>Purchase invoice</label>
         <input
           value={purchaseInvoiceNumber}
-          onChange={(e) => setPurchaseInvoiceNumber(e.target.value)}
+          onChange={(e) =>
+            setPurchaseInvoiceNumber(e.target.value.toUpperCase())
+          }
         />
 
         <div />

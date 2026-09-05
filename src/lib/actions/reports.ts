@@ -16,7 +16,15 @@ import {
   dueDeltasAfter,
   dueAsOfFromLive,
   discountDueDelta,
+  OPENING_DUE_DATE,
+  paymentDueDelta,
+  purchaseDispatchDueDelta,
+  saleDispatchDueDelta,
 } from "@/lib/domain/customerDue";
+import {
+  averageFundRecoveryDays,
+  type FundRecoveryMovement,
+} from "@/lib/domain/fundRecovery";
 
 const qualityClassInclude = {
   origin: { select: { id: true, name: true } },
@@ -170,7 +178,21 @@ export type CustomerAnalysisListRow = {
   due: string;
   totalProfit: string | null;
   marginPmt: string | null;
+  /** Amount-weighted average days from supply to recovery; null if none recovered. */
+  recoveryOfFund: string | null;
 };
+
+function addFundRecoveryMovement(
+  byCustomer: Map<string, FundRecoveryMovement[]>,
+  customerId: string,
+  movement: FundRecoveryMovement,
+) {
+  const amount = toDecimal(movement.amount);
+  if (!amount.isFinite() || amount.isZero()) return;
+  const list = byCustomer.get(customerId) ?? [];
+  list.push(movement);
+  byCustomer.set(customerId, list);
+}
 
 export async function listCustomerAnalysisReport(
   filters: CustomerAnalysisFilters = {},
@@ -194,34 +216,82 @@ export async function listCustomerAnalysisReport(
     },
   });
 
+  const customerIds = customers.map((c) => c.id);
   const dateFilter = dispatchDateWhere(filters);
-  const [dispatches, discounts] = await Promise.all([
-    prisma.dispatch.findMany({
-      where: dateFilter ? { dispatchDate: dateFilter } : undefined,
-      select: {
-        dispatchedQuantity: true,
-        dispatchTerms: true,
-        freight: true,
-        order: {
-          select: {
-            customerId: true,
-            rate: true,
-            finalRate: true,
+  const [dispatches, discounts, ledgerDispatches, payments, ledgerDiscounts] =
+    await Promise.all([
+      prisma.dispatch.findMany({
+        where: dateFilter ? { dispatchDate: dateFilter } : undefined,
+        select: {
+          dispatchedQuantity: true,
+          dispatchTerms: true,
+          freight: true,
+          order: {
+            select: {
+              customerId: true,
+              rate: true,
+              finalRate: true,
+            },
+          },
+          purchaseOrder: {
+            select: {
+              rate: true,
+              finalRate: true,
+            },
           },
         },
-        purchaseOrder: {
-          select: {
-            rate: true,
-            finalRate: true,
-          },
-        },
-      },
-    }),
-    prisma.discount.findMany({
-      where: customerDiscountWhere(filters),
-      select: { customerId: true, status: true, amount: true },
-    }),
-  ]);
+      }),
+      prisma.discount.findMany({
+        where: customerDiscountWhere(filters),
+        select: { customerId: true, status: true, amount: true },
+      }),
+      customerIds.length === 0
+        ? Promise.resolve([])
+        : prisma.dispatch.findMany({
+            where: {
+              OR: [
+                { order: { customerId: { in: customerIds } } },
+                { purchaseOrder: { importerId: { in: customerIds } } },
+              ],
+            },
+            select: {
+              id: true,
+              dispatchDate: true,
+              dispatchedQuantity: true,
+              createdAt: true,
+              order: { select: { customerId: true, finalRate: true } },
+              purchaseOrder: {
+                select: { importerId: true, finalRate: true },
+              },
+            },
+          }),
+      customerIds.length === 0
+        ? Promise.resolve([])
+        : prisma.payment.findMany({
+            where: { customerId: { in: customerIds } },
+            select: {
+              id: true,
+              customerId: true,
+              date: true,
+              amount: true,
+              direction: true,
+              createdAt: true,
+            },
+          }),
+      customerIds.length === 0
+        ? Promise.resolve([])
+        : prisma.discount.findMany({
+            where: { customerId: { in: customerIds } },
+            select: {
+              id: true,
+              customerId: true,
+              date: true,
+              amount: true,
+              status: true,
+              createdAt: true,
+            },
+          }),
+    ]);
   const dueDeltas = filters.dateTo
     ? await dueDeltasAfter(filters.dateTo)
     : null;
@@ -254,6 +324,68 @@ export async function listCustomerAnalysisReport(
     }
   }
 
+  const movementsByCustomer = new Map<string, FundRecoveryMovement[]>();
+  for (const customer of customers) {
+    addFundRecoveryMovement(movementsByCustomer, customer.id, {
+      date: OPENING_DUE_DATE,
+      amount: customer.openingDue,
+      sortKey: `0|opening|${customer.id}`,
+      countsForRecovery: true,
+    });
+  }
+  for (const row of ledgerDispatches) {
+    if (row.order) {
+      addFundRecoveryMovement(movementsByCustomer, row.order.customerId, {
+        date: row.dispatchDate,
+        amount: saleDispatchDueDelta(
+          row.order.finalRate,
+          row.dispatchedQuantity,
+        ),
+        sortKey: `1|sale|${row.createdAt.toISOString()}|${row.id}`,
+        countsForRecovery: true,
+      });
+    }
+    if (row.purchaseOrder) {
+      addFundRecoveryMovement(
+        movementsByCustomer,
+        row.purchaseOrder.importerId,
+        {
+          date: row.dispatchDate,
+          amount: purchaseDispatchDueDelta(
+            row.purchaseOrder.finalRate,
+            row.dispatchedQuantity,
+          ),
+          sortKey: `2|purchase|${row.createdAt.toISOString()}|${row.id}`,
+        },
+      );
+    }
+  }
+  for (const payment of payments) {
+    if (!payment.customerId) continue;
+    addFundRecoveryMovement(movementsByCustomer, payment.customerId, {
+      date: payment.date,
+      amount: paymentDueDelta(payment.direction, payment.amount),
+      sortKey: `3|payment|${payment.createdAt.toISOString()}|${payment.id}`,
+    });
+  }
+  for (const discount of ledgerDiscounts) {
+    if (!discount.customerId) continue;
+    addFundRecoveryMovement(movementsByCustomer, discount.customerId, {
+      date: discount.date,
+      amount: discountDueDelta(discount.status, discount.amount),
+      sortKey: `4|discount|${discount.createdAt.toISOString()}|${discount.id}`,
+    });
+  }
+
+  const recoveryOptions = {
+    chargeDateFrom: filters.dateFrom
+      ? new Date(`${filters.dateFrom}T00:00:00.000Z`)
+      : undefined,
+    chargeDateTo: filters.dateTo
+      ? new Date(`${filters.dateTo}T23:59:59.999Z`)
+      : undefined,
+  };
+
   return customers.map((c) => {
     const agg = byCustomer.get(c.id);
     const volume = agg?.volume ?? new Decimal(0);
@@ -261,6 +393,10 @@ export async function listCustomerAnalysisReport(
       agg?.profit ?? null,
       discountNet.get(c.id),
       volume,
+    );
+    const recoveryDays = averageFundRecoveryDays(
+      movementsByCustomer.get(c.id) ?? [],
+      recoveryOptions,
     );
 
     return {
@@ -277,6 +413,8 @@ export async function listCustomerAnalysisReport(
         : c.due.toString(),
       totalProfit,
       marginPmt,
+      recoveryOfFund:
+        recoveryDays == null ? null : String(recoveryDays),
     };
   });
 }
@@ -383,6 +521,7 @@ export async function listVendorAnalysisReport(
         : c.due.toString(),
       totalProfit,
       marginPmt,
+      recoveryOfFund: null,
     };
   });
 }

@@ -234,6 +234,13 @@ export const REPORT_SUB_PAGES = [
     reportSubPage: true,
   },
   {
+    key: "reports-transport-ledger",
+    href: "/reports/transport/ledger",
+    label: "Ledger",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
     key: "reports-vessel",
     href: "/reports/vessel",
     label: "Vessel Report",
@@ -304,6 +311,7 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
     pages: [
       { key: "reports-transport-engine", label: "Transport Engine Report" },
       { key: "reports-transport-due", label: "Transport Due" },
+      { key: "reports-transport-ledger", label: "Ledger" },
     ],
   },
   {

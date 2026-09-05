@@ -121,7 +121,7 @@ export default async function TransporterDetailPage({
 
       <div className="detail-meta">
         <div className="detail-meta-item">
-          <span className="detail-meta-label">Owner</span>
+          <span className="detail-meta-label">Transport Owner</span>
           <span className="detail-meta-value">
             {transporter.ownerName
               ? (capitalizeName(transporter.ownerName) ?? transporter.ownerName)

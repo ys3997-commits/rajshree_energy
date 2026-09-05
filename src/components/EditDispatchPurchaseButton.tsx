@@ -146,7 +146,7 @@ export function EditDispatchPurchaseButton({
           <input
             id={`purchase-invoice-${dispatchId}`}
             value={purchaseInvoice}
-            onChange={(e) => setPurchaseInvoice(e.target.value)}
+            onChange={(e) => setPurchaseInvoice(e.target.value.toUpperCase())}
             placeholder="Purchase invoice number"
             autoFocus={!rowSummary}
           />

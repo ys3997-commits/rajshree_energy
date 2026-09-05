@@ -8,6 +8,7 @@ import type { CustomerAnalysisListRow } from "@/lib/actions/reports";
 import {
   formatCustomerCategory,
   formatAmount,
+  formatCreditPeriod,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 
@@ -18,7 +19,8 @@ type SortKey =
   | "totalQuantity"
   | "due"
   | "totalProfit"
-  | "marginPmt";
+  | "marginPmt"
+  | "recoveryOfFund";
 type SortDir = "asc" | "desc";
 
 const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
@@ -27,6 +29,7 @@ const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
   "due",
   "totalProfit",
   "marginPmt",
+  "recoveryOfFund",
 ]);
 
 function numericValue(value: string | null | undefined): number {
@@ -131,6 +134,11 @@ export function CustomerAnalysisList({
     { key: "totalDue", header: "Total due", align: "right" as const },
     { key: "totalMargin", header: "Total Margin", align: "right" as const },
     { key: "marginPmt", header: "Margin PMT", align: "right" as const },
+    {
+      key: "recoveryOfFund",
+      header: "Recovery of fund",
+      align: "right" as const,
+    },
   ];
 
   const exportRows = useMemo(
@@ -143,6 +151,9 @@ export function CustomerAnalysisList({
         totalDue: formatAmount(c.due),
         totalMargin: formatAmount(c.totalProfit),
         marginPmt: formatAmount(c.marginPmt),
+        recoveryOfFund: formatCreditPeriod(
+          c.recoveryOfFund == null ? null : Number(c.recoveryOfFund),
+        ),
       })),
     [filtered],
   );
@@ -240,7 +251,8 @@ export function CustomerAnalysisList({
         <p className="home-empty">No customers match your filter.</p>
       ) : (
         <div className="table-wrap">
-          <div className="table-h-scroll"><table className="data">
+          <div className="table-h-scroll">
+            <table className="data customer-analysis-table">
             <thead>
               <tr>
                 <th className="report-customer-col">
@@ -304,6 +316,17 @@ export function CustomerAnalysisList({
                     {sortIndicator(sortKey === "marginPmt", sortDir)}
                   </button>
                 </th>
+                <th className="cell-num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("recoveryOfFund")}
+                    title="Average days to recover funds after goods are supplied"
+                  >
+                    Recovery of fund
+                    {sortIndicator(sortKey === "recoveryOfFund", sortDir)}
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -332,6 +355,13 @@ export function CustomerAnalysisList({
                   <td className="cell-num">{formatAmount(c.due)}</td>
                   <td className="cell-num">{formatAmount(c.totalProfit)}</td>
                   <td className="cell-num">{formatAmount(c.marginPmt)}</td>
+                  <td className="cell-num">
+                    {formatCreditPeriod(
+                      c.recoveryOfFund == null
+                        ? null
+                        : Number(c.recoveryOfFund),
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

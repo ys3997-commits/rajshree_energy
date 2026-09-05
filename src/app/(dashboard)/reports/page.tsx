@@ -81,6 +81,11 @@ const reports = [
     desc: "Outstanding freight balances with transporters.",
   },
   {
+    href: "/reports/transport/ledger",
+    title: "Transport Ledger",
+    desc: "Transporter ledger of dispatches, funds, and discounts.",
+  },
+  {
     href: "/reports/collection/vendor",
     title: "Vendor Collection",
     desc: "Supplier collection balances and outstanding dues.",

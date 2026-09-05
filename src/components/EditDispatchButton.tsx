@@ -754,7 +754,7 @@ export function EditDispatchButton({
           <input
             id={`edit-sale-invoice-${dispatchId}`}
             value={saleInvoice}
-            onChange={(e) => setSaleInvoice(e.target.value)}
+            onChange={(e) => setSaleInvoice(e.target.value.toUpperCase())}
           />
 
           <label htmlFor={`edit-purchase-invoice-${dispatchId}`}>
@@ -763,7 +763,7 @@ export function EditDispatchButton({
           <input
             id={`edit-purchase-invoice-${dispatchId}`}
             value={purchaseInvoice}
-            onChange={(e) => setPurchaseInvoice(e.target.value)}
+            onChange={(e) => setPurchaseInvoice(e.target.value.toUpperCase())}
           />
 
           <label htmlFor={`edit-received-${dispatchId}`}>

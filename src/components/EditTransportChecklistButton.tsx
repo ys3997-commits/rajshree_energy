@@ -200,7 +200,7 @@ export function EditTransportChecklistButton({
           <input
             id={`te-invoice-no-${dispatchId}`}
             value={transportInvoiceNo}
-            onChange={(e) => setTransportInvoiceNo(e.target.value)}
+            onChange={(e) => setTransportInvoiceNo(e.target.value.toUpperCase())}
             placeholder="Transport invoice number"
             autoFocus={!rowSummary}
           />

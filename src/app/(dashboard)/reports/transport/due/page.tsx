@@ -2,8 +2,23 @@ import Link from "next/link";
 import { listTransportDueRows } from "@/lib/actions/transportDue";
 import { TransportDueClient } from "./TransportDueClient";
 
-export default async function TransportDuePage() {
-  const rows = await listTransportDueRows();
+type SearchParams = Promise<{
+  dateStart?: string;
+  dateEnd?: string;
+}>;
+
+export default async function TransportDuePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const sp = await searchParams;
+  const dateStart = sp.dateStart?.trim() || "";
+  const dateEnd = sp.dateEnd?.trim() || "";
+  const rows = await listTransportDueRows({
+    dateStart: dateStart || undefined,
+    dateEnd: dateEnd || undefined,
+  });
 
   return (
     <div>
@@ -23,7 +38,11 @@ export default async function TransportDuePage() {
         </div>
       </div>
 
-      <TransportDueClient initialRows={rows} />
+      <TransportDueClient
+        initialRows={rows}
+        dateStart={dateStart}
+        dateEnd={dateEnd}
+      />
     </div>
   );
 }

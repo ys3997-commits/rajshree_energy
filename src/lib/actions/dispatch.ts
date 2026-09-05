@@ -170,7 +170,7 @@ function normalizeInvoiceNumber(
 ): string | null | undefined {
   if (value === undefined) return undefined;
   if (value === null) return null;
-  const trimmed = value.trim();
+  const trimmed = value.trim().toUpperCase();
   return trimmed.length > 0 ? trimmed : null;
 }
 
@@ -298,6 +298,7 @@ function revalidateDispatchPaths() {
   revalidatePath("/customers");
   revalidatePath("/payments");
   revalidatePath("/reports/transport/due");
+  revalidatePath("/reports/transport/ledger");
 }
 
 /**

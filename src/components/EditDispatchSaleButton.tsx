@@ -166,7 +166,7 @@ export function EditDispatchSaleButton({
           <input
             id={`sale-invoice-${dispatchId}`}
             value={saleInvoice}
-            onChange={(e) => setSaleInvoice(e.target.value)}
+            onChange={(e) => setSaleInvoice(e.target.value.toUpperCase())}
             placeholder="Sale invoice number"
             autoFocus={!rowSummary}
           />

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { TransportDueRow } from "@/lib/actions/transportDue";
 import { capitalizeName, formatDateDdMmYyyy, formatAmount } from "@/lib/domain/format";
@@ -27,15 +28,41 @@ function sortIndicator(active: boolean, dir: SortDir): string {
   return dir === "asc" ? " ↑" : " ↓";
 }
 
+function transportDueHref(dateStart: string, dateEnd: string): string {
+  const params = new URLSearchParams();
+  if (dateStart) params.set("dateStart", dateStart);
+  if (dateEnd) params.set("dateEnd", dateEnd);
+  const qs = params.toString();
+  return qs ? `/reports/transport/due?${qs}` : "/reports/transport/due";
+}
+
 export function TransportDueClient({
   initialRows,
+  dateStart: initialDateStart = "",
+  dateEnd: initialDateEnd = "",
 }: {
   initialRows: TransportDueRow[];
+  dateStart?: string;
+  dateEnd?: string;
 }) {
+  const router = useRouter();
   const [cityFilter, setCityFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
+  const [dateStart, setDateStart] = useState(initialDateStart || "");
+  const [dateEnd, setDateEnd] = useState(initialDateEnd || "");
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+
+  useEffect(() => {
+    setDateStart(initialDateStart || "");
+    setDateEnd(initialDateEnd || "");
+  }, [initialDateStart, initialDateEnd]);
+
+  function applyDates(nextStart: string, nextEnd: string) {
+    setDateStart(nextStart);
+    setDateEnd(nextEnd);
+    router.push(transportDueHref(nextStart, nextEnd));
+  }
 
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
@@ -55,7 +82,9 @@ export function TransportDueClient({
     [initialRows],
   );
 
-  const hasActiveFilters = Boolean(cityFilter || stateFilter);
+  const hasActiveFilters = Boolean(
+    cityFilter || stateFilter || dateStart || dateEnd,
+  );
 
   const filteredRows = useMemo(() => {
     const next = initialRows.filter((row) => {
@@ -142,6 +171,28 @@ export function TransportDueClient({
             ))}
           </select>
         </label>
+        <label>
+          Date start
+          <input
+            type="date"
+            lang="en-GB"
+            className="field-input"
+            value={dateStart}
+            max={dateEnd || undefined}
+            onChange={(e) => applyDates(e.target.value, dateEnd)}
+          />
+        </label>
+        <label>
+          Date end
+          <input
+            type="date"
+            lang="en-GB"
+            className="field-input"
+            value={dateEnd}
+            min={dateStart || undefined}
+            onChange={(e) => applyDates(dateStart, e.target.value)}
+          />
+        </label>
         {hasActiveFilters && (
           <button
             type="button"
@@ -149,6 +200,7 @@ export function TransportDueClient({
             onClick={() => {
               setCityFilter("");
               setStateFilter("");
+              applyDates("", "");
             }}
           >
             Clear

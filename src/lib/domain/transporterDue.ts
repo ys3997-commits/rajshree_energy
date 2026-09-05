@@ -22,13 +22,14 @@ function computeDue(
 ): Decimal {
   const opening = openingDue == null ? new Decimal(0) : toDecimal(openingDue);
   return opening
+    .neg()
     .plus(toDecimal(freightBilled).mul(freightFactor))
     .minus(toDecimal(paid))
     .plus(toDecimal(received))
     .toDecimalPlaces(2);
 }
 
-/** Total due: opening due + total freight − fund paid + fund received. */
+/** Total due: −opening due + total freight − fund paid + fund received. */
 export function computeTransporterDue(
   openingDue: DecimalLike | null | undefined,
   freightBilled: DecimalLike,
@@ -38,7 +39,7 @@ export function computeTransporterDue(
   return computeDue(openingDue, freightBilled, paid, received, new Decimal(1));
 }
 
-/** Transporter due: opening due + (freight billed × 0.99) − fund paid + fund received. */
+/** Transporter due: −opening due + (freight billed × 0.99) − fund paid + fund received. */
 export function computeTransporterPayableDue(
   openingDue: DecimalLike | null | undefined,
   freightBilled: DecimalLike,
