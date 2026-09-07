@@ -12,6 +12,7 @@ import {
   suggestNextDispatchNumber,
   suggestNextPoNumber,
 } from "@/lib/actions/dispatch";
+import { listPortOptions } from "@/lib/actions/ports";
 import {
   formatDateDdMmYyyy,
   formatDispatchMt,
@@ -42,6 +43,8 @@ export type DispatchSearchParams = {
   dispatchDate?: string;
   dispatchDateStart?: string;
   dispatchDateEnd?: string;
+  coalOrigin?: string;
+  portId?: string;
 };
 
 export function displayOrderDigits(
@@ -343,6 +346,10 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     sp.dispatchTerms === DispatchTerms.EX_PORT
       ? sp.dispatchTerms
       : "";
+  const coalOrigin: DispatchFilters["coalOrigin"] =
+    sp.coalOrigin === "domestic" || sp.coalOrigin === "imported"
+      ? sp.coalOrigin
+      : "";
 
   const filters: DispatchFilters = {
     receiptStatus: (sp.receiptStatus as ReceiptStatus) || "",
@@ -357,6 +364,8 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     dispatchDate: sp.dispatchDate || "",
     dispatchDateStart: sp.dispatchDateStart || "",
     dispatchDateEnd: sp.dispatchDateEnd || "",
+    coalOrigin,
+    portId: sp.portId || "",
   };
 
   const [
@@ -365,12 +374,14 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     vessels,
     balanceOrders,
     balancePurchases,
+    ports,
   ] = await Promise.all([
     listDispatches(filters),
     listCustomers({ activeOnly: true }),
     listVessels(),
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
+    listPortOptions(),
   ]);
 
   const [transporters, suggestedPo, suggestedPurchasePo, suggestedDispatchNumber] =
@@ -395,6 +406,7 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     dispatches,
     customers: customers.map((c) => ({ id: c.id, name: c.name })),
     vessels: vessels.map((v) => ({ id: v.id, vesselName: v.vesselName })),
+    ports: ports.map((p) => ({ id: p.id, name: p.name })),
     balanceOrders: balanceOrders.map((o) => ({
       poNumber: o.poNumber,
       balanceOrder: o.balanceOrder?.toString() ?? null,

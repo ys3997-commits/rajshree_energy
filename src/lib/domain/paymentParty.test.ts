@@ -20,13 +20,20 @@ describe("parsePaymentParty", () => {
     });
   });
 
+  it("accepts an investment company id", () => {
+    expect(parsePaymentParty({ investmentCompanyId: "i1" })).toEqual({
+      kind: "investment",
+      id: "i1",
+    });
+  });
+
   it("rejects both or neither", () => {
     expect(() => parsePaymentParty({})).toThrow(
-      "Customer or transporter is required",
+      "Customer, transporter, or investment company is required",
     );
     expect(() =>
       parsePaymentParty({ customerId: "c1", transporterId: "t1" }),
-    ).toThrow("Select a customer or a transporter, not both");
+    ).toThrow("Select only one party");
   });
 });
 
@@ -39,6 +46,10 @@ describe("partyKey", () => {
     expect(parsePartyKey(partyKey("transporter", "xyz"))).toEqual({
       kind: "transporter",
       id: "xyz",
+    });
+    expect(parsePartyKey(partyKey("investment", "inv1"))).toEqual({
+      kind: "investment",
+      id: "inv1",
     });
   });
 });

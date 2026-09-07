@@ -3,13 +3,19 @@ import Link from "next/link";
 export function PartyNameLink({
   customerId,
   transporterId,
+  investmentCompanyId,
   name,
 }: {
   customerId: string | null;
   transporterId: string | null;
+  investmentCompanyId?: string | null;
   name: string;
 }) {
-  const label = transporterId ? `${name} — Transporter` : name;
+  const label = transporterId
+    ? `${name} — Transporter`
+    : investmentCompanyId
+      ? `${name} — Investment`
+      : name;
   if (customerId) {
     return (
       <Link
@@ -23,6 +29,13 @@ export function PartyNameLink({
   if (transporterId) {
     return (
       <Link href={`/transporters/${transporterId}`} className="btn-link">
+        {label}
+      </Link>
+    );
+  }
+  if (investmentCompanyId) {
+    return (
+      <Link href="/investments" className="btn-link">
         {label}
       </Link>
     );

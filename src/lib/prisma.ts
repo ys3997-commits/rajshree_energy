@@ -80,7 +80,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 /** Bump when the generated client or pool settings change so HMR drops stale sockets. */
-const PRISMA_GEN = 28;
+const PRISMA_GEN = 29;
 
 function getPrisma(): AppPrisma {
   if (globalForPrisma.prismaGen === PRISMA_GEN && globalForPrisma.prisma) {

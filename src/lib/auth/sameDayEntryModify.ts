@@ -7,8 +7,8 @@ const IST_DAY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
 
 const MS_PER_DAY = 86_400_000;
 
-/** Staff may edit their own dispatch on the creation IST day plus this many extra days. */
-export const DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS = 1;
+/** Staff may edit their own dispatch on the creation IST day plus this many extra days (4 days total). */
+export const DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS = 3;
 
 export type SameDayEntryRow = {
   createdAt: Date;
@@ -48,8 +48,12 @@ export function sameDayEntryPermissions(
   row: SameDayEntryRow,
   options: SameDayEntryOptions = {},
 ): { canEdit: boolean; canDelete: boolean } {
-  const allowed = canModifySameDayEntry(access, row, options);
-  return { canEdit: allowed, canDelete: allowed };
+  const canEdit = canModifySameDayEntry(access, row, options);
+  return {
+    canEdit,
+    // Staff may edit within the window; only owner may delete.
+    canDelete: access.kind === "owner",
+  };
 }
 
 function sameDayLockMessage(
@@ -61,7 +65,8 @@ function sameDayLockMessage(
   if (extraCalendarDays <= 0) {
     return `You can ${verb} only your own ${entityLabel} on the same day.`;
   }
-  return `You can ${verb} only your own ${entityLabel} on the same day or the next day.`;
+  const totalDays = extraCalendarDays + 1;
+  return `You can ${verb} only your own ${entityLabel} within ${totalDays} days of creation.`;
 }
 
 export function assertCanModifySameDayEntry(

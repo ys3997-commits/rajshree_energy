@@ -89,6 +89,13 @@ export const MASTER_SUB_PAGES = [
     masterSubPage: true,
   },
   {
+    key: "investments",
+    href: "/investments",
+    label: "Investment",
+    group: "Pages" as const,
+    masterSubPage: true,
+  },
+  {
     key: "qualities",
     href: "/qualities",
     label: "Qualities",
@@ -195,6 +202,13 @@ export const REPORT_SUB_PAGES = [
     key: "reports-dispatch",
     href: "/reports/master-dispatch",
     label: "Dispatch",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
+    key: "reports-investments",
+    href: "/reports/investments",
+    label: "Investments",
     group: "Reports" as const,
     reportSubPage: true,
   },
@@ -326,6 +340,7 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
 
 export const REPORT_ACCESS_LEAVES: ReportAccessPage[] = [
   { key: "reports-dispatch", label: "Dispatch" },
+  { key: "reports-investments", label: "Investments" },
   { key: "reports-purchase", label: "Purchase" },
 ];
 

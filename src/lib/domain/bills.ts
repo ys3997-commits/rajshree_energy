@@ -1,3 +1,5 @@
+import { calendarDaysElapsedInIst } from "@/lib/auth/sameDayEntryModify";
+
 export const BILL_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
 export type BillStatus = (typeof BILL_STATUSES)[number];
 
@@ -11,6 +13,8 @@ export const MAX_BILL_FILE_BYTES = 4 * 1024 * 1024;
 export const MAX_BILL_FILES = 1;
 export const MAX_BILL_TOTAL_BYTES = MAX_BILL_FILE_BYTES;
 export const MAX_BILL_REMARK_WORDS = 25;
+/** Owner may re-approve a rejected bill within this many IST calendar days of rejection. */
+export const BILL_REAPPROVE_WITHIN_CALENDAR_DAYS = 15;
 
 const ALLOWED_BILL_MIME = new Set([
   "application/pdf",
@@ -188,14 +192,30 @@ export function isBillAccountVoucherComplete(input: {
   return Boolean(input.accountVoucherNo.trim());
 }
 
+export type CanApproveBillOptions = {
+  reviewedAt?: Date | string | null;
+  now?: Date;
+};
+
 export function canApproveBill(
   access: { kind: string },
   status: string,
+  options: CanApproveBillOptions = {},
 ): boolean {
-  return (
-    access.kind === "owner" &&
-    (status === "PENDING" || status === "REJECTED")
+  if (access.kind !== "owner") return false;
+  if (status === "PENDING") return true;
+  if (status !== "REJECTED") return false;
+
+  const raw = options.reviewedAt;
+  if (raw == null) return false;
+  const rejectedAt = typeof raw === "string" ? new Date(raw) : raw;
+  if (Number.isNaN(rejectedAt.getTime())) return false;
+
+  const elapsed = calendarDaysElapsedInIst(
+    rejectedAt,
+    options.now ?? new Date(),
   );
+  return elapsed >= 0 && elapsed <= BILL_REAPPROVE_WITHIN_CALENDAR_DAYS;
 }
 
 export function canRejectBill(

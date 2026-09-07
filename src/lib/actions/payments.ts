@@ -23,6 +23,7 @@ export type PaymentInput = {
   date: string;
   customerId?: string | null;
   transporterId?: string | null;
+  investmentCompanyId?: string | null;
   direction: "RECEIVED" | "SENT" | string;
   amount: string | number;
 };
@@ -32,6 +33,7 @@ export type PaymentRow = {
   date: string;
   customerId: string | null;
   transporterId: string | null;
+  investmentCompanyId: string | null;
   customerName: string;
   direction: "RECEIVED" | "SENT";
   amount: string;
@@ -103,10 +105,12 @@ function toPaymentRow(row: {
   createdByStaffId: string | null;
   customerId: string | null;
   transporterId: string | null;
+  investmentCompanyId: string | null;
   direction: PaymentDirection;
   amount: { toString(): string };
   customer: { name: string } | null;
   transporter: { name: string } | null;
+  investmentCompany: { name: string } | null;
 }, access: Exclude<Access, { kind: "none" }>): PaymentRow {
   const canModify = canModifyPayment(access, row);
   return {
@@ -114,7 +118,12 @@ function toPaymentRow(row: {
     date: row.date.toISOString().slice(0, 10),
     customerId: row.customerId,
     transporterId: row.transporterId,
-    customerName: row.customer?.name ?? row.transporter?.name ?? "—",
+    investmentCompanyId: row.investmentCompanyId,
+    customerName:
+      row.customer?.name ??
+      row.transporter?.name ??
+      row.investmentCompany?.name ??
+      "—",
     direction: row.direction,
     amount: row.amount.toString(),
     canEdit: canModify,
@@ -139,6 +148,7 @@ function validatePaymentInput(input: PaymentInput) {
 const paymentInclude = {
   customer: { select: { id: true, name: true } },
   transporter: { select: { id: true, name: true } },
+  investmentCompany: { select: { id: true, name: true } },
 } as const;
 
 const paymentOrderBy = [
@@ -147,9 +157,13 @@ const paymentOrderBy = [
 ];
 
 function partyCreateData(party: PaymentParty) {
-  return party.kind === "customer"
-    ? { customer: { connect: { id: party.id } } }
-    : { transporter: { connect: { id: party.id } } };
+  if (party.kind === "customer") {
+    return { customer: { connect: { id: party.id } } };
+  }
+  if (party.kind === "transporter") {
+    return { transporter: { connect: { id: party.id } } };
+  }
+  return { investmentCompany: { connect: { id: party.id } } };
 }
 
 function partyUpdateData(party: PaymentParty) {
@@ -160,6 +174,10 @@ function partyUpdateData(party: PaymentParty) {
         : { disconnect: true },
     transporter:
       party.kind === "transporter"
+        ? { connect: { id: party.id } }
+        : { disconnect: true },
+    investmentCompany:
+      party.kind === "investment"
         ? { connect: { id: party.id } }
         : { disconnect: true },
   };
@@ -174,11 +192,19 @@ async function assertPartyExists(party: PaymentParty) {
     if (!customer) throw new Error("Customer not found");
     return;
   }
-  const transporter = await prisma.transporter.findUnique({
+  if (party.kind === "transporter") {
+    const transporter = await prisma.transporter.findUnique({
+      where: { id: party.id },
+      select: { id: true },
+    });
+    if (!transporter) throw new Error("Transporter not found");
+    return;
+  }
+  const company = await prisma.investmentCompany.findUnique({
     where: { id: party.id },
     select: { id: true },
   });
-  if (!transporter) throw new Error("Transporter not found");
+  if (!company) throw new Error("Investment company not found");
 }
 
 function revalidatePaymentPaths(party?: PaymentParty) {
@@ -188,6 +214,10 @@ function revalidatePaymentPaths(party?: PaymentParty) {
     revalidatePath("/transporters");
     revalidatePath("/reports/transport/due");
     revalidatePath("/reports/transport/ledger");
+  }
+  if (!party || party.kind === "investment") {
+    revalidatePath("/investments");
+    revalidatePath("/reports/investments");
   }
 }
 
@@ -206,6 +236,8 @@ function paymentWhere(options?: {
     and.push({ customerId: parsedParty.id });
   } else if (parsedParty?.kind === "transporter") {
     and.push({ transporterId: parsedParty.id });
+  } else if (parsedParty?.kind === "investment") {
+    and.push({ investmentCompanyId: parsedParty.id });
   }
 
   const flowType = parseFundFlowType(options?.type);
@@ -355,6 +387,7 @@ export async function updatePayment(
       id: true,
       customerId: true,
       transporterId: true,
+      investmentCompanyId: true,
       direction: true,
       amount: true,
       createdAt: true,
@@ -413,6 +446,7 @@ export async function deletePayment(id: string) {
       id: true,
       customerId: true,
       transporterId: true,
+      investmentCompanyId: true,
       direction: true,
       amount: true,
       createdAt: true,
@@ -440,6 +474,8 @@ export async function deletePayment(id: string) {
   revalidatePaymentPaths(
     existing.transporterId
       ? { kind: "transporter", id: existing.transporterId }
-      : undefined,
+      : existing.investmentCompanyId
+        ? { kind: "investment", id: existing.investmentCompanyId }
+        : undefined,
   );
 }

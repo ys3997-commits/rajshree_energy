@@ -5024,6 +5024,12 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
   text-align: right;
 }
 
+.report-page .customer-analysis-list table.data.customer-analysis-table th.report-customer-col,
+.report-page .customer-analysis-list table.data.customer-analysis-table td.report-customer-col {
+  min-width: 14rem;
+  max-width: 18rem;
+}
+
 .report-page .customer-analysis-list table.data.customer-analysis-table tbody td {
   padding: 0.7rem var(--table-cell-padding-x);
   line-height: 1.25;
@@ -5048,6 +5054,19 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
 .approvals-page table.data thead th.cell-num,
 .approvals-page table.data thead th.cell-num button.th-sort {
   text-align: right;
+}
+
+/* Approvals — white body through every column (incl. after Owner Remark) */
+.approvals-page .table-wrap {
+  background: #ffffff;
+}
+
+.approvals-page table.data tbody td {
+  background: #ffffff;
+}
+
+.approvals-page table.data tbody tr:hover td {
+  background: #f7faf9;
 }
 
 /* Update screens — title case table headers */
@@ -6016,3 +6035,221 @@ table.data.transport-engine-table.report-screen-table tfoot td {
   color: var(--muted);
   font-size: 0.875rem;
 }
+
+.investment-add-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1rem;
+  align-items: end;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
+}
+
+.investment-add-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 10rem;
+}
+
+.investment-add-field > span {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.investment-add-field .field-input {
+  min-width: 10rem;
+}
+
+.investment-add-field:first-child {
+  min-width: 14rem;
+  flex: 1 1 14rem;
+}
+
+.investment-add-actions {
+  display: flex;
+  align-items: end;
+  padding-bottom: 0.05rem;
+}
+
+.investment-report {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.investment-panel {
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 2px);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.35rem 1.35rem;
+}
+
+.investment-panel-table {
+  padding-bottom: 1.1rem;
+}
+
+.investment-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.investment-panel-title {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.investment-panel-desc {
+  margin: 0.3rem 0 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.investment-inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1rem;
+  align-items: end;
+}
+
+.investment-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 9.5rem;
+}
+
+.investment-field > span {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.investment-field-company {
+  min-width: 16rem;
+  flex: 1 1 16rem;
+}
+
+.investment-field-amount {
+  min-width: 11rem;
+}
+
+.investment-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: end;
+  padding-bottom: 0.05rem;
+}
+
+.investment-period-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.investment-period-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #f7f9f9;
+}
+
+.investment-period-chip-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.investment-period-chip-main strong {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.investment-period-chip-main span {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.investment-empty-hint {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.investment-period-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.investment-period-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.investment-period-header .btn-link {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.investment-period-header .btn-link:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.investment-period-group {
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+}
+
+.investment-period-sub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.investment-panel-table .table-wrap {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .investment-panel-head {
+    flex-direction: column;
+  }
+
+  .investment-field-company,
+  .investment-field-amount,
+  .investment-field {
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
+}
+

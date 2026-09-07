@@ -36,7 +36,24 @@ export type DispatchFilters = {
   dispatchDate?: string;
   dispatchDateStart?: string;
   dispatchDateEnd?: string;
+  /** Filter by coal origin: domestic / imported (quality class). */
+  coalOrigin?: "domestic" | "imported" | "";
+  portId?: string;
 };
+
+function appendWhereAnd(
+  where: Prisma.DispatchWhereInput,
+  clause: Prisma.DispatchWhereInput,
+) {
+  const existing = where.AND;
+  if (!existing) {
+    where.AND = [clause];
+  } else if (Array.isArray(existing)) {
+    where.AND = [...existing, clause];
+  } else {
+    where.AND = [existing, clause];
+  }
+}
 
 export async function listDispatches(filters: DispatchFilters = {}) {
   await ensureDispatchNumbers();
@@ -59,17 +76,19 @@ export async function listDispatches(filters: DispatchFilters = {}) {
     ];
   }
   if (filters.saleUpdateStatus === "RECEIVED") {
-    where.AND = [
-      { saleInvoiceNumber: { not: null } },
-      { NOT: { saleInvoiceNumber: "" } },
-      { receivingQuantity: { not: null } },
-    ];
+    appendWhereAnd(where, {
+      saleInvoiceNumber: { not: null },
+      NOT: { saleInvoiceNumber: "" },
+      receivingQuantity: { not: null },
+    });
   } else if (filters.saleUpdateStatus === "PENDING") {
-    where.OR = [
-      { saleInvoiceNumber: null },
-      { saleInvoiceNumber: "" },
-      { receivingQuantity: null },
-    ];
+    appendWhereAnd(where, {
+      OR: [
+        { saleInvoiceNumber: null },
+        { saleInvoiceNumber: "" },
+        { receivingQuantity: null },
+      ],
+    });
   }
   if (filters.poNumber) {
     where.poNumber = { contains: filters.poNumber, mode: "insensitive" };
@@ -84,6 +103,14 @@ export async function listDispatches(filters: DispatchFilters = {}) {
   if (filters.vendorId) where.importerId = filters.vendorId;
   if (filters.customerId) {
     where.order = { customerId: filters.customerId };
+  }
+  if (filters.portId) {
+    appendWhereAnd(where, {
+      OR: [
+        { vessel: { portId: filters.portId } },
+        { order: { portId: filters.portId } },
+      ],
+    });
   }
   if (filters.dispatchTerms) {
     where.dispatchTerms = filters.dispatchTerms;
@@ -144,7 +171,20 @@ export async function listDispatches(filters: DispatchFilters = {}) {
     orderBy: [{ dispatchDate: "desc" }, { createdAt: "desc" }],
   });
 
-  return rows.map((row) => {
+  const filteredRows =
+    filters.coalOrigin === "domestic" || filters.coalOrigin === "imported"
+      ? rows.filter((row) => {
+          const qc =
+            row.purchaseOrder?.qualityClass ??
+            row.vessel.qualityClass ??
+            row.order?.qualityClass ??
+            null;
+          if (filters.coalOrigin === "domestic") return qc?.domestic === true;
+          return qc?.domestic === false;
+        })
+      : rows;
+
+  return filteredRows.map((row) => {
     const freightAmount =
       row.freight != null
         ? toDecimal(row.freight).mul(row.dispatchedQuantity)

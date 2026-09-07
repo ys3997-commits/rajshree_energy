@@ -150,13 +150,30 @@ describe("bill access", () => {
     expect(canRejectBill(staff, "PENDING")).toBe(false);
   });
 
-  it("lets the owner approve pending or rejected bills and reject only pending", () => {
+  it("lets the owner approve pending or recently rejected bills and reject only pending", () => {
     const owner = { kind: "owner" };
+    const now = new Date("2026-03-20T10:00:00.000Z");
+    const rejectedRecently = new Date("2026-03-10T08:00:00.000Z"); // 10 IST days earlier
+    const rejectedTooOld = new Date("2026-03-04T08:00:00.000Z"); // 16 IST days earlier
     expect(canUploadBill(owner)).toBe(false);
     expect(canViewBill(owner, "s1")).toBe(true);
     expect(canApproveBill(owner, "PENDING")).toBe(true);
     expect(canRejectBill(owner, "PENDING")).toBe(true);
-    expect(canApproveBill(owner, "REJECTED")).toBe(true);
+    expect(
+      canApproveBill(owner, "REJECTED", { reviewedAt: rejectedRecently, now }),
+    ).toBe(true);
+    expect(
+      canApproveBill(owner, "REJECTED", {
+        reviewedAt: rejectedRecently,
+        now: new Date("2026-03-25T10:00:00.000Z"),
+      }),
+    ).toBe(true);
+    expect(
+      canApproveBill(owner, "REJECTED", { reviewedAt: rejectedTooOld, now }),
+    ).toBe(false);
+    expect(canApproveBill(owner, "REJECTED", { reviewedAt: null, now })).toBe(
+      false,
+    );
     expect(canRejectBill(owner, "REJECTED")).toBe(false);
     expect(canApproveBill(owner, "APPROVED")).toBe(false);
     expect(canRejectBill(owner, "APPROVED")).toBe(false);

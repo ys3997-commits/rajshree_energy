@@ -10,7 +10,7 @@ import {
   type BillListResult,
   type BillRow,
 } from "@/lib/actions/bills";
-import { BILL_STATUS_LABEL, countRemarkWords, MAX_BILL_REMARK_WORDS, type BillStatus } from "@/lib/domain/bills";
+import { BILL_STATUS_LABEL, canApproveBill, countRemarkWords, MAX_BILL_REMARK_WORDS, type BillStatus } from "@/lib/domain/bills";
 import {
   capitalizeName,
   formatIndianAmountTyping,
@@ -528,7 +528,9 @@ export function BillsClient({
                 </td>
                 {isOwner ? (
                   <td className="space-x-2 whitespace-nowrap">
-                    {row.status === "PENDING" || row.status === "REJECTED" ? (
+                    {canApproveBill({ kind: "owner" }, row.status, {
+                      reviewedAt: row.reviewedAt,
+                    }) ? (
                       <button
                         type="button"
                         className="btn btn-sm"

@@ -1,10 +1,12 @@
 import { listCustomers } from "@/lib/actions/customers";
+import { listInvestmentCompanies } from "@/lib/actions/investments";
 import { listTransporters } from "@/lib/actions/transporters";
 
 export async function loadFundFlowParties() {
-  const [customers, transporters] = await Promise.all([
+  const [customers, transporters, investments] = await Promise.all([
     listCustomers({ activeOnly: true }),
     listTransporters(),
+    listInvestmentCompanies(),
   ]);
 
   return [
@@ -18,6 +20,11 @@ export async function loadFundFlowParties() {
       id: t.id,
       name: t.name,
       kind: "transporter" as const,
+    })),
+    ...investments.map((c) => ({
+      id: c.id,
+      name: c.name,
+      kind: "investment" as const,
     })),
   ];
 }

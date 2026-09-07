@@ -18,7 +18,7 @@ import {
   formatRs,
   parseAmountInput,
 } from "@/lib/domain/format";
-import { parsePartyKey, partyKey } from "@/lib/domain/paymentParty";
+import { parsePartyKey, partyKey, partyOptionGroup, partyOptionLabel } from "@/lib/domain/paymentParty";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { FundFlowDateFilter } from "./FundFlowDateFilter";
@@ -29,7 +29,7 @@ import { paymentsHref } from "./paymentsHref";
 type Opt = {
   id: string;
   name: string;
-  kind: "customer" | "transporter";
+  kind: "customer" | "transporter" | "investment";
   category?: CustomerCategory;
 };
 type Status = "RECEIVED" | "PAID" | "";
@@ -67,7 +67,9 @@ function formFromRow(row: DiscountRow): FormState {
     date: row.date,
     partyId: row.transporterId
       ? partyKey("transporter", row.transporterId)
-      : partyKey("customer", row.customerId ?? ""),
+      : row.investmentCompanyId
+        ? partyKey("investment", row.investmentCompanyId)
+        : partyKey("customer", row.customerId ?? ""),
     status: row.status,
     amount: row.amount,
     coalOrigin: (row.coalOrigin ?? "") as CoalOriginValue,
@@ -100,9 +102,9 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 }
 
 function partyLabel(row: DiscountRow): string {
-  return row.transporterId
-    ? `${row.customerName} — Transporter`
-    : row.customerName;
+  if (row.transporterId) return `${row.customerName} — Transporter`;
+  if (row.investmentCompanyId) return `${row.customerName} — Investment`;
+  return row.customerName;
 }
 
 function resetAddFormAfterSave(form: FormState): FormState {
@@ -170,11 +172,14 @@ export function DiscountsClient({
     () =>
       parties.map((c) => ({
         value: partyKey(c.kind, c.id),
-        label:
-          c.kind === "transporter"
-            ? `${c.name} — Transporter`
-            : `${c.name} — ${formatCustomerCategory(c.category)}`,
-        group: c.kind === "transporter" ? "Transporters" : "Customers",
+        label: partyOptionLabel({
+          kind: c.kind,
+          name: c.name,
+          categoryLabel: c.category
+            ? formatCustomerCategory(c.category)
+            : undefined,
+        }),
+        group: partyOptionGroup(c.kind),
       })),
     [parties],
   );
@@ -206,6 +211,7 @@ export function DiscountsClient({
       date: form.date,
       customerId: party.kind === "customer" ? party.id : null,
       transporterId: party.kind === "transporter" ? party.id : null,
+      investmentCompanyId: party.kind === "investment" ? party.id : null,
       status: form.status,
       amount: form.amount,
       coalOrigin: form.coalOrigin,
@@ -214,7 +220,9 @@ export function DiscountsClient({
   }
 
   function validate(form: FormState): string | null {
-    if (!form.partyId) return "Customer or transporter is required";
+    if (!form.partyId) {
+      return "Customer, transporter, or investment company is required";
+    }
     if (!form.status) return "Select Discount Received or Discount Paid";
     if (!form.amount || Number(form.amount) <= 0) {
       return "Amount must be greater than zero";
@@ -380,8 +388,8 @@ export function DiscountsClient({
                   form="discount-add-form"
                   required
                   className="field-input"
-                  ariaLabel="Customer or transporter"
-                  placeholder="Search customer or transporter"
+                  ariaLabel="Customer, transporter, or investment company"
+                  placeholder="Search customer, transporter, or investment"
                   value={addForm.partyId}
                   onChange={(partyId) => setAddForm({ ...addForm, partyId })}
                   options={partyOptions}
@@ -502,8 +510,8 @@ export function DiscountsClient({
                           form="discount-edit-form"
                           required
                           className="field-input"
-                          ariaLabel="Customer or transporter"
-                          placeholder="Search customer or transporter"
+                          ariaLabel="Customer, transporter, or investment company"
+                          placeholder="Search customer, transporter, or investment"
                           value={editForm.partyId}
                           onChange={(partyId) =>
                             setEditForm({ ...editForm, partyId })
@@ -606,6 +614,7 @@ export function DiscountsClient({
                         <PartyNameLink
                           customerId={row.customerId}
                           transporterId={row.transporterId}
+                          investmentCompanyId={row.investmentCompanyId}
                           name={row.customerName}
                         />
                       </td>

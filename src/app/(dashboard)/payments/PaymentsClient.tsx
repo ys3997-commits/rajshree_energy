@@ -17,7 +17,7 @@ import {
   formatRs,
   parseAmountInput,
 } from "@/lib/domain/format";
-import { parsePartyKey, partyKey } from "@/lib/domain/paymentParty";
+import { parsePartyKey, partyKey, partyOptionGroup, partyOptionLabel } from "@/lib/domain/paymentParty";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { FundFlowDateFilter } from "./FundFlowDateFilter";
@@ -28,7 +28,7 @@ import { paymentsHref } from "./paymentsHref";
 type Opt = {
   id: string;
   name: string;
-  kind: "customer" | "transporter";
+  kind: "customer" | "transporter" | "investment";
   category?: CustomerCategory;
 };
 type Direction = "RECEIVED" | "SENT" | "";
@@ -61,7 +61,9 @@ function formFromRow(row: PaymentRow): FormState {
     date: row.date,
     partyId: row.transporterId
       ? partyKey("transporter", row.transporterId)
-      : partyKey("customer", row.customerId ?? ""),
+      : row.investmentCompanyId
+        ? partyKey("investment", row.investmentCompanyId)
+        : partyKey("customer", row.customerId ?? ""),
     direction: row.direction,
     amount: row.amount,
   };
@@ -100,9 +102,9 @@ function resetAddFormAfterSave(form: FormState): FormState {
 }
 
 function partyLabel(row: PaymentRow): string {
-  return row.transporterId
-    ? `${row.customerName} — Transporter`
-    : row.customerName;
+  if (row.transporterId) return `${row.customerName} — Transporter`;
+  if (row.investmentCompanyId) return `${row.customerName} — Investment`;
+  return row.customerName;
 }
 
 function hasListFilters(
@@ -154,11 +156,14 @@ export function PaymentsClient({
     () =>
       parties.map((c) => ({
         value: partyKey(c.kind, c.id),
-        label:
-          c.kind === "transporter"
-            ? `${c.name} — Transporter`
-            : `${c.name} — ${formatCustomerCategory(c.category)}`,
-        group: c.kind === "transporter" ? "Transporters" : "Customers",
+        label: partyOptionLabel({
+          kind: c.kind,
+          name: c.name,
+          categoryLabel: c.category
+            ? formatCustomerCategory(c.category)
+            : undefined,
+        }),
+        group: partyOptionGroup(c.kind),
       })),
     [parties],
   );
@@ -193,13 +198,16 @@ export function PaymentsClient({
       date: form.date,
       customerId: party.kind === "customer" ? party.id : null,
       transporterId: party.kind === "transporter" ? party.id : null,
+      investmentCompanyId: party.kind === "investment" ? party.id : null,
       direction: form.direction,
       amount: form.amount,
     };
   }
 
   function validate(form: FormState): string | null {
-    if (!form.partyId) return "Customer or transporter is required";
+    if (!form.partyId) {
+      return "Customer, transporter, or investment company is required";
+    }
     if (!form.direction) return "Select Fund Received or Fund Paid";
     if (!form.amount || Number(form.amount) <= 0) {
       return "Amount must be greater than zero";
@@ -361,8 +369,8 @@ export function PaymentsClient({
                   form="payment-add-form"
                   required
                   className="field-input"
-                  ariaLabel="Customer or transporter"
-                  placeholder="Search customer or transporter"
+                  ariaLabel="Customer, transporter, or investment company"
+                  placeholder="Search customer, transporter, or investment"
                   value={addForm.partyId}
                   onChange={(partyId) => setAddForm({ ...addForm, partyId })}
                   options={partyOptions}
@@ -450,8 +458,8 @@ export function PaymentsClient({
                           form="payment-edit-form"
                           required
                           className="field-input"
-                          ariaLabel="Customer or transporter"
-                          placeholder="Search customer or transporter"
+                          ariaLabel="Customer, transporter, or investment company"
+                          placeholder="Search customer, transporter, or investment"
                           value={editForm.partyId}
                           onChange={(partyId) =>
                             setEditForm({ ...editForm, partyId })
@@ -519,6 +527,7 @@ export function PaymentsClient({
                         <PartyNameLink
                           customerId={row.customerId}
                           transporterId={row.transporterId}
+                          investmentCompanyId={row.investmentCompanyId}
                           name={row.customerName}
                         />
                       </td>

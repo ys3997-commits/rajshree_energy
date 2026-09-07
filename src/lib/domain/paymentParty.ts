@@ -1,4 +1,4 @@
-export type PaymentPartyKind = "customer" | "transporter";
+export type PaymentPartyKind = "customer" | "transporter" | "investment";
 
 export type PaymentParty = {
   kind: PaymentPartyKind;
@@ -8,15 +8,23 @@ export type PaymentParty = {
 export function parsePaymentParty(input: {
   customerId?: string | null;
   transporterId?: string | null;
+  investmentCompanyId?: string | null;
 }): PaymentParty {
   const customerId = input.customerId?.trim() || "";
   const transporterId = input.transporterId?.trim() || "";
-  if (customerId && transporterId) {
-    throw new Error("Select a customer or a transporter, not both");
+  const investmentCompanyId = input.investmentCompanyId?.trim() || "";
+  const selected = [customerId, transporterId, investmentCompanyId].filter(
+    Boolean,
+  );
+  if (selected.length > 1) {
+    throw new Error("Select only one party");
   }
   if (customerId) return { kind: "customer", id: customerId };
   if (transporterId) return { kind: "transporter", id: transporterId };
-  throw new Error("Customer or transporter is required");
+  if (investmentCompanyId) {
+    return { kind: "investment", id: investmentCompanyId };
+  }
+  throw new Error("Customer, transporter, or investment company is required");
 }
 
 export function partyKey(kind: PaymentPartyKind, id: string): string {
@@ -35,7 +43,12 @@ export function parsePartyKey(value: string): PaymentParty {
       transporterId: trimmed.slice("transporter:".length),
     });
   }
-  throw new Error("Customer or transporter is required");
+  if (trimmed.startsWith("investment:")) {
+    return parsePaymentParty({
+      investmentCompanyId: trimmed.slice("investment:".length),
+    });
+  }
+  throw new Error("Customer, transporter, or investment company is required");
 }
 
 export function tryParsePartyKey(value?: string | null): PaymentParty | null {
@@ -46,4 +59,24 @@ export function tryParsePartyKey(value?: string | null): PaymentParty | null {
   } catch {
     return null;
   }
+}
+
+export function partyOptionLabel(party: {
+  kind: PaymentPartyKind;
+  name: string;
+  categoryLabel?: string;
+}): string {
+  if (party.kind === "transporter") return `${party.name} — Transporter`;
+  if (party.kind === "investment") {
+    return `${party.name} — Investment`;
+  }
+  return party.categoryLabel
+    ? `${party.name} — ${party.categoryLabel}`
+    : party.name;
+}
+
+export function partyOptionGroup(kind: PaymentPartyKind): string {
+  if (kind === "transporter") return "Transporters";
+  if (kind === "investment") return "Investment companies";
+  return "Customers";
 }

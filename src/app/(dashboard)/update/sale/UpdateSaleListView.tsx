@@ -19,7 +19,7 @@ import {
 const COLUMN_COUNT = 13;
 
 export function UpdateSaleListView({ data }: { data: DispatchListData }) {
-  const { filters, dispatches, customers } = data;
+  const { filters, dispatches, customers, ports } = data;
   const exportRows = buildUpdateSaleExportRows(dispatches);
 
   return (
@@ -62,6 +62,25 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Domestic / Imported
+          <select name="coalOrigin" defaultValue={filters.coalOrigin}>
+            <option value="">All</option>
+            <option value="domestic">Domestic</option>
+            <option value="imported">Imported</option>
+          </select>
+        </label>
+        <label>
+          Port
+          <select name="portId" defaultValue={filters.portId}>
+            <option value="">All</option>
+            {ports.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
               </option>
             ))}
           </select>
@@ -212,6 +231,7 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                             weight: formatDispatchMt(row.dispatchedQuantity),
                             basicPrice: formatAmount(row.saleBasicRate),
                             totalPrice: formatAmount(row.saleTotalRate),
+                            customer: row.customerName ?? "—",
                             deliveryTerms: formatDispatchTerms(
                               row.dispatchTerms,
                             ),

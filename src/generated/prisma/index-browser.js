@@ -351,6 +351,7 @@ exports.Prisma.PaymentScalarFieldEnum = {
   date: 'date',
   customerId: 'customerId',
   transporterId: 'transporterId',
+  investmentCompanyId: 'investmentCompanyId',
   createdByStaffId: 'createdByStaffId',
   direction: 'direction',
   amount: 'amount',
@@ -363,6 +364,7 @@ exports.Prisma.DiscountScalarFieldEnum = {
   date: 'date',
   customerId: 'customerId',
   transporterId: 'transporterId',
+  investmentCompanyId: 'investmentCompanyId',
   createdByStaffId: 'createdByStaffId',
   status: 'status',
   amount: 'amount',
@@ -397,6 +399,44 @@ exports.Prisma.BillFileScalarFieldEnum = {
   fileData: 'fileData',
   sortOrder: 'sortOrder',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.InvestmentCompanyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  openingDue: 'openingDue',
+  remark: 'remark',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvestmentOpenDueScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  remark: 'remark',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvestmentPeriodScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  startDate: 'startDate',
+  endDate: 'endDate',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvestmentPeriodValueScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  periodId: 'periodId',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -497,7 +537,11 @@ exports.Prisma.ModelName = {
   Payment: 'Payment',
   Discount: 'Discount',
   Bill: 'Bill',
-  BillFile: 'BillFile'
+  BillFile: 'BillFile',
+  InvestmentCompany: 'InvestmentCompany',
+  InvestmentOpenDue: 'InvestmentOpenDue',
+  InvestmentPeriod: 'InvestmentPeriod',
+  InvestmentPeriodValue: 'InvestmentPeriodValue'
 };
 
 /**

@@ -100,12 +100,12 @@ export type PurchaseOrder = $Result.DefaultSelection<Prisma.$PurchaseOrderPayloa
 export type Dispatch = $Result.DefaultSelection<Prisma.$DispatchPayload>
 /**
  * Model Payment
- * Money received from or sent to a customer or transporter.
+ * Money received from or sent to a customer, transporter, or investment company.
  */
 export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
 /**
  * Model Discount
- * Discount received from or paid to a customer or transporter.
+ * Discount received from or paid to a customer, transporter, or investment company.
  */
 export type Discount = $Result.DefaultSelection<Prisma.$DiscountPayload>
 /**
@@ -118,6 +118,26 @@ export type Bill = $Result.DefaultSelection<Prisma.$BillPayload>
  * 
  */
 export type BillFile = $Result.DefaultSelection<Prisma.$BillFilePayload>
+/**
+ * Model InvestmentCompany
+ * Company invested in (Masters → Investment).
+ */
+export type InvestmentCompany = $Result.DefaultSelection<Prisma.$InvestmentCompanyPayload>
+/**
+ * Model InvestmentOpenDue
+ * Outstanding investment dues (Masters → Investment → Open Due).
+ */
+export type InvestmentOpenDue = $Result.DefaultSelection<Prisma.$InvestmentOpenDuePayload>
+/**
+ * Model InvestmentPeriod
+ * Named investment period; each period becomes a report column.
+ */
+export type InvestmentPeriod = $Result.DefaultSelection<Prisma.$InvestmentPeriodPayload>
+/**
+ * Model InvestmentPeriodValue
+ * Profit / loss for one company in one period column.
+ */
+export type InvestmentPeriodValue = $Result.DefaultSelection<Prisma.$InvestmentPeriodValuePayload>
 
 /**
  * Enums
@@ -603,6 +623,46 @@ export class PrismaClient<
     * ```
     */
   get billFile(): Prisma.BillFileDelegate<ExtArgs>;
+
+  /**
+   * `prisma.investmentCompany`: Exposes CRUD operations for the **InvestmentCompany** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InvestmentCompanies
+    * const investmentCompanies = await prisma.investmentCompany.findMany()
+    * ```
+    */
+  get investmentCompany(): Prisma.InvestmentCompanyDelegate<ExtArgs>;
+
+  /**
+   * `prisma.investmentOpenDue`: Exposes CRUD operations for the **InvestmentOpenDue** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InvestmentOpenDues
+    * const investmentOpenDues = await prisma.investmentOpenDue.findMany()
+    * ```
+    */
+  get investmentOpenDue(): Prisma.InvestmentOpenDueDelegate<ExtArgs>;
+
+  /**
+   * `prisma.investmentPeriod`: Exposes CRUD operations for the **InvestmentPeriod** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InvestmentPeriods
+    * const investmentPeriods = await prisma.investmentPeriod.findMany()
+    * ```
+    */
+  get investmentPeriod(): Prisma.InvestmentPeriodDelegate<ExtArgs>;
+
+  /**
+   * `prisma.investmentPeriodValue`: Exposes CRUD operations for the **InvestmentPeriodValue** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more InvestmentPeriodValues
+    * const investmentPeriodValues = await prisma.investmentPeriodValue.findMany()
+    * ```
+    */
+  get investmentPeriodValue(): Prisma.InvestmentPeriodValueDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1064,7 +1124,11 @@ export namespace Prisma {
     Payment: 'Payment',
     Discount: 'Discount',
     Bill: 'Bill',
-    BillFile: 'BillFile'
+    BillFile: 'BillFile',
+    InvestmentCompany: 'InvestmentCompany',
+    InvestmentOpenDue: 'InvestmentOpenDue',
+    InvestmentPeriod: 'InvestmentPeriod',
+    InvestmentPeriodValue: 'InvestmentPeriodValue'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1080,7 +1144,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "ownerOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "bill" | "billFile"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "ownerOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2554,6 +2618,286 @@ export namespace Prisma {
           }
         }
       }
+      InvestmentCompany: {
+        payload: Prisma.$InvestmentCompanyPayload<ExtArgs>
+        fields: Prisma.InvestmentCompanyFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvestmentCompanyFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvestmentCompanyFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>
+          }
+          findFirst: {
+            args: Prisma.InvestmentCompanyFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvestmentCompanyFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>
+          }
+          findMany: {
+            args: Prisma.InvestmentCompanyFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>[]
+          }
+          create: {
+            args: Prisma.InvestmentCompanyCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>
+          }
+          createMany: {
+            args: Prisma.InvestmentCompanyCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InvestmentCompanyCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>[]
+          }
+          delete: {
+            args: Prisma.InvestmentCompanyDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>
+          }
+          update: {
+            args: Prisma.InvestmentCompanyUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>
+          }
+          deleteMany: {
+            args: Prisma.InvestmentCompanyDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvestmentCompanyUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InvestmentCompanyUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentCompanyPayload>
+          }
+          aggregate: {
+            args: Prisma.InvestmentCompanyAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvestmentCompany>
+          }
+          groupBy: {
+            args: Prisma.InvestmentCompanyGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentCompanyGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvestmentCompanyCountArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentCompanyCountAggregateOutputType> | number
+          }
+        }
+      }
+      InvestmentOpenDue: {
+        payload: Prisma.$InvestmentOpenDuePayload<ExtArgs>
+        fields: Prisma.InvestmentOpenDueFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvestmentOpenDueFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvestmentOpenDueFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>
+          }
+          findFirst: {
+            args: Prisma.InvestmentOpenDueFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvestmentOpenDueFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>
+          }
+          findMany: {
+            args: Prisma.InvestmentOpenDueFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>[]
+          }
+          create: {
+            args: Prisma.InvestmentOpenDueCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>
+          }
+          createMany: {
+            args: Prisma.InvestmentOpenDueCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InvestmentOpenDueCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>[]
+          }
+          delete: {
+            args: Prisma.InvestmentOpenDueDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>
+          }
+          update: {
+            args: Prisma.InvestmentOpenDueUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>
+          }
+          deleteMany: {
+            args: Prisma.InvestmentOpenDueDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvestmentOpenDueUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InvestmentOpenDueUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentOpenDuePayload>
+          }
+          aggregate: {
+            args: Prisma.InvestmentOpenDueAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvestmentOpenDue>
+          }
+          groupBy: {
+            args: Prisma.InvestmentOpenDueGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentOpenDueGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvestmentOpenDueCountArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentOpenDueCountAggregateOutputType> | number
+          }
+        }
+      }
+      InvestmentPeriod: {
+        payload: Prisma.$InvestmentPeriodPayload<ExtArgs>
+        fields: Prisma.InvestmentPeriodFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvestmentPeriodFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvestmentPeriodFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>
+          }
+          findFirst: {
+            args: Prisma.InvestmentPeriodFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvestmentPeriodFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>
+          }
+          findMany: {
+            args: Prisma.InvestmentPeriodFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>[]
+          }
+          create: {
+            args: Prisma.InvestmentPeriodCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>
+          }
+          createMany: {
+            args: Prisma.InvestmentPeriodCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InvestmentPeriodCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>[]
+          }
+          delete: {
+            args: Prisma.InvestmentPeriodDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>
+          }
+          update: {
+            args: Prisma.InvestmentPeriodUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>
+          }
+          deleteMany: {
+            args: Prisma.InvestmentPeriodDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvestmentPeriodUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InvestmentPeriodUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodPayload>
+          }
+          aggregate: {
+            args: Prisma.InvestmentPeriodAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvestmentPeriod>
+          }
+          groupBy: {
+            args: Prisma.InvestmentPeriodGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentPeriodGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvestmentPeriodCountArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentPeriodCountAggregateOutputType> | number
+          }
+        }
+      }
+      InvestmentPeriodValue: {
+        payload: Prisma.$InvestmentPeriodValuePayload<ExtArgs>
+        fields: Prisma.InvestmentPeriodValueFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.InvestmentPeriodValueFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.InvestmentPeriodValueFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>
+          }
+          findFirst: {
+            args: Prisma.InvestmentPeriodValueFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.InvestmentPeriodValueFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>
+          }
+          findMany: {
+            args: Prisma.InvestmentPeriodValueFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>[]
+          }
+          create: {
+            args: Prisma.InvestmentPeriodValueCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>
+          }
+          createMany: {
+            args: Prisma.InvestmentPeriodValueCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.InvestmentPeriodValueCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>[]
+          }
+          delete: {
+            args: Prisma.InvestmentPeriodValueDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>
+          }
+          update: {
+            args: Prisma.InvestmentPeriodValueUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>
+          }
+          deleteMany: {
+            args: Prisma.InvestmentPeriodValueDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.InvestmentPeriodValueUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.InvestmentPeriodValueUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$InvestmentPeriodValuePayload>
+          }
+          aggregate: {
+            args: Prisma.InvestmentPeriodValueAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateInvestmentPeriodValue>
+          }
+          groupBy: {
+            args: Prisma.InvestmentPeriodValueGroupByArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentPeriodValueGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.InvestmentPeriodValueCountArgs<ExtArgs>
+            result: $Utils.Optional<InvestmentPeriodValueCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3183,6 +3527,95 @@ export namespace Prisma {
    */
   export type BillCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BillFileWhereInput
+  }
+
+
+  /**
+   * Count Type InvestmentCompanyCountOutputType
+   */
+
+  export type InvestmentCompanyCountOutputType = {
+    openDues: number
+    payments: number
+    discounts: number
+    periodValues: number
+  }
+
+  export type InvestmentCompanyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    openDues?: boolean | InvestmentCompanyCountOutputTypeCountOpenDuesArgs
+    payments?: boolean | InvestmentCompanyCountOutputTypeCountPaymentsArgs
+    discounts?: boolean | InvestmentCompanyCountOutputTypeCountDiscountsArgs
+    periodValues?: boolean | InvestmentCompanyCountOutputTypeCountPeriodValuesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * InvestmentCompanyCountOutputType without action
+   */
+  export type InvestmentCompanyCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompanyCountOutputType
+     */
+    select?: InvestmentCompanyCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * InvestmentCompanyCountOutputType without action
+   */
+  export type InvestmentCompanyCountOutputTypeCountOpenDuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentOpenDueWhereInput
+  }
+
+  /**
+   * InvestmentCompanyCountOutputType without action
+   */
+  export type InvestmentCompanyCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentWhereInput
+  }
+
+  /**
+   * InvestmentCompanyCountOutputType without action
+   */
+  export type InvestmentCompanyCountOutputTypeCountDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DiscountWhereInput
+  }
+
+  /**
+   * InvestmentCompanyCountOutputType without action
+   */
+  export type InvestmentCompanyCountOutputTypeCountPeriodValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentPeriodValueWhereInput
+  }
+
+
+  /**
+   * Count Type InvestmentPeriodCountOutputType
+   */
+
+  export type InvestmentPeriodCountOutputType = {
+    values: number
+  }
+
+  export type InvestmentPeriodCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    values?: boolean | InvestmentPeriodCountOutputTypeCountValuesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * InvestmentPeriodCountOutputType without action
+   */
+  export type InvestmentPeriodCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodCountOutputType
+     */
+    select?: InvestmentPeriodCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * InvestmentPeriodCountOutputType without action
+   */
+  export type InvestmentPeriodCountOutputTypeCountValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentPeriodValueWhereInput
   }
 
 
@@ -20919,6 +21352,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    investmentCompanyId: string | null
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
@@ -20931,6 +21365,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    investmentCompanyId: string | null
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
@@ -20943,6 +21378,7 @@ export namespace Prisma {
     date: number
     customerId: number
     transporterId: number
+    investmentCompanyId: number
     createdByStaffId: number
     direction: number
     amount: number
@@ -20965,6 +21401,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    investmentCompanyId?: true
     createdByStaffId?: true
     direction?: true
     amount?: true
@@ -20977,6 +21414,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    investmentCompanyId?: true
     createdByStaffId?: true
     direction?: true
     amount?: true
@@ -20989,6 +21427,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    investmentCompanyId?: true
     createdByStaffId?: true
     direction?: true
     amount?: true
@@ -21088,6 +21527,7 @@ export namespace Prisma {
     date: Date
     customerId: string | null
     transporterId: string | null
+    investmentCompanyId: string | null
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal
@@ -21119,6 +21559,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    investmentCompanyId?: boolean
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
@@ -21126,6 +21567,7 @@ export namespace Prisma {
     updatedAt?: boolean
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -21134,6 +21576,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    investmentCompanyId?: boolean
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
@@ -21141,6 +21584,7 @@ export namespace Prisma {
     updatedAt?: boolean
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -21149,6 +21593,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    investmentCompanyId?: boolean
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
@@ -21159,11 +21604,13 @@ export namespace Prisma {
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }
 
@@ -21172,6 +21619,7 @@ export namespace Prisma {
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs> | null
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
+      investmentCompany: Prisma.$InvestmentCompanyPayload<ExtArgs> | null
       createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -21179,6 +21627,7 @@ export namespace Prisma {
       date: Date
       customerId: string | null
       transporterId: string | null
+      investmentCompanyId: string | null
       createdByStaffId: string | null
       direction: $Enums.PaymentDirection
       amount: Prisma.Decimal
@@ -21550,6 +21999,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends Payment$customerArgs<ExtArgs> = {}>(args?: Subset<T, Payment$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     transporter<T extends Payment$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Payment$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    investmentCompany<T extends Payment$investmentCompanyArgs<ExtArgs> = {}>(args?: Subset<T, Payment$investmentCompanyArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     createdByStaff<T extends Payment$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Payment$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -21584,6 +22034,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Payment", 'DateTime'>
     readonly customerId: FieldRef<"Payment", 'String'>
     readonly transporterId: FieldRef<"Payment", 'String'>
+    readonly investmentCompanyId: FieldRef<"Payment", 'String'>
     readonly createdByStaffId: FieldRef<"Payment", 'String'>
     readonly direction: FieldRef<"Payment", 'PaymentDirection'>
     readonly amount: FieldRef<"Payment", 'Decimal'>
@@ -21937,6 +22388,21 @@ export namespace Prisma {
   }
 
   /**
+   * Payment.investmentCompany
+   */
+  export type Payment$investmentCompanyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    where?: InvestmentCompanyWhereInput
+  }
+
+  /**
    * Payment.createdByStaff
    */
   export type Payment$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -21991,6 +22457,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    investmentCompanyId: string | null
     createdByStaffId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
@@ -22005,6 +22472,7 @@ export namespace Prisma {
     date: Date | null
     customerId: string | null
     transporterId: string | null
+    investmentCompanyId: string | null
     createdByStaffId: string | null
     status: $Enums.DiscountStatus | null
     amount: Decimal | null
@@ -22019,6 +22487,7 @@ export namespace Prisma {
     date: number
     customerId: number
     transporterId: number
+    investmentCompanyId: number
     createdByStaffId: number
     status: number
     amount: number
@@ -22043,6 +22512,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    investmentCompanyId?: true
     createdByStaffId?: true
     status?: true
     amount?: true
@@ -22057,6 +22527,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    investmentCompanyId?: true
     createdByStaffId?: true
     status?: true
     amount?: true
@@ -22071,6 +22542,7 @@ export namespace Prisma {
     date?: true
     customerId?: true
     transporterId?: true
+    investmentCompanyId?: true
     createdByStaffId?: true
     status?: true
     amount?: true
@@ -22172,6 +22644,7 @@ export namespace Prisma {
     date: Date
     customerId: string | null
     transporterId: string | null
+    investmentCompanyId: string | null
     createdByStaffId: string | null
     status: $Enums.DiscountStatus
     amount: Decimal
@@ -22205,6 +22678,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    investmentCompanyId?: boolean
     createdByStaffId?: boolean
     status?: boolean
     amount?: boolean
@@ -22214,6 +22688,7 @@ export namespace Prisma {
     updatedAt?: boolean
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Discount$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["discount"]>
 
@@ -22222,6 +22697,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    investmentCompanyId?: boolean
     createdByStaffId?: boolean
     status?: boolean
     amount?: boolean
@@ -22231,6 +22707,7 @@ export namespace Prisma {
     updatedAt?: boolean
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Discount$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["discount"]>
 
@@ -22239,6 +22716,7 @@ export namespace Prisma {
     date?: boolean
     customerId?: boolean
     transporterId?: boolean
+    investmentCompanyId?: boolean
     createdByStaffId?: boolean
     status?: boolean
     amount?: boolean
@@ -22251,11 +22729,13 @@ export namespace Prisma {
   export type DiscountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Discount$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }
   export type DiscountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Discount$customerArgs<ExtArgs>
     transporter?: boolean | Discount$transporterArgs<ExtArgs>
+    investmentCompany?: boolean | Discount$investmentCompanyArgs<ExtArgs>
     createdByStaff?: boolean | Discount$createdByStaffArgs<ExtArgs>
   }
 
@@ -22264,6 +22744,7 @@ export namespace Prisma {
     objects: {
       customer: Prisma.$CustomerPayload<ExtArgs> | null
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
+      investmentCompany: Prisma.$InvestmentCompanyPayload<ExtArgs> | null
       createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -22271,6 +22752,7 @@ export namespace Prisma {
       date: Date
       customerId: string | null
       transporterId: string | null
+      investmentCompanyId: string | null
       createdByStaffId: string | null
       status: $Enums.DiscountStatus
       amount: Prisma.Decimal
@@ -22647,6 +23129,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     customer<T extends Discount$customerArgs<ExtArgs> = {}>(args?: Subset<T, Discount$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     transporter<T extends Discount$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Discount$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    investmentCompany<T extends Discount$investmentCompanyArgs<ExtArgs> = {}>(args?: Subset<T, Discount$investmentCompanyArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     createdByStaff<T extends Discount$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Discount$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -22681,6 +23164,7 @@ export namespace Prisma {
     readonly date: FieldRef<"Discount", 'DateTime'>
     readonly customerId: FieldRef<"Discount", 'String'>
     readonly transporterId: FieldRef<"Discount", 'String'>
+    readonly investmentCompanyId: FieldRef<"Discount", 'String'>
     readonly createdByStaffId: FieldRef<"Discount", 'String'>
     readonly status: FieldRef<"Discount", 'DiscountStatus'>
     readonly amount: FieldRef<"Discount", 'Decimal'>
@@ -23033,6 +23517,21 @@ export namespace Prisma {
      */
     include?: TransporterInclude<ExtArgs> | null
     where?: TransporterWhereInput
+  }
+
+  /**
+   * Discount.investmentCompany
+   */
+  export type Discount$investmentCompanyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    where?: InvestmentCompanyWhereInput
   }
 
   /**
@@ -25179,6 +25678,4060 @@ export namespace Prisma {
 
 
   /**
+   * Model InvestmentCompany
+   */
+
+  export type AggregateInvestmentCompany = {
+    _count: InvestmentCompanyCountAggregateOutputType | null
+    _avg: InvestmentCompanyAvgAggregateOutputType | null
+    _sum: InvestmentCompanySumAggregateOutputType | null
+    _min: InvestmentCompanyMinAggregateOutputType | null
+    _max: InvestmentCompanyMaxAggregateOutputType | null
+  }
+
+  export type InvestmentCompanyAvgAggregateOutputType = {
+    openingDue: Decimal | null
+  }
+
+  export type InvestmentCompanySumAggregateOutputType = {
+    openingDue: Decimal | null
+  }
+
+  export type InvestmentCompanyMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    openingDue: Decimal | null
+    remark: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentCompanyMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    openingDue: Decimal | null
+    remark: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentCompanyCountAggregateOutputType = {
+    id: number
+    name: number
+    openingDue: number
+    remark: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InvestmentCompanyAvgAggregateInputType = {
+    openingDue?: true
+  }
+
+  export type InvestmentCompanySumAggregateInputType = {
+    openingDue?: true
+  }
+
+  export type InvestmentCompanyMinAggregateInputType = {
+    id?: true
+    name?: true
+    openingDue?: true
+    remark?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentCompanyMaxAggregateInputType = {
+    id?: true
+    name?: true
+    openingDue?: true
+    remark?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentCompanyCountAggregateInputType = {
+    id?: true
+    name?: true
+    openingDue?: true
+    remark?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InvestmentCompanyAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentCompany to aggregate.
+     */
+    where?: InvestmentCompanyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentCompanies to fetch.
+     */
+    orderBy?: InvestmentCompanyOrderByWithRelationInput | InvestmentCompanyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvestmentCompanyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentCompanies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentCompanies.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InvestmentCompanies
+    **/
+    _count?: true | InvestmentCompanyCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvestmentCompanyAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvestmentCompanySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvestmentCompanyMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvestmentCompanyMaxAggregateInputType
+  }
+
+  export type GetInvestmentCompanyAggregateType<T extends InvestmentCompanyAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvestmentCompany]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvestmentCompany[P]>
+      : GetScalarType<T[P], AggregateInvestmentCompany[P]>
+  }
+
+
+
+
+  export type InvestmentCompanyGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentCompanyWhereInput
+    orderBy?: InvestmentCompanyOrderByWithAggregationInput | InvestmentCompanyOrderByWithAggregationInput[]
+    by: InvestmentCompanyScalarFieldEnum[] | InvestmentCompanyScalarFieldEnum
+    having?: InvestmentCompanyScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvestmentCompanyCountAggregateInputType | true
+    _avg?: InvestmentCompanyAvgAggregateInputType
+    _sum?: InvestmentCompanySumAggregateInputType
+    _min?: InvestmentCompanyMinAggregateInputType
+    _max?: InvestmentCompanyMaxAggregateInputType
+  }
+
+  export type InvestmentCompanyGroupByOutputType = {
+    id: string
+    name: string
+    openingDue: Decimal
+    remark: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: InvestmentCompanyCountAggregateOutputType | null
+    _avg: InvestmentCompanyAvgAggregateOutputType | null
+    _sum: InvestmentCompanySumAggregateOutputType | null
+    _min: InvestmentCompanyMinAggregateOutputType | null
+    _max: InvestmentCompanyMaxAggregateOutputType | null
+  }
+
+  type GetInvestmentCompanyGroupByPayload<T extends InvestmentCompanyGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvestmentCompanyGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvestmentCompanyGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvestmentCompanyGroupByOutputType[P]>
+            : GetScalarType<T[P], InvestmentCompanyGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvestmentCompanySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    openingDue?: boolean
+    remark?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    openDues?: boolean | InvestmentCompany$openDuesArgs<ExtArgs>
+    payments?: boolean | InvestmentCompany$paymentsArgs<ExtArgs>
+    discounts?: boolean | InvestmentCompany$discountsArgs<ExtArgs>
+    periodValues?: boolean | InvestmentCompany$periodValuesArgs<ExtArgs>
+    _count?: boolean | InvestmentCompanyCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investmentCompany"]>
+
+  export type InvestmentCompanySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    openingDue?: boolean
+    remark?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["investmentCompany"]>
+
+  export type InvestmentCompanySelectScalar = {
+    id?: boolean
+    name?: boolean
+    openingDue?: boolean
+    remark?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InvestmentCompanyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    openDues?: boolean | InvestmentCompany$openDuesArgs<ExtArgs>
+    payments?: boolean | InvestmentCompany$paymentsArgs<ExtArgs>
+    discounts?: boolean | InvestmentCompany$discountsArgs<ExtArgs>
+    periodValues?: boolean | InvestmentCompany$periodValuesArgs<ExtArgs>
+    _count?: boolean | InvestmentCompanyCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type InvestmentCompanyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $InvestmentCompanyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InvestmentCompany"
+    objects: {
+      openDues: Prisma.$InvestmentOpenDuePayload<ExtArgs>[]
+      payments: Prisma.$PaymentPayload<ExtArgs>[]
+      discounts: Prisma.$DiscountPayload<ExtArgs>[]
+      periodValues: Prisma.$InvestmentPeriodValuePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      /**
+       * Carry-forward / opening investment balance.
+       */
+      openingDue: Prisma.Decimal
+      remark: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["investmentCompany"]>
+    composites: {}
+  }
+
+  type InvestmentCompanyGetPayload<S extends boolean | null | undefined | InvestmentCompanyDefaultArgs> = $Result.GetResult<Prisma.$InvestmentCompanyPayload, S>
+
+  type InvestmentCompanyCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InvestmentCompanyFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InvestmentCompanyCountAggregateInputType | true
+    }
+
+  export interface InvestmentCompanyDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InvestmentCompany'], meta: { name: 'InvestmentCompany' } }
+    /**
+     * Find zero or one InvestmentCompany that matches the filter.
+     * @param {InvestmentCompanyFindUniqueArgs} args - Arguments to find a InvestmentCompany
+     * @example
+     * // Get one InvestmentCompany
+     * const investmentCompany = await prisma.investmentCompany.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvestmentCompanyFindUniqueArgs>(args: SelectSubset<T, InvestmentCompanyFindUniqueArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one InvestmentCompany that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InvestmentCompanyFindUniqueOrThrowArgs} args - Arguments to find a InvestmentCompany
+     * @example
+     * // Get one InvestmentCompany
+     * const investmentCompany = await prisma.investmentCompany.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvestmentCompanyFindUniqueOrThrowArgs>(args: SelectSubset<T, InvestmentCompanyFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first InvestmentCompany that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyFindFirstArgs} args - Arguments to find a InvestmentCompany
+     * @example
+     * // Get one InvestmentCompany
+     * const investmentCompany = await prisma.investmentCompany.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvestmentCompanyFindFirstArgs>(args?: SelectSubset<T, InvestmentCompanyFindFirstArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first InvestmentCompany that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyFindFirstOrThrowArgs} args - Arguments to find a InvestmentCompany
+     * @example
+     * // Get one InvestmentCompany
+     * const investmentCompany = await prisma.investmentCompany.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvestmentCompanyFindFirstOrThrowArgs>(args?: SelectSubset<T, InvestmentCompanyFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more InvestmentCompanies that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InvestmentCompanies
+     * const investmentCompanies = await prisma.investmentCompany.findMany()
+     * 
+     * // Get first 10 InvestmentCompanies
+     * const investmentCompanies = await prisma.investmentCompany.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const investmentCompanyWithIdOnly = await prisma.investmentCompany.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvestmentCompanyFindManyArgs>(args?: SelectSubset<T, InvestmentCompanyFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a InvestmentCompany.
+     * @param {InvestmentCompanyCreateArgs} args - Arguments to create a InvestmentCompany.
+     * @example
+     * // Create one InvestmentCompany
+     * const InvestmentCompany = await prisma.investmentCompany.create({
+     *   data: {
+     *     // ... data to create a InvestmentCompany
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvestmentCompanyCreateArgs>(args: SelectSubset<T, InvestmentCompanyCreateArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many InvestmentCompanies.
+     * @param {InvestmentCompanyCreateManyArgs} args - Arguments to create many InvestmentCompanies.
+     * @example
+     * // Create many InvestmentCompanies
+     * const investmentCompany = await prisma.investmentCompany.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvestmentCompanyCreateManyArgs>(args?: SelectSubset<T, InvestmentCompanyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InvestmentCompanies and returns the data saved in the database.
+     * @param {InvestmentCompanyCreateManyAndReturnArgs} args - Arguments to create many InvestmentCompanies.
+     * @example
+     * // Create many InvestmentCompanies
+     * const investmentCompany = await prisma.investmentCompany.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InvestmentCompanies and only return the `id`
+     * const investmentCompanyWithIdOnly = await prisma.investmentCompany.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InvestmentCompanyCreateManyAndReturnArgs>(args?: SelectSubset<T, InvestmentCompanyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a InvestmentCompany.
+     * @param {InvestmentCompanyDeleteArgs} args - Arguments to delete one InvestmentCompany.
+     * @example
+     * // Delete one InvestmentCompany
+     * const InvestmentCompany = await prisma.investmentCompany.delete({
+     *   where: {
+     *     // ... filter to delete one InvestmentCompany
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvestmentCompanyDeleteArgs>(args: SelectSubset<T, InvestmentCompanyDeleteArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one InvestmentCompany.
+     * @param {InvestmentCompanyUpdateArgs} args - Arguments to update one InvestmentCompany.
+     * @example
+     * // Update one InvestmentCompany
+     * const investmentCompany = await prisma.investmentCompany.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvestmentCompanyUpdateArgs>(args: SelectSubset<T, InvestmentCompanyUpdateArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more InvestmentCompanies.
+     * @param {InvestmentCompanyDeleteManyArgs} args - Arguments to filter InvestmentCompanies to delete.
+     * @example
+     * // Delete a few InvestmentCompanies
+     * const { count } = await prisma.investmentCompany.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvestmentCompanyDeleteManyArgs>(args?: SelectSubset<T, InvestmentCompanyDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvestmentCompanies.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InvestmentCompanies
+     * const investmentCompany = await prisma.investmentCompany.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvestmentCompanyUpdateManyArgs>(args: SelectSubset<T, InvestmentCompanyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InvestmentCompany.
+     * @param {InvestmentCompanyUpsertArgs} args - Arguments to update or create a InvestmentCompany.
+     * @example
+     * // Update or create a InvestmentCompany
+     * const investmentCompany = await prisma.investmentCompany.upsert({
+     *   create: {
+     *     // ... data to create a InvestmentCompany
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InvestmentCompany we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvestmentCompanyUpsertArgs>(args: SelectSubset<T, InvestmentCompanyUpsertArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of InvestmentCompanies.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyCountArgs} args - Arguments to filter InvestmentCompanies to count.
+     * @example
+     * // Count the number of InvestmentCompanies
+     * const count = await prisma.investmentCompany.count({
+     *   where: {
+     *     // ... the filter for the InvestmentCompanies we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvestmentCompanyCountArgs>(
+      args?: Subset<T, InvestmentCompanyCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvestmentCompanyCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InvestmentCompany.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvestmentCompanyAggregateArgs>(args: Subset<T, InvestmentCompanyAggregateArgs>): Prisma.PrismaPromise<GetInvestmentCompanyAggregateType<T>>
+
+    /**
+     * Group by InvestmentCompany.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentCompanyGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvestmentCompanyGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvestmentCompanyGroupByArgs['orderBy'] }
+        : { orderBy?: InvestmentCompanyGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvestmentCompanyGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvestmentCompanyGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InvestmentCompany model
+   */
+  readonly fields: InvestmentCompanyFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InvestmentCompany.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvestmentCompanyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    openDues<T extends InvestmentCompany$openDuesArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentCompany$openDuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "findMany"> | Null>
+    payments<T extends InvestmentCompany$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentCompany$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    discounts<T extends InvestmentCompany$discountsArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentCompany$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany"> | Null>
+    periodValues<T extends InvestmentCompany$periodValuesArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentCompany$periodValuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InvestmentCompany model
+   */ 
+  interface InvestmentCompanyFieldRefs {
+    readonly id: FieldRef<"InvestmentCompany", 'String'>
+    readonly name: FieldRef<"InvestmentCompany", 'String'>
+    readonly openingDue: FieldRef<"InvestmentCompany", 'Decimal'>
+    readonly remark: FieldRef<"InvestmentCompany", 'String'>
+    readonly createdAt: FieldRef<"InvestmentCompany", 'DateTime'>
+    readonly updatedAt: FieldRef<"InvestmentCompany", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InvestmentCompany findUnique
+   */
+  export type InvestmentCompanyFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentCompany to fetch.
+     */
+    where: InvestmentCompanyWhereUniqueInput
+  }
+
+  /**
+   * InvestmentCompany findUniqueOrThrow
+   */
+  export type InvestmentCompanyFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentCompany to fetch.
+     */
+    where: InvestmentCompanyWhereUniqueInput
+  }
+
+  /**
+   * InvestmentCompany findFirst
+   */
+  export type InvestmentCompanyFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentCompany to fetch.
+     */
+    where?: InvestmentCompanyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentCompanies to fetch.
+     */
+    orderBy?: InvestmentCompanyOrderByWithRelationInput | InvestmentCompanyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentCompanies.
+     */
+    cursor?: InvestmentCompanyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentCompanies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentCompanies.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentCompanies.
+     */
+    distinct?: InvestmentCompanyScalarFieldEnum | InvestmentCompanyScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany findFirstOrThrow
+   */
+  export type InvestmentCompanyFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentCompany to fetch.
+     */
+    where?: InvestmentCompanyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentCompanies to fetch.
+     */
+    orderBy?: InvestmentCompanyOrderByWithRelationInput | InvestmentCompanyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentCompanies.
+     */
+    cursor?: InvestmentCompanyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentCompanies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentCompanies.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentCompanies.
+     */
+    distinct?: InvestmentCompanyScalarFieldEnum | InvestmentCompanyScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany findMany
+   */
+  export type InvestmentCompanyFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentCompanies to fetch.
+     */
+    where?: InvestmentCompanyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentCompanies to fetch.
+     */
+    orderBy?: InvestmentCompanyOrderByWithRelationInput | InvestmentCompanyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InvestmentCompanies.
+     */
+    cursor?: InvestmentCompanyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentCompanies from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentCompanies.
+     */
+    skip?: number
+    distinct?: InvestmentCompanyScalarFieldEnum | InvestmentCompanyScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany create
+   */
+  export type InvestmentCompanyCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InvestmentCompany.
+     */
+    data: XOR<InvestmentCompanyCreateInput, InvestmentCompanyUncheckedCreateInput>
+  }
+
+  /**
+   * InvestmentCompany createMany
+   */
+  export type InvestmentCompanyCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InvestmentCompanies.
+     */
+    data: InvestmentCompanyCreateManyInput | InvestmentCompanyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvestmentCompany createManyAndReturn
+   */
+  export type InvestmentCompanyCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many InvestmentCompanies.
+     */
+    data: InvestmentCompanyCreateManyInput | InvestmentCompanyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvestmentCompany update
+   */
+  export type InvestmentCompanyUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InvestmentCompany.
+     */
+    data: XOR<InvestmentCompanyUpdateInput, InvestmentCompanyUncheckedUpdateInput>
+    /**
+     * Choose, which InvestmentCompany to update.
+     */
+    where: InvestmentCompanyWhereUniqueInput
+  }
+
+  /**
+   * InvestmentCompany updateMany
+   */
+  export type InvestmentCompanyUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InvestmentCompanies.
+     */
+    data: XOR<InvestmentCompanyUpdateManyMutationInput, InvestmentCompanyUncheckedUpdateManyInput>
+    /**
+     * Filter which InvestmentCompanies to update
+     */
+    where?: InvestmentCompanyWhereInput
+  }
+
+  /**
+   * InvestmentCompany upsert
+   */
+  export type InvestmentCompanyUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InvestmentCompany to update in case it exists.
+     */
+    where: InvestmentCompanyWhereUniqueInput
+    /**
+     * In case the InvestmentCompany found by the `where` argument doesn't exist, create a new InvestmentCompany with this data.
+     */
+    create: XOR<InvestmentCompanyCreateInput, InvestmentCompanyUncheckedCreateInput>
+    /**
+     * In case the InvestmentCompany was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvestmentCompanyUpdateInput, InvestmentCompanyUncheckedUpdateInput>
+  }
+
+  /**
+   * InvestmentCompany delete
+   */
+  export type InvestmentCompanyDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+    /**
+     * Filter which InvestmentCompany to delete.
+     */
+    where: InvestmentCompanyWhereUniqueInput
+  }
+
+  /**
+   * InvestmentCompany deleteMany
+   */
+  export type InvestmentCompanyDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentCompanies to delete
+     */
+    where?: InvestmentCompanyWhereInput
+  }
+
+  /**
+   * InvestmentCompany.openDues
+   */
+  export type InvestmentCompany$openDuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    where?: InvestmentOpenDueWhereInput
+    orderBy?: InvestmentOpenDueOrderByWithRelationInput | InvestmentOpenDueOrderByWithRelationInput[]
+    cursor?: InvestmentOpenDueWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvestmentOpenDueScalarFieldEnum | InvestmentOpenDueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany.payments
+   */
+  export type InvestmentCompany$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
+    cursor?: PaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany.discounts
+   */
+  export type InvestmentCompany$discountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Discount
+     */
+    select?: DiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DiscountInclude<ExtArgs> | null
+    where?: DiscountWhereInput
+    orderBy?: DiscountOrderByWithRelationInput | DiscountOrderByWithRelationInput[]
+    cursor?: DiscountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DiscountScalarFieldEnum | DiscountScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany.periodValues
+   */
+  export type InvestmentCompany$periodValuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    where?: InvestmentPeriodValueWhereInput
+    orderBy?: InvestmentPeriodValueOrderByWithRelationInput | InvestmentPeriodValueOrderByWithRelationInput[]
+    cursor?: InvestmentPeriodValueWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvestmentPeriodValueScalarFieldEnum | InvestmentPeriodValueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentCompany without action
+   */
+  export type InvestmentCompanyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentCompany
+     */
+    select?: InvestmentCompanySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentCompanyInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model InvestmentOpenDue
+   */
+
+  export type AggregateInvestmentOpenDue = {
+    _count: InvestmentOpenDueCountAggregateOutputType | null
+    _avg: InvestmentOpenDueAvgAggregateOutputType | null
+    _sum: InvestmentOpenDueSumAggregateOutputType | null
+    _min: InvestmentOpenDueMinAggregateOutputType | null
+    _max: InvestmentOpenDueMaxAggregateOutputType | null
+  }
+
+  export type InvestmentOpenDueAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type InvestmentOpenDueSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type InvestmentOpenDueMinAggregateOutputType = {
+    id: string | null
+    companyId: string | null
+    amount: Decimal | null
+    dueDate: Date | null
+    remark: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentOpenDueMaxAggregateOutputType = {
+    id: string | null
+    companyId: string | null
+    amount: Decimal | null
+    dueDate: Date | null
+    remark: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentOpenDueCountAggregateOutputType = {
+    id: number
+    companyId: number
+    amount: number
+    dueDate: number
+    remark: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InvestmentOpenDueAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type InvestmentOpenDueSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type InvestmentOpenDueMinAggregateInputType = {
+    id?: true
+    companyId?: true
+    amount?: true
+    dueDate?: true
+    remark?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentOpenDueMaxAggregateInputType = {
+    id?: true
+    companyId?: true
+    amount?: true
+    dueDate?: true
+    remark?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentOpenDueCountAggregateInputType = {
+    id?: true
+    companyId?: true
+    amount?: true
+    dueDate?: true
+    remark?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InvestmentOpenDueAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentOpenDue to aggregate.
+     */
+    where?: InvestmentOpenDueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentOpenDues to fetch.
+     */
+    orderBy?: InvestmentOpenDueOrderByWithRelationInput | InvestmentOpenDueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvestmentOpenDueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentOpenDues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentOpenDues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InvestmentOpenDues
+    **/
+    _count?: true | InvestmentOpenDueCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvestmentOpenDueAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvestmentOpenDueSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvestmentOpenDueMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvestmentOpenDueMaxAggregateInputType
+  }
+
+  export type GetInvestmentOpenDueAggregateType<T extends InvestmentOpenDueAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvestmentOpenDue]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvestmentOpenDue[P]>
+      : GetScalarType<T[P], AggregateInvestmentOpenDue[P]>
+  }
+
+
+
+
+  export type InvestmentOpenDueGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentOpenDueWhereInput
+    orderBy?: InvestmentOpenDueOrderByWithAggregationInput | InvestmentOpenDueOrderByWithAggregationInput[]
+    by: InvestmentOpenDueScalarFieldEnum[] | InvestmentOpenDueScalarFieldEnum
+    having?: InvestmentOpenDueScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvestmentOpenDueCountAggregateInputType | true
+    _avg?: InvestmentOpenDueAvgAggregateInputType
+    _sum?: InvestmentOpenDueSumAggregateInputType
+    _min?: InvestmentOpenDueMinAggregateInputType
+    _max?: InvestmentOpenDueMaxAggregateInputType
+  }
+
+  export type InvestmentOpenDueGroupByOutputType = {
+    id: string
+    companyId: string
+    amount: Decimal
+    dueDate: Date | null
+    remark: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: InvestmentOpenDueCountAggregateOutputType | null
+    _avg: InvestmentOpenDueAvgAggregateOutputType | null
+    _sum: InvestmentOpenDueSumAggregateOutputType | null
+    _min: InvestmentOpenDueMinAggregateOutputType | null
+    _max: InvestmentOpenDueMaxAggregateOutputType | null
+  }
+
+  type GetInvestmentOpenDueGroupByPayload<T extends InvestmentOpenDueGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvestmentOpenDueGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvestmentOpenDueGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvestmentOpenDueGroupByOutputType[P]>
+            : GetScalarType<T[P], InvestmentOpenDueGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvestmentOpenDueSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    amount?: boolean
+    dueDate?: boolean
+    remark?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investmentOpenDue"]>
+
+  export type InvestmentOpenDueSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    amount?: boolean
+    dueDate?: boolean
+    remark?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investmentOpenDue"]>
+
+  export type InvestmentOpenDueSelectScalar = {
+    id?: boolean
+    companyId?: boolean
+    amount?: boolean
+    dueDate?: boolean
+    remark?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InvestmentOpenDueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+  }
+  export type InvestmentOpenDueIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+  }
+
+  export type $InvestmentOpenDuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InvestmentOpenDue"
+    objects: {
+      company: Prisma.$InvestmentCompanyPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      companyId: string
+      amount: Prisma.Decimal
+      dueDate: Date | null
+      remark: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["investmentOpenDue"]>
+    composites: {}
+  }
+
+  type InvestmentOpenDueGetPayload<S extends boolean | null | undefined | InvestmentOpenDueDefaultArgs> = $Result.GetResult<Prisma.$InvestmentOpenDuePayload, S>
+
+  type InvestmentOpenDueCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InvestmentOpenDueFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InvestmentOpenDueCountAggregateInputType | true
+    }
+
+  export interface InvestmentOpenDueDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InvestmentOpenDue'], meta: { name: 'InvestmentOpenDue' } }
+    /**
+     * Find zero or one InvestmentOpenDue that matches the filter.
+     * @param {InvestmentOpenDueFindUniqueArgs} args - Arguments to find a InvestmentOpenDue
+     * @example
+     * // Get one InvestmentOpenDue
+     * const investmentOpenDue = await prisma.investmentOpenDue.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvestmentOpenDueFindUniqueArgs>(args: SelectSubset<T, InvestmentOpenDueFindUniqueArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one InvestmentOpenDue that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InvestmentOpenDueFindUniqueOrThrowArgs} args - Arguments to find a InvestmentOpenDue
+     * @example
+     * // Get one InvestmentOpenDue
+     * const investmentOpenDue = await prisma.investmentOpenDue.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvestmentOpenDueFindUniqueOrThrowArgs>(args: SelectSubset<T, InvestmentOpenDueFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first InvestmentOpenDue that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueFindFirstArgs} args - Arguments to find a InvestmentOpenDue
+     * @example
+     * // Get one InvestmentOpenDue
+     * const investmentOpenDue = await prisma.investmentOpenDue.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvestmentOpenDueFindFirstArgs>(args?: SelectSubset<T, InvestmentOpenDueFindFirstArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first InvestmentOpenDue that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueFindFirstOrThrowArgs} args - Arguments to find a InvestmentOpenDue
+     * @example
+     * // Get one InvestmentOpenDue
+     * const investmentOpenDue = await prisma.investmentOpenDue.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvestmentOpenDueFindFirstOrThrowArgs>(args?: SelectSubset<T, InvestmentOpenDueFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more InvestmentOpenDues that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InvestmentOpenDues
+     * const investmentOpenDues = await prisma.investmentOpenDue.findMany()
+     * 
+     * // Get first 10 InvestmentOpenDues
+     * const investmentOpenDues = await prisma.investmentOpenDue.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const investmentOpenDueWithIdOnly = await prisma.investmentOpenDue.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvestmentOpenDueFindManyArgs>(args?: SelectSubset<T, InvestmentOpenDueFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a InvestmentOpenDue.
+     * @param {InvestmentOpenDueCreateArgs} args - Arguments to create a InvestmentOpenDue.
+     * @example
+     * // Create one InvestmentOpenDue
+     * const InvestmentOpenDue = await prisma.investmentOpenDue.create({
+     *   data: {
+     *     // ... data to create a InvestmentOpenDue
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvestmentOpenDueCreateArgs>(args: SelectSubset<T, InvestmentOpenDueCreateArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many InvestmentOpenDues.
+     * @param {InvestmentOpenDueCreateManyArgs} args - Arguments to create many InvestmentOpenDues.
+     * @example
+     * // Create many InvestmentOpenDues
+     * const investmentOpenDue = await prisma.investmentOpenDue.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvestmentOpenDueCreateManyArgs>(args?: SelectSubset<T, InvestmentOpenDueCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InvestmentOpenDues and returns the data saved in the database.
+     * @param {InvestmentOpenDueCreateManyAndReturnArgs} args - Arguments to create many InvestmentOpenDues.
+     * @example
+     * // Create many InvestmentOpenDues
+     * const investmentOpenDue = await prisma.investmentOpenDue.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InvestmentOpenDues and only return the `id`
+     * const investmentOpenDueWithIdOnly = await prisma.investmentOpenDue.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InvestmentOpenDueCreateManyAndReturnArgs>(args?: SelectSubset<T, InvestmentOpenDueCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a InvestmentOpenDue.
+     * @param {InvestmentOpenDueDeleteArgs} args - Arguments to delete one InvestmentOpenDue.
+     * @example
+     * // Delete one InvestmentOpenDue
+     * const InvestmentOpenDue = await prisma.investmentOpenDue.delete({
+     *   where: {
+     *     // ... filter to delete one InvestmentOpenDue
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvestmentOpenDueDeleteArgs>(args: SelectSubset<T, InvestmentOpenDueDeleteArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one InvestmentOpenDue.
+     * @param {InvestmentOpenDueUpdateArgs} args - Arguments to update one InvestmentOpenDue.
+     * @example
+     * // Update one InvestmentOpenDue
+     * const investmentOpenDue = await prisma.investmentOpenDue.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvestmentOpenDueUpdateArgs>(args: SelectSubset<T, InvestmentOpenDueUpdateArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more InvestmentOpenDues.
+     * @param {InvestmentOpenDueDeleteManyArgs} args - Arguments to filter InvestmentOpenDues to delete.
+     * @example
+     * // Delete a few InvestmentOpenDues
+     * const { count } = await prisma.investmentOpenDue.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvestmentOpenDueDeleteManyArgs>(args?: SelectSubset<T, InvestmentOpenDueDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvestmentOpenDues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InvestmentOpenDues
+     * const investmentOpenDue = await prisma.investmentOpenDue.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvestmentOpenDueUpdateManyArgs>(args: SelectSubset<T, InvestmentOpenDueUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InvestmentOpenDue.
+     * @param {InvestmentOpenDueUpsertArgs} args - Arguments to update or create a InvestmentOpenDue.
+     * @example
+     * // Update or create a InvestmentOpenDue
+     * const investmentOpenDue = await prisma.investmentOpenDue.upsert({
+     *   create: {
+     *     // ... data to create a InvestmentOpenDue
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InvestmentOpenDue we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvestmentOpenDueUpsertArgs>(args: SelectSubset<T, InvestmentOpenDueUpsertArgs<ExtArgs>>): Prisma__InvestmentOpenDueClient<$Result.GetResult<Prisma.$InvestmentOpenDuePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of InvestmentOpenDues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueCountArgs} args - Arguments to filter InvestmentOpenDues to count.
+     * @example
+     * // Count the number of InvestmentOpenDues
+     * const count = await prisma.investmentOpenDue.count({
+     *   where: {
+     *     // ... the filter for the InvestmentOpenDues we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvestmentOpenDueCountArgs>(
+      args?: Subset<T, InvestmentOpenDueCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvestmentOpenDueCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InvestmentOpenDue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvestmentOpenDueAggregateArgs>(args: Subset<T, InvestmentOpenDueAggregateArgs>): Prisma.PrismaPromise<GetInvestmentOpenDueAggregateType<T>>
+
+    /**
+     * Group by InvestmentOpenDue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentOpenDueGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvestmentOpenDueGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvestmentOpenDueGroupByArgs['orderBy'] }
+        : { orderBy?: InvestmentOpenDueGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvestmentOpenDueGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvestmentOpenDueGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InvestmentOpenDue model
+   */
+  readonly fields: InvestmentOpenDueFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InvestmentOpenDue.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvestmentOpenDueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends InvestmentCompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentCompanyDefaultArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InvestmentOpenDue model
+   */ 
+  interface InvestmentOpenDueFieldRefs {
+    readonly id: FieldRef<"InvestmentOpenDue", 'String'>
+    readonly companyId: FieldRef<"InvestmentOpenDue", 'String'>
+    readonly amount: FieldRef<"InvestmentOpenDue", 'Decimal'>
+    readonly dueDate: FieldRef<"InvestmentOpenDue", 'DateTime'>
+    readonly remark: FieldRef<"InvestmentOpenDue", 'String'>
+    readonly createdAt: FieldRef<"InvestmentOpenDue", 'DateTime'>
+    readonly updatedAt: FieldRef<"InvestmentOpenDue", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InvestmentOpenDue findUnique
+   */
+  export type InvestmentOpenDueFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentOpenDue to fetch.
+     */
+    where: InvestmentOpenDueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentOpenDue findUniqueOrThrow
+   */
+  export type InvestmentOpenDueFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentOpenDue to fetch.
+     */
+    where: InvestmentOpenDueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentOpenDue findFirst
+   */
+  export type InvestmentOpenDueFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentOpenDue to fetch.
+     */
+    where?: InvestmentOpenDueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentOpenDues to fetch.
+     */
+    orderBy?: InvestmentOpenDueOrderByWithRelationInput | InvestmentOpenDueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentOpenDues.
+     */
+    cursor?: InvestmentOpenDueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentOpenDues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentOpenDues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentOpenDues.
+     */
+    distinct?: InvestmentOpenDueScalarFieldEnum | InvestmentOpenDueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentOpenDue findFirstOrThrow
+   */
+  export type InvestmentOpenDueFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentOpenDue to fetch.
+     */
+    where?: InvestmentOpenDueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentOpenDues to fetch.
+     */
+    orderBy?: InvestmentOpenDueOrderByWithRelationInput | InvestmentOpenDueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentOpenDues.
+     */
+    cursor?: InvestmentOpenDueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentOpenDues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentOpenDues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentOpenDues.
+     */
+    distinct?: InvestmentOpenDueScalarFieldEnum | InvestmentOpenDueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentOpenDue findMany
+   */
+  export type InvestmentOpenDueFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentOpenDues to fetch.
+     */
+    where?: InvestmentOpenDueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentOpenDues to fetch.
+     */
+    orderBy?: InvestmentOpenDueOrderByWithRelationInput | InvestmentOpenDueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InvestmentOpenDues.
+     */
+    cursor?: InvestmentOpenDueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentOpenDues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentOpenDues.
+     */
+    skip?: number
+    distinct?: InvestmentOpenDueScalarFieldEnum | InvestmentOpenDueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentOpenDue create
+   */
+  export type InvestmentOpenDueCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InvestmentOpenDue.
+     */
+    data: XOR<InvestmentOpenDueCreateInput, InvestmentOpenDueUncheckedCreateInput>
+  }
+
+  /**
+   * InvestmentOpenDue createMany
+   */
+  export type InvestmentOpenDueCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InvestmentOpenDues.
+     */
+    data: InvestmentOpenDueCreateManyInput | InvestmentOpenDueCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvestmentOpenDue createManyAndReturn
+   */
+  export type InvestmentOpenDueCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many InvestmentOpenDues.
+     */
+    data: InvestmentOpenDueCreateManyInput | InvestmentOpenDueCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InvestmentOpenDue update
+   */
+  export type InvestmentOpenDueUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InvestmentOpenDue.
+     */
+    data: XOR<InvestmentOpenDueUpdateInput, InvestmentOpenDueUncheckedUpdateInput>
+    /**
+     * Choose, which InvestmentOpenDue to update.
+     */
+    where: InvestmentOpenDueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentOpenDue updateMany
+   */
+  export type InvestmentOpenDueUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InvestmentOpenDues.
+     */
+    data: XOR<InvestmentOpenDueUpdateManyMutationInput, InvestmentOpenDueUncheckedUpdateManyInput>
+    /**
+     * Filter which InvestmentOpenDues to update
+     */
+    where?: InvestmentOpenDueWhereInput
+  }
+
+  /**
+   * InvestmentOpenDue upsert
+   */
+  export type InvestmentOpenDueUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InvestmentOpenDue to update in case it exists.
+     */
+    where: InvestmentOpenDueWhereUniqueInput
+    /**
+     * In case the InvestmentOpenDue found by the `where` argument doesn't exist, create a new InvestmentOpenDue with this data.
+     */
+    create: XOR<InvestmentOpenDueCreateInput, InvestmentOpenDueUncheckedCreateInput>
+    /**
+     * In case the InvestmentOpenDue was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvestmentOpenDueUpdateInput, InvestmentOpenDueUncheckedUpdateInput>
+  }
+
+  /**
+   * InvestmentOpenDue delete
+   */
+  export type InvestmentOpenDueDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+    /**
+     * Filter which InvestmentOpenDue to delete.
+     */
+    where: InvestmentOpenDueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentOpenDue deleteMany
+   */
+  export type InvestmentOpenDueDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentOpenDues to delete
+     */
+    where?: InvestmentOpenDueWhereInput
+  }
+
+  /**
+   * InvestmentOpenDue without action
+   */
+  export type InvestmentOpenDueDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentOpenDue
+     */
+    select?: InvestmentOpenDueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentOpenDueInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model InvestmentPeriod
+   */
+
+  export type AggregateInvestmentPeriod = {
+    _count: InvestmentPeriodCountAggregateOutputType | null
+    _avg: InvestmentPeriodAvgAggregateOutputType | null
+    _sum: InvestmentPeriodSumAggregateOutputType | null
+    _min: InvestmentPeriodMinAggregateOutputType | null
+    _max: InvestmentPeriodMaxAggregateOutputType | null
+  }
+
+  export type InvestmentPeriodAvgAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type InvestmentPeriodSumAggregateOutputType = {
+    sortOrder: number | null
+  }
+
+  export type InvestmentPeriodMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    startDate: Date | null
+    endDate: Date | null
+    sortOrder: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentPeriodMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    startDate: Date | null
+    endDate: Date | null
+    sortOrder: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentPeriodCountAggregateOutputType = {
+    id: number
+    name: number
+    startDate: number
+    endDate: number
+    sortOrder: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InvestmentPeriodAvgAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type InvestmentPeriodSumAggregateInputType = {
+    sortOrder?: true
+  }
+
+  export type InvestmentPeriodMinAggregateInputType = {
+    id?: true
+    name?: true
+    startDate?: true
+    endDate?: true
+    sortOrder?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentPeriodMaxAggregateInputType = {
+    id?: true
+    name?: true
+    startDate?: true
+    endDate?: true
+    sortOrder?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentPeriodCountAggregateInputType = {
+    id?: true
+    name?: true
+    startDate?: true
+    endDate?: true
+    sortOrder?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InvestmentPeriodAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentPeriod to aggregate.
+     */
+    where?: InvestmentPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriods to fetch.
+     */
+    orderBy?: InvestmentPeriodOrderByWithRelationInput | InvestmentPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvestmentPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriods.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InvestmentPeriods
+    **/
+    _count?: true | InvestmentPeriodCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvestmentPeriodAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvestmentPeriodSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvestmentPeriodMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvestmentPeriodMaxAggregateInputType
+  }
+
+  export type GetInvestmentPeriodAggregateType<T extends InvestmentPeriodAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvestmentPeriod]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvestmentPeriod[P]>
+      : GetScalarType<T[P], AggregateInvestmentPeriod[P]>
+  }
+
+
+
+
+  export type InvestmentPeriodGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentPeriodWhereInput
+    orderBy?: InvestmentPeriodOrderByWithAggregationInput | InvestmentPeriodOrderByWithAggregationInput[]
+    by: InvestmentPeriodScalarFieldEnum[] | InvestmentPeriodScalarFieldEnum
+    having?: InvestmentPeriodScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvestmentPeriodCountAggregateInputType | true
+    _avg?: InvestmentPeriodAvgAggregateInputType
+    _sum?: InvestmentPeriodSumAggregateInputType
+    _min?: InvestmentPeriodMinAggregateInputType
+    _max?: InvestmentPeriodMaxAggregateInputType
+  }
+
+  export type InvestmentPeriodGroupByOutputType = {
+    id: string
+    name: string
+    startDate: Date
+    endDate: Date
+    sortOrder: number
+    createdAt: Date
+    updatedAt: Date
+    _count: InvestmentPeriodCountAggregateOutputType | null
+    _avg: InvestmentPeriodAvgAggregateOutputType | null
+    _sum: InvestmentPeriodSumAggregateOutputType | null
+    _min: InvestmentPeriodMinAggregateOutputType | null
+    _max: InvestmentPeriodMaxAggregateOutputType | null
+  }
+
+  type GetInvestmentPeriodGroupByPayload<T extends InvestmentPeriodGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvestmentPeriodGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvestmentPeriodGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvestmentPeriodGroupByOutputType[P]>
+            : GetScalarType<T[P], InvestmentPeriodGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvestmentPeriodSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    values?: boolean | InvestmentPeriod$valuesArgs<ExtArgs>
+    _count?: boolean | InvestmentPeriodCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investmentPeriod"]>
+
+  export type InvestmentPeriodSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["investmentPeriod"]>
+
+  export type InvestmentPeriodSelectScalar = {
+    id?: boolean
+    name?: boolean
+    startDate?: boolean
+    endDate?: boolean
+    sortOrder?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InvestmentPeriodInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    values?: boolean | InvestmentPeriod$valuesArgs<ExtArgs>
+    _count?: boolean | InvestmentPeriodCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type InvestmentPeriodIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $InvestmentPeriodPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InvestmentPeriod"
+    objects: {
+      values: Prisma.$InvestmentPeriodValuePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      startDate: Date
+      endDate: Date
+      /**
+       * Column order in the investments report (among period columns only).
+       */
+      sortOrder: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["investmentPeriod"]>
+    composites: {}
+  }
+
+  type InvestmentPeriodGetPayload<S extends boolean | null | undefined | InvestmentPeriodDefaultArgs> = $Result.GetResult<Prisma.$InvestmentPeriodPayload, S>
+
+  type InvestmentPeriodCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InvestmentPeriodFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InvestmentPeriodCountAggregateInputType | true
+    }
+
+  export interface InvestmentPeriodDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InvestmentPeriod'], meta: { name: 'InvestmentPeriod' } }
+    /**
+     * Find zero or one InvestmentPeriod that matches the filter.
+     * @param {InvestmentPeriodFindUniqueArgs} args - Arguments to find a InvestmentPeriod
+     * @example
+     * // Get one InvestmentPeriod
+     * const investmentPeriod = await prisma.investmentPeriod.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvestmentPeriodFindUniqueArgs>(args: SelectSubset<T, InvestmentPeriodFindUniqueArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one InvestmentPeriod that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InvestmentPeriodFindUniqueOrThrowArgs} args - Arguments to find a InvestmentPeriod
+     * @example
+     * // Get one InvestmentPeriod
+     * const investmentPeriod = await prisma.investmentPeriod.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvestmentPeriodFindUniqueOrThrowArgs>(args: SelectSubset<T, InvestmentPeriodFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first InvestmentPeriod that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodFindFirstArgs} args - Arguments to find a InvestmentPeriod
+     * @example
+     * // Get one InvestmentPeriod
+     * const investmentPeriod = await prisma.investmentPeriod.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvestmentPeriodFindFirstArgs>(args?: SelectSubset<T, InvestmentPeriodFindFirstArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first InvestmentPeriod that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodFindFirstOrThrowArgs} args - Arguments to find a InvestmentPeriod
+     * @example
+     * // Get one InvestmentPeriod
+     * const investmentPeriod = await prisma.investmentPeriod.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvestmentPeriodFindFirstOrThrowArgs>(args?: SelectSubset<T, InvestmentPeriodFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more InvestmentPeriods that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InvestmentPeriods
+     * const investmentPeriods = await prisma.investmentPeriod.findMany()
+     * 
+     * // Get first 10 InvestmentPeriods
+     * const investmentPeriods = await prisma.investmentPeriod.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const investmentPeriodWithIdOnly = await prisma.investmentPeriod.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvestmentPeriodFindManyArgs>(args?: SelectSubset<T, InvestmentPeriodFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a InvestmentPeriod.
+     * @param {InvestmentPeriodCreateArgs} args - Arguments to create a InvestmentPeriod.
+     * @example
+     * // Create one InvestmentPeriod
+     * const InvestmentPeriod = await prisma.investmentPeriod.create({
+     *   data: {
+     *     // ... data to create a InvestmentPeriod
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvestmentPeriodCreateArgs>(args: SelectSubset<T, InvestmentPeriodCreateArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many InvestmentPeriods.
+     * @param {InvestmentPeriodCreateManyArgs} args - Arguments to create many InvestmentPeriods.
+     * @example
+     * // Create many InvestmentPeriods
+     * const investmentPeriod = await prisma.investmentPeriod.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvestmentPeriodCreateManyArgs>(args?: SelectSubset<T, InvestmentPeriodCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InvestmentPeriods and returns the data saved in the database.
+     * @param {InvestmentPeriodCreateManyAndReturnArgs} args - Arguments to create many InvestmentPeriods.
+     * @example
+     * // Create many InvestmentPeriods
+     * const investmentPeriod = await prisma.investmentPeriod.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InvestmentPeriods and only return the `id`
+     * const investmentPeriodWithIdOnly = await prisma.investmentPeriod.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InvestmentPeriodCreateManyAndReturnArgs>(args?: SelectSubset<T, InvestmentPeriodCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a InvestmentPeriod.
+     * @param {InvestmentPeriodDeleteArgs} args - Arguments to delete one InvestmentPeriod.
+     * @example
+     * // Delete one InvestmentPeriod
+     * const InvestmentPeriod = await prisma.investmentPeriod.delete({
+     *   where: {
+     *     // ... filter to delete one InvestmentPeriod
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvestmentPeriodDeleteArgs>(args: SelectSubset<T, InvestmentPeriodDeleteArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one InvestmentPeriod.
+     * @param {InvestmentPeriodUpdateArgs} args - Arguments to update one InvestmentPeriod.
+     * @example
+     * // Update one InvestmentPeriod
+     * const investmentPeriod = await prisma.investmentPeriod.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvestmentPeriodUpdateArgs>(args: SelectSubset<T, InvestmentPeriodUpdateArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more InvestmentPeriods.
+     * @param {InvestmentPeriodDeleteManyArgs} args - Arguments to filter InvestmentPeriods to delete.
+     * @example
+     * // Delete a few InvestmentPeriods
+     * const { count } = await prisma.investmentPeriod.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvestmentPeriodDeleteManyArgs>(args?: SelectSubset<T, InvestmentPeriodDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvestmentPeriods.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InvestmentPeriods
+     * const investmentPeriod = await prisma.investmentPeriod.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvestmentPeriodUpdateManyArgs>(args: SelectSubset<T, InvestmentPeriodUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InvestmentPeriod.
+     * @param {InvestmentPeriodUpsertArgs} args - Arguments to update or create a InvestmentPeriod.
+     * @example
+     * // Update or create a InvestmentPeriod
+     * const investmentPeriod = await prisma.investmentPeriod.upsert({
+     *   create: {
+     *     // ... data to create a InvestmentPeriod
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InvestmentPeriod we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvestmentPeriodUpsertArgs>(args: SelectSubset<T, InvestmentPeriodUpsertArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of InvestmentPeriods.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodCountArgs} args - Arguments to filter InvestmentPeriods to count.
+     * @example
+     * // Count the number of InvestmentPeriods
+     * const count = await prisma.investmentPeriod.count({
+     *   where: {
+     *     // ... the filter for the InvestmentPeriods we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvestmentPeriodCountArgs>(
+      args?: Subset<T, InvestmentPeriodCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvestmentPeriodCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InvestmentPeriod.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvestmentPeriodAggregateArgs>(args: Subset<T, InvestmentPeriodAggregateArgs>): Prisma.PrismaPromise<GetInvestmentPeriodAggregateType<T>>
+
+    /**
+     * Group by InvestmentPeriod.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvestmentPeriodGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvestmentPeriodGroupByArgs['orderBy'] }
+        : { orderBy?: InvestmentPeriodGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvestmentPeriodGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvestmentPeriodGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InvestmentPeriod model
+   */
+  readonly fields: InvestmentPeriodFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InvestmentPeriod.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvestmentPeriodClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    values<T extends InvestmentPeriod$valuesArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentPeriod$valuesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InvestmentPeriod model
+   */ 
+  interface InvestmentPeriodFieldRefs {
+    readonly id: FieldRef<"InvestmentPeriod", 'String'>
+    readonly name: FieldRef<"InvestmentPeriod", 'String'>
+    readonly startDate: FieldRef<"InvestmentPeriod", 'DateTime'>
+    readonly endDate: FieldRef<"InvestmentPeriod", 'DateTime'>
+    readonly sortOrder: FieldRef<"InvestmentPeriod", 'Int'>
+    readonly createdAt: FieldRef<"InvestmentPeriod", 'DateTime'>
+    readonly updatedAt: FieldRef<"InvestmentPeriod", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InvestmentPeriod findUnique
+   */
+  export type InvestmentPeriodFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriod to fetch.
+     */
+    where: InvestmentPeriodWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriod findUniqueOrThrow
+   */
+  export type InvestmentPeriodFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriod to fetch.
+     */
+    where: InvestmentPeriodWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriod findFirst
+   */
+  export type InvestmentPeriodFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriod to fetch.
+     */
+    where?: InvestmentPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriods to fetch.
+     */
+    orderBy?: InvestmentPeriodOrderByWithRelationInput | InvestmentPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentPeriods.
+     */
+    cursor?: InvestmentPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriods.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentPeriods.
+     */
+    distinct?: InvestmentPeriodScalarFieldEnum | InvestmentPeriodScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriod findFirstOrThrow
+   */
+  export type InvestmentPeriodFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriod to fetch.
+     */
+    where?: InvestmentPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriods to fetch.
+     */
+    orderBy?: InvestmentPeriodOrderByWithRelationInput | InvestmentPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentPeriods.
+     */
+    cursor?: InvestmentPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriods.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentPeriods.
+     */
+    distinct?: InvestmentPeriodScalarFieldEnum | InvestmentPeriodScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriod findMany
+   */
+  export type InvestmentPeriodFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriods to fetch.
+     */
+    where?: InvestmentPeriodWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriods to fetch.
+     */
+    orderBy?: InvestmentPeriodOrderByWithRelationInput | InvestmentPeriodOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InvestmentPeriods.
+     */
+    cursor?: InvestmentPeriodWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriods from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriods.
+     */
+    skip?: number
+    distinct?: InvestmentPeriodScalarFieldEnum | InvestmentPeriodScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriod create
+   */
+  export type InvestmentPeriodCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InvestmentPeriod.
+     */
+    data: XOR<InvestmentPeriodCreateInput, InvestmentPeriodUncheckedCreateInput>
+  }
+
+  /**
+   * InvestmentPeriod createMany
+   */
+  export type InvestmentPeriodCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InvestmentPeriods.
+     */
+    data: InvestmentPeriodCreateManyInput | InvestmentPeriodCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvestmentPeriod createManyAndReturn
+   */
+  export type InvestmentPeriodCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many InvestmentPeriods.
+     */
+    data: InvestmentPeriodCreateManyInput | InvestmentPeriodCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvestmentPeriod update
+   */
+  export type InvestmentPeriodUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InvestmentPeriod.
+     */
+    data: XOR<InvestmentPeriodUpdateInput, InvestmentPeriodUncheckedUpdateInput>
+    /**
+     * Choose, which InvestmentPeriod to update.
+     */
+    where: InvestmentPeriodWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriod updateMany
+   */
+  export type InvestmentPeriodUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InvestmentPeriods.
+     */
+    data: XOR<InvestmentPeriodUpdateManyMutationInput, InvestmentPeriodUncheckedUpdateManyInput>
+    /**
+     * Filter which InvestmentPeriods to update
+     */
+    where?: InvestmentPeriodWhereInput
+  }
+
+  /**
+   * InvestmentPeriod upsert
+   */
+  export type InvestmentPeriodUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InvestmentPeriod to update in case it exists.
+     */
+    where: InvestmentPeriodWhereUniqueInput
+    /**
+     * In case the InvestmentPeriod found by the `where` argument doesn't exist, create a new InvestmentPeriod with this data.
+     */
+    create: XOR<InvestmentPeriodCreateInput, InvestmentPeriodUncheckedCreateInput>
+    /**
+     * In case the InvestmentPeriod was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvestmentPeriodUpdateInput, InvestmentPeriodUncheckedUpdateInput>
+  }
+
+  /**
+   * InvestmentPeriod delete
+   */
+  export type InvestmentPeriodDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+    /**
+     * Filter which InvestmentPeriod to delete.
+     */
+    where: InvestmentPeriodWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriod deleteMany
+   */
+  export type InvestmentPeriodDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentPeriods to delete
+     */
+    where?: InvestmentPeriodWhereInput
+  }
+
+  /**
+   * InvestmentPeriod.values
+   */
+  export type InvestmentPeriod$valuesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    where?: InvestmentPeriodValueWhereInput
+    orderBy?: InvestmentPeriodValueOrderByWithRelationInput | InvestmentPeriodValueOrderByWithRelationInput[]
+    cursor?: InvestmentPeriodValueWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvestmentPeriodValueScalarFieldEnum | InvestmentPeriodValueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriod without action
+   */
+  export type InvestmentPeriodDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriod
+     */
+    select?: InvestmentPeriodSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model InvestmentPeriodValue
+   */
+
+  export type AggregateInvestmentPeriodValue = {
+    _count: InvestmentPeriodValueCountAggregateOutputType | null
+    _avg: InvestmentPeriodValueAvgAggregateOutputType | null
+    _sum: InvestmentPeriodValueSumAggregateOutputType | null
+    _min: InvestmentPeriodValueMinAggregateOutputType | null
+    _max: InvestmentPeriodValueMaxAggregateOutputType | null
+  }
+
+  export type InvestmentPeriodValueAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type InvestmentPeriodValueSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type InvestmentPeriodValueMinAggregateOutputType = {
+    id: string | null
+    companyId: string | null
+    periodId: string | null
+    amount: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentPeriodValueMaxAggregateOutputType = {
+    id: string | null
+    companyId: string | null
+    periodId: string | null
+    amount: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type InvestmentPeriodValueCountAggregateOutputType = {
+    id: number
+    companyId: number
+    periodId: number
+    amount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type InvestmentPeriodValueAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type InvestmentPeriodValueSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type InvestmentPeriodValueMinAggregateInputType = {
+    id?: true
+    companyId?: true
+    periodId?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentPeriodValueMaxAggregateInputType = {
+    id?: true
+    companyId?: true
+    periodId?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type InvestmentPeriodValueCountAggregateInputType = {
+    id?: true
+    companyId?: true
+    periodId?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type InvestmentPeriodValueAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentPeriodValue to aggregate.
+     */
+    where?: InvestmentPeriodValueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriodValues to fetch.
+     */
+    orderBy?: InvestmentPeriodValueOrderByWithRelationInput | InvestmentPeriodValueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: InvestmentPeriodValueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriodValues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriodValues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned InvestmentPeriodValues
+    **/
+    _count?: true | InvestmentPeriodValueCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: InvestmentPeriodValueAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InvestmentPeriodValueSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: InvestmentPeriodValueMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: InvestmentPeriodValueMaxAggregateInputType
+  }
+
+  export type GetInvestmentPeriodValueAggregateType<T extends InvestmentPeriodValueAggregateArgs> = {
+        [P in keyof T & keyof AggregateInvestmentPeriodValue]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateInvestmentPeriodValue[P]>
+      : GetScalarType<T[P], AggregateInvestmentPeriodValue[P]>
+  }
+
+
+
+
+  export type InvestmentPeriodValueGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentPeriodValueWhereInput
+    orderBy?: InvestmentPeriodValueOrderByWithAggregationInput | InvestmentPeriodValueOrderByWithAggregationInput[]
+    by: InvestmentPeriodValueScalarFieldEnum[] | InvestmentPeriodValueScalarFieldEnum
+    having?: InvestmentPeriodValueScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: InvestmentPeriodValueCountAggregateInputType | true
+    _avg?: InvestmentPeriodValueAvgAggregateInputType
+    _sum?: InvestmentPeriodValueSumAggregateInputType
+    _min?: InvestmentPeriodValueMinAggregateInputType
+    _max?: InvestmentPeriodValueMaxAggregateInputType
+  }
+
+  export type InvestmentPeriodValueGroupByOutputType = {
+    id: string
+    companyId: string
+    periodId: string
+    amount: Decimal
+    createdAt: Date
+    updatedAt: Date
+    _count: InvestmentPeriodValueCountAggregateOutputType | null
+    _avg: InvestmentPeriodValueAvgAggregateOutputType | null
+    _sum: InvestmentPeriodValueSumAggregateOutputType | null
+    _min: InvestmentPeriodValueMinAggregateOutputType | null
+    _max: InvestmentPeriodValueMaxAggregateOutputType | null
+  }
+
+  type GetInvestmentPeriodValueGroupByPayload<T extends InvestmentPeriodValueGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<InvestmentPeriodValueGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof InvestmentPeriodValueGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], InvestmentPeriodValueGroupByOutputType[P]>
+            : GetScalarType<T[P], InvestmentPeriodValueGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type InvestmentPeriodValueSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    periodId?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+    period?: boolean | InvestmentPeriodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investmentPeriodValue"]>
+
+  export type InvestmentPeriodValueSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    companyId?: boolean
+    periodId?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+    period?: boolean | InvestmentPeriodDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["investmentPeriodValue"]>
+
+  export type InvestmentPeriodValueSelectScalar = {
+    id?: boolean
+    companyId?: boolean
+    periodId?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type InvestmentPeriodValueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+    period?: boolean | InvestmentPeriodDefaultArgs<ExtArgs>
+  }
+  export type InvestmentPeriodValueIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
+    period?: boolean | InvestmentPeriodDefaultArgs<ExtArgs>
+  }
+
+  export type $InvestmentPeriodValuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "InvestmentPeriodValue"
+    objects: {
+      company: Prisma.$InvestmentCompanyPayload<ExtArgs>
+      period: Prisma.$InvestmentPeriodPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      companyId: string
+      periodId: string
+      amount: Prisma.Decimal
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["investmentPeriodValue"]>
+    composites: {}
+  }
+
+  type InvestmentPeriodValueGetPayload<S extends boolean | null | undefined | InvestmentPeriodValueDefaultArgs> = $Result.GetResult<Prisma.$InvestmentPeriodValuePayload, S>
+
+  type InvestmentPeriodValueCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<InvestmentPeriodValueFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: InvestmentPeriodValueCountAggregateInputType | true
+    }
+
+  export interface InvestmentPeriodValueDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['InvestmentPeriodValue'], meta: { name: 'InvestmentPeriodValue' } }
+    /**
+     * Find zero or one InvestmentPeriodValue that matches the filter.
+     * @param {InvestmentPeriodValueFindUniqueArgs} args - Arguments to find a InvestmentPeriodValue
+     * @example
+     * // Get one InvestmentPeriodValue
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends InvestmentPeriodValueFindUniqueArgs>(args: SelectSubset<T, InvestmentPeriodValueFindUniqueArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one InvestmentPeriodValue that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {InvestmentPeriodValueFindUniqueOrThrowArgs} args - Arguments to find a InvestmentPeriodValue
+     * @example
+     * // Get one InvestmentPeriodValue
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends InvestmentPeriodValueFindUniqueOrThrowArgs>(args: SelectSubset<T, InvestmentPeriodValueFindUniqueOrThrowArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first InvestmentPeriodValue that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueFindFirstArgs} args - Arguments to find a InvestmentPeriodValue
+     * @example
+     * // Get one InvestmentPeriodValue
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends InvestmentPeriodValueFindFirstArgs>(args?: SelectSubset<T, InvestmentPeriodValueFindFirstArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first InvestmentPeriodValue that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueFindFirstOrThrowArgs} args - Arguments to find a InvestmentPeriodValue
+     * @example
+     * // Get one InvestmentPeriodValue
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends InvestmentPeriodValueFindFirstOrThrowArgs>(args?: SelectSubset<T, InvestmentPeriodValueFindFirstOrThrowArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more InvestmentPeriodValues that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all InvestmentPeriodValues
+     * const investmentPeriodValues = await prisma.investmentPeriodValue.findMany()
+     * 
+     * // Get first 10 InvestmentPeriodValues
+     * const investmentPeriodValues = await prisma.investmentPeriodValue.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const investmentPeriodValueWithIdOnly = await prisma.investmentPeriodValue.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends InvestmentPeriodValueFindManyArgs>(args?: SelectSubset<T, InvestmentPeriodValueFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a InvestmentPeriodValue.
+     * @param {InvestmentPeriodValueCreateArgs} args - Arguments to create a InvestmentPeriodValue.
+     * @example
+     * // Create one InvestmentPeriodValue
+     * const InvestmentPeriodValue = await prisma.investmentPeriodValue.create({
+     *   data: {
+     *     // ... data to create a InvestmentPeriodValue
+     *   }
+     * })
+     * 
+     */
+    create<T extends InvestmentPeriodValueCreateArgs>(args: SelectSubset<T, InvestmentPeriodValueCreateArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many InvestmentPeriodValues.
+     * @param {InvestmentPeriodValueCreateManyArgs} args - Arguments to create many InvestmentPeriodValues.
+     * @example
+     * // Create many InvestmentPeriodValues
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends InvestmentPeriodValueCreateManyArgs>(args?: SelectSubset<T, InvestmentPeriodValueCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many InvestmentPeriodValues and returns the data saved in the database.
+     * @param {InvestmentPeriodValueCreateManyAndReturnArgs} args - Arguments to create many InvestmentPeriodValues.
+     * @example
+     * // Create many InvestmentPeriodValues
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many InvestmentPeriodValues and only return the `id`
+     * const investmentPeriodValueWithIdOnly = await prisma.investmentPeriodValue.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends InvestmentPeriodValueCreateManyAndReturnArgs>(args?: SelectSubset<T, InvestmentPeriodValueCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a InvestmentPeriodValue.
+     * @param {InvestmentPeriodValueDeleteArgs} args - Arguments to delete one InvestmentPeriodValue.
+     * @example
+     * // Delete one InvestmentPeriodValue
+     * const InvestmentPeriodValue = await prisma.investmentPeriodValue.delete({
+     *   where: {
+     *     // ... filter to delete one InvestmentPeriodValue
+     *   }
+     * })
+     * 
+     */
+    delete<T extends InvestmentPeriodValueDeleteArgs>(args: SelectSubset<T, InvestmentPeriodValueDeleteArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one InvestmentPeriodValue.
+     * @param {InvestmentPeriodValueUpdateArgs} args - Arguments to update one InvestmentPeriodValue.
+     * @example
+     * // Update one InvestmentPeriodValue
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends InvestmentPeriodValueUpdateArgs>(args: SelectSubset<T, InvestmentPeriodValueUpdateArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more InvestmentPeriodValues.
+     * @param {InvestmentPeriodValueDeleteManyArgs} args - Arguments to filter InvestmentPeriodValues to delete.
+     * @example
+     * // Delete a few InvestmentPeriodValues
+     * const { count } = await prisma.investmentPeriodValue.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends InvestmentPeriodValueDeleteManyArgs>(args?: SelectSubset<T, InvestmentPeriodValueDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more InvestmentPeriodValues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many InvestmentPeriodValues
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends InvestmentPeriodValueUpdateManyArgs>(args: SelectSubset<T, InvestmentPeriodValueUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one InvestmentPeriodValue.
+     * @param {InvestmentPeriodValueUpsertArgs} args - Arguments to update or create a InvestmentPeriodValue.
+     * @example
+     * // Update or create a InvestmentPeriodValue
+     * const investmentPeriodValue = await prisma.investmentPeriodValue.upsert({
+     *   create: {
+     *     // ... data to create a InvestmentPeriodValue
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the InvestmentPeriodValue we want to update
+     *   }
+     * })
+     */
+    upsert<T extends InvestmentPeriodValueUpsertArgs>(args: SelectSubset<T, InvestmentPeriodValueUpsertArgs<ExtArgs>>): Prisma__InvestmentPeriodValueClient<$Result.GetResult<Prisma.$InvestmentPeriodValuePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of InvestmentPeriodValues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueCountArgs} args - Arguments to filter InvestmentPeriodValues to count.
+     * @example
+     * // Count the number of InvestmentPeriodValues
+     * const count = await prisma.investmentPeriodValue.count({
+     *   where: {
+     *     // ... the filter for the InvestmentPeriodValues we want to count
+     *   }
+     * })
+    **/
+    count<T extends InvestmentPeriodValueCountArgs>(
+      args?: Subset<T, InvestmentPeriodValueCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], InvestmentPeriodValueCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a InvestmentPeriodValue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends InvestmentPeriodValueAggregateArgs>(args: Subset<T, InvestmentPeriodValueAggregateArgs>): Prisma.PrismaPromise<GetInvestmentPeriodValueAggregateType<T>>
+
+    /**
+     * Group by InvestmentPeriodValue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InvestmentPeriodValueGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends InvestmentPeriodValueGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: InvestmentPeriodValueGroupByArgs['orderBy'] }
+        : { orderBy?: InvestmentPeriodValueGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, InvestmentPeriodValueGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInvestmentPeriodValueGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the InvestmentPeriodValue model
+   */
+  readonly fields: InvestmentPeriodValueFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for InvestmentPeriodValue.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__InvestmentPeriodValueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    company<T extends InvestmentCompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentCompanyDefaultArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    period<T extends InvestmentPeriodDefaultArgs<ExtArgs> = {}>(args?: Subset<T, InvestmentPeriodDefaultArgs<ExtArgs>>): Prisma__InvestmentPeriodClient<$Result.GetResult<Prisma.$InvestmentPeriodPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the InvestmentPeriodValue model
+   */ 
+  interface InvestmentPeriodValueFieldRefs {
+    readonly id: FieldRef<"InvestmentPeriodValue", 'String'>
+    readonly companyId: FieldRef<"InvestmentPeriodValue", 'String'>
+    readonly periodId: FieldRef<"InvestmentPeriodValue", 'String'>
+    readonly amount: FieldRef<"InvestmentPeriodValue", 'Decimal'>
+    readonly createdAt: FieldRef<"InvestmentPeriodValue", 'DateTime'>
+    readonly updatedAt: FieldRef<"InvestmentPeriodValue", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * InvestmentPeriodValue findUnique
+   */
+  export type InvestmentPeriodValueFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriodValue to fetch.
+     */
+    where: InvestmentPeriodValueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriodValue findUniqueOrThrow
+   */
+  export type InvestmentPeriodValueFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriodValue to fetch.
+     */
+    where: InvestmentPeriodValueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriodValue findFirst
+   */
+  export type InvestmentPeriodValueFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriodValue to fetch.
+     */
+    where?: InvestmentPeriodValueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriodValues to fetch.
+     */
+    orderBy?: InvestmentPeriodValueOrderByWithRelationInput | InvestmentPeriodValueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentPeriodValues.
+     */
+    cursor?: InvestmentPeriodValueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriodValues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriodValues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentPeriodValues.
+     */
+    distinct?: InvestmentPeriodValueScalarFieldEnum | InvestmentPeriodValueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriodValue findFirstOrThrow
+   */
+  export type InvestmentPeriodValueFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriodValue to fetch.
+     */
+    where?: InvestmentPeriodValueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriodValues to fetch.
+     */
+    orderBy?: InvestmentPeriodValueOrderByWithRelationInput | InvestmentPeriodValueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for InvestmentPeriodValues.
+     */
+    cursor?: InvestmentPeriodValueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriodValues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriodValues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of InvestmentPeriodValues.
+     */
+    distinct?: InvestmentPeriodValueScalarFieldEnum | InvestmentPeriodValueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriodValue findMany
+   */
+  export type InvestmentPeriodValueFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * Filter, which InvestmentPeriodValues to fetch.
+     */
+    where?: InvestmentPeriodValueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of InvestmentPeriodValues to fetch.
+     */
+    orderBy?: InvestmentPeriodValueOrderByWithRelationInput | InvestmentPeriodValueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing InvestmentPeriodValues.
+     */
+    cursor?: InvestmentPeriodValueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` InvestmentPeriodValues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` InvestmentPeriodValues.
+     */
+    skip?: number
+    distinct?: InvestmentPeriodValueScalarFieldEnum | InvestmentPeriodValueScalarFieldEnum[]
+  }
+
+  /**
+   * InvestmentPeriodValue create
+   */
+  export type InvestmentPeriodValueCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * The data needed to create a InvestmentPeriodValue.
+     */
+    data: XOR<InvestmentPeriodValueCreateInput, InvestmentPeriodValueUncheckedCreateInput>
+  }
+
+  /**
+   * InvestmentPeriodValue createMany
+   */
+  export type InvestmentPeriodValueCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many InvestmentPeriodValues.
+     */
+    data: InvestmentPeriodValueCreateManyInput | InvestmentPeriodValueCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * InvestmentPeriodValue createManyAndReturn
+   */
+  export type InvestmentPeriodValueCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many InvestmentPeriodValues.
+     */
+    data: InvestmentPeriodValueCreateManyInput | InvestmentPeriodValueCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * InvestmentPeriodValue update
+   */
+  export type InvestmentPeriodValueUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * The data needed to update a InvestmentPeriodValue.
+     */
+    data: XOR<InvestmentPeriodValueUpdateInput, InvestmentPeriodValueUncheckedUpdateInput>
+    /**
+     * Choose, which InvestmentPeriodValue to update.
+     */
+    where: InvestmentPeriodValueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriodValue updateMany
+   */
+  export type InvestmentPeriodValueUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update InvestmentPeriodValues.
+     */
+    data: XOR<InvestmentPeriodValueUpdateManyMutationInput, InvestmentPeriodValueUncheckedUpdateManyInput>
+    /**
+     * Filter which InvestmentPeriodValues to update
+     */
+    where?: InvestmentPeriodValueWhereInput
+  }
+
+  /**
+   * InvestmentPeriodValue upsert
+   */
+  export type InvestmentPeriodValueUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * The filter to search for the InvestmentPeriodValue to update in case it exists.
+     */
+    where: InvestmentPeriodValueWhereUniqueInput
+    /**
+     * In case the InvestmentPeriodValue found by the `where` argument doesn't exist, create a new InvestmentPeriodValue with this data.
+     */
+    create: XOR<InvestmentPeriodValueCreateInput, InvestmentPeriodValueUncheckedCreateInput>
+    /**
+     * In case the InvestmentPeriodValue was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<InvestmentPeriodValueUpdateInput, InvestmentPeriodValueUncheckedUpdateInput>
+  }
+
+  /**
+   * InvestmentPeriodValue delete
+   */
+  export type InvestmentPeriodValueDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+    /**
+     * Filter which InvestmentPeriodValue to delete.
+     */
+    where: InvestmentPeriodValueWhereUniqueInput
+  }
+
+  /**
+   * InvestmentPeriodValue deleteMany
+   */
+  export type InvestmentPeriodValueDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which InvestmentPeriodValues to delete
+     */
+    where?: InvestmentPeriodValueWhereInput
+  }
+
+  /**
+   * InvestmentPeriodValue without action
+   */
+  export type InvestmentPeriodValueDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the InvestmentPeriodValue
+     */
+    select?: InvestmentPeriodValueSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentPeriodValueInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -25472,6 +30025,7 @@ export namespace Prisma {
     date: 'date',
     customerId: 'customerId',
     transporterId: 'transporterId',
+    investmentCompanyId: 'investmentCompanyId',
     createdByStaffId: 'createdByStaffId',
     direction: 'direction',
     amount: 'amount',
@@ -25487,6 +30041,7 @@ export namespace Prisma {
     date: 'date',
     customerId: 'customerId',
     transporterId: 'transporterId',
+    investmentCompanyId: 'investmentCompanyId',
     createdByStaffId: 'createdByStaffId',
     status: 'status',
     amount: 'amount',
@@ -25530,6 +30085,56 @@ export namespace Prisma {
   };
 
   export type BillFileScalarFieldEnum = (typeof BillFileScalarFieldEnum)[keyof typeof BillFileScalarFieldEnum]
+
+
+  export const InvestmentCompanyScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    openingDue: 'openingDue',
+    remark: 'remark',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InvestmentCompanyScalarFieldEnum = (typeof InvestmentCompanyScalarFieldEnum)[keyof typeof InvestmentCompanyScalarFieldEnum]
+
+
+  export const InvestmentOpenDueScalarFieldEnum: {
+    id: 'id',
+    companyId: 'companyId',
+    amount: 'amount',
+    dueDate: 'dueDate',
+    remark: 'remark',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InvestmentOpenDueScalarFieldEnum = (typeof InvestmentOpenDueScalarFieldEnum)[keyof typeof InvestmentOpenDueScalarFieldEnum]
+
+
+  export const InvestmentPeriodScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    startDate: 'startDate',
+    endDate: 'endDate',
+    sortOrder: 'sortOrder',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InvestmentPeriodScalarFieldEnum = (typeof InvestmentPeriodScalarFieldEnum)[keyof typeof InvestmentPeriodScalarFieldEnum]
+
+
+  export const InvestmentPeriodValueScalarFieldEnum: {
+    id: 'id',
+    companyId: 'companyId',
+    periodId: 'periodId',
+    amount: 'amount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type InvestmentPeriodValueScalarFieldEnum = (typeof InvestmentPeriodValueScalarFieldEnum)[keyof typeof InvestmentPeriodValueScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -27295,6 +31900,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Payment"> | Date | string
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
+    investmentCompanyId?: StringNullableFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -27302,6 +31908,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
@@ -27310,6 +31917,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    investmentCompanyId?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -27317,6 +31925,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
     transporter?: TransporterOrderByWithRelationInput
+    investmentCompany?: InvestmentCompanyOrderByWithRelationInput
     createdByStaff?: StaffOrderByWithRelationInput
   }
 
@@ -27328,6 +31937,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Payment"> | Date | string
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
+    investmentCompanyId?: StringNullableFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -27335,6 +31945,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
 
@@ -27343,6 +31954,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    investmentCompanyId?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -27363,6 +31975,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     customerId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     transporterId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    investmentCompanyId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionWithAggregatesFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalWithAggregatesFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -27378,6 +31991,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Discount"> | Date | string
     customerId?: StringNullableFilter<"Discount"> | string | null
     transporterId?: StringNullableFilter<"Discount"> | string | null
+    investmentCompanyId?: StringNullableFilter<"Discount"> | string | null
     createdByStaffId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
@@ -27387,6 +32001,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
@@ -27395,6 +32010,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    investmentCompanyId?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
@@ -27404,6 +32020,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
     transporter?: TransporterOrderByWithRelationInput
+    investmentCompany?: InvestmentCompanyOrderByWithRelationInput
     createdByStaff?: StaffOrderByWithRelationInput
   }
 
@@ -27415,6 +32032,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Discount"> | Date | string
     customerId?: StringNullableFilter<"Discount"> | string | null
     transporterId?: StringNullableFilter<"Discount"> | string | null
+    investmentCompanyId?: StringNullableFilter<"Discount"> | string | null
     createdByStaffId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
@@ -27424,6 +32042,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Discount"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
+    investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
 
@@ -27432,6 +32051,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
+    investmentCompanyId?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     status?: SortOrder
     amount?: SortOrder
@@ -27454,6 +32074,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
     customerId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     transporterId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
+    investmentCompanyId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     createdByStaffId?: StringNullableWithAggregatesFilter<"Discount"> | string | null
     status?: EnumDiscountStatusWithAggregatesFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalWithAggregatesFilter<"Discount"> | Decimal | DecimalJsLike | number | string
@@ -27633,6 +32254,277 @@ export namespace Prisma {
     fileData?: BytesWithAggregatesFilter<"BillFile"> | Buffer
     sortOrder?: IntWithAggregatesFilter<"BillFile"> | number
     createdAt?: DateTimeWithAggregatesFilter<"BillFile"> | Date | string
+  }
+
+  export type InvestmentCompanyWhereInput = {
+    AND?: InvestmentCompanyWhereInput | InvestmentCompanyWhereInput[]
+    OR?: InvestmentCompanyWhereInput[]
+    NOT?: InvestmentCompanyWhereInput | InvestmentCompanyWhereInput[]
+    id?: StringFilter<"InvestmentCompany"> | string
+    name?: StringFilter<"InvestmentCompany"> | string
+    openingDue?: DecimalFilter<"InvestmentCompany"> | Decimal | DecimalJsLike | number | string
+    remark?: StringNullableFilter<"InvestmentCompany"> | string | null
+    createdAt?: DateTimeFilter<"InvestmentCompany"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentCompany"> | Date | string
+    openDues?: InvestmentOpenDueListRelationFilter
+    payments?: PaymentListRelationFilter
+    discounts?: DiscountListRelationFilter
+    periodValues?: InvestmentPeriodValueListRelationFilter
+  }
+
+  export type InvestmentCompanyOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    openingDue?: SortOrder
+    remark?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    openDues?: InvestmentOpenDueOrderByRelationAggregateInput
+    payments?: PaymentOrderByRelationAggregateInput
+    discounts?: DiscountOrderByRelationAggregateInput
+    periodValues?: InvestmentPeriodValueOrderByRelationAggregateInput
+  }
+
+  export type InvestmentCompanyWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: InvestmentCompanyWhereInput | InvestmentCompanyWhereInput[]
+    OR?: InvestmentCompanyWhereInput[]
+    NOT?: InvestmentCompanyWhereInput | InvestmentCompanyWhereInput[]
+    name?: StringFilter<"InvestmentCompany"> | string
+    openingDue?: DecimalFilter<"InvestmentCompany"> | Decimal | DecimalJsLike | number | string
+    remark?: StringNullableFilter<"InvestmentCompany"> | string | null
+    createdAt?: DateTimeFilter<"InvestmentCompany"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentCompany"> | Date | string
+    openDues?: InvestmentOpenDueListRelationFilter
+    payments?: PaymentListRelationFilter
+    discounts?: DiscountListRelationFilter
+    periodValues?: InvestmentPeriodValueListRelationFilter
+  }, "id">
+
+  export type InvestmentCompanyOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    openingDue?: SortOrder
+    remark?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InvestmentCompanyCountOrderByAggregateInput
+    _avg?: InvestmentCompanyAvgOrderByAggregateInput
+    _max?: InvestmentCompanyMaxOrderByAggregateInput
+    _min?: InvestmentCompanyMinOrderByAggregateInput
+    _sum?: InvestmentCompanySumOrderByAggregateInput
+  }
+
+  export type InvestmentCompanyScalarWhereWithAggregatesInput = {
+    AND?: InvestmentCompanyScalarWhereWithAggregatesInput | InvestmentCompanyScalarWhereWithAggregatesInput[]
+    OR?: InvestmentCompanyScalarWhereWithAggregatesInput[]
+    NOT?: InvestmentCompanyScalarWhereWithAggregatesInput | InvestmentCompanyScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InvestmentCompany"> | string
+    name?: StringWithAggregatesFilter<"InvestmentCompany"> | string
+    openingDue?: DecimalWithAggregatesFilter<"InvestmentCompany"> | Decimal | DecimalJsLike | number | string
+    remark?: StringNullableWithAggregatesFilter<"InvestmentCompany"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"InvestmentCompany"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"InvestmentCompany"> | Date | string
+  }
+
+  export type InvestmentOpenDueWhereInput = {
+    AND?: InvestmentOpenDueWhereInput | InvestmentOpenDueWhereInput[]
+    OR?: InvestmentOpenDueWhereInput[]
+    NOT?: InvestmentOpenDueWhereInput | InvestmentOpenDueWhereInput[]
+    id?: StringFilter<"InvestmentOpenDue"> | string
+    companyId?: StringFilter<"InvestmentOpenDue"> | string
+    amount?: DecimalFilter<"InvestmentOpenDue"> | Decimal | DecimalJsLike | number | string
+    dueDate?: DateTimeNullableFilter<"InvestmentOpenDue"> | Date | string | null
+    remark?: StringNullableFilter<"InvestmentOpenDue"> | string | null
+    createdAt?: DateTimeFilter<"InvestmentOpenDue"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentOpenDue"> | Date | string
+    company?: XOR<InvestmentCompanyRelationFilter, InvestmentCompanyWhereInput>
+  }
+
+  export type InvestmentOpenDueOrderByWithRelationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    amount?: SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    remark?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    company?: InvestmentCompanyOrderByWithRelationInput
+  }
+
+  export type InvestmentOpenDueWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: InvestmentOpenDueWhereInput | InvestmentOpenDueWhereInput[]
+    OR?: InvestmentOpenDueWhereInput[]
+    NOT?: InvestmentOpenDueWhereInput | InvestmentOpenDueWhereInput[]
+    companyId?: StringFilter<"InvestmentOpenDue"> | string
+    amount?: DecimalFilter<"InvestmentOpenDue"> | Decimal | DecimalJsLike | number | string
+    dueDate?: DateTimeNullableFilter<"InvestmentOpenDue"> | Date | string | null
+    remark?: StringNullableFilter<"InvestmentOpenDue"> | string | null
+    createdAt?: DateTimeFilter<"InvestmentOpenDue"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentOpenDue"> | Date | string
+    company?: XOR<InvestmentCompanyRelationFilter, InvestmentCompanyWhereInput>
+  }, "id">
+
+  export type InvestmentOpenDueOrderByWithAggregationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    amount?: SortOrder
+    dueDate?: SortOrderInput | SortOrder
+    remark?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InvestmentOpenDueCountOrderByAggregateInput
+    _avg?: InvestmentOpenDueAvgOrderByAggregateInput
+    _max?: InvestmentOpenDueMaxOrderByAggregateInput
+    _min?: InvestmentOpenDueMinOrderByAggregateInput
+    _sum?: InvestmentOpenDueSumOrderByAggregateInput
+  }
+
+  export type InvestmentOpenDueScalarWhereWithAggregatesInput = {
+    AND?: InvestmentOpenDueScalarWhereWithAggregatesInput | InvestmentOpenDueScalarWhereWithAggregatesInput[]
+    OR?: InvestmentOpenDueScalarWhereWithAggregatesInput[]
+    NOT?: InvestmentOpenDueScalarWhereWithAggregatesInput | InvestmentOpenDueScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InvestmentOpenDue"> | string
+    companyId?: StringWithAggregatesFilter<"InvestmentOpenDue"> | string
+    amount?: DecimalWithAggregatesFilter<"InvestmentOpenDue"> | Decimal | DecimalJsLike | number | string
+    dueDate?: DateTimeNullableWithAggregatesFilter<"InvestmentOpenDue"> | Date | string | null
+    remark?: StringNullableWithAggregatesFilter<"InvestmentOpenDue"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"InvestmentOpenDue"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"InvestmentOpenDue"> | Date | string
+  }
+
+  export type InvestmentPeriodWhereInput = {
+    AND?: InvestmentPeriodWhereInput | InvestmentPeriodWhereInput[]
+    OR?: InvestmentPeriodWhereInput[]
+    NOT?: InvestmentPeriodWhereInput | InvestmentPeriodWhereInput[]
+    id?: StringFilter<"InvestmentPeriod"> | string
+    name?: StringFilter<"InvestmentPeriod"> | string
+    startDate?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    endDate?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    sortOrder?: IntFilter<"InvestmentPeriod"> | number
+    createdAt?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    values?: InvestmentPeriodValueListRelationFilter
+  }
+
+  export type InvestmentPeriodOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    values?: InvestmentPeriodValueOrderByRelationAggregateInput
+  }
+
+  export type InvestmentPeriodWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: InvestmentPeriodWhereInput | InvestmentPeriodWhereInput[]
+    OR?: InvestmentPeriodWhereInput[]
+    NOT?: InvestmentPeriodWhereInput | InvestmentPeriodWhereInput[]
+    name?: StringFilter<"InvestmentPeriod"> | string
+    startDate?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    endDate?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    sortOrder?: IntFilter<"InvestmentPeriod"> | number
+    createdAt?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentPeriod"> | Date | string
+    values?: InvestmentPeriodValueListRelationFilter
+  }, "id">
+
+  export type InvestmentPeriodOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InvestmentPeriodCountOrderByAggregateInput
+    _avg?: InvestmentPeriodAvgOrderByAggregateInput
+    _max?: InvestmentPeriodMaxOrderByAggregateInput
+    _min?: InvestmentPeriodMinOrderByAggregateInput
+    _sum?: InvestmentPeriodSumOrderByAggregateInput
+  }
+
+  export type InvestmentPeriodScalarWhereWithAggregatesInput = {
+    AND?: InvestmentPeriodScalarWhereWithAggregatesInput | InvestmentPeriodScalarWhereWithAggregatesInput[]
+    OR?: InvestmentPeriodScalarWhereWithAggregatesInput[]
+    NOT?: InvestmentPeriodScalarWhereWithAggregatesInput | InvestmentPeriodScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InvestmentPeriod"> | string
+    name?: StringWithAggregatesFilter<"InvestmentPeriod"> | string
+    startDate?: DateTimeWithAggregatesFilter<"InvestmentPeriod"> | Date | string
+    endDate?: DateTimeWithAggregatesFilter<"InvestmentPeriod"> | Date | string
+    sortOrder?: IntWithAggregatesFilter<"InvestmentPeriod"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"InvestmentPeriod"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"InvestmentPeriod"> | Date | string
+  }
+
+  export type InvestmentPeriodValueWhereInput = {
+    AND?: InvestmentPeriodValueWhereInput | InvestmentPeriodValueWhereInput[]
+    OR?: InvestmentPeriodValueWhereInput[]
+    NOT?: InvestmentPeriodValueWhereInput | InvestmentPeriodValueWhereInput[]
+    id?: StringFilter<"InvestmentPeriodValue"> | string
+    companyId?: StringFilter<"InvestmentPeriodValue"> | string
+    periodId?: StringFilter<"InvestmentPeriodValue"> | string
+    amount?: DecimalFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
+    company?: XOR<InvestmentCompanyRelationFilter, InvestmentCompanyWhereInput>
+    period?: XOR<InvestmentPeriodRelationFilter, InvestmentPeriodWhereInput>
+  }
+
+  export type InvestmentPeriodValueOrderByWithRelationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    periodId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    company?: InvestmentCompanyOrderByWithRelationInput
+    period?: InvestmentPeriodOrderByWithRelationInput
+  }
+
+  export type InvestmentPeriodValueWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    companyId_periodId?: InvestmentPeriodValueCompanyIdPeriodIdCompoundUniqueInput
+    AND?: InvestmentPeriodValueWhereInput | InvestmentPeriodValueWhereInput[]
+    OR?: InvestmentPeriodValueWhereInput[]
+    NOT?: InvestmentPeriodValueWhereInput | InvestmentPeriodValueWhereInput[]
+    companyId?: StringFilter<"InvestmentPeriodValue"> | string
+    periodId?: StringFilter<"InvestmentPeriodValue"> | string
+    amount?: DecimalFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
+    company?: XOR<InvestmentCompanyRelationFilter, InvestmentCompanyWhereInput>
+    period?: XOR<InvestmentPeriodRelationFilter, InvestmentPeriodWhereInput>
+  }, "id" | "companyId_periodId">
+
+  export type InvestmentPeriodValueOrderByWithAggregationInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    periodId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: InvestmentPeriodValueCountOrderByAggregateInput
+    _avg?: InvestmentPeriodValueAvgOrderByAggregateInput
+    _max?: InvestmentPeriodValueMaxOrderByAggregateInput
+    _min?: InvestmentPeriodValueMinOrderByAggregateInput
+    _sum?: InvestmentPeriodValueSumOrderByAggregateInput
+  }
+
+  export type InvestmentPeriodValueScalarWhereWithAggregatesInput = {
+    AND?: InvestmentPeriodValueScalarWhereWithAggregatesInput | InvestmentPeriodValueScalarWhereWithAggregatesInput[]
+    OR?: InvestmentPeriodValueScalarWhereWithAggregatesInput[]
+    NOT?: InvestmentPeriodValueScalarWhereWithAggregatesInput | InvestmentPeriodValueScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"InvestmentPeriodValue"> | string
+    companyId?: StringWithAggregatesFilter<"InvestmentPeriodValue"> | string
+    periodId?: StringWithAggregatesFilter<"InvestmentPeriodValue"> | string
+    amount?: DecimalWithAggregatesFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeWithAggregatesFilter<"InvestmentPeriodValue"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"InvestmentPeriodValue"> | Date | string
   }
 
   export type StaffCreateInput = {
@@ -29294,6 +34186,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -29302,6 +34195,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -29318,6 +34212,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -29326,6 +34221,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -29338,6 +34234,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -29359,6 +34256,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -29377,6 +34275,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutDiscountsInput
     transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutDiscountsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
   }
 
@@ -29385,6 +34284,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
@@ -29405,6 +34305,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutDiscountsNestedInput
     transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutDiscountsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
   }
 
@@ -29413,6 +34314,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -29427,6 +34329,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
@@ -29452,6 +34355,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -29650,6 +34554,289 @@ export namespace Prisma {
     fileData?: BytesFieldUpdateOperationsInput | Buffer
     sortOrder?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentCompanyCreateInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueCreateNestedManyWithoutCompanyInput
+    payments?: PaymentCreateNestedManyWithoutInvestmentCompanyInput
+    discounts?: DiscountCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyUncheckedCreateInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueUncheckedCreateNestedManyWithoutCompanyInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUpdateManyWithoutCompanyNestedInput
+    payments?: PaymentUpdateManyWithoutInvestmentCompanyNestedInput
+    discounts?: DiscountUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type InvestmentCompanyUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUncheckedUpdateManyWithoutCompanyNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type InvestmentCompanyCreateManyInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentCompanyUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentCompanyUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentOpenDueCreateInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    dueDate?: Date | string | null
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: InvestmentCompanyCreateNestedOneWithoutOpenDuesInput
+  }
+
+  export type InvestmentOpenDueUncheckedCreateInput = {
+    id?: string
+    companyId: string
+    amount: Decimal | DecimalJsLike | number | string
+    dueDate?: Date | string | null
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentOpenDueUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: InvestmentCompanyUpdateOneRequiredWithoutOpenDuesNestedInput
+  }
+
+  export type InvestmentOpenDueUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentOpenDueCreateManyInput = {
+    id?: string
+    companyId: string
+    amount: Decimal | DecimalJsLike | number | string
+    dueDate?: Date | string | null
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentOpenDueUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentOpenDueUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodCreateInput = {
+    id?: string
+    name: string
+    startDate: Date | string
+    endDate: Date | string
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    values?: InvestmentPeriodValueCreateNestedManyWithoutPeriodInput
+  }
+
+  export type InvestmentPeriodUncheckedCreateInput = {
+    id?: string
+    name: string
+    startDate: Date | string
+    endDate: Date | string
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    values?: InvestmentPeriodValueUncheckedCreateNestedManyWithoutPeriodInput
+  }
+
+  export type InvestmentPeriodUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    values?: InvestmentPeriodValueUpdateManyWithoutPeriodNestedInput
+  }
+
+  export type InvestmentPeriodUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    values?: InvestmentPeriodValueUncheckedUpdateManyWithoutPeriodNestedInput
+  }
+
+  export type InvestmentPeriodCreateManyInput = {
+    id?: string
+    name: string
+    startDate: Date | string
+    endDate: Date | string
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueCreateInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: InvestmentCompanyCreateNestedOneWithoutPeriodValuesInput
+    period: InvestmentPeriodCreateNestedOneWithoutValuesInput
+  }
+
+  export type InvestmentPeriodValueUncheckedCreateInput = {
+    id?: string
+    companyId: string
+    periodId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodValueUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: InvestmentCompanyUpdateOneRequiredWithoutPeriodValuesNestedInput
+    period?: InvestmentPeriodUpdateOneRequiredWithoutValuesNestedInput
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    periodId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueCreateManyInput = {
+    id?: string
+    companyId: string
+    periodId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodValueUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    periodId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -30918,11 +36105,17 @@ export namespace Prisma {
     not?: NestedEnumPaymentDirectionFilter<$PrismaModel> | $Enums.PaymentDirection
   }
 
+  export type InvestmentCompanyNullableRelationFilter = {
+    is?: InvestmentCompanyWhereInput | null
+    isNot?: InvestmentCompanyWhereInput | null
+  }
+
   export type PaymentCountOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    investmentCompanyId?: SortOrder
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -30939,6 +36132,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    investmentCompanyId?: SortOrder
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -30951,6 +36145,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    investmentCompanyId?: SortOrder
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -30991,6 +36186,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    investmentCompanyId?: SortOrder
     createdByStaffId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
@@ -31009,6 +36205,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    investmentCompanyId?: SortOrder
     createdByStaffId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
@@ -31023,6 +36220,7 @@ export namespace Prisma {
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
+    investmentCompanyId?: SortOrder
     createdByStaffId?: SortOrder
     status?: SortOrder
     amount?: SortOrder
@@ -31232,6 +36430,187 @@ export namespace Prisma {
     _sum?: NestedIntFilter<$PrismaModel>
     _min?: NestedIntFilter<$PrismaModel>
     _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type InvestmentOpenDueListRelationFilter = {
+    every?: InvestmentOpenDueWhereInput
+    some?: InvestmentOpenDueWhereInput
+    none?: InvestmentOpenDueWhereInput
+  }
+
+  export type InvestmentPeriodValueListRelationFilter = {
+    every?: InvestmentPeriodValueWhereInput
+    some?: InvestmentPeriodValueWhereInput
+    none?: InvestmentPeriodValueWhereInput
+  }
+
+  export type InvestmentOpenDueOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InvestmentPeriodValueOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type InvestmentCompanyCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    openingDue?: SortOrder
+    remark?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentCompanyAvgOrderByAggregateInput = {
+    openingDue?: SortOrder
+  }
+
+  export type InvestmentCompanyMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    openingDue?: SortOrder
+    remark?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentCompanyMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    openingDue?: SortOrder
+    remark?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentCompanySumOrderByAggregateInput = {
+    openingDue?: SortOrder
+  }
+
+  export type InvestmentCompanyRelationFilter = {
+    is?: InvestmentCompanyWhereInput
+    isNot?: InvestmentCompanyWhereInput
+  }
+
+  export type InvestmentOpenDueCountOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    amount?: SortOrder
+    dueDate?: SortOrder
+    remark?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentOpenDueAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type InvestmentOpenDueMaxOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    amount?: SortOrder
+    dueDate?: SortOrder
+    remark?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentOpenDueMinOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    amount?: SortOrder
+    dueDate?: SortOrder
+    remark?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentOpenDueSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type InvestmentPeriodCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentPeriodAvgOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type InvestmentPeriodMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentPeriodMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    startDate?: SortOrder
+    endDate?: SortOrder
+    sortOrder?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentPeriodSumOrderByAggregateInput = {
+    sortOrder?: SortOrder
+  }
+
+  export type InvestmentPeriodRelationFilter = {
+    is?: InvestmentPeriodWhereInput
+    isNot?: InvestmentPeriodWhereInput
+  }
+
+  export type InvestmentPeriodValueCompanyIdPeriodIdCompoundUniqueInput = {
+    companyId: string
+    periodId: string
+  }
+
+  export type InvestmentPeriodValueCountOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    periodId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentPeriodValueAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type InvestmentPeriodValueMaxOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    periodId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentPeriodValueMinOrderByAggregateInput = {
+    id?: SortOrder
+    companyId?: SortOrder
+    periodId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type InvestmentPeriodValueSumOrderByAggregateInput = {
+    amount?: SortOrder
   }
 
   export type StaffCreatepageKeysInput = {
@@ -32702,6 +38081,12 @@ export namespace Prisma {
     connect?: TransporterWhereUniqueInput
   }
 
+  export type InvestmentCompanyCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutPaymentsInput, InvestmentCompanyUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutPaymentsInput
+    connect?: InvestmentCompanyWhereUniqueInput
+  }
+
   export type StaffCreateNestedOneWithoutCreatedPaymentsInput = {
     create?: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutCreatedPaymentsInput
@@ -32732,6 +38117,16 @@ export namespace Prisma {
     update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutPaymentsInput, TransporterUpdateWithoutPaymentsInput>, TransporterUncheckedUpdateWithoutPaymentsInput>
   }
 
+  export type InvestmentCompanyUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutPaymentsInput, InvestmentCompanyUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutPaymentsInput
+    upsert?: InvestmentCompanyUpsertWithoutPaymentsInput
+    disconnect?: InvestmentCompanyWhereInput | boolean
+    delete?: InvestmentCompanyWhereInput | boolean
+    connect?: InvestmentCompanyWhereUniqueInput
+    update?: XOR<XOR<InvestmentCompanyUpdateToOneWithWhereWithoutPaymentsInput, InvestmentCompanyUpdateWithoutPaymentsInput>, InvestmentCompanyUncheckedUpdateWithoutPaymentsInput>
+  }
+
   export type StaffUpdateOneWithoutCreatedPaymentsNestedInput = {
     create?: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutCreatedPaymentsInput
@@ -32752,6 +38147,12 @@ export namespace Prisma {
     create?: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
     connectOrCreate?: TransporterCreateOrConnectWithoutDiscountsInput
     connect?: TransporterWhereUniqueInput
+  }
+
+  export type InvestmentCompanyCreateNestedOneWithoutDiscountsInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutDiscountsInput, InvestmentCompanyUncheckedCreateWithoutDiscountsInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutDiscountsInput
+    connect?: InvestmentCompanyWhereUniqueInput
   }
 
   export type StaffCreateNestedOneWithoutCreatedDiscountsInput = {
@@ -32786,6 +38187,16 @@ export namespace Prisma {
     delete?: TransporterWhereInput | boolean
     connect?: TransporterWhereUniqueInput
     update?: XOR<XOR<TransporterUpdateToOneWithWhereWithoutDiscountsInput, TransporterUpdateWithoutDiscountsInput>, TransporterUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type InvestmentCompanyUpdateOneWithoutDiscountsNestedInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutDiscountsInput, InvestmentCompanyUncheckedCreateWithoutDiscountsInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutDiscountsInput
+    upsert?: InvestmentCompanyUpsertWithoutDiscountsInput
+    disconnect?: InvestmentCompanyWhereInput | boolean
+    delete?: InvestmentCompanyWhereInput | boolean
+    connect?: InvestmentCompanyWhereUniqueInput
+    update?: XOR<XOR<InvestmentCompanyUpdateToOneWithWhereWithoutDiscountsInput, InvestmentCompanyUpdateWithoutDiscountsInput>, InvestmentCompanyUncheckedUpdateWithoutDiscountsInput>
   }
 
   export type StaffUpdateOneWithoutCreatedDiscountsNestedInput = {
@@ -32882,6 +38293,258 @@ export namespace Prisma {
     upsert?: BillUpsertWithoutFilesInput
     connect?: BillWhereUniqueInput
     update?: XOR<XOR<BillUpdateToOneWithWhereWithoutFilesInput, BillUpdateWithoutFilesInput>, BillUncheckedUpdateWithoutFilesInput>
+  }
+
+  export type InvestmentOpenDueCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<InvestmentOpenDueCreateWithoutCompanyInput, InvestmentOpenDueUncheckedCreateWithoutCompanyInput> | InvestmentOpenDueCreateWithoutCompanyInput[] | InvestmentOpenDueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentOpenDueCreateOrConnectWithoutCompanyInput | InvestmentOpenDueCreateOrConnectWithoutCompanyInput[]
+    createMany?: InvestmentOpenDueCreateManyCompanyInputEnvelope
+    connect?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+  }
+
+  export type PaymentCreateNestedManyWithoutInvestmentCompanyInput = {
+    create?: XOR<PaymentCreateWithoutInvestmentCompanyInput, PaymentUncheckedCreateWithoutInvestmentCompanyInput> | PaymentCreateWithoutInvestmentCompanyInput[] | PaymentUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutInvestmentCompanyInput | PaymentCreateOrConnectWithoutInvestmentCompanyInput[]
+    createMany?: PaymentCreateManyInvestmentCompanyInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type DiscountCreateNestedManyWithoutInvestmentCompanyInput = {
+    create?: XOR<DiscountCreateWithoutInvestmentCompanyInput, DiscountUncheckedCreateWithoutInvestmentCompanyInput> | DiscountCreateWithoutInvestmentCompanyInput[] | DiscountUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutInvestmentCompanyInput | DiscountCreateOrConnectWithoutInvestmentCompanyInput[]
+    createMany?: DiscountCreateManyInvestmentCompanyInputEnvelope
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+  }
+
+  export type InvestmentPeriodValueCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutCompanyInput, InvestmentPeriodValueUncheckedCreateWithoutCompanyInput> | InvestmentPeriodValueCreateWithoutCompanyInput[] | InvestmentPeriodValueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutCompanyInput | InvestmentPeriodValueCreateOrConnectWithoutCompanyInput[]
+    createMany?: InvestmentPeriodValueCreateManyCompanyInputEnvelope
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+  }
+
+  export type InvestmentOpenDueUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<InvestmentOpenDueCreateWithoutCompanyInput, InvestmentOpenDueUncheckedCreateWithoutCompanyInput> | InvestmentOpenDueCreateWithoutCompanyInput[] | InvestmentOpenDueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentOpenDueCreateOrConnectWithoutCompanyInput | InvestmentOpenDueCreateOrConnectWithoutCompanyInput[]
+    createMany?: InvestmentOpenDueCreateManyCompanyInputEnvelope
+    connect?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+  }
+
+  export type PaymentUncheckedCreateNestedManyWithoutInvestmentCompanyInput = {
+    create?: XOR<PaymentCreateWithoutInvestmentCompanyInput, PaymentUncheckedCreateWithoutInvestmentCompanyInput> | PaymentCreateWithoutInvestmentCompanyInput[] | PaymentUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutInvestmentCompanyInput | PaymentCreateOrConnectWithoutInvestmentCompanyInput[]
+    createMany?: PaymentCreateManyInvestmentCompanyInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type DiscountUncheckedCreateNestedManyWithoutInvestmentCompanyInput = {
+    create?: XOR<DiscountCreateWithoutInvestmentCompanyInput, DiscountUncheckedCreateWithoutInvestmentCompanyInput> | DiscountCreateWithoutInvestmentCompanyInput[] | DiscountUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutInvestmentCompanyInput | DiscountCreateOrConnectWithoutInvestmentCompanyInput[]
+    createMany?: DiscountCreateManyInvestmentCompanyInputEnvelope
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+  }
+
+  export type InvestmentPeriodValueUncheckedCreateNestedManyWithoutCompanyInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutCompanyInput, InvestmentPeriodValueUncheckedCreateWithoutCompanyInput> | InvestmentPeriodValueCreateWithoutCompanyInput[] | InvestmentPeriodValueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutCompanyInput | InvestmentPeriodValueCreateOrConnectWithoutCompanyInput[]
+    createMany?: InvestmentPeriodValueCreateManyCompanyInputEnvelope
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+  }
+
+  export type InvestmentOpenDueUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<InvestmentOpenDueCreateWithoutCompanyInput, InvestmentOpenDueUncheckedCreateWithoutCompanyInput> | InvestmentOpenDueCreateWithoutCompanyInput[] | InvestmentOpenDueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentOpenDueCreateOrConnectWithoutCompanyInput | InvestmentOpenDueCreateOrConnectWithoutCompanyInput[]
+    upsert?: InvestmentOpenDueUpsertWithWhereUniqueWithoutCompanyInput | InvestmentOpenDueUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: InvestmentOpenDueCreateManyCompanyInputEnvelope
+    set?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    disconnect?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    delete?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    connect?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    update?: InvestmentOpenDueUpdateWithWhereUniqueWithoutCompanyInput | InvestmentOpenDueUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: InvestmentOpenDueUpdateManyWithWhereWithoutCompanyInput | InvestmentOpenDueUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: InvestmentOpenDueScalarWhereInput | InvestmentOpenDueScalarWhereInput[]
+  }
+
+  export type PaymentUpdateManyWithoutInvestmentCompanyNestedInput = {
+    create?: XOR<PaymentCreateWithoutInvestmentCompanyInput, PaymentUncheckedCreateWithoutInvestmentCompanyInput> | PaymentCreateWithoutInvestmentCompanyInput[] | PaymentUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutInvestmentCompanyInput | PaymentCreateOrConnectWithoutInvestmentCompanyInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutInvestmentCompanyInput | PaymentUpsertWithWhereUniqueWithoutInvestmentCompanyInput[]
+    createMany?: PaymentCreateManyInvestmentCompanyInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutInvestmentCompanyInput | PaymentUpdateWithWhereUniqueWithoutInvestmentCompanyInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutInvestmentCompanyInput | PaymentUpdateManyWithWhereWithoutInvestmentCompanyInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type DiscountUpdateManyWithoutInvestmentCompanyNestedInput = {
+    create?: XOR<DiscountCreateWithoutInvestmentCompanyInput, DiscountUncheckedCreateWithoutInvestmentCompanyInput> | DiscountCreateWithoutInvestmentCompanyInput[] | DiscountUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutInvestmentCompanyInput | DiscountCreateOrConnectWithoutInvestmentCompanyInput[]
+    upsert?: DiscountUpsertWithWhereUniqueWithoutInvestmentCompanyInput | DiscountUpsertWithWhereUniqueWithoutInvestmentCompanyInput[]
+    createMany?: DiscountCreateManyInvestmentCompanyInputEnvelope
+    set?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    disconnect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    delete?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    update?: DiscountUpdateWithWhereUniqueWithoutInvestmentCompanyInput | DiscountUpdateWithWhereUniqueWithoutInvestmentCompanyInput[]
+    updateMany?: DiscountUpdateManyWithWhereWithoutInvestmentCompanyInput | DiscountUpdateManyWithWhereWithoutInvestmentCompanyInput[]
+    deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+  }
+
+  export type InvestmentPeriodValueUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutCompanyInput, InvestmentPeriodValueUncheckedCreateWithoutCompanyInput> | InvestmentPeriodValueCreateWithoutCompanyInput[] | InvestmentPeriodValueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutCompanyInput | InvestmentPeriodValueCreateOrConnectWithoutCompanyInput[]
+    upsert?: InvestmentPeriodValueUpsertWithWhereUniqueWithoutCompanyInput | InvestmentPeriodValueUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: InvestmentPeriodValueCreateManyCompanyInputEnvelope
+    set?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    disconnect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    delete?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    update?: InvestmentPeriodValueUpdateWithWhereUniqueWithoutCompanyInput | InvestmentPeriodValueUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: InvestmentPeriodValueUpdateManyWithWhereWithoutCompanyInput | InvestmentPeriodValueUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: InvestmentPeriodValueScalarWhereInput | InvestmentPeriodValueScalarWhereInput[]
+  }
+
+  export type InvestmentOpenDueUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<InvestmentOpenDueCreateWithoutCompanyInput, InvestmentOpenDueUncheckedCreateWithoutCompanyInput> | InvestmentOpenDueCreateWithoutCompanyInput[] | InvestmentOpenDueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentOpenDueCreateOrConnectWithoutCompanyInput | InvestmentOpenDueCreateOrConnectWithoutCompanyInput[]
+    upsert?: InvestmentOpenDueUpsertWithWhereUniqueWithoutCompanyInput | InvestmentOpenDueUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: InvestmentOpenDueCreateManyCompanyInputEnvelope
+    set?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    disconnect?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    delete?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    connect?: InvestmentOpenDueWhereUniqueInput | InvestmentOpenDueWhereUniqueInput[]
+    update?: InvestmentOpenDueUpdateWithWhereUniqueWithoutCompanyInput | InvestmentOpenDueUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: InvestmentOpenDueUpdateManyWithWhereWithoutCompanyInput | InvestmentOpenDueUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: InvestmentOpenDueScalarWhereInput | InvestmentOpenDueScalarWhereInput[]
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutInvestmentCompanyNestedInput = {
+    create?: XOR<PaymentCreateWithoutInvestmentCompanyInput, PaymentUncheckedCreateWithoutInvestmentCompanyInput> | PaymentCreateWithoutInvestmentCompanyInput[] | PaymentUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutInvestmentCompanyInput | PaymentCreateOrConnectWithoutInvestmentCompanyInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutInvestmentCompanyInput | PaymentUpsertWithWhereUniqueWithoutInvestmentCompanyInput[]
+    createMany?: PaymentCreateManyInvestmentCompanyInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutInvestmentCompanyInput | PaymentUpdateWithWhereUniqueWithoutInvestmentCompanyInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutInvestmentCompanyInput | PaymentUpdateManyWithWhereWithoutInvestmentCompanyInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type DiscountUncheckedUpdateManyWithoutInvestmentCompanyNestedInput = {
+    create?: XOR<DiscountCreateWithoutInvestmentCompanyInput, DiscountUncheckedCreateWithoutInvestmentCompanyInput> | DiscountCreateWithoutInvestmentCompanyInput[] | DiscountUncheckedCreateWithoutInvestmentCompanyInput[]
+    connectOrCreate?: DiscountCreateOrConnectWithoutInvestmentCompanyInput | DiscountCreateOrConnectWithoutInvestmentCompanyInput[]
+    upsert?: DiscountUpsertWithWhereUniqueWithoutInvestmentCompanyInput | DiscountUpsertWithWhereUniqueWithoutInvestmentCompanyInput[]
+    createMany?: DiscountCreateManyInvestmentCompanyInputEnvelope
+    set?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    disconnect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    delete?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+    update?: DiscountUpdateWithWhereUniqueWithoutInvestmentCompanyInput | DiscountUpdateWithWhereUniqueWithoutInvestmentCompanyInput[]
+    updateMany?: DiscountUpdateManyWithWhereWithoutInvestmentCompanyInput | DiscountUpdateManyWithWhereWithoutInvestmentCompanyInput[]
+    deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyNestedInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutCompanyInput, InvestmentPeriodValueUncheckedCreateWithoutCompanyInput> | InvestmentPeriodValueCreateWithoutCompanyInput[] | InvestmentPeriodValueUncheckedCreateWithoutCompanyInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutCompanyInput | InvestmentPeriodValueCreateOrConnectWithoutCompanyInput[]
+    upsert?: InvestmentPeriodValueUpsertWithWhereUniqueWithoutCompanyInput | InvestmentPeriodValueUpsertWithWhereUniqueWithoutCompanyInput[]
+    createMany?: InvestmentPeriodValueCreateManyCompanyInputEnvelope
+    set?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    disconnect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    delete?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    update?: InvestmentPeriodValueUpdateWithWhereUniqueWithoutCompanyInput | InvestmentPeriodValueUpdateWithWhereUniqueWithoutCompanyInput[]
+    updateMany?: InvestmentPeriodValueUpdateManyWithWhereWithoutCompanyInput | InvestmentPeriodValueUpdateManyWithWhereWithoutCompanyInput[]
+    deleteMany?: InvestmentPeriodValueScalarWhereInput | InvestmentPeriodValueScalarWhereInput[]
+  }
+
+  export type InvestmentCompanyCreateNestedOneWithoutOpenDuesInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutOpenDuesInput, InvestmentCompanyUncheckedCreateWithoutOpenDuesInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutOpenDuesInput
+    connect?: InvestmentCompanyWhereUniqueInput
+  }
+
+  export type InvestmentCompanyUpdateOneRequiredWithoutOpenDuesNestedInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutOpenDuesInput, InvestmentCompanyUncheckedCreateWithoutOpenDuesInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutOpenDuesInput
+    upsert?: InvestmentCompanyUpsertWithoutOpenDuesInput
+    connect?: InvestmentCompanyWhereUniqueInput
+    update?: XOR<XOR<InvestmentCompanyUpdateToOneWithWhereWithoutOpenDuesInput, InvestmentCompanyUpdateWithoutOpenDuesInput>, InvestmentCompanyUncheckedUpdateWithoutOpenDuesInput>
+  }
+
+  export type InvestmentPeriodValueCreateNestedManyWithoutPeriodInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutPeriodInput, InvestmentPeriodValueUncheckedCreateWithoutPeriodInput> | InvestmentPeriodValueCreateWithoutPeriodInput[] | InvestmentPeriodValueUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutPeriodInput | InvestmentPeriodValueCreateOrConnectWithoutPeriodInput[]
+    createMany?: InvestmentPeriodValueCreateManyPeriodInputEnvelope
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+  }
+
+  export type InvestmentPeriodValueUncheckedCreateNestedManyWithoutPeriodInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutPeriodInput, InvestmentPeriodValueUncheckedCreateWithoutPeriodInput> | InvestmentPeriodValueCreateWithoutPeriodInput[] | InvestmentPeriodValueUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutPeriodInput | InvestmentPeriodValueCreateOrConnectWithoutPeriodInput[]
+    createMany?: InvestmentPeriodValueCreateManyPeriodInputEnvelope
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+  }
+
+  export type InvestmentPeriodValueUpdateManyWithoutPeriodNestedInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutPeriodInput, InvestmentPeriodValueUncheckedCreateWithoutPeriodInput> | InvestmentPeriodValueCreateWithoutPeriodInput[] | InvestmentPeriodValueUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutPeriodInput | InvestmentPeriodValueCreateOrConnectWithoutPeriodInput[]
+    upsert?: InvestmentPeriodValueUpsertWithWhereUniqueWithoutPeriodInput | InvestmentPeriodValueUpsertWithWhereUniqueWithoutPeriodInput[]
+    createMany?: InvestmentPeriodValueCreateManyPeriodInputEnvelope
+    set?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    disconnect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    delete?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    update?: InvestmentPeriodValueUpdateWithWhereUniqueWithoutPeriodInput | InvestmentPeriodValueUpdateWithWhereUniqueWithoutPeriodInput[]
+    updateMany?: InvestmentPeriodValueUpdateManyWithWhereWithoutPeriodInput | InvestmentPeriodValueUpdateManyWithWhereWithoutPeriodInput[]
+    deleteMany?: InvestmentPeriodValueScalarWhereInput | InvestmentPeriodValueScalarWhereInput[]
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateManyWithoutPeriodNestedInput = {
+    create?: XOR<InvestmentPeriodValueCreateWithoutPeriodInput, InvestmentPeriodValueUncheckedCreateWithoutPeriodInput> | InvestmentPeriodValueCreateWithoutPeriodInput[] | InvestmentPeriodValueUncheckedCreateWithoutPeriodInput[]
+    connectOrCreate?: InvestmentPeriodValueCreateOrConnectWithoutPeriodInput | InvestmentPeriodValueCreateOrConnectWithoutPeriodInput[]
+    upsert?: InvestmentPeriodValueUpsertWithWhereUniqueWithoutPeriodInput | InvestmentPeriodValueUpsertWithWhereUniqueWithoutPeriodInput[]
+    createMany?: InvestmentPeriodValueCreateManyPeriodInputEnvelope
+    set?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    disconnect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    delete?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    connect?: InvestmentPeriodValueWhereUniqueInput | InvestmentPeriodValueWhereUniqueInput[]
+    update?: InvestmentPeriodValueUpdateWithWhereUniqueWithoutPeriodInput | InvestmentPeriodValueUpdateWithWhereUniqueWithoutPeriodInput[]
+    updateMany?: InvestmentPeriodValueUpdateManyWithWhereWithoutPeriodInput | InvestmentPeriodValueUpdateManyWithWhereWithoutPeriodInput[]
+    deleteMany?: InvestmentPeriodValueScalarWhereInput | InvestmentPeriodValueScalarWhereInput[]
+  }
+
+  export type InvestmentCompanyCreateNestedOneWithoutPeriodValuesInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutPeriodValuesInput, InvestmentCompanyUncheckedCreateWithoutPeriodValuesInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutPeriodValuesInput
+    connect?: InvestmentCompanyWhereUniqueInput
+  }
+
+  export type InvestmentPeriodCreateNestedOneWithoutValuesInput = {
+    create?: XOR<InvestmentPeriodCreateWithoutValuesInput, InvestmentPeriodUncheckedCreateWithoutValuesInput>
+    connectOrCreate?: InvestmentPeriodCreateOrConnectWithoutValuesInput
+    connect?: InvestmentPeriodWhereUniqueInput
+  }
+
+  export type InvestmentCompanyUpdateOneRequiredWithoutPeriodValuesNestedInput = {
+    create?: XOR<InvestmentCompanyCreateWithoutPeriodValuesInput, InvestmentCompanyUncheckedCreateWithoutPeriodValuesInput>
+    connectOrCreate?: InvestmentCompanyCreateOrConnectWithoutPeriodValuesInput
+    upsert?: InvestmentCompanyUpsertWithoutPeriodValuesInput
+    connect?: InvestmentCompanyWhereUniqueInput
+    update?: XOR<XOR<InvestmentCompanyUpdateToOneWithWhereWithoutPeriodValuesInput, InvestmentCompanyUpdateWithoutPeriodValuesInput>, InvestmentCompanyUncheckedUpdateWithoutPeriodValuesInput>
+  }
+
+  export type InvestmentPeriodUpdateOneRequiredWithoutValuesNestedInput = {
+    create?: XOR<InvestmentPeriodCreateWithoutValuesInput, InvestmentPeriodUncheckedCreateWithoutValuesInput>
+    connectOrCreate?: InvestmentPeriodCreateOrConnectWithoutValuesInput
+    upsert?: InvestmentPeriodUpsertWithoutValuesInput
+    connect?: InvestmentPeriodWhereUniqueInput
+    update?: XOR<XOR<InvestmentPeriodUpdateToOneWithWhereWithoutValuesInput, InvestmentPeriodUpdateWithoutValuesInput>, InvestmentPeriodUncheckedUpdateWithoutValuesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -33580,6 +39243,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutCreatedByStaffInput = {
@@ -33587,6 +39251,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -33614,6 +39279,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutDiscountsInput
     transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutDiscountsInput
   }
 
   export type DiscountUncheckedCreateWithoutCreatedByStaffInput = {
@@ -33621,6 +39287,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -33870,6 +39537,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Payment"> | Date | string
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
+    investmentCompanyId?: StringNullableFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -33901,6 +39569,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"Discount"> | Date | string
     customerId?: StringNullableFilter<"Discount"> | string | null
     transporterId?: StringNullableFilter<"Discount"> | string | null
+    investmentCompanyId?: StringNullableFilter<"Discount"> | string | null
     createdByStaffId?: StringNullableFilter<"Discount"> | string | null
     status?: EnumDiscountStatusFilter<"Discount"> | $Enums.DiscountStatus
     amount?: DecimalFilter<"Discount"> | Decimal | DecimalJsLike | number | string
@@ -34041,6 +39710,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -34048,6 +39718,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     customerId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -34075,6 +39746,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutDiscountsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutDiscountsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
   }
 
@@ -34082,6 +39754,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     customerId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
@@ -34902,6 +40575,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -34909,6 +40583,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -34936,6 +40611,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutDiscountsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
   }
 
@@ -34943,6 +40619,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
@@ -36979,6 +42656,35 @@ export namespace Prisma {
     create: XOR<TransporterCreateWithoutPaymentsInput, TransporterUncheckedCreateWithoutPaymentsInput>
   }
 
+  export type InvestmentCompanyCreateWithoutPaymentsInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueCreateNestedManyWithoutCompanyInput
+    discounts?: DiscountCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueUncheckedCreateNestedManyWithoutCompanyInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyCreateOrConnectWithoutPaymentsInput = {
+    where: InvestmentCompanyWhereUniqueInput
+    create: XOR<InvestmentCompanyCreateWithoutPaymentsInput, InvestmentCompanyUncheckedCreateWithoutPaymentsInput>
+  }
+
   export type StaffCreateWithoutCreatedPaymentsInput = {
     id?: string
     name: string
@@ -37164,6 +42870,41 @@ export namespace Prisma {
     discounts?: DiscountUncheckedUpdateManyWithoutTransporterNestedInput
   }
 
+  export type InvestmentCompanyUpsertWithoutPaymentsInput = {
+    update: XOR<InvestmentCompanyUpdateWithoutPaymentsInput, InvestmentCompanyUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<InvestmentCompanyCreateWithoutPaymentsInput, InvestmentCompanyUncheckedCreateWithoutPaymentsInput>
+    where?: InvestmentCompanyWhereInput
+  }
+
+  export type InvestmentCompanyUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: InvestmentCompanyWhereInput
+    data: XOR<InvestmentCompanyUpdateWithoutPaymentsInput, InvestmentCompanyUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type InvestmentCompanyUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUpdateManyWithoutCompanyNestedInput
+    discounts?: DiscountUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type InvestmentCompanyUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUncheckedUpdateManyWithoutCompanyNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
   export type StaffUpsertWithoutCreatedPaymentsInput = {
     update: XOR<StaffUpdateWithoutCreatedPaymentsInput, StaffUncheckedUpdateWithoutCreatedPaymentsInput>
     create: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
@@ -37341,6 +43082,35 @@ export namespace Prisma {
   export type TransporterCreateOrConnectWithoutDiscountsInput = {
     where: TransporterWhereUniqueInput
     create: XOR<TransporterCreateWithoutDiscountsInput, TransporterUncheckedCreateWithoutDiscountsInput>
+  }
+
+  export type InvestmentCompanyCreateWithoutDiscountsInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueCreateNestedManyWithoutCompanyInput
+    payments?: PaymentCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyUncheckedCreateWithoutDiscountsInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueUncheckedCreateNestedManyWithoutCompanyInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyCreateOrConnectWithoutDiscountsInput = {
+    where: InvestmentCompanyWhereUniqueInput
+    create: XOR<InvestmentCompanyCreateWithoutDiscountsInput, InvestmentCompanyUncheckedCreateWithoutDiscountsInput>
   }
 
   export type StaffCreateWithoutCreatedDiscountsInput = {
@@ -37526,6 +43296,41 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUncheckedUpdateManyWithoutTransporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutTransporterNestedInput
+  }
+
+  export type InvestmentCompanyUpsertWithoutDiscountsInput = {
+    update: XOR<InvestmentCompanyUpdateWithoutDiscountsInput, InvestmentCompanyUncheckedUpdateWithoutDiscountsInput>
+    create: XOR<InvestmentCompanyCreateWithoutDiscountsInput, InvestmentCompanyUncheckedCreateWithoutDiscountsInput>
+    where?: InvestmentCompanyWhereInput
+  }
+
+  export type InvestmentCompanyUpdateToOneWithWhereWithoutDiscountsInput = {
+    where?: InvestmentCompanyWhereInput
+    data: XOR<InvestmentCompanyUpdateWithoutDiscountsInput, InvestmentCompanyUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type InvestmentCompanyUpdateWithoutDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUpdateManyWithoutCompanyNestedInput
+    payments?: PaymentUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type InvestmentCompanyUncheckedUpdateWithoutDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUncheckedUpdateManyWithoutCompanyNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
   export type StaffUpsertWithoutCreatedDiscountsInput = {
@@ -37816,6 +43621,447 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type InvestmentOpenDueCreateWithoutCompanyInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    dueDate?: Date | string | null
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentOpenDueUncheckedCreateWithoutCompanyInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    dueDate?: Date | string | null
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentOpenDueCreateOrConnectWithoutCompanyInput = {
+    where: InvestmentOpenDueWhereUniqueInput
+    create: XOR<InvestmentOpenDueCreateWithoutCompanyInput, InvestmentOpenDueUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type InvestmentOpenDueCreateManyCompanyInputEnvelope = {
+    data: InvestmentOpenDueCreateManyCompanyInput | InvestmentOpenDueCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PaymentCreateWithoutInvestmentCompanyInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutInvestmentCompanyInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateOrConnectWithoutInvestmentCompanyInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutInvestmentCompanyInput, PaymentUncheckedCreateWithoutInvestmentCompanyInput>
+  }
+
+  export type PaymentCreateManyInvestmentCompanyInputEnvelope = {
+    data: PaymentCreateManyInvestmentCompanyInput | PaymentCreateManyInvestmentCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DiscountCreateWithoutInvestmentCompanyInput = {
+    id?: string
+    date: Date | string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutDiscountsInput
+    transporter?: TransporterCreateNestedOneWithoutDiscountsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDiscountsInput
+  }
+
+  export type DiscountUncheckedCreateWithoutInvestmentCompanyInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    createdByStaffId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DiscountCreateOrConnectWithoutInvestmentCompanyInput = {
+    where: DiscountWhereUniqueInput
+    create: XOR<DiscountCreateWithoutInvestmentCompanyInput, DiscountUncheckedCreateWithoutInvestmentCompanyInput>
+  }
+
+  export type DiscountCreateManyInvestmentCompanyInputEnvelope = {
+    data: DiscountCreateManyInvestmentCompanyInput | DiscountCreateManyInvestmentCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InvestmentPeriodValueCreateWithoutCompanyInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    period: InvestmentPeriodCreateNestedOneWithoutValuesInput
+  }
+
+  export type InvestmentPeriodValueUncheckedCreateWithoutCompanyInput = {
+    id?: string
+    periodId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodValueCreateOrConnectWithoutCompanyInput = {
+    where: InvestmentPeriodValueWhereUniqueInput
+    create: XOR<InvestmentPeriodValueCreateWithoutCompanyInput, InvestmentPeriodValueUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type InvestmentPeriodValueCreateManyCompanyInputEnvelope = {
+    data: InvestmentPeriodValueCreateManyCompanyInput | InvestmentPeriodValueCreateManyCompanyInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InvestmentOpenDueUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: InvestmentOpenDueWhereUniqueInput
+    update: XOR<InvestmentOpenDueUpdateWithoutCompanyInput, InvestmentOpenDueUncheckedUpdateWithoutCompanyInput>
+    create: XOR<InvestmentOpenDueCreateWithoutCompanyInput, InvestmentOpenDueUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type InvestmentOpenDueUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: InvestmentOpenDueWhereUniqueInput
+    data: XOR<InvestmentOpenDueUpdateWithoutCompanyInput, InvestmentOpenDueUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type InvestmentOpenDueUpdateManyWithWhereWithoutCompanyInput = {
+    where: InvestmentOpenDueScalarWhereInput
+    data: XOR<InvestmentOpenDueUpdateManyMutationInput, InvestmentOpenDueUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type InvestmentOpenDueScalarWhereInput = {
+    AND?: InvestmentOpenDueScalarWhereInput | InvestmentOpenDueScalarWhereInput[]
+    OR?: InvestmentOpenDueScalarWhereInput[]
+    NOT?: InvestmentOpenDueScalarWhereInput | InvestmentOpenDueScalarWhereInput[]
+    id?: StringFilter<"InvestmentOpenDue"> | string
+    companyId?: StringFilter<"InvestmentOpenDue"> | string
+    amount?: DecimalFilter<"InvestmentOpenDue"> | Decimal | DecimalJsLike | number | string
+    dueDate?: DateTimeNullableFilter<"InvestmentOpenDue"> | Date | string | null
+    remark?: StringNullableFilter<"InvestmentOpenDue"> | string | null
+    createdAt?: DateTimeFilter<"InvestmentOpenDue"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentOpenDue"> | Date | string
+  }
+
+  export type PaymentUpsertWithWhereUniqueWithoutInvestmentCompanyInput = {
+    where: PaymentWhereUniqueInput
+    update: XOR<PaymentUpdateWithoutInvestmentCompanyInput, PaymentUncheckedUpdateWithoutInvestmentCompanyInput>
+    create: XOR<PaymentCreateWithoutInvestmentCompanyInput, PaymentUncheckedCreateWithoutInvestmentCompanyInput>
+  }
+
+  export type PaymentUpdateWithWhereUniqueWithoutInvestmentCompanyInput = {
+    where: PaymentWhereUniqueInput
+    data: XOR<PaymentUpdateWithoutInvestmentCompanyInput, PaymentUncheckedUpdateWithoutInvestmentCompanyInput>
+  }
+
+  export type PaymentUpdateManyWithWhereWithoutInvestmentCompanyInput = {
+    where: PaymentScalarWhereInput
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutInvestmentCompanyInput>
+  }
+
+  export type DiscountUpsertWithWhereUniqueWithoutInvestmentCompanyInput = {
+    where: DiscountWhereUniqueInput
+    update: XOR<DiscountUpdateWithoutInvestmentCompanyInput, DiscountUncheckedUpdateWithoutInvestmentCompanyInput>
+    create: XOR<DiscountCreateWithoutInvestmentCompanyInput, DiscountUncheckedCreateWithoutInvestmentCompanyInput>
+  }
+
+  export type DiscountUpdateWithWhereUniqueWithoutInvestmentCompanyInput = {
+    where: DiscountWhereUniqueInput
+    data: XOR<DiscountUpdateWithoutInvestmentCompanyInput, DiscountUncheckedUpdateWithoutInvestmentCompanyInput>
+  }
+
+  export type DiscountUpdateManyWithWhereWithoutInvestmentCompanyInput = {
+    where: DiscountScalarWhereInput
+    data: XOR<DiscountUpdateManyMutationInput, DiscountUncheckedUpdateManyWithoutInvestmentCompanyInput>
+  }
+
+  export type InvestmentPeriodValueUpsertWithWhereUniqueWithoutCompanyInput = {
+    where: InvestmentPeriodValueWhereUniqueInput
+    update: XOR<InvestmentPeriodValueUpdateWithoutCompanyInput, InvestmentPeriodValueUncheckedUpdateWithoutCompanyInput>
+    create: XOR<InvestmentPeriodValueCreateWithoutCompanyInput, InvestmentPeriodValueUncheckedCreateWithoutCompanyInput>
+  }
+
+  export type InvestmentPeriodValueUpdateWithWhereUniqueWithoutCompanyInput = {
+    where: InvestmentPeriodValueWhereUniqueInput
+    data: XOR<InvestmentPeriodValueUpdateWithoutCompanyInput, InvestmentPeriodValueUncheckedUpdateWithoutCompanyInput>
+  }
+
+  export type InvestmentPeriodValueUpdateManyWithWhereWithoutCompanyInput = {
+    where: InvestmentPeriodValueScalarWhereInput
+    data: XOR<InvestmentPeriodValueUpdateManyMutationInput, InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyInput>
+  }
+
+  export type InvestmentPeriodValueScalarWhereInput = {
+    AND?: InvestmentPeriodValueScalarWhereInput | InvestmentPeriodValueScalarWhereInput[]
+    OR?: InvestmentPeriodValueScalarWhereInput[]
+    NOT?: InvestmentPeriodValueScalarWhereInput | InvestmentPeriodValueScalarWhereInput[]
+    id?: StringFilter<"InvestmentPeriodValue"> | string
+    companyId?: StringFilter<"InvestmentPeriodValue"> | string
+    periodId?: StringFilter<"InvestmentPeriodValue"> | string
+    amount?: DecimalFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
+    updatedAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
+  }
+
+  export type InvestmentCompanyCreateWithoutOpenDuesInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutInvestmentCompanyInput
+    discounts?: DiscountCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyUncheckedCreateWithoutOpenDuesInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    periodValues?: InvestmentPeriodValueUncheckedCreateNestedManyWithoutCompanyInput
+  }
+
+  export type InvestmentCompanyCreateOrConnectWithoutOpenDuesInput = {
+    where: InvestmentCompanyWhereUniqueInput
+    create: XOR<InvestmentCompanyCreateWithoutOpenDuesInput, InvestmentCompanyUncheckedCreateWithoutOpenDuesInput>
+  }
+
+  export type InvestmentCompanyUpsertWithoutOpenDuesInput = {
+    update: XOR<InvestmentCompanyUpdateWithoutOpenDuesInput, InvestmentCompanyUncheckedUpdateWithoutOpenDuesInput>
+    create: XOR<InvestmentCompanyCreateWithoutOpenDuesInput, InvestmentCompanyUncheckedCreateWithoutOpenDuesInput>
+    where?: InvestmentCompanyWhereInput
+  }
+
+  export type InvestmentCompanyUpdateToOneWithWhereWithoutOpenDuesInput = {
+    where?: InvestmentCompanyWhereInput
+    data: XOR<InvestmentCompanyUpdateWithoutOpenDuesInput, InvestmentCompanyUncheckedUpdateWithoutOpenDuesInput>
+  }
+
+  export type InvestmentCompanyUpdateWithoutOpenDuesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutInvestmentCompanyNestedInput
+    discounts?: DiscountUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type InvestmentCompanyUncheckedUpdateWithoutOpenDuesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    periodValues?: InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyNestedInput
+  }
+
+  export type InvestmentPeriodValueCreateWithoutPeriodInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: InvestmentCompanyCreateNestedOneWithoutPeriodValuesInput
+  }
+
+  export type InvestmentPeriodValueUncheckedCreateWithoutPeriodInput = {
+    id?: string
+    companyId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodValueCreateOrConnectWithoutPeriodInput = {
+    where: InvestmentPeriodValueWhereUniqueInput
+    create: XOR<InvestmentPeriodValueCreateWithoutPeriodInput, InvestmentPeriodValueUncheckedCreateWithoutPeriodInput>
+  }
+
+  export type InvestmentPeriodValueCreateManyPeriodInputEnvelope = {
+    data: InvestmentPeriodValueCreateManyPeriodInput | InvestmentPeriodValueCreateManyPeriodInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type InvestmentPeriodValueUpsertWithWhereUniqueWithoutPeriodInput = {
+    where: InvestmentPeriodValueWhereUniqueInput
+    update: XOR<InvestmentPeriodValueUpdateWithoutPeriodInput, InvestmentPeriodValueUncheckedUpdateWithoutPeriodInput>
+    create: XOR<InvestmentPeriodValueCreateWithoutPeriodInput, InvestmentPeriodValueUncheckedCreateWithoutPeriodInput>
+  }
+
+  export type InvestmentPeriodValueUpdateWithWhereUniqueWithoutPeriodInput = {
+    where: InvestmentPeriodValueWhereUniqueInput
+    data: XOR<InvestmentPeriodValueUpdateWithoutPeriodInput, InvestmentPeriodValueUncheckedUpdateWithoutPeriodInput>
+  }
+
+  export type InvestmentPeriodValueUpdateManyWithWhereWithoutPeriodInput = {
+    where: InvestmentPeriodValueScalarWhereInput
+    data: XOR<InvestmentPeriodValueUpdateManyMutationInput, InvestmentPeriodValueUncheckedUpdateManyWithoutPeriodInput>
+  }
+
+  export type InvestmentCompanyCreateWithoutPeriodValuesInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueCreateNestedManyWithoutCompanyInput
+    payments?: PaymentCreateNestedManyWithoutInvestmentCompanyInput
+    discounts?: DiscountCreateNestedManyWithoutInvestmentCompanyInput
+  }
+
+  export type InvestmentCompanyUncheckedCreateWithoutPeriodValuesInput = {
+    id?: string
+    name: string
+    openingDue?: Decimal | DecimalJsLike | number | string
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    openDues?: InvestmentOpenDueUncheckedCreateNestedManyWithoutCompanyInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutInvestmentCompanyInput
+  }
+
+  export type InvestmentCompanyCreateOrConnectWithoutPeriodValuesInput = {
+    where: InvestmentCompanyWhereUniqueInput
+    create: XOR<InvestmentCompanyCreateWithoutPeriodValuesInput, InvestmentCompanyUncheckedCreateWithoutPeriodValuesInput>
+  }
+
+  export type InvestmentPeriodCreateWithoutValuesInput = {
+    id?: string
+    name: string
+    startDate: Date | string
+    endDate: Date | string
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodUncheckedCreateWithoutValuesInput = {
+    id?: string
+    name: string
+    startDate: Date | string
+    endDate: Date | string
+    sortOrder?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodCreateOrConnectWithoutValuesInput = {
+    where: InvestmentPeriodWhereUniqueInput
+    create: XOR<InvestmentPeriodCreateWithoutValuesInput, InvestmentPeriodUncheckedCreateWithoutValuesInput>
+  }
+
+  export type InvestmentCompanyUpsertWithoutPeriodValuesInput = {
+    update: XOR<InvestmentCompanyUpdateWithoutPeriodValuesInput, InvestmentCompanyUncheckedUpdateWithoutPeriodValuesInput>
+    create: XOR<InvestmentCompanyCreateWithoutPeriodValuesInput, InvestmentCompanyUncheckedCreateWithoutPeriodValuesInput>
+    where?: InvestmentCompanyWhereInput
+  }
+
+  export type InvestmentCompanyUpdateToOneWithWhereWithoutPeriodValuesInput = {
+    where?: InvestmentCompanyWhereInput
+    data: XOR<InvestmentCompanyUpdateWithoutPeriodValuesInput, InvestmentCompanyUncheckedUpdateWithoutPeriodValuesInput>
+  }
+
+  export type InvestmentCompanyUpdateWithoutPeriodValuesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUpdateManyWithoutCompanyNestedInput
+    payments?: PaymentUpdateManyWithoutInvestmentCompanyNestedInput
+    discounts?: DiscountUpdateManyWithoutInvestmentCompanyNestedInput
+  }
+
+  export type InvestmentCompanyUncheckedUpdateWithoutPeriodValuesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    openDues?: InvestmentOpenDueUncheckedUpdateManyWithoutCompanyNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutInvestmentCompanyNestedInput
+  }
+
+  export type InvestmentPeriodUpsertWithoutValuesInput = {
+    update: XOR<InvestmentPeriodUpdateWithoutValuesInput, InvestmentPeriodUncheckedUpdateWithoutValuesInput>
+    create: XOR<InvestmentPeriodCreateWithoutValuesInput, InvestmentPeriodUncheckedCreateWithoutValuesInput>
+    where?: InvestmentPeriodWhereInput
+  }
+
+  export type InvestmentPeriodUpdateToOneWithWhereWithoutValuesInput = {
+    where?: InvestmentPeriodWhereInput
+    data: XOR<InvestmentPeriodUpdateWithoutValuesInput, InvestmentPeriodUncheckedUpdateWithoutValuesInput>
+  }
+
+  export type InvestmentPeriodUpdateWithoutValuesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodUncheckedUpdateWithoutValuesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    endDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type CustomerCreateManyDealByInput = {
     id?: string
     name: string
@@ -37896,6 +44142,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -37907,6 +44154,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    investmentCompanyId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     coalOrigin?: $Enums.CoalOrigin | null
@@ -38194,6 +44442,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutCreatedByStaffInput = {
@@ -38201,6 +44450,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38212,6 +44462,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38229,6 +44480,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutDiscountsNestedInput
     transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutDiscountsNestedInput
   }
 
   export type DiscountUncheckedUpdateWithoutCreatedByStaffInput = {
@@ -38236,6 +44488,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -38249,6 +44502,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
@@ -38385,6 +44639,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     customerId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -38396,6 +44651,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     customerId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
@@ -38506,6 +44762,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -38513,6 +44770,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -38524,6 +44782,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -38541,6 +44800,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutDiscountsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutDiscountsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
   }
 
@@ -38548,6 +44808,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -38561,6 +44822,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -39041,6 +45303,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -39052,6 +45315,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     transporterId?: string | null
+    investmentCompanyId?: string | null
     createdByStaffId?: string | null
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
@@ -39280,6 +45544,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -39287,6 +45552,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -39298,6 +45564,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -39315,6 +45582,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutDiscountsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
   }
 
@@ -39322,6 +45590,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -39335,6 +45604,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -39822,6 +46092,210 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type InvestmentOpenDueCreateManyCompanyInput = {
+    id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    dueDate?: Date | string | null
+    remark?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateManyInvestmentCompanyInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DiscountCreateManyInvestmentCompanyInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    createdByStaffId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    coalOrigin?: $Enums.CoalOrigin | null
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodValueCreateManyCompanyInput = {
+    id?: string
+    periodId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentOpenDueUpdateWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentOpenDueUncheckedUpdateWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentOpenDueUncheckedUpdateManyWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    dueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    remark?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUpdateWithoutInvestmentCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutInvestmentCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutInvestmentCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DiscountUpdateWithoutInvestmentCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutDiscountsNestedInput
+    transporter?: TransporterUpdateOneWithoutDiscountsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDiscountsNestedInput
+  }
+
+  export type DiscountUncheckedUpdateWithoutInvestmentCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DiscountUncheckedUpdateManyWithoutInvestmentCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueUpdateWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    period?: InvestmentPeriodUpdateOneRequiredWithoutValuesNestedInput
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    periodId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueCreateManyPeriodInput = {
+    id?: string
+    companyId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentPeriodValueUpdateWithoutPeriodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: InvestmentCompanyUpdateOneRequiredWithoutPeriodValuesNestedInput
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateWithoutPeriodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentPeriodValueUncheckedUpdateManyWithoutPeriodInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -39871,6 +46345,14 @@ export namespace Prisma {
      * @deprecated Use BillCountOutputTypeDefaultArgs instead
      */
     export type BillCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvestmentCompanyCountOutputTypeDefaultArgs instead
+     */
+    export type InvestmentCompanyCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentCompanyCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvestmentPeriodCountOutputTypeDefaultArgs instead
+     */
+    export type InvestmentPeriodCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentPeriodCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use StaffDefaultArgs instead
      */
@@ -39955,6 +46437,22 @@ export namespace Prisma {
      * @deprecated Use BillFileDefaultArgs instead
      */
     export type BillFileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillFileDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvestmentCompanyDefaultArgs instead
+     */
+    export type InvestmentCompanyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentCompanyDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvestmentOpenDueDefaultArgs instead
+     */
+    export type InvestmentOpenDueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentOpenDueDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvestmentPeriodDefaultArgs instead
+     */
+    export type InvestmentPeriodArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentPeriodDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use InvestmentPeriodValueDefaultArgs instead
+     */
+    export type InvestmentPeriodValueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentPeriodValueDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

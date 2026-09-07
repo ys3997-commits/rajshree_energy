@@ -16,6 +16,7 @@ export type SaleEditRowSummary = {
   weight: string;
   basicPrice: string;
   totalPrice: string;
+  customer: string;
   deliveryTerms: string;
   transporter: string;
 };
@@ -140,6 +141,7 @@ export function EditDispatchSaleButton({
               <SummaryField label="Weight" value={rowSummary.weight} />
               <SummaryField label="Basic price" value={rowSummary.basicPrice} />
               <SummaryField label="Total price" value={rowSummary.totalPrice} />
+              <SummaryField label="Customer" value={rowSummary.customer} />
               <SummaryField
                 label="Delivery terms"
                 value={rowSummary.deliveryTerms}

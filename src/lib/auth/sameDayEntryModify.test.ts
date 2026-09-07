@@ -4,6 +4,7 @@ import {
   calendarDaysElapsedInIst,
   canModifySameDayEntry,
   DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+  sameDayEntryPermissions,
 } from "./sameDayEntryModify";
 
 const staff: Extract<Access, { kind: "staff" }> = {
@@ -54,20 +55,26 @@ describe("canModifySameDayEntry", () => {
     ).toBe(false);
   });
 
-  it("lets staff edit a dispatch on the next IST day", () => {
+  it("lets staff edit a dispatch through the 4th IST day", () => {
     expect(
       canModifySameDayEntry(staff, ownRow, {
         extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
         now: ist("2026-03-03T10:00:00"),
       }),
     ).toBe(true);
-  });
-
-  it("locks a dispatch from the second IST day after creation", () => {
     expect(
       canModifySameDayEntry(staff, ownRow, {
         extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
-        now: ist("2026-03-04T00:00:00"),
+        now: ist("2026-03-05T23:00:00"),
+      }),
+    ).toBe(true);
+  });
+
+  it("locks a dispatch from the 5th IST day after creation", () => {
+    expect(
+      canModifySameDayEntry(staff, ownRow, {
+        extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+        now: ist("2026-03-06T00:00:00"),
       }),
     ).toBe(false);
   });
@@ -89,5 +96,20 @@ describe("canModifySameDayEntry", () => {
     expect(
       canModifySameDayEntry(owner, ownRow, { now: ist("2026-03-10T12:00:00") }),
     ).toBe(true);
+  });
+
+  it("allows owner delete but never staff delete", () => {
+    expect(
+      sameDayEntryPermissions(owner, ownRow, {
+        extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+        now: ist("2026-03-02T12:00:00"),
+      }),
+    ).toEqual({ canEdit: true, canDelete: true });
+    expect(
+      sameDayEntryPermissions(staff, ownRow, {
+        extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
+        now: ist("2026-03-02T12:00:00"),
+      }),
+    ).toEqual({ canEdit: true, canDelete: false });
   });
 });

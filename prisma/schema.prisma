@@ -413,49 +413,55 @@ model Dispatch {
   @@index([createdByStaffId])
 }
 
-/// Money received from or sent to a customer or transporter.
+/// Money received from or sent to a customer, transporter, or investment company.
 model Payment {
-  id            String           @id @default(cuid())
-  date          DateTime
-  customerId    String?
-  transporterId String?
-  createdByStaffId String?
-  direction     PaymentDirection
-  amount        Decimal          @db.Decimal(18, 2)
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  id                   String           @id @default(cuid())
+  date                 DateTime
+  customerId           String?
+  transporterId        String?
+  investmentCompanyId  String?
+  createdByStaffId     String?
+  direction            PaymentDirection
+  amount               Decimal          @db.Decimal(18, 2)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
 
-  customer    Customer?    @relation(fields: [customerId], references: [id])
-  transporter Transporter? @relation(fields: [transporterId], references: [id])
-  createdByStaff Staff?    @relation("PaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+  customer           Customer?           @relation(fields: [customerId], references: [id])
+  transporter        Transporter?        @relation(fields: [transporterId], references: [id])
+  investmentCompany  InvestmentCompany?  @relation(fields: [investmentCompanyId], references: [id])
+  createdByStaff     Staff?              @relation("PaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([investmentCompanyId])
   @@index([createdByStaffId])
   @@index([date])
 }
 
-/// Discount received from or paid to a customer or transporter.
+/// Discount received from or paid to a customer, transporter, or investment company.
 model Discount {
-  id            String         @id @default(cuid())
-  date          DateTime
-  customerId    String?
-  transporterId String?
-  createdByStaffId String?
-  status        DiscountStatus
-  amount        Decimal        @db.Decimal(18, 2)
+  id                   String         @id @default(cuid())
+  date                 DateTime
+  customerId           String?
+  transporterId        String?
+  investmentCompanyId  String?
+  createdByStaffId     String?
+  status               DiscountStatus
+  amount               Decimal        @db.Decimal(18, 2)
   /// Domestic coal vs imported coal. Null on older rows.
-  coalOrigin    CoalOrigin?
-  remarks       String         @default("")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  coalOrigin           CoalOrigin?
+  remarks              String         @default("")
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 
-  customer    Customer?    @relation(fields: [customerId], references: [id])
-  transporter Transporter? @relation(fields: [transporterId], references: [id])
-  createdByStaff Staff?    @relation("DiscountCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+  customer           Customer?           @relation(fields: [customerId], references: [id])
+  transporter        Transporter?        @relation(fields: [transporterId], references: [id])
+  investmentCompany  InvestmentCompany?  @relation(fields: [investmentCompanyId], references: [id])
+  createdByStaff     Staff?              @relation("DiscountCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
+  @@index([investmentCompanyId])
   @@index([createdByStaffId])
   @@index([date])
 }
@@ -504,4 +510,70 @@ model BillFile {
   bill Bill @relation(fields: [billId], references: [id], onDelete: Cascade)
 
   @@index([billId])
+}
+
+/// Company invested in (Masters → Investment).
+model InvestmentCompany {
+  id         String   @id @default(cuid())
+  name       String
+  /// Carry-forward / opening investment balance.
+  openingDue Decimal  @default(0) @db.Decimal(18, 2)
+  remark     String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  openDues       InvestmentOpenDue[]
+  payments       Payment[]
+  discounts      Discount[]
+  periodValues   InvestmentPeriodValue[]
+}
+
+/// Outstanding investment dues (Masters → Investment → Open Due).
+model InvestmentOpenDue {
+  id        String    @id @default(cuid())
+  companyId String
+  amount    Decimal   @db.Decimal(18, 2)
+  dueDate   DateTime?
+  remark    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  company InvestmentCompany @relation(fields: [companyId], references: [id], onDelete: Restrict)
+
+  @@index([companyId])
+  @@index([dueDate])
+}
+
+/// Named investment period; each period becomes a report column.
+model InvestmentPeriod {
+  id        String   @id @default(cuid())
+  name      String
+  startDate DateTime
+  endDate   DateTime
+  /// Column order in the investments report (among period columns only).
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  values InvestmentPeriodValue[]
+
+  @@index([sortOrder])
+  @@index([createdAt])
+}
+
+/// Profit / loss for one company in one period column.
+model InvestmentPeriodValue {
+  id        String  @id @default(cuid())
+  companyId String
+  periodId  String
+  amount    Decimal @db.Decimal(18, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company InvestmentCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  period  InvestmentPeriod  @relation(fields: [periodId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, periodId])
+  @@index([companyId])
+  @@index([periodId])
 }

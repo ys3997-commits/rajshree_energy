@@ -36,6 +36,7 @@ import {
   normalizeSaleOrderNumber,
 } from "@/lib/domain/orderNumbers";
 import { requireSignedIn } from "@/lib/auth/access";
+import { AccessDeniedError } from "@/lib/auth/errors";
 import {
   assertCanEditPurchaseChecklist,
   assertCanEditSaleChecklist,
@@ -946,14 +947,14 @@ export async function updateDispatch(
 
 export async function deleteDispatch(id: string): Promise<void> {
   const access = await requireSignedIn();
+  if (access.kind !== "owner") {
+    throw new AccessDeniedError("Only the owner can delete dispatches.");
+  }
   const existingForAuth = await prisma.dispatch.findUnique({
     where: { id },
-    select: { createdAt: true, createdByStaffId: true },
+    select: { id: true },
   });
   if (!existingForAuth) throw new Error("Dispatch not found");
-  assertCanModifySameDayEntry(access, existingForAuth, "delete", "dispatch", {
-    extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
-  });
 
   await prisma.$transaction(async (tx) => {
     const existing = await tx.dispatch.findUnique({ where: { id } });

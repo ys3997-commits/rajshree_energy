@@ -22,7 +22,7 @@ export function OptionSelect({
   required,
 }: OptionSelectProps) {
   const merged = useMemo(() => {
-    const names = [...options];
+    const names = [...(Array.isArray(options) ? options : [])];
     if (value && !names.includes(value)) {
       return [value, ...names];
     }

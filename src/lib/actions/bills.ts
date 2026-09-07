@@ -12,6 +12,7 @@ import {
 } from "@/lib/auth/access";
 import { toDecimal } from "@/lib/domain/computations";
 import {
+  BILL_REAPPROVE_WITHIN_CALENDAR_DAYS,
   billDateRange,
   canApproveBill,
   canRejectBill,
@@ -388,15 +389,21 @@ export async function reviewBill(
 
   const existing = await prisma.bill.findUnique({
     where: { id },
-    select: { id: true, status: true },
+    select: { id: true, status: true, reviewedAt: true },
   });
   if (!existing) throw new Error("Bill not found");
   const allowed =
     status === "APPROVED"
-      ? canApproveBill(access, existing.status)
+      ? canApproveBill(access, existing.status, {
+          reviewedAt: existing.reviewedAt,
+        })
       : canRejectBill(access, existing.status);
   if (!allowed) {
-    throw new Error("This bill cannot be reviewed in its current state");
+    throw new Error(
+      status === "APPROVED" && existing.status === "REJECTED"
+        ? `Rejected bills can only be re-approved within ${BILL_REAPPROVE_WITHIN_CALENDAR_DAYS} days of rejection`
+        : "This bill cannot be reviewed in its current state",
+    );
   }
 
   const row = await prisma.bill.update({

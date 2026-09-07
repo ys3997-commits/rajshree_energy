@@ -5,13 +5,18 @@ import { useMemo, useState } from "react";
 import { CustomerCategory } from "@/generated/prisma";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { formatCustomerCategory } from "@/lib/domain/format";
-import { partyKey } from "@/lib/domain/paymentParty";
+import {
+  partyKey,
+  partyOptionGroup,
+  partyOptionLabel,
+  type PaymentPartyKind,
+} from "@/lib/domain/paymentParty";
 import { paymentsHref, type PaymentsSection } from "./paymentsHref";
 
 type PartyOpt = {
   id: string;
   name: string;
-  kind: "customer" | "transporter";
+  kind: PaymentPartyKind;
   category?: CustomerCategory;
 };
 
@@ -35,14 +40,17 @@ export function FundFlowDateFilter({
 
   const partyOptions = useMemo(
     () => [
-      { value: "", label: "All customers / transporters" },
+      { value: "", label: "All customers / transporters / investment" },
       ...parties.map((c) => ({
         value: partyKey(c.kind, c.id),
-        label:
-          c.kind === "transporter"
-            ? `${c.name} — Transporter`
-            : `${c.name} — ${formatCustomerCategory(c.category)}`,
-        group: c.kind === "transporter" ? "Transporters" : "Customers",
+        label: partyOptionLabel({
+          kind: c.kind,
+          name: c.name,
+          categoryLabel: c.category
+            ? formatCustomerCategory(c.category)
+            : undefined,
+        }),
+        group: partyOptionGroup(c.kind),
       })),
     ],
     [parties],
@@ -73,8 +81,8 @@ export function FundFlowDateFilter({
         Customer
         <SearchableSelect
           className="field-input"
-          ariaLabel="Customer or transporter"
-          placeholder="Search customer or transporter"
+          ariaLabel="Customer, transporter, or investment company"
+          placeholder="Search customer, transporter, or investment"
           value={partyId}
           onChange={setPartyId}
           options={partyOptions}

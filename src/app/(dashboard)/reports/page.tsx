@@ -56,6 +56,11 @@ const reports = [
     desc: "Purchase, sale, freight, and basic-rate profit for every dispatch.",
   },
   {
+    href: "/reports/investments",
+    title: "Investments",
+    desc: "Current investment and period-wise profit / loss.",
+  },
+  {
     href: "/reports/product",
     title: "Quality Report",
     desc: "Purchase and sale balances by quality class, with unsold stock.",
