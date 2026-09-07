@@ -552,7 +552,8 @@ export function InvestmentsReportClient({
             </p>
           </div>
           <TableDownloadButtons
-            fileBaseName="investments-report"
+            title="Investments report"
+            filenameBase="investments-report"
             columns={downloadColumns}
             rows={downloadRows}
           />
