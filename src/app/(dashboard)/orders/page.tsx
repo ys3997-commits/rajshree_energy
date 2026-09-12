@@ -1,18 +1,9 @@
-import { listOrders, listOrdersWithBalance } from "@/lib/actions/orders";
-import {
-  listPurchaseOrdersWithBalance,
-  suggestNextPurchasePoNumber,
-} from "@/lib/actions/purchaseOrders";
+import { listOrders } from "@/lib/actions/orders";
 import { listCustomers } from "@/lib/actions/customers";
 import { listSaleExecutiveOptions } from "@/lib/actions/option-lists";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
-import { listTransporters } from "@/lib/actions/transporters";
-import { listVessels } from "@/lib/actions/vessels";
-import {
-  suggestNextDispatchNumber,
-  suggestNextPoNumber,
-} from "@/lib/actions/dispatch";
+import { suggestNextPoNumber } from "@/lib/actions/dispatch";
 import { formatRs } from "@/lib/domain/computations";
 import {
   capitalizeName,
@@ -29,9 +20,9 @@ import {
 } from "@/lib/domain/format";
 import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
-import { CreateDispatchButton } from "@/components/CreateDispatchButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
+import { OrderWhatsAppButton } from "@/components/OrderWhatsAppButton";
 import Link from "next/link";
 
 type SearchParams = Promise<{
@@ -68,20 +59,7 @@ export default async function OrdersPage({
       listQualityClasses(),
     ]);
 
-  const [balanceOrders, balancePurchases, transporters, vessels] =
-    await Promise.all([
-      listOrdersWithBalance(),
-      listPurchaseOrdersWithBalance(),
-      listTransporters(),
-      listVessels({ activeOnly: true }),
-    ]);
-
-  const [suggestedPo, suggestedPurchasePo, suggestedDispatchNumber] =
-    await Promise.all([
-      suggestNextPoNumber(),
-      suggestNextPurchasePoNumber(),
-      suggestNextDispatchNumber(),
-    ]);
+  const suggestedPo = await suggestNextPoNumber();
 
   const customerOpts = customers.map((c) => ({
     id: c.id,
@@ -103,13 +81,13 @@ export default async function OrdersPage({
     { key: "customer", header: "Customer" },
     { key: "quality", header: "Quality class" },
     { key: "lorries", header: "Number of lorries", align: "right" as const },
-    { key: "orderQty", header: "Order quantity", align: "right" as const },
+    { key: "orderQty", header: "Order Qty", align: "right" as const },
     {
       key: "dispatchedQty",
-      header: "Dispatched quantity",
+      header: "Dispatched Qty",
       align: "right" as const,
     },
-    { key: "closingQty", header: "Closing quantity", align: "right" as const },
+    { key: "closingQty", header: "Closing Qty", align: "right" as const },
     { key: "balance", header: "Balance", align: "right" as const },
     { key: "lastDispatch", header: "Last dispatch", align: "right" as const },
     { key: "trucks", header: "Trucks dispatch", align: "right" as const },
@@ -156,31 +134,6 @@ export default async function OrdersPage({
             ports={portOpts}
             qualityClasses={qualityClassOpts}
             suggestedPo={suggestedPo}
-          />
-          <CreateDispatchButton
-            orders={balanceOrders.map((o) => ({
-              poNumber: o.poNumber,
-              balanceOrder: o.balanceOrder?.toString() ?? null,
-              rate: o.rate?.toString() ?? null,
-              customer: o.customer,
-            }))}
-            purchaseOrders={balancePurchases.map((p) => ({
-              poNumber: p.poNumber,
-              balanceOrder: p.balanceOrder?.toString() ?? null,
-              rate: p.rate?.toString() ?? null,
-              importer: p.importer,
-              vessel: p.vessel,
-              qualityClass: p.qualityClass,
-            }))}
-            transporters={transporters.map((t) => ({ id: t.id, name: t.name }))}
-            customers={customerOpts}
-            vessels={vessels.map((v) => ({
-              id: v.id,
-              vesselName: v.vesselName,
-            }))}
-            suggestedPo={suggestedPo}
-            suggestedPurchasePo={suggestedPurchasePo}
-            suggestedDispatchNumber={suggestedDispatchNumber}
           />
         </div>
       </div>
@@ -259,18 +212,18 @@ export default async function OrdersPage({
         <div className="table-h-scroll"><table className="data orders-table">
           <thead>
             <tr>
-              <th>PO number</th>
-              <th>Date</th>
-              <th>Customer</th>
+              <th className="orders-sticky-po">PO number</th>
+              <th className="orders-sticky-date">Date</th>
+              <th className="orders-sticky-customer">Customer</th>
               <th>Quality class</th>
               <th className="num col-lorries">
                 Number of
                 <br />
                 lorries
               </th>
-              <th className="num">Order quantity</th>
-              <th className="num">Dispatched quantity</th>
-              <th className="num">Closing quantity</th>
+              <th className="num">Order Qty</th>
+              <th className="num">Dispatched Qty</th>
+              <th className="num">Closing Qty</th>
               <th className="num">Balance</th>
               <th className="num">
                 Last
@@ -287,6 +240,7 @@ export default async function OrdersPage({
               <th className="num">Basic rate</th>
               <th>Delivery term</th>
               <th>Status</th>
+              <th className="collection-whatsapp-col" aria-label="WhatsApp" />
               <th className="col-actions">Actions</th>
             </tr>
           </thead>
@@ -296,7 +250,7 @@ export default async function OrdersPage({
                 formatOrderStatusForDisplay(row) === "Running";
               return (
               <tr key={row.id}>
-                <td>
+                <td className="orders-sticky-po">
                   <Link
                     href={`/orders/${row.id}`}
                     className="font-medium"
@@ -304,10 +258,12 @@ export default async function OrdersPage({
                     {row.poNumber}
                   </Link>
                 </td>
-                <td className="cell-date">
+                <td className="cell-date orders-sticky-date">
                   {formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null)}
                 </td>
-                <td>{row.customer.name}</td>
+                <td className="orders-sticky-customer" title={row.customer.name}>
+                  {row.customer.name}
+                </td>
                 <td>{formatQualityClass(row.qualityClass)}</td>
                 <td className="num col-lorries">
                   {formatIndianNumber(row.numberOfLorries)}
@@ -333,6 +289,19 @@ export default async function OrdersPage({
                 <td className="num">{formatRs(row.rate)}</td>
                 <td>{formatDispatchTerms(row.deliveryTerms)}</td>
                 <td>{formatOrderStatusForDisplay(row)}</td>
+                <td className="collection-whatsapp-col">
+                  <OrderWhatsAppButton
+                    purchaserName={row.customer.purchaserName}
+                    purchaserContact={row.customer.purchaserContact}
+                    customerCategory={row.customer.category}
+                    numberOfLorries={row.numberOfLorries}
+                    quantity={row.quantity?.toString() ?? null}
+                    rate={row.rate?.toString() ?? null}
+                    deliveryTerms={row.deliveryTerms}
+                    portName={row.port?.name ?? null}
+                    creditDays={row.creditDays}
+                  />
+                </td>
                 <td className="col-actions">
                   {canClose ? (
                     <CloseQuantityButton
@@ -351,7 +320,7 @@ export default async function OrdersPage({
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={17}>No orders match filters.</td>
+                <td colSpan={18}>No orders match filters.</td>
               </tr>
             )}
           </tbody>

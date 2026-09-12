@@ -43,6 +43,24 @@ export function isSaleChecklistComplete(input: {
   return Boolean(input.saleInvoiceNumber?.trim()) && received !== "";
 }
 
+export function isBiltyChecklistComplete(input: {
+  biltyHardCopy: boolean;
+}): boolean {
+  return input.biltyHardCopy;
+}
+
+export function isTransportInvoiceChecklistComplete(input: {
+  transportInvoiceNo: string | null;
+  invoiceHardCopy: boolean;
+  transportEntryInTally: boolean;
+}): boolean {
+  return (
+    Boolean(input.transportInvoiceNo?.trim()) &&
+    input.invoiceHardCopy &&
+    input.transportEntryInTally
+  );
+}
+
 export function isTransportChecklistComplete(input: {
   biltyHardCopy: boolean;
   transportInvoiceNo: string | null;
@@ -50,9 +68,7 @@ export function isTransportChecklistComplete(input: {
   transportEntryInTally: boolean;
 }): boolean {
   return (
-    input.biltyHardCopy &&
-    Boolean(input.transportInvoiceNo?.trim()) &&
-    input.invoiceHardCopy &&
-    input.transportEntryInTally
+    isBiltyChecklistComplete(input) &&
+    isTransportInvoiceChecklistComplete(input)
   );
 }

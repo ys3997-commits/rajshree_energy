@@ -7,15 +7,22 @@ import {
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prisma } from "@/lib/prisma";
-import { lineProfit } from "@/lib/domain/computations";
+import { lineProfit, toDecimal } from "@/lib/domain/computations";
 import {
   computeOverdue,
   discountDueDelta,
+  OPENING_DUE_DATE,
   paymentDueDelta,
   purchaseDispatchDueDelta,
   saleDispatchDueDelta,
   sumSalesSuppliedInCreditWindow,
 } from "@/lib/domain/customerDue";
+import {
+  splitUnpaidDueByOrigin,
+  unpaidDueByDate,
+  type AgeingMovement,
+  type DueOrigin,
+} from "@/lib/domain/ageing";
 import { listQualityReport } from "@/lib/actions/reports";
 
 function startOfLocalDay(d: Date): Date {
@@ -133,10 +140,9 @@ export type HomePendingBillOwner = {
 };
 
 /** Pending bills grouped by approver (owner option name). */
-export async function getHomePendingBillsByOwner(
-  staffId?: string,
-): Promise<HomePendingBillOwner[]> {
-  const staffScope = staffId ? { staffId } : {};
+export async function getHomePendingBillsByOwner(): Promise<
+  HomePendingBillOwner[]
+> {
   const [owners, grouped] = await Promise.all([
     prisma.ownerOption.findMany({
       orderBy: { name: "asc" },
@@ -144,7 +150,7 @@ export async function getHomePendingBillsByOwner(
     }),
     prisma.bill.groupBy({
       by: ["approverName"],
-      where: { status: "PENDING", ...staffScope },
+      where: { status: "PENDING" },
       _count: { _all: true },
     }),
   ]);
@@ -681,6 +687,204 @@ export async function getHomeOverdueCharts(): Promise<{
   });
 
   return { days };
+}
+
+export type HomeDebtorDueByCoal = {
+  domestic: string;
+  imported: string;
+  total: string;
+  domesticPercent: string;
+  importedPercent: string;
+};
+
+function addDueMovement(
+  byCustomer: Map<string, AgeingMovement[]>,
+  customerId: string,
+  movement: AgeingMovement,
+) {
+  const amount = toDecimal(movement.amount);
+  if (!amount.isFinite() || amount.isZero()) return;
+  const list = byCustomer.get(customerId) ?? [];
+  list.push(movement);
+  byCustomer.set(customerId, list);
+}
+
+function saleCoalOrigin(
+  purchaseQc: QualityDomestic,
+  vesselQc: QualityDomestic,
+  orderQc: QualityDomestic,
+): DueOrigin {
+  return isDomesticQuality(purchaseQc, vesselQc, orderQc)
+    ? "DOMESTIC"
+    : "IMPORTED";
+}
+
+/**
+ * Home debtor due: Industry + Trader unpaid due (same FIFO as Ageing),
+ * split by domestic vs imported coal. Opening due counts as imported.
+ */
+export async function getHomeDebtorDueByCoal(): Promise<HomeDebtorDueByCoal> {
+  const empty: HomeDebtorDueByCoal = {
+    domestic: "0",
+    imported: "0",
+    total: "0",
+    domesticPercent: "0",
+    importedPercent: "0",
+  };
+
+  const customers = await prisma.customer.findMany({
+    where: {
+      category: {
+        in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
+      },
+      due: { gt: 0 },
+    },
+    select: { id: true, openingDue: true },
+  });
+
+  if (customers.length === 0) return empty;
+
+  const ids = customers.map((customer) => customer.id);
+  const [dispatches, payments, discounts] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: {
+        OR: [
+          { order: { customerId: { in: ids } } },
+          { purchaseOrder: { importerId: { in: ids } } },
+        ],
+      },
+      select: {
+        id: true,
+        dispatchDate: true,
+        dispatchedQuantity: true,
+        createdAt: true,
+        order: {
+          select: {
+            customerId: true,
+            finalRate: true,
+            qualityClass: { select: { domestic: true } },
+          },
+        },
+        purchaseOrder: {
+          select: {
+            importerId: true,
+            finalRate: true,
+            qualityClass: { select: { domestic: true } },
+          },
+        },
+        vessel: {
+          select: { qualityClass: { select: { domestic: true } } },
+        },
+      },
+    }),
+    prisma.payment.findMany({
+      where: { customerId: { in: ids } },
+      select: {
+        id: true,
+        customerId: true,
+        date: true,
+        amount: true,
+        direction: true,
+        createdAt: true,
+      },
+    }),
+    prisma.discount.findMany({
+      where: { customerId: { in: ids } },
+      select: {
+        id: true,
+        customerId: true,
+        date: true,
+        amount: true,
+        status: true,
+        coalOrigin: true,
+        createdAt: true,
+      },
+    }),
+  ]);
+
+  const movementsByCustomer = new Map<string, AgeingMovement[]>();
+
+  for (const customer of customers) {
+    addDueMovement(movementsByCustomer, customer.id, {
+      date: OPENING_DUE_DATE,
+      amount: customer.openingDue,
+      sortKey: `0|opening|${customer.id}`,
+      origin: "IMPORTED",
+    });
+  }
+
+  for (const row of dispatches) {
+    if (row.order) {
+      const amount = saleDispatchDueDelta(
+        row.order.finalRate,
+        row.dispatchedQuantity,
+      );
+      addDueMovement(movementsByCustomer, row.order.customerId, {
+        date: row.dispatchDate,
+        amount,
+        sortKey: `1|sale|${row.createdAt.toISOString()}|${row.id}`,
+        origin: saleCoalOrigin(
+          row.purchaseOrder.qualityClass,
+          row.vessel.qualityClass,
+          row.order.qualityClass,
+        ),
+      });
+    }
+    if (row.purchaseOrder) {
+      addDueMovement(movementsByCustomer, row.purchaseOrder.importerId, {
+        date: row.dispatchDate,
+        amount: purchaseDispatchDueDelta(
+          row.purchaseOrder.finalRate,
+          row.dispatchedQuantity,
+        ),
+        sortKey: `2|purchase|${row.createdAt.toISOString()}|${row.id}`,
+      });
+    }
+  }
+
+  for (const payment of payments) {
+    if (!payment.customerId) continue;
+    const amount = paymentDueDelta(payment.direction, payment.amount);
+    addDueMovement(movementsByCustomer, payment.customerId, {
+      date: payment.date,
+      amount,
+      sortKey: `3|payment|${payment.createdAt.toISOString()}|${payment.id}`,
+      origin: amount.gt(0) ? "IMPORTED" : undefined,
+    });
+  }
+
+  for (const discount of discounts) {
+    if (!discount.customerId) continue;
+    const amount = discountDueDelta(discount.status, discount.amount);
+    const origin: DueOrigin | undefined = amount.gt(0)
+      ? discount.coalOrigin === CoalOrigin.DOMESTIC
+        ? "DOMESTIC"
+        : "IMPORTED"
+      : undefined;
+    addDueMovement(movementsByCustomer, discount.customerId, {
+      date: discount.date,
+      amount,
+      sortKey: `4|discount|${discount.createdAt.toISOString()}|${discount.id}`,
+      origin,
+    });
+  }
+
+  const asOf = new Date();
+  const unpaid: { date: Date; amount: Decimal; origin?: DueOrigin }[] = [];
+  for (const customer of customers) {
+    unpaid.push(
+      ...unpaidDueByDate(movementsByCustomer.get(customer.id) ?? [], asOf),
+    );
+  }
+
+  const split = splitUnpaidDueByOrigin(unpaid);
+  return {
+    domestic: split.domestic.toString(),
+    imported: split.imported.toString(),
+    total: split.total.toString(),
+    domesticPercent: split.domesticPercent,
+    importedPercent: split.importedPercent,
+  };
 }
 
 export type TopCustomerVolume = {

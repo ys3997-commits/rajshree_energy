@@ -173,13 +173,8 @@ export function validateBillFiles(
   return meta;
 }
 
-export function canViewBill(
-  access: { kind: string; id?: string },
-  staffId: string,
-): boolean {
-  if (access.kind === "owner") return true;
-  if (access.kind === "staff") return access.id === staffId;
-  return false;
+export function canViewBill(access: { kind: string }): boolean {
+  return access.kind === "owner" || access.kind === "staff";
 }
 
 export function canUploadBill(access: { kind: string }): boolean {

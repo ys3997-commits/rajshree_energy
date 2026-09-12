@@ -41,6 +41,7 @@ export async function getCurrentAccess(): Promise<Access> {
       saleOrderSalesExecs: true,
       purchaseOrderSalesExecs: true,
       ageingReportSalesExecs: true,
+      customerLedgerSalesExecs: true,
     },
   });
   if (!staff?.passwordHash || staff.pageKeys.length === 0) {
@@ -72,6 +73,10 @@ export async function getCurrentAccess(): Promise<Access> {
     ageingReportSalesExecs: normalizeStoredExecScope(
       staff.ageingReportSalesExecs,
       pageKeys.includes("reports-ageing"),
+    ),
+    customerLedgerSalesExecs: normalizeStoredExecScope(
+      staff.customerLedgerSalesExecs,
+      pageKeys.includes("reports-ledger"),
     ),
   };
 }

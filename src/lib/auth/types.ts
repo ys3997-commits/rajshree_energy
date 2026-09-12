@@ -10,5 +10,6 @@ export type Access =
       saleOrderSalesExecs: string[];
       purchaseOrderSalesExecs: string[];
       ageingReportSalesExecs: string[];
+      customerLedgerSalesExecs: string[];
     }
   | { kind: "none" };

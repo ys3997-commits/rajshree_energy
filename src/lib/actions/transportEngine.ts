@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import {
   diffInQuantity,
   effectiveReceivingQuantity,
+  freightBillQuantity,
   toDecimal,
 } from "@/lib/domain/computations";
 import {
@@ -28,6 +29,7 @@ export type TransportEngineRow = {
   receivingWeight: string | null;
   diffInWeight: string | null;
   customerName: string | null;
+  customerCity: string | null;
   portName: string | null;
   transporterName: string | null;
   dispatchTerms: DispatchTerms;
@@ -81,7 +83,8 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       },
       order: {
         select: {
-          customer: { select: { name: true } },
+          customer: { select: { name: true, city: true } },
+          port: { select: { name: true } },
         },
       },
     },
@@ -91,12 +94,14 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
   return rows.map((row) => {
     const isFor = row.dispatchTerms === DispatchTerms.FOR;
     const freightPerTon = isFor && row.freight != null ? row.freight : null;
+    const receivingWeight = effectiveReceivingQuantity(row);
     const freightAmount =
       freightPerTon != null
-        ? toDecimal(freightPerTon).mul(row.dispatchedQuantity)
+        ? toDecimal(freightPerTon).mul(
+            freightBillQuantity(row.dispatchedQuantity, receivingWeight),
+          )
         : null;
     const diff = diffInQuantity(row);
-    const receivingWeight = effectiveReceivingQuantity(row);
 
     return {
       id: row.id,
@@ -108,7 +113,8 @@ export async function listTransportEngineRows(): Promise<TransportEngineRow[]> {
       receivingWeight: receivingWeight?.toString() ?? null,
       diffInWeight: diff?.toString() ?? null,
       customerName: row.order?.customer?.name ?? null,
-      portName: row.vessel?.port?.name ?? null,
+      customerCity: row.order?.customer?.city ?? null,
+      portName: row.order?.port?.name ?? row.vessel?.port?.name ?? null,
       transporterName: row.transporter?.name ?? null,
       dispatchTerms: row.dispatchTerms,
       freightPerTon: freightPerTon?.toString() ?? null,

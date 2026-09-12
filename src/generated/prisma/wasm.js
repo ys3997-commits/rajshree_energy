@@ -133,6 +133,7 @@ exports.Prisma.StaffScalarFieldEnum = {
   saleOrderSalesExecs: 'saleOrderSalesExecs',
   purchaseOrderSalesExecs: 'purchaseOrderSalesExecs',
   ageingReportSalesExecs: 'ageingReportSalesExecs',
+  customerLedgerSalesExecs: 'customerLedgerSalesExecs',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -435,6 +436,7 @@ exports.Prisma.InvestmentPeriodValueScalarFieldEnum = {
   companyId: 'companyId',
   periodId: 'periodId',
   amount: 'amount',
+  interest: 'interest',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

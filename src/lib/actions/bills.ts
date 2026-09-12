@@ -163,10 +163,6 @@ async function requireBillsAccess() {
   return access;
 }
 
-function staffScope(access: Awaited<ReturnType<typeof requireBillsAccess>>) {
-  return access.kind === "staff" ? { staffId: access.id } : {};
-}
-
 function formFile(formData: FormData): File | null {
   const single = formData.get("file");
   if (single instanceof File && (single.size > 0 || single.name.trim() !== "")) {
@@ -262,13 +258,11 @@ export async function listBills(options?: {
   const approver = parseBillTextFilter(options?.approver);
   const sentBy =
     access.kind === "owner" ? parseBillTextFilter(options?.sentBy) : null;
-  const scope = staffScope(access);
-  const extra = {
+  const filterWhere = {
     ...(approver ? { approverName: approver } : {}),
     ...(sentBy ? { staffId: sentBy } : {}),
     ...billDateRange(dateFrom, dateTo),
   };
-  const filterWhere = { ...scope, ...extra };
   const listWhere = { ...filterWhere, ...(status ? { status } : {}) };
 
   const [all, pending, approved, rejected, total, senders] = await Promise.all([
@@ -332,7 +326,7 @@ export async function createBill(formData: FormData): Promise<BillRow> {
     select: { id: true },
   });
   if (!ownerMatch) {
-    throw new Error("Approver name must be an owner from Options");
+    throw new Error("Approver name must be from RE Leadership");
   }
   const remark = validateOwnerReviewRemark(
     String(formData.get("remark") ?? ""),
@@ -428,12 +422,11 @@ export async function updateBillAccountVoucherNo(
   const existing = await prisma.bill.findUnique({
     where: { id },
     select: {
-      staffId: true,
       accountVoucherNo: true,
     },
   });
   if (!existing) throw new Error("Bill not found");
-  if (!canViewBill(access, existing.staffId)) {
+  if (!canViewBill(access)) {
     throw new AccessDeniedError();
   }
   assertCanEditBillAccountVoucher(access, existing);
@@ -462,11 +455,10 @@ export async function getBillFile(id: string): Promise<{
       fileName: true,
       fileMime: true,
       fileData: true,
-      bill: { select: { staffId: true } },
     },
   });
   if (row) {
-    if (!canViewBill(access, row.bill.staffId)) {
+    if (!canViewBill(access)) {
       throw new AccessDeniedError();
     }
     return {
@@ -479,7 +471,6 @@ export async function getBillFile(id: string): Promise<{
   const bill = await prisma.bill.findUnique({
     where: { id },
     select: {
-      staffId: true,
       files: {
         select: { fileName: true, fileMime: true, fileData: true },
         orderBy: { sortOrder: "asc" },
@@ -488,7 +479,7 @@ export async function getBillFile(id: string): Promise<{
     },
   });
   const first = bill?.files[0];
-  if (!bill || !first || !canViewBill(access, bill.staffId)) {
+  if (!bill || !first || !canViewBill(access)) {
     throw new AccessDeniedError();
   }
   return {

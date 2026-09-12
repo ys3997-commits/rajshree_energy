@@ -168,8 +168,9 @@ export function TransportLedgerClient({
         header: "Freight Amount after TDS",
         align: "right" as const,
       },
+      { key: "port", header: "Loaded Place" },
+      { key: "unloadedPlace", header: "Unloaded Place" },
       { key: "customer", header: "Customer" },
-      { key: "port", header: "Port" },
       {
         key: "divider",
         header: DIVIDER,
@@ -205,6 +206,9 @@ export function TransportLedgerClient({
           ? (capitalizeName(dispatch.customerName) ?? dispatch.customerName)
           : "",
         port: dispatch?.portName ?? "",
+        unloadedPlace: dispatch?.customerCity
+          ? (capitalizeName(dispatch.customerCity) ?? dispatch.customerCity)
+          : "",
         divider: DIVIDER,
         fundDate: fund ? exportDate(fund.fundDate) : "",
         particular: fund?.fundType ?? "",
@@ -382,16 +386,34 @@ export function TransportLedgerClient({
                         <span className="ledger-th-inner">Date</span>
                       </th>
                       <th>
-                        <span className="ledger-th-inner">Lorry No</span>
+                        <span className="ledger-th-inner">
+                          <span>
+                            Lorry
+                            <br />
+                            No
+                          </span>
+                        </span>
                       </th>
                       <th className="cell-num">
                         <span className="ledger-th-inner">Weight</span>
                       </th>
                       <th className="cell-num">
-                        <span className="ledger-th-inner">Freight PMT</span>
+                        <span className="ledger-th-inner">
+                          <span>
+                            Freight
+                            <br />
+                            PMT
+                          </span>
+                        </span>
                       </th>
                       <th className="cell-num">
-                        <span className="ledger-th-inner">Freight Amount</span>
+                        <span className="ledger-th-inner">
+                          <span>
+                            Freight
+                            <br />
+                            Amount
+                          </span>
+                        </span>
                       </th>
                       <th className="cell-num">
                         <span className="ledger-th-inner">
@@ -403,10 +425,25 @@ export function TransportLedgerClient({
                         </span>
                       </th>
                       <th>
-                        <span className="ledger-th-inner">Customer</span>
+                        <span className="ledger-th-inner">
+                          <span>
+                            Loaded
+                            <br />
+                            Place
+                          </span>
+                        </span>
                       </th>
                       <th>
-                        <span className="ledger-th-inner">Port</span>
+                        <span className="ledger-th-inner">
+                          <span>
+                            Unloaded
+                            <br />
+                            Place
+                          </span>
+                        </span>
+                      </th>
+                      <th>
+                        <span className="ledger-th-inner">Customer</span>
                       </th>
                     </tr>
                   </thead>
@@ -438,13 +475,19 @@ export function TransportLedgerClient({
                             ? formatAmount(row.freightAmountAfterTds)
                             : "—"}
                         </td>
+                        <td>{row.portName ?? "—"}</td>
+                        <td>
+                          {row.customerCity
+                            ? (capitalizeName(row.customerCity) ??
+                              row.customerCity)
+                            : "—"}
+                        </td>
                         <td>
                           {row.customerName
                             ? (capitalizeName(row.customerName) ??
                               row.customerName)
                             : "—"}
                         </td>
-                        <td>{row.portName ?? "—"}</td>
                       </tr>
                     ))}
                   </tbody>

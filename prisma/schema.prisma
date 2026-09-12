@@ -94,6 +94,8 @@ model Staff {
   purchaseOrderSalesExecs String[] @default([])
   /// Sales executives visible in Ageing Report. ["*"] = all; else executive names.
   ageingReportSalesExecs String[] @default([])
+  /// Sales executives visible in Customer Ledger. ["*"] = all; else executive names.
+  customerLedgerSalesExecs String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -199,7 +201,7 @@ model DealingCompanyOption {
   updatedAt DateTime @updatedAt
 }
 
-/// Managed list of owner names (suggested on customers and transporters; stored as text).
+/// Managed list of RE Leadership names (bill approvers).
 model OwnerOption {
   id        String   @id @default(cuid())
   name      String   @unique
@@ -561,12 +563,13 @@ model InvestmentPeriod {
   @@index([createdAt])
 }
 
-/// Profit / loss for one company in one period column.
+/// Profit / loss (and optional interest) for one company in one period column.
 model InvestmentPeriodValue {
-  id        String  @id @default(cuid())
+  id        String   @id @default(cuid())
   companyId String
   periodId  String
-  amount    Decimal @db.Decimal(18, 2)
+  amount    Decimal  @db.Decimal(18, 2)
+  interest  Decimal? @db.Decimal(18, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

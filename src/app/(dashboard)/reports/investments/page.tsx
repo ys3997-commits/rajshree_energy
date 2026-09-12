@@ -22,7 +22,8 @@ export default async function InvestmentsReportPage() {
           </p>
           <h1 className="page-title">Investments</h1>
           <p className="page-subtitle">
-            Track current investment and period profit / loss.
+            Track current investment, with period profit / loss and interest
+            added on each period end date.
           </p>
         </div>
       </div>

@@ -186,7 +186,6 @@ export function CustomersClient({
   sectors,
   saleExecutives,
   dealingCompanies,
-  owners,
 }: {
   initial: CustomerListResult;
   customerOptions: CustomerOpt[];
@@ -194,7 +193,6 @@ export function CustomersClient({
   sectors: string[];
   saleExecutives: string[];
   dealingCompanies: string[];
-  owners: string[];
 }) {
   const router = useRouter();
   const {
@@ -473,11 +471,11 @@ export function CustomersClient({
 
         <label>Owner</label>
         <div className="role-fields">
-          <OptionSelect
-            emptyLabel="Name"
+          <input
+            placeholder="Name"
             value={addForm.ownerName}
-            onChange={(ownerName) => patchAdd({ ownerName })}
-            options={owners}
+            onChange={(e) => setAddNameField("ownerName", e.target.value)}
+            onBlur={() => blurAddNameField("ownerName")}
           />
           <input
             placeholder="Phone"
@@ -821,13 +819,15 @@ export function CustomersClient({
                         </td>
                         <td>
                           <div className="customer-inline-stack">
-                            <OptionSelect
-                              emptyLabel="Name"
+                            <input
+                              className="field-input"
+                              placeholder="Name"
+                              aria-label="Owner name"
                               value={editForm.ownerName}
-                              onChange={(ownerName) =>
-                                patchEdit({ ownerName })
+                              onChange={(e) =>
+                                setEditNameField("ownerName", e.target.value)
                               }
-                              options={owners}
+                              onBlur={() => blurEditNameField("ownerName")}
                             />
                             <input
                               className="field-input"

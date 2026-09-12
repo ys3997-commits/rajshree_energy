@@ -9,6 +9,13 @@ import {
 } from "@/lib/domain/customerDue";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
+import { requirePage } from "@/lib/auth/access";
+import {
+  CUSTOMER_LEDGER_PAGE_KEY,
+  execScopeToCustomerWhere,
+  getStaffReportExecScope,
+  rowMatchesExecScope,
+} from "@/lib/auth/report-exec-access";
 import { Decimal } from "@prisma/client/runtime/library";
 
 export type LedgerCustomerOption = {
@@ -183,7 +190,10 @@ function purchaseDispatchRow(args: {
 
 /** Customers for the ledger dropdown (name ascending). */
 export async function listLedgerCustomers(): Promise<LedgerCustomerOption[]> {
+  const access = await requirePage(CUSTOMER_LEDGER_PAGE_KEY);
+  const scope = getStaffReportExecScope(access, CUSTOMER_LEDGER_PAGE_KEY);
   const rows = await prisma.customer.findMany({
+    where: execScopeToCustomerWhere(scope),
     orderBy: { name: "asc" },
     select: { id: true, name: true, category: true },
   });
@@ -201,6 +211,9 @@ export async function getCustomerLedger(
 ): Promise<CustomerLedgerResult | null> {
   if (!customerId) return null;
 
+  const access = await requirePage(CUSTOMER_LEDGER_PAGE_KEY);
+  const scope = getStaffReportExecScope(access, CUSTOMER_LEDGER_PAGE_KEY);
+
   const customer = await prisma.customer.findUnique({
     where: { id: customerId },
     select: {
@@ -210,9 +223,13 @@ export async function getCustomerLedger(
       openingDue: true,
       due: true,
       creditDays: true,
+      saleExecutive: true,
     },
   });
   if (!customer) return null;
+  if (scope !== "all" && !rowMatchesExecScope(customer.saleExecutive, scope)) {
+    return null;
+  }
 
   const [saleDispatches, purchaseDispatches] = await Promise.all([
     prisma.dispatch.findMany({

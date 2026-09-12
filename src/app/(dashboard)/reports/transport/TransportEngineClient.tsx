@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { DispatchTerms } from "@/generated/prisma";
+import { UpdateTableInteraction } from "@/components/UpdateTableInteraction";
 import { EditTransportChecklistButton } from "@/components/EditTransportChecklistButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
@@ -15,8 +16,16 @@ import {
   formatLorryNumber,
   formatAmount,
 } from "@/lib/domain/format";
-import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
+import { displayDispatchNumber, parseDispatchSequence } from "@/lib/domain/dispatchNumbers";
 import { isTransportChecklistComplete } from "@/lib/domain/dispatchChecklist";
+
+type TransportSortKey =
+  | "date"
+  | "dispatchNumber"
+  | "diffInWeight"
+  | "deliveryTerms"
+  | "transporterName";
+type SortDir = "asc" | "desc";
 
 function formatChecklistYes(value: boolean): string {
   return value ? "Yes" : "—";
@@ -28,6 +37,34 @@ function distinctTrimmed(values: Array<string | null | undefined>): string[] {
     if (value?.trim()) names.add(value.trim());
   }
   return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+function sortIndicator(active: boolean, dir: SortDir): string {
+  if (!active) return "";
+  return dir === "asc" ? " ↑" : " ↓";
+}
+
+function compareNullableNumber(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): number {
+  const an = a == null || a === "" ? null : Number(a);
+  const bn = b == null || b === "" ? null : Number(b);
+  const aValid = an != null && Number.isFinite(an);
+  const bValid = bn != null && Number.isFinite(bn);
+  if (!aValid && !bValid) return 0;
+  if (!aValid) return 1;
+  if (!bValid) return -1;
+  return an - bn;
+}
+
+function compareText(a: string | null | undefined, b: string | null | undefined): number {
+  const left = a?.trim() ?? "";
+  const right = b?.trim() ?? "";
+  if (!left && !right) return 0;
+  if (!left) return 1;
+  if (!right) return -1;
+  return left.localeCompare(right);
 }
 
 function buildTransportEditRowSummary(row: TransportEngineRow) {
@@ -44,6 +81,9 @@ function buildTransportEditRowSummary(row: TransportEngineRow) {
       ? (capitalizeName(row.customerName) ?? row.customerName)
       : "—",
     portName: row.portName ?? "—",
+    unloadingPlace: row.customerCity
+      ? (capitalizeName(row.customerCity) ?? row.customerCity)
+      : "—",
     deliveryTerms: formatDispatchTerms(row.dispatchTerms),
     transporter: row.transporterName
       ? (capitalizeName(row.transporterName) ?? row.transporterName)
@@ -83,6 +123,8 @@ export function TransportEngineClient({
   );
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
+  const [sortKey, setSortKey] = useState<TransportSortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const customerOptions = useMemo(
     () => distinctTrimmed(rows.map((row) => row.customerName)),
@@ -139,6 +181,49 @@ export function TransportEngineClient({
     dateEnd,
   ]);
 
+  function toggleSort(key: TransportSortKey) {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortKey(key);
+    setSortDir(
+      key === "date" || key === "diffInWeight" ? "desc" : "asc",
+    );
+  }
+
+  const displayed = useMemo(() => {
+    if (variant !== "update" || !sortKey) return filtered;
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      let cmp = 0;
+      if (sortKey === "date") {
+        cmp = a.dispatchDate.localeCompare(b.dispatchDate);
+      } else if (sortKey === "dispatchNumber") {
+        const aSeq = parseDispatchSequence(a.dispatchNumber) ?? Number.POSITIVE_INFINITY;
+        const bSeq = parseDispatchSequence(b.dispatchNumber) ?? Number.POSITIVE_INFINITY;
+        cmp = aSeq - bSeq;
+      } else if (sortKey === "diffInWeight") {
+        cmp = compareNullableNumber(a.diffInWeight, b.diffInWeight);
+      } else if (sortKey === "deliveryTerms") {
+        cmp = formatDispatchTerms(a.dispatchTerms).localeCompare(
+          formatDispatchTerms(b.dispatchTerms),
+        );
+      } else {
+        cmp = compareText(
+          a.transporterName
+            ? (capitalizeName(a.transporterName) ?? a.transporterName)
+            : "",
+          b.transporterName
+            ? (capitalizeName(b.transporterName) ?? b.transporterName)
+            : "",
+        );
+      }
+      if (cmp !== 0) return cmp * dir;
+      return a.id.localeCompare(b.id);
+    });
+  }, [filtered, sortKey, sortDir, variant]);
+
   const exportColumns = useMemo(() => {
     const base = [
       { key: "date", header: "Date" },
@@ -161,6 +246,7 @@ export function TransportEngineClient({
     },
     { key: "customer", header: "Customer name" },
     { key: "portName", header: "Port name" },
+    { key: "unloadingPlace", header: "Unloading place" },
     { key: "deliveryTerms", header: "Delivery terms" },
     { key: "transporter", header: "Transporter name" },
     {
@@ -186,14 +272,15 @@ export function TransportEngineClient({
             date: "Date",
             saleInvoice: "Sale Invoice",
             lorryNumber: "Lorry Number",
-            loadingWeight: "Loading Weight",
-            receivingWeight: "Receiving Weight",
-            diffInWeight: "Diff in Weight",
+            loadingWeight: "Loaded Qty",
+            receivingWeight: "Unloaded Qty",
+            diffInWeight: "Diff Qty",
             customer: "Customer Name",
-            portName: "Port Name",
+            portName: "Loading Place",
+            unloadingPlace: "Unloading Place",
             deliveryTerms: "Delivery Terms",
             transporter: "Transporter Name",
-            freightPerTon: "Freight per Ton",
+            freightPerTon: "Freight PMT",
             freightAmount: "Freight Amount",
             biltyHardCopy: "Bilty Hard Copy",
             invoiceHardCopy: "Invoice Hard Copy",
@@ -205,12 +292,12 @@ export function TransportEngineClient({
         }),
       ];
     }
-    return base;
+    return base.filter((column) => column.key !== "unloadingPlace");
   }, [variant]);
 
   const exportRows = useMemo(
     () =>
-      filtered.map((row) => {
+      displayed.map((row) => {
         const base = {
           date: formatDateDdMmYyyy(row.dispatchDate),
         saleInvoice: row.saleInvoiceNumber ?? "—",
@@ -222,6 +309,9 @@ export function TransportEngineClient({
           ? (capitalizeName(row.customerName) ?? row.customerName)
           : "—",
         portName: row.portName ?? "—",
+        unloadingPlace: row.customerCity
+          ? (capitalizeName(row.customerCity) ?? row.customerCity)
+          : "—",
         deliveryTerms: formatDispatchTerms(row.dispatchTerms),
         transporter: row.transporterName
           ? (capitalizeName(row.transporterName) ?? row.transporterName)
@@ -243,10 +333,11 @@ export function TransportEngineClient({
         }
         return base;
       }),
-    [filtered, variant],
+    [displayed, variant],
   );
 
   const isUpdateLayout = variant === "update";
+  const TableTag = isUpdateLayout ? UpdateTableInteraction : "table";
 
   return (
     <div>
@@ -361,7 +452,7 @@ export function TransportEngineClient({
         }
       >
         <div className="table-h-scroll">
-          <table
+          <TableTag
             className={
               isUpdateLayout
                 ? "data update-transport-table"
@@ -379,6 +470,7 @@ export function TransportEngineClient({
                 <col className="update-transport-col-qty" />
                 <col className="update-transport-col-name" />
                 <col className="update-transport-col-port" />
+                <col className="update-transport-col-place" />
                 <col className="update-transport-col-terms" />
                 <col className="update-transport-col-transporter" />
                 <col className="update-transport-col-amt" />
@@ -393,30 +485,88 @@ export function TransportEngineClient({
           <thead>
             <tr>
               {isUpdateLayout ? (
-                <th className="update-transport-dispatch-col">Dispatch No</th>
+                <th className="update-transport-dispatch-col">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("dispatchNumber")}
+                  >
+                    Dispatch No
+                    {sortIndicator(sortKey === "dispatchNumber", sortDir)}
+                  </button>
+                </th>
               ) : null}
               <th className={isUpdateLayout ? "update-transport-date-col" : undefined}>
-                Date
+                {isUpdateLayout ? (
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("date")}
+                  >
+                    Date
+                    {sortIndicator(sortKey === "date", sortDir)}
+                  </button>
+                ) : (
+                  "Date"
+                )}
               </th>
               <th>{isUpdateLayout ? "Sale Invoice" : "Sale invoice"}</th>
               <th>{isUpdateLayout ? "Lorry Number" : "Lorry number"}</th>
               <th className="cell-num">
-                {isUpdateLayout ? "Loading Weight" : "Loading weight"}
+                {isUpdateLayout ? "Loaded Qty" : "Loading weight"}
               </th>
               <th className="cell-num">
-                {isUpdateLayout ? "Receiving Weight" : "Receiving weight"}
+                {isUpdateLayout ? "Unloaded Qty" : "Receiving weight"}
               </th>
               <th className="cell-num">
-                {isUpdateLayout ? "Diff in Weight" : "Diff in weight"}
+                {isUpdateLayout ? (
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("diffInWeight")}
+                  >
+                    Diff Qty
+                    {sortIndicator(sortKey === "diffInWeight", sortDir)}
+                  </button>
+                ) : (
+                  "Diff in weight"
+                )}
               </th>
               <th className={isUpdateLayout ? undefined : "report-customer-col"}>
                 {isUpdateLayout ? "Customer Name" : "Customer name"}
               </th>
-              <th>{isUpdateLayout ? "Port Name" : "Port name"}</th>
-              <th>{isUpdateLayout ? "Delivery Terms" : "Delivery terms"}</th>
-              <th>{isUpdateLayout ? "Transporter Name" : "Transporter name"}</th>
+              <th>{isUpdateLayout ? "Loading Place" : "Port name"}</th>
+              {isUpdateLayout ? <th>Unloading Place</th> : null}
+              <th>
+                {isUpdateLayout ? (
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("deliveryTerms")}
+                  >
+                    Delivery Terms
+                    {sortIndicator(sortKey === "deliveryTerms", sortDir)}
+                  </button>
+                ) : (
+                  "Delivery terms"
+                )}
+              </th>
+              <th>
+                {isUpdateLayout ? (
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("transporterName")}
+                  >
+                    Transporter Name
+                    {sortIndicator(sortKey === "transporterName", sortDir)}
+                  </button>
+                ) : (
+                  "Transporter name"
+                )}
+              </th>
               <th className="cell-num">
-                {isUpdateLayout ? "Freight per Ton" : "Freight per ton"}
+                {isUpdateLayout ? "Freight PMT" : "Freight per ton"}
               </th>
               <th className="cell-num">
                 {isUpdateLayout ? "Freight Amount" : "Freight amount"}
@@ -437,10 +587,10 @@ export function TransportEngineClient({
             </tr>
           </thead>
           <tbody>
-            {filtered.map((row) => {
+            {displayed.map((row) => {
               const lorry = formatLorryNumber(row.lorryNumber);
               return (
-                <tr key={row.id}>
+                <tr key={row.id} data-dispatch-id={row.id}>
                   {isUpdateLayout ? (
                     <td className="update-transport-dispatch-col">
                       {displayDispatchNumber(row.dispatchNumber)}
@@ -499,6 +649,20 @@ export function TransportEngineClient({
                   <td className={row.portName ? undefined : "cell-center"}>
                     {row.portName ?? "—"}
                   </td>
+                  {isUpdateLayout ? (
+                    <td
+                      className={
+                        row.customerCity
+                          ? "update-transport-name-cell"
+                          : "update-transport-name-cell cell-center"
+                      }
+                      title={row.customerCity ?? undefined}
+                    >
+                      {row.customerCity
+                        ? (capitalizeName(row.customerCity) ?? row.customerCity)
+                        : "—"}
+                    </td>
+                  ) : null}
                   <td>
                     {formatDispatchTerms(row.dispatchTerms)}
                   </td>
@@ -547,49 +711,107 @@ export function TransportEngineClient({
                   </td>
                   <td className={isUpdateLayout ? "update-transport-actions-col" : undefined}>
                     <div className="dispatch-edit-actions">
-                      <EditTransportChecklistButton
-                        dispatchId={row.id}
-                        biltyHardCopy={row.biltyHardCopy}
-                        transportInvoiceNo={row.transportInvoiceNo}
-                        invoiceHardCopy={row.invoiceHardCopy}
-                        softCopyStatus={row.softCopyStatus}
-                        transportEntryInTally={row.transportEntryInTally}
-                        canEdit={row.canEdit}
-                        buttonLabel={
-                          isUpdateLayout ? "Transport edit" : "Edit"
-                        }
-                        rowSummary={
-                          isUpdateLayout
-                            ? buildTransportEditRowSummary(row)
-                            : undefined
-                        }
-                        onUpdated={(result) => {
-                          setRows((prev) =>
-                            prev.map((item) =>
-                              item.id === row.id
-                                ? {
-                                    ...item,
-                                    biltyHardCopy: result.biltyHardCopy,
-                                    transportInvoiceNo:
-                                      result.transportInvoiceNo,
-                                    invoiceHardCopy: result.invoiceHardCopy,
-                                    softCopyStatus: result.softCopyStatus,
-                                    transportEntryInTally:
-                                      result.transportEntryInTally,
-                                  }
-                                : item,
-                            ),
-                          );
-                        }}
-                      />
+                      {isUpdateLayout ? (
+                        <>
+                          <EditTransportChecklistButton
+                            dispatchId={row.id}
+                            mode="bilty"
+                            biltyHardCopy={row.biltyHardCopy}
+                            transportInvoiceNo={row.transportInvoiceNo}
+                            invoiceHardCopy={row.invoiceHardCopy}
+                            softCopyStatus={row.softCopyStatus}
+                            transportEntryInTally={row.transportEntryInTally}
+                            canEdit={row.canEdit}
+                            buttonLabel="Bilty Edit"
+                            rowSummary={buildTransportEditRowSummary(row)}
+                            onUpdated={(result) => {
+                              setRows((prev) =>
+                                prev.map((item) =>
+                                  item.id === row.id
+                                    ? {
+                                        ...item,
+                                        biltyHardCopy: result.biltyHardCopy,
+                                        transportInvoiceNo:
+                                          result.transportInvoiceNo,
+                                        invoiceHardCopy: result.invoiceHardCopy,
+                                        softCopyStatus: result.softCopyStatus,
+                                        transportEntryInTally:
+                                          result.transportEntryInTally,
+                                      }
+                                    : item,
+                                ),
+                              );
+                            }}
+                          />
+                          <EditTransportChecklistButton
+                            dispatchId={row.id}
+                            mode="invoice"
+                            biltyHardCopy={row.biltyHardCopy}
+                            transportInvoiceNo={row.transportInvoiceNo}
+                            invoiceHardCopy={row.invoiceHardCopy}
+                            softCopyStatus={row.softCopyStatus}
+                            transportEntryInTally={row.transportEntryInTally}
+                            canEdit={row.canEdit}
+                            buttonLabel="Invoice Edit"
+                            rowSummary={buildTransportEditRowSummary(row)}
+                            onUpdated={(result) => {
+                              setRows((prev) =>
+                                prev.map((item) =>
+                                  item.id === row.id
+                                    ? {
+                                        ...item,
+                                        biltyHardCopy: result.biltyHardCopy,
+                                        transportInvoiceNo:
+                                          result.transportInvoiceNo,
+                                        invoiceHardCopy: result.invoiceHardCopy,
+                                        softCopyStatus: result.softCopyStatus,
+                                        transportEntryInTally:
+                                          result.transportEntryInTally,
+                                      }
+                                    : item,
+                                ),
+                              );
+                            }}
+                          />
+                        </>
+                      ) : (
+                        <EditTransportChecklistButton
+                          dispatchId={row.id}
+                          biltyHardCopy={row.biltyHardCopy}
+                          transportInvoiceNo={row.transportInvoiceNo}
+                          invoiceHardCopy={row.invoiceHardCopy}
+                          softCopyStatus={row.softCopyStatus}
+                          transportEntryInTally={row.transportEntryInTally}
+                          canEdit={row.canEdit}
+                          buttonLabel="Edit"
+                          onUpdated={(result) => {
+                            setRows((prev) =>
+                              prev.map((item) =>
+                                item.id === row.id
+                                  ? {
+                                      ...item,
+                                      biltyHardCopy: result.biltyHardCopy,
+                                      transportInvoiceNo:
+                                        result.transportInvoiceNo,
+                                      invoiceHardCopy: result.invoiceHardCopy,
+                                      softCopyStatus: result.softCopyStatus,
+                                      transportEntryInTally:
+                                        result.transportEntryInTally,
+                                    }
+                                  : item,
+                              ),
+                            );
+                          }}
+                        />
+                      )}
                     </div>
                   </td>
                 </tr>
               );
             })}
-            {filtered.length === 0 && (
+            {displayed.length === 0 && (
               <tr>
-                <td colSpan={isUpdateLayout ? 18 : 17}>
+                <td colSpan={isUpdateLayout ? 19 : 17}>
                   {rows.length === 0
                     ? "No dispatches yet."
                     : "No dispatches match these filters."}
@@ -597,7 +819,7 @@ export function TransportEngineClient({
               </tr>
             )}
           </tbody>
-        </table>
+          </TableTag>
         </div>
       </div>
     </div>

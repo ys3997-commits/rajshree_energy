@@ -10,13 +10,18 @@ import {
   formatAmount,
 } from "@/lib/domain/format";
 import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
+import { isUpdateSaleReceivingOverdue } from "@/lib/domain/updateSale";
 import {
   buildUpdateSaleExportRows,
   dispatchExportColumnsUpdateSale,
+  formatSaleGstAmount,
+  formatSaleTcsAmount,
+  formatSaleTotalAmount,
   type DispatchListData,
 } from "../../dispatches/dispatchListShared";
+import { UpdateTableInteraction } from "@/components/UpdateTableInteraction";
 
-const COLUMN_COUNT = 13;
+const COLUMN_COUNT = 15;
 
 export function UpdateSaleListView({ data }: { data: DispatchListData }) {
   const { filters, dispatches, customers, ports } = data;
@@ -26,8 +31,11 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
     <>
       <form className="filters" method="get" action="/update/sale">
         <label>
-          Sale status
-          <select name="saleUpdateStatus" defaultValue={filters.saleUpdateStatus}>
+          Received Qty
+          <select
+            name="receivedQtyStatus"
+            defaultValue={filters.receivedQtyStatus}
+          >
             <option value="">All</option>
             <option value="PENDING">Pending</option>
             <option value="RECEIVED">Received</option>
@@ -107,13 +115,15 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
 
       <div className="table-wrap table-wrap-scroll update-sale-table-wrap">
         <div className="table-h-scroll">
-          <table className="data update-sale-table">
+          <UpdateTableInteraction className="data update-sale-table">
             <colgroup>
               <col className="update-sale-col-dispatch" />
               <col className="update-sale-col-date" />
               <col className="update-sale-col-invoice" />
               <col className="update-sale-col-lorry" />
-              <col className="update-sale-col-qty" />
+              <col className="update-sale-col-weight" />
+              <col className="update-sale-col-amt" />
+              <col className="update-sale-col-amt" />
               <col className="update-sale-col-amt" />
               <col className="update-sale-col-amt" />
               <col className="update-sale-col-customer" />
@@ -127,16 +137,18 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
               <tr>
                 <th className="update-sale-dispatch-col">Dispatch No</th>
                 <th className="update-sale-date-col">Date</th>
-                <th>Sale Invoice</th>
-                <th>Lorry No</th>
-                <th className="cell-num">Weight</th>
+                <th className="update-sale-invoice-col">Sale Invoice</th>
+                <th className="update-sale-lorry-col">Lorry No</th>
+                <th className="cell-num update-sale-weight-col">Loading Qty</th>
                 <th className="cell-num">Basic Price</th>
-                <th className="cell-num">Total Price</th>
+                <th className="cell-num">GST</th>
+                <th className="cell-num">TCS</th>
+                <th className="cell-num">Total Amount</th>
                 <th>Customer</th>
                 <th>Delivery Terms</th>
                 <th>Transporter Name</th>
-                <th className="cell-num">Received</th>
-                <th className="cell-num">Diff</th>
+                <th className="cell-num">Received Qty</th>
+                <th className="cell-num">Diff Qty</th>
                 <th className="update-sale-actions-col"></th>
               </tr>
             </thead>
@@ -147,9 +159,28 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                   ? row.dispatchedQuantity
                   : row.receivingQuantity;
                 const diffQty = isExPort ? 0 : row.diffInQuantity;
+                const gstAmount = formatSaleGstAmount(
+                  row.dispatchedQuantity,
+                  row.saleBasicRate,
+                );
+                const tcsAmount = formatSaleTcsAmount(
+                  row.dispatchedQuantity,
+                  row.saleBasicRate,
+                  row.customerCategory,
+                );
+                const totalAmount = formatSaleTotalAmount(
+                  row.dispatchedQuantity,
+                  row.saleBasicRate,
+                  row.customerCategory,
+                );
+                const overdue = isUpdateSaleReceivingOverdue(row);
 
                 return (
-                  <tr key={row.id}>
+                  <tr
+                    key={row.id}
+                    data-dispatch-id={row.id}
+                    className={overdue ? "collection-row-due-call" : undefined}
+                  >
                     <td className="update-sale-dispatch-col">
                       {displayDispatchNumber(row.dispatchNumber)}
                     </td>
@@ -159,24 +190,28 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                       )}
                     </td>
                     <td
-                      className={
-                        row.saleInvoiceNumber ? undefined : "cell-center"
-                      }
+                      className={`update-sale-invoice-col${
+                        row.saleInvoiceNumber ? "" : " cell-center"
+                      }`}
                     >
                       {row.saleInvoiceNumber ?? "—"}
                     </td>
-                    <td className={row.lorryNumber ? undefined : "cell-center"}>
+                    <td
+                      className={`update-sale-lorry-col${
+                        row.lorryNumber ? "" : " cell-center"
+                      }`}
+                    >
                       {formatLorryNumber(row.lorryNumber) ?? "—"}
                     </td>
-                    <td className="cell-num">
+                    <td className="cell-num update-sale-weight-col">
                       {formatDispatchMt(row.dispatchedQuantity)}
                     </td>
                     <td className="cell-num">
                       {formatAmount(row.saleBasicRate)}
                     </td>
-                    <td className="cell-num">
-                      {formatAmount(row.saleTotalRate)}
-                    </td>
+                    <td className="cell-num">{gstAmount}</td>
+                    <td className="cell-num">{tcsAmount}</td>
+                    <td className="cell-num">{totalAmount}</td>
                     <td
                       className={`update-sale-customer-cell${
                         row.customerName ? "" : " cell-center"
@@ -230,7 +265,9 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                               formatLorryNumber(row.lorryNumber) ?? "—",
                             weight: formatDispatchMt(row.dispatchedQuantity),
                             basicPrice: formatAmount(row.saleBasicRate),
-                            totalPrice: formatAmount(row.saleTotalRate),
+                            gst: gstAmount,
+                            tcs: tcsAmount,
+                            totalAmount,
                             customer: row.customerName ?? "—",
                             deliveryTerms: formatDispatchTerms(
                               row.dispatchTerms,
@@ -249,7 +286,7 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                 </tr>
               )}
             </tbody>
-          </table>
+          </UpdateTableInteraction>
         </div>
       </div>
     </>

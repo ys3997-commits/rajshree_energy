@@ -6,7 +6,10 @@ import {
   discountDueDelta,
   paymentDueDelta,
 } from "@/lib/domain/customerDue";
-import { timeWeightedInvestedCapital } from "@/lib/domain/investmentPeriodReturn";
+import {
+  periodReturnDelta,
+  timeWeightedInvestedCapital,
+} from "@/lib/domain/investmentPeriodReturn";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -21,8 +24,10 @@ export type InvestmentReportRow = {
   id: string;
   name: string;
   currentDue: string;
-  /** periodId → amount string */
+  /** periodId → profit / loss amount string */
   amounts: Record<string, string>;
+  /** periodId → interest amount string */
+  interests: Record<string, string>;
   /**
    * periodId → time-weighted invested capital for that period
    * (opening + fund movements weighted by days invested in the period).
@@ -38,8 +43,10 @@ export type InvestmentPeriodInput = {
 
 export type InvestmentPeriodValuesInput = {
   companyId: string;
-  /** periodId → amount */
+  /** periodId → profit / loss amount */
   amounts: Record<string, string>;
+  /** periodId → interest amount */
+  interests?: Record<string, string>;
 };
 
 function parseDate(value: string, label: string): Date {
@@ -60,6 +67,13 @@ function parseAmount(value: string | number): Decimal {
     throw new Error("Amount must be a valid number");
   }
   return d.toDecimalPlaces(2);
+}
+
+function parseOptionalAmount(value: string | undefined): Decimal | null {
+  if (value === undefined) return null;
+  const trimmed = value.trim();
+  if (trimmed === "" || trimmed === "-") return null;
+  return parseAmount(trimmed);
 }
 
 function formatDay(value: Date): string {
@@ -144,6 +158,7 @@ export async function listInvestmentReportRows(): Promise<InvestmentReportRow[]>
         companyId: true,
         periodId: true,
         amount: true,
+        interest: true,
       },
     }),
   ]);
@@ -181,11 +196,33 @@ export async function listInvestmentReportRows(): Promise<InvestmentReportRow[]>
     movementsByCompany.set(discount.investmentCompanyId, list);
   }
 
+  const periodById = new Map(periods.map((period) => [period.id, period]));
   const amountsByCompany = new Map<string, Record<string, string>>();
+  const interestsByCompany = new Map<string, Record<string, string>>();
   for (const value of values) {
-    const map = amountsByCompany.get(value.companyId) ?? {};
-    map[value.periodId] = value.amount.toString();
-    amountsByCompany.set(value.companyId, map);
+    const amountMap = amountsByCompany.get(value.companyId) ?? {};
+    amountMap[value.periodId] = value.amount.toString();
+    amountsByCompany.set(value.companyId, amountMap);
+    if (value.interest != null) {
+      const interestMap = interestsByCompany.get(value.companyId) ?? {};
+      interestMap[value.periodId] = value.interest.toString();
+      interestsByCompany.set(value.companyId, interestMap);
+    }
+
+    const period = periodById.get(value.periodId);
+    if (!period) continue;
+    const delta = toDecimal(
+      periodReturnDelta(
+        value.amount.toString(),
+        value.interest?.toString() ?? null,
+      ),
+    );
+    if (delta.isZero()) continue;
+    const current = dueByCompany.get(value.companyId) ?? toDecimal(0);
+    dueByCompany.set(value.companyId, current.plus(delta));
+    const list = movementsByCompany.get(value.companyId) ?? [];
+    list.push({ date: period.endDate, delta });
+    movementsByCompany.set(value.companyId, list);
   }
 
   return companies.map((company) => {
@@ -210,6 +247,7 @@ export async function listInvestmentReportRows(): Promise<InvestmentReportRow[]>
         .toDecimalPlaces(2)
         .toString(),
       amounts: amountsByCompany.get(company.id) ?? {},
+      interests: interestsByCompany.get(company.id) ?? {},
       investedByPeriod,
     };
   });
@@ -310,8 +348,9 @@ export async function saveInvestmentPeriodValues(
   }
 
   await prisma.$transaction(
-    entries.map(([periodId, value]) =>
-      prisma.investmentPeriodValue.upsert({
+    entries.map(([periodId, value]) => {
+      const interest = parseOptionalAmount(input.interests?.[periodId]);
+      return prisma.investmentPeriodValue.upsert({
         where: {
           companyId_periodId: { companyId, periodId },
         },
@@ -319,12 +358,14 @@ export async function saveInvestmentPeriodValues(
           companyId,
           periodId,
           amount: parseAmount(value),
+          interest,
         },
         update: {
           amount: parseAmount(value),
+          ...(input.interests ? { interest } : {}),
         },
-      }),
-    ),
+      });
+    }),
   );
 
   revalidateInvestmentReport();

@@ -7,6 +7,7 @@ import {
   getHomeLatestActivity,
   getHomePendingBillsByOwner,
   getHomeTodayKpis,
+  getHomeDebtorDueByCoal,
   getTopCustomersByCoalOrigin,
 } from "@/lib/actions/dashboard";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
@@ -32,6 +33,7 @@ import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
 import { HomeKpiStrip } from "@/components/HomeKpiStrip";
 import { HomeLatestActivityStrip } from "@/components/HomeLatestActivityStrip";
 import { HomePendingBillsStrip } from "@/components/HomePendingBillsStrip";
+import { HomeDebtorDuePanel } from "@/components/HomeDebtorDuePanel";
 
 function formatQty(value: string): string {
   return formatDispatchMt(value);
@@ -74,12 +76,14 @@ export default async function HomePage() {
     fundCharts,
     topCustomersByCoal,
     pendingBillsByOwner,
+    debtorDueByCoal,
   ] = await Promise.all([
     getHomeTodayKpis(),
     getHomeLatestActivity(),
     getHomeFundCharts(),
     getTopCustomersByCoalOrigin(7),
-    getHomePendingBillsByOwner(access.kind === "staff" ? access.id : undefined),
+    getHomePendingBillsByOwner(),
+    getHomeDebtorDueByCoal(),
   ]);
 
   const [customers, ports, vessels, qualityClasses] = await Promise.all([
@@ -170,6 +174,8 @@ export default async function HomePage() {
       {canOpen("/bills") ? (
         <HomePendingBillsStrip owners={pendingBillsByOwner} />
       ) : null}
+
+      <HomeDebtorDuePanel due={debtorDueByCoal} />
 
       <section className="home-section">
         <div className="home-section-head">

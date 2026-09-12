@@ -120,7 +120,15 @@ export async function listOrders(filters: OrderFilters = {}) {
     where,
     include: {
       customer: {
-        select: { id: true, name: true, city: true, state: true, category: true },
+        select: {
+          id: true,
+          name: true,
+          city: true,
+          state: true,
+          category: true,
+          purchaserName: true,
+          purchaserContact: true,
+        },
       },
       orderBy: { select: { id: true, name: true } },
       port: { select: { id: true, name: true } },

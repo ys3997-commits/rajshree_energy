@@ -27,6 +27,7 @@ export type DispatchFilters = {
   receiptStatus?: ReceiptStatus | "";
   purchaseUpdateStatus?: "PENDING" | "RECEIVED" | "";
   saleUpdateStatus?: "PENDING" | "RECEIVED" | "";
+  receivedQtyStatus?: "PENDING" | "RECEIVED" | "";
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
@@ -88,6 +89,19 @@ export async function listDispatches(filters: DispatchFilters = {}) {
         { saleInvoiceNumber: "" },
         { receivingQuantity: null },
       ],
+    });
+  }
+  if (filters.receivedQtyStatus === "RECEIVED") {
+    appendWhereAnd(where, {
+      OR: [
+        { receivingQuantity: { not: null } },
+        { dispatchTerms: DispatchTerms.EX_PORT },
+      ],
+    });
+  } else if (filters.receivedQtyStatus === "PENDING") {
+    appendWhereAnd(where, {
+      receivingQuantity: null,
+      NOT: { dispatchTerms: DispatchTerms.EX_PORT },
     });
   }
   if (filters.poNumber) {
@@ -153,7 +167,7 @@ export async function listDispatches(filters: DispatchFilters = {}) {
           poNumber: true,
           rate: true,
           finalRate: true,
-          customer: { select: { id: true, name: true } },
+          customer: { select: { id: true, name: true, category: true } },
           qualityClass: { include: qualityClassInclude },
         },
       },
@@ -218,6 +232,7 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       salePoNumber: row.poNumber,
       orderId: row.order?.id ?? null,
       customerName: row.order?.customer?.name ?? null,
+      customerCategory: row.order?.customer?.category ?? null,
       saleBasicRate: row.order?.rate ?? null,
       saleTotalRate: row.order?.finalRate ?? null,
       saleInvoiceNumber: row.saleInvoiceNumber,

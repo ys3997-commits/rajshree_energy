@@ -103,6 +103,7 @@ export function OptionsClient({
   const hasStateColumn = activeId === "ports" || activeId === "cities";
 
   const active = categoryMeta(activeId);
+  const listPhrase = active.listPhrase ?? active.label.toLowerCase();
 
   const filteredOptions = useMemo(() => {
     if (activeId === "people") return [];
@@ -367,7 +368,7 @@ export function OptionsClient({
             <input
               type="search"
               className="field-input options-search-input"
-              placeholder={`Search ${active.label.toLowerCase()}…`}
+              placeholder={`Search ${listPhrase}…`}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -551,7 +552,7 @@ export function OptionsClient({
                   >
                     {query.trim()
                       ? "No matches for your search."
-                      : `No ${active.label.toLowerCase()} yet. Add one above.`}
+                      : `No ${listPhrase} yet. Add one above.`}
                   </td>
                 </tr>
               )}

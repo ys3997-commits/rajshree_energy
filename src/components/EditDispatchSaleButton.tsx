@@ -15,7 +15,9 @@ export type SaleEditRowSummary = {
   lorryNumber: string;
   weight: string;
   basicPrice: string;
-  totalPrice: string;
+  gst: string;
+  tcs: string;
+  totalAmount: string;
   customer: string;
   deliveryTerms: string;
   transporter: string;
@@ -138,9 +140,14 @@ export function EditDispatchSaleButton({
               />
               <SummaryField label="Date" value={rowSummary.date} />
               <SummaryField label="Lorry no" value={rowSummary.lorryNumber} />
-              <SummaryField label="Weight" value={rowSummary.weight} />
+              <SummaryField label="Loading Qty" value={rowSummary.weight} />
               <SummaryField label="Basic price" value={rowSummary.basicPrice} />
-              <SummaryField label="Total price" value={rowSummary.totalPrice} />
+              <SummaryField label="GST" value={rowSummary.gst} />
+              <SummaryField label="TCS" value={rowSummary.tcs} />
+              <SummaryField
+                label="Total amount"
+                value={rowSummary.totalAmount}
+              />
               <SummaryField label="Customer" value={rowSummary.customer} />
               <SummaryField
                 label="Delivery terms"

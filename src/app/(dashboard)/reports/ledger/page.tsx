@@ -2,6 +2,8 @@ import {
   getCustomerLedger,
   listLedgerCustomers,
 } from "@/lib/actions/ledger";
+import { requirePage } from "@/lib/auth/access";
+import { CUSTOMER_LEDGER_PAGE_KEY } from "@/lib/auth/report-exec-access";
 import { LedgerClient } from "./LedgerClient";
 
 type SearchParams = Promise<{
@@ -15,6 +17,7 @@ export default async function LedgerReportPage({
 }: {
   searchParams: SearchParams;
 }) {
+  await requirePage(CUSTOMER_LEDGER_PAGE_KEY);
   const sp = await searchParams;
   const customerId = sp.customerId?.trim() || "";
   const dateFrom = sp.dateFrom?.trim() || "";

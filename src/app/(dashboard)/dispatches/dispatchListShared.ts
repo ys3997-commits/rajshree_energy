@@ -28,12 +28,14 @@ import {
   parseSaleOrderSequence,
 } from "@/lib/domain/orderNumbers";
 import { PURCHASE_TCS_RATE } from "@/lib/domain/purchaseRate";
+import { SALE_TCS_RATE, saleTcsApplies } from "@/lib/domain/saleRate";
 import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
 
 export type DispatchSearchParams = {
   receiptStatus?: string;
   purchaseUpdateStatus?: string;
   saleUpdateStatus?: string;
+  receivedQtyStatus?: string;
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
@@ -108,6 +110,50 @@ export function formatPurchaseTotalAmount(
   if (gst == null) return "—";
   const tcs = basicAmount.plus(gst).mul(PURCHASE_TCS_RATE);
   return formatAmount(basicAmount.plus(gst).plus(tcs));
+}
+
+export function formatSaleGstAmount(
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
+): string {
+  return formatPurchaseGstAmount(weight, basicRate);
+}
+
+export function formatSaleTcsAmount(
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
+  category: string | null | undefined,
+): string {
+  if (!saleTcsApplies(category)) return "—";
+  const gst = computeGst({
+    rate: basicRate != null ? toDecimal(basicRate) : null,
+    quantity: toDecimal(weight),
+  });
+  if (gst == null || basicRate == null) return "—";
+  const tcs = toDecimal(weight)
+    .mul(toDecimal(basicRate))
+    .plus(gst)
+    .mul(SALE_TCS_RATE);
+  return formatAmount(tcs);
+}
+
+export function formatSaleTotalAmount(
+  weight: DecimalLike,
+  basicRate: DecimalLike | null | undefined,
+  category: string | null | undefined,
+): string {
+  if (basicRate == null) return "—";
+  const basicAmount = toDecimal(weight).mul(toDecimal(basicRate));
+  const gst = computeGst({
+    rate: toDecimal(basicRate),
+    quantity: toDecimal(weight),
+  });
+  if (gst == null) return "—";
+  if (saleTcsApplies(category)) {
+    const tcs = basicAmount.plus(gst).mul(SALE_TCS_RATE);
+    return formatAmount(basicAmount.plus(gst).plus(tcs));
+  }
+  return formatAmount(basicAmount.plus(gst));
 }
 
 export const dispatchExportColumns = [
@@ -241,22 +287,32 @@ export const dispatchExportColumnsUpdateSale = [
   { key: "date", header: "Date" },
   { key: "saleInvoice", header: "Sale invoice" },
   { key: "lorryNumber", header: "Lorry no" },
-  { key: "weight", header: "Weight", align: "right" as const },
+  { key: "weight", header: "Loading Qty", align: "right" as const },
   {
     key: "saleBasic",
     header: "Basic price",
     align: "right" as const,
   },
   {
-    key: "saleTotal",
-    header: "Total price",
+    key: "saleGstAmount",
+    header: "GST",
+    align: "right" as const,
+  },
+  {
+    key: "saleTcsAmount",
+    header: "TCS",
+    align: "right" as const,
+  },
+  {
+    key: "saleTotalAmount",
+    header: "Total Amount",
     align: "right" as const,
   },
   { key: "customer", header: "Customer" },
   { key: "deliveryTerms", header: "Delivery terms" },
   { key: "transporter", header: "Transporter name" },
-  { key: "received", header: "Received", align: "right" as const },
-  { key: "diff", header: "Diff", align: "right" as const },
+  { key: "received", header: "Received Qty", align: "right" as const },
+  { key: "diff", header: "Diff Qty", align: "right" as const },
 ];
 
 export function buildUpdateSaleExportRows(dispatches: DispatchRow[]) {
@@ -267,7 +323,20 @@ export function buildUpdateSaleExportRows(dispatches: DispatchRow[]) {
     lorryNumber: row.lorryNumber,
     weight: row.weight,
     saleBasic: formatAmount(dispatches[index].saleBasicRate),
-    saleTotal: formatAmount(dispatches[index].saleTotalRate),
+    saleGstAmount: formatSaleGstAmount(
+      dispatches[index].dispatchedQuantity,
+      dispatches[index].saleBasicRate,
+    ),
+    saleTcsAmount: formatSaleTcsAmount(
+      dispatches[index].dispatchedQuantity,
+      dispatches[index].saleBasicRate,
+      dispatches[index].customerCategory,
+    ),
+    saleTotalAmount: formatSaleTotalAmount(
+      dispatches[index].dispatchedQuantity,
+      dispatches[index].saleBasicRate,
+      dispatches[index].customerCategory,
+    ),
     customer: row.customer,
     deliveryTerms: row.deliveryTerms,
     transporter: row.transporter,
@@ -341,6 +410,10 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     sp.saleUpdateStatus === "PENDING" || sp.saleUpdateStatus === "RECEIVED"
       ? sp.saleUpdateStatus
       : "";
+  const receivedQtyStatus: DispatchFilters["receivedQtyStatus"] =
+    sp.receivedQtyStatus === "PENDING" || sp.receivedQtyStatus === "RECEIVED"
+      ? sp.receivedQtyStatus
+      : "";
   const dispatchTerms: DispatchFilters["dispatchTerms"] =
     sp.dispatchTerms === DispatchTerms.FOR ||
     sp.dispatchTerms === DispatchTerms.EX_PORT
@@ -355,6 +428,7 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     receiptStatus: (sp.receiptStatus as ReceiptStatus) || "",
     purchaseUpdateStatus,
     saleUpdateStatus,
+    receivedQtyStatus,
     poNumber: sp.poNumber || "",
     purchasePoNumber: sp.purchasePoNumber || "",
     vesselId: sp.vesselId || "",

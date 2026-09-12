@@ -141,11 +141,11 @@ describe("bill account voucher", () => {
 });
 
 describe("bill access", () => {
-  it("lets staff upload and see only their own bills", () => {
+  it("lets staff upload and see all company bills", () => {
     const staff = { kind: "staff", id: "s1" };
     expect(canUploadBill(staff)).toBe(true);
-    expect(canViewBill(staff, "s1")).toBe(true);
-    expect(canViewBill(staff, "s2")).toBe(false);
+    expect(canViewBill(staff)).toBe(true);
+    expect(canViewBill({ kind: "none" })).toBe(false);
     expect(canApproveBill(staff, "PENDING")).toBe(false);
     expect(canRejectBill(staff, "PENDING")).toBe(false);
   });
@@ -156,7 +156,7 @@ describe("bill access", () => {
     const rejectedRecently = new Date("2026-03-10T08:00:00.000Z"); // 10 IST days earlier
     const rejectedTooOld = new Date("2026-03-04T08:00:00.000Z"); // 16 IST days earlier
     expect(canUploadBill(owner)).toBe(false);
-    expect(canViewBill(owner, "s1")).toBe(true);
+    expect(canViewBill(owner)).toBe(true);
     expect(canApproveBill(owner, "PENDING")).toBe(true);
     expect(canRejectBill(owner, "PENDING")).toBe(true);
     expect(

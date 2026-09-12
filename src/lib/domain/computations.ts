@@ -109,6 +109,21 @@ export function effectiveReceivingQuantity(dispatch: {
   return dispatch.receivingQuantity;
 }
 
+/**
+ * Freight is billed on the lesser of loading and receiving weight.
+ * If receiving is not yet set, loading weight is used.
+ */
+export function freightBillQuantity(
+  loadingWeight: DecimalLike,
+  receivingWeight: DecimalLike | null | undefined,
+): Decimal {
+  const loading = toDecimal(loadingWeight);
+  if (receivingWeight == null) return loading;
+  const receiving = toDecimal(receivingWeight);
+  if (!receiving.isFinite()) return loading;
+  return Decimal.min(loading, receiving);
+}
+
 export function computeOrderStatus(order: {
   orderType?: OrderType;
   quantity: Decimal | null;

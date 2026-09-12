@@ -1,3 +1,4 @@
+import { UpdateTableInteraction } from "@/components/UpdateTableInteraction";
 import { EditDispatchPurchaseButton } from "@/components/EditDispatchPurchaseButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { TableRefreshButton } from "@/components/TableRefreshButton";
@@ -96,7 +97,7 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
 
       <div className="table-wrap table-wrap-scroll update-purchase-table-wrap">
         <div className="table-h-scroll">
-          <table className="data update-purchase-table">
+          <UpdateTableInteraction className="data update-purchase-table">
             <colgroup>
               <col className="update-purchase-col-dispatch" />
               <col className="update-purchase-col-date" />
@@ -133,7 +134,7 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
             </thead>
             <tbody>
               {dispatches.map((row) => (
-                <tr key={row.id}>
+                <tr key={row.id} data-dispatch-id={row.id}>
                   <td className="update-purchase-dispatch-col">
                     {displayDispatchNumber(row.dispatchNumber)}
                   </td>
@@ -246,7 +247,7 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
                 </tr>
               )}
             </tbody>
-          </table>
+          </UpdateTableInteraction>
         </div>
       </div>
     </>

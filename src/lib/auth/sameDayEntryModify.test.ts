@@ -17,6 +17,7 @@ const staff: Extract<Access, { kind: "staff" }> = {
   saleOrderSalesExecs: [],
   purchaseOrderSalesExecs: [],
   ageingReportSalesExecs: [],
+  customerLedgerSalesExecs: [],
 };
 
 const owner: Extract<Access, { kind: "owner" }> = {

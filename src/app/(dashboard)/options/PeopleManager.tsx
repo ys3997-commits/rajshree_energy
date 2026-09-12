@@ -23,6 +23,7 @@ import {
 import {
   AGEING_REPORT_PAGE_KEY,
   COLLECTION_ENGINE_PAGE_KEY,
+  CUSTOMER_LEDGER_PAGE_KEY,
   isReportExecAll,
   REPORT_EXEC_ALL,
   PURCHASE_ORDERS_PAGE_KEY,
@@ -44,6 +45,7 @@ export type PeopleRow = {
   saleOrderSalesExecs: string[];
   purchaseOrderSalesExecs: string[];
   ageingReportSalesExecs: string[];
+  customerLedgerSalesExecs: string[];
 };
 
 type SaleExecutiveOption = { id: string; name: string };
@@ -51,11 +53,19 @@ type SaleExecutiveOption = { id: string; name: string };
 function toggleExecScope(
   current: string[],
   name: string,
+  allNames: string[],
 ): string[] {
-  if (isReportExecAll(current)) return [name];
-  return current.includes(name)
-    ? current.filter((item) => item !== name)
-    : [...current, name];
+  if (isReportExecAll(current)) {
+    return allNames.filter((item) => item !== name);
+  }
+  if (current.includes(name)) {
+    return current.filter((item) => item !== name);
+  }
+  const next = [...current, name];
+  if (allNames.length > 0 && allNames.every((item) => next.includes(item))) {
+    return [REPORT_EXEC_ALL];
+  }
+  return next;
 }
 
 export function PeopleManager({
@@ -91,6 +101,9 @@ export function PeopleManager({
   const [ageingReportSalesExecs, setAgeingReportSalesExecs] = useState<string[]>(
     [],
   );
+  const [customerLedgerSalesExecs, setCustomerLedgerSalesExecs] = useState<
+    string[]
+  >([]);
   const [updateExpanded, setUpdateExpanded] = useState(false);
   const [bankExpanded, setBankExpanded] = useState(false);
   const [masterExpanded, setMasterExpanded] = useState(false);
@@ -128,6 +141,7 @@ export function PeopleManager({
     setSaleOrderSalesExecs([]);
     setPurchaseOrderSalesExecs([]);
     setAgeingReportSalesExecs([]);
+    setCustomerLedgerSalesExecs([]);
     setUpdateExpanded(false);
     setBankExpanded(false);
     setMasterExpanded(false);
@@ -175,6 +189,7 @@ export function PeopleManager({
     setSaleOrderSalesExecs(item.saleOrderSalesExecs);
     setPurchaseOrderSalesExecs(item.purchaseOrderSalesExecs);
     setAgeingReportSalesExecs(item.ageingReportSalesExecs);
+    setCustomerLedgerSalesExecs(item.customerLedgerSalesExecs);
     setEditorOpen(true);
   }
 
@@ -332,6 +347,9 @@ export function PeopleManager({
     if (key === AGEING_REPORT_PAGE_KEY) {
       setAgeingReportSalesExecs([REPORT_EXEC_ALL]);
     }
+    if (key === CUSTOMER_LEDGER_PAGE_KEY) {
+      setCustomerLedgerSalesExecs([REPORT_EXEC_ALL]);
+    }
   }
 
   function clearExecScope(key: string) {
@@ -349,6 +367,9 @@ export function PeopleManager({
     }
     if (key === AGEING_REPORT_PAGE_KEY) {
       setAgeingReportSalesExecs([]);
+    }
+    if (key === CUSTOMER_LEDGER_PAGE_KEY) {
+      setCustomerLedgerSalesExecs([]);
     }
   }
 
@@ -452,6 +473,13 @@ export function PeopleManager({
         setAgeingReportSalesExecs,
       );
     }
+    if (key === CUSTOMER_LEDGER_PAGE_KEY) {
+      return renderExecScope(
+        CUSTOMER_LEDGER_PAGE_KEY,
+        customerLedgerSalesExecs,
+        setCustomerLedgerSalesExecs,
+      );
+    }
     return null;
   }
 
@@ -476,6 +504,9 @@ export function PeopleManager({
     }
     if (key === AGEING_REPORT_PAGE_KEY) {
       setAgeingReportSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
+    }
+    if (key === CUSTOMER_LEDGER_PAGE_KEY) {
+      setCustomerLedgerSalesExecs(turningOn ? [REPORT_EXEC_ALL] : []);
     }
   }
 
@@ -511,6 +542,9 @@ export function PeopleManager({
         }
         if (keys.includes(AGEING_REPORT_PAGE_KEY)) {
           setAgeingReportSalesExecs([]);
+        }
+        if (keys.includes(CUSTOMER_LEDGER_PAGE_KEY)) {
+          setCustomerLedgerSalesExecs([]);
         }
         if (group === "Pages") {
           setUpdateExpanded(false);
@@ -555,6 +589,12 @@ export function PeopleManager({
       ) {
         setAgeingReportSalesExecs([REPORT_EXEC_ALL]);
       }
+      if (
+        keys.includes(CUSTOMER_LEDGER_PAGE_KEY) &&
+        !current.includes(CUSTOMER_LEDGER_PAGE_KEY)
+      ) {
+        setCustomerLedgerSalesExecs([REPORT_EXEC_ALL]);
+      }
       if (group === "Pages") {
         setUpdateExpanded(true);
         setBankExpanded(true);
@@ -587,10 +627,12 @@ export function PeopleManager({
   ) {
     if (!pageKeys.includes(pageKey)) return null;
 
+    const allNames = sortedExecutives.map((executive) => executive.name);
     const allOn = isReportExecAll(scope);
 
     return (
       <div className="people-exec-scope">
+        <p className="people-exec-heading">Sales executives</p>
         <label className="people-exec-item">
           <input
             type="checkbox"
@@ -605,13 +647,19 @@ export function PeopleManager({
           <label key={executive.id} className="people-exec-item">
             <input
               type="checkbox"
-              checked={!allOn && scope.includes(executive.name)}
-              disabled={allOn}
-              onChange={() => setScope(toggleExecScope(scope, executive.name))}
+              checked={allOn || scope.includes(executive.name)}
+              onChange={() =>
+                setScope(toggleExecScope(scope, executive.name, allNames))
+              }
             />
             {executive.name}
           </label>
         ))}
+        {sortedExecutives.length === 0 && (
+          <p className="people-exec-empty">
+            No sales executives in Options yet.
+          </p>
+        )}
       </div>
     );
   }
@@ -636,6 +684,7 @@ export function PeopleManager({
             saleOrderSalesExecs,
             purchaseOrderSalesExecs,
             ageingReportSalesExecs,
+            customerLedgerSalesExecs,
             disableLogin,
           });
           onChange(
@@ -654,6 +703,7 @@ export function PeopleManager({
             saleOrderSalesExecs,
             purchaseOrderSalesExecs,
             ageingReportSalesExecs,
+            customerLedgerSalesExecs,
           });
           onChange(
             [...people, toRow(row)].sort((a, b) => a.name.localeCompare(b.name)),
@@ -1017,7 +1067,8 @@ export function PeopleManager({
                                 const scoped =
                                   page.key === COLLECTION_ENGINE_PAGE_KEY ||
                                   page.key === SALES_ENGINE_PAGE_KEY ||
-                                  page.key === AGEING_REPORT_PAGE_KEY;
+                                  page.key === AGEING_REPORT_PAGE_KEY ||
+                                  page.key === CUSTOMER_LEDGER_PAGE_KEY;
                                 return (
                                   <div
                                     key={page.key}
@@ -1152,6 +1203,7 @@ function toRow(row: {
   saleOrderSalesExecs: string[];
   purchaseOrderSalesExecs: string[];
   ageingReportSalesExecs: string[];
+  customerLedgerSalesExecs: string[];
 }): PeopleRow {
   return {
     id: row.id,
@@ -1164,5 +1216,6 @@ function toRow(row: {
     saleOrderSalesExecs: row.saleOrderSalesExecs,
     purchaseOrderSalesExecs: row.purchaseOrderSalesExecs,
     ageingReportSalesExecs: row.ageingReportSalesExecs,
+    customerLedgerSalesExecs: row.customerLedgerSalesExecs,
   };
 }

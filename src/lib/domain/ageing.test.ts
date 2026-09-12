@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   ageingBucketKey,
   bucketUnpaidDue,
+  splitUnpaidDueByOrigin,
   unpaidDueByDate,
   utcDayDiff,
 } from "./ageing";
@@ -80,6 +81,49 @@ describe("FIFO unpaid due", () => {
     );
     expect(unpaid).toHaveLength(1);
     expect(unpaid[0].amount.toString()).toBe("300");
+  });
+
+  it("keeps coal origin on remaining unpaid charges after FIFO", () => {
+    const unpaid = unpaidDueByDate(
+      [
+        { date: d("2026-07-01"), amount: 1000, origin: "IMPORTED" },
+        { date: d("2026-08-01"), amount: 400, origin: "DOMESTIC" },
+        { date: d("2026-08-10"), amount: -600 },
+      ],
+      asOf,
+    );
+    expect(
+      unpaid.map((row) => [
+        row.date.toISOString().slice(0, 10),
+        row.amount.toString(),
+        row.origin,
+      ]),
+    ).toEqual([
+      ["2026-07-01", "400", "IMPORTED"],
+      ["2026-08-01", "400", "DOMESTIC"],
+    ]);
+  });
+});
+
+describe("splitUnpaidDueByOrigin", () => {
+  it("counts untagged remaining due as imported", () => {
+    const split = splitUnpaidDueByOrigin([
+      { date: d("2026-08-01"), amount: new Decimal(100) },
+      { date: d("2026-08-02"), amount: new Decimal(50), origin: "DOMESTIC" },
+    ]);
+    expect(split.imported.toString()).toBe("100");
+    expect(split.domestic.toString()).toBe("50");
+    expect(split.total.toString()).toBe("150");
+    expect(split.domesticPercent).toBe("33.3");
+    expect(split.importedPercent).toBe("66.7");
+  });
+
+  it("returns 100% imported when only imported remains", () => {
+    const split = splitUnpaidDueByOrigin([
+      { date: d("2026-08-01"), amount: new Decimal(250), origin: "IMPORTED" },
+    ]);
+    expect(split.domesticPercent).toBe("0.0");
+    expect(split.importedPercent).toBe("100.0");
   });
 });
 

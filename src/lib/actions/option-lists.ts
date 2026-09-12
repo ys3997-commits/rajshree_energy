@@ -169,6 +169,12 @@ export async function deleteDealingCompanyOption(id: string) {
   revalidateOptionPaths();
 }
 
+function revalidateLeadershipPaths() {
+  revalidatePath("/options");
+  revalidatePath("/bills");
+  revalidatePath("/");
+}
+
 export async function listOwnerOptions() {
   return prisma.ownerOption.findMany({ orderBy: { name: "asc" } });
 }
@@ -177,7 +183,7 @@ export async function createOwnerOption(name: string) {
   const row = await prisma.ownerOption.create({
     data: { name: trimName(name, "Name") },
   });
-  revalidateOptionPaths();
+  revalidateLeadershipPaths();
   return { id: row.id };
 }
 
@@ -186,11 +192,11 @@ export async function updateOwnerOption(id: string, name: string) {
     where: { id },
     data: { name: trimName(name, "Name") },
   });
-  revalidateOptionPaths();
+  revalidateLeadershipPaths();
   return { id: row.id };
 }
 
 export async function deleteOwnerOption(id: string) {
   await prisma.ownerOption.delete({ where: { id } });
-  revalidateOptionPaths();
+  revalidateLeadershipPaths();
 }

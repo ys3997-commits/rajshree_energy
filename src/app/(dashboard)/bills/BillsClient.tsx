@@ -317,7 +317,7 @@ export function BillsClient({
           <OptionSelect
             id="bill-approver"
             required
-            emptyLabel="Select owner"
+            emptyLabel="Select"
             value={form.approverName}
             onChange={(approverName) => setForm({ ...form, approverName })}
             options={owners}

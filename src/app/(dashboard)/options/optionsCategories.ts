@@ -15,6 +15,7 @@ export const OPTION_CATEGORIES: {
   label: string;
   description: string;
   placeholder: string;
+  listPhrase?: string;
 }[] = [
   {
     id: "origins",
@@ -68,9 +69,10 @@ export const OPTION_CATEGORIES: {
   {
     id: "owners",
     slug: "owners",
-    label: "Owner",
-    description: "Suggested owner names on customers and transporters.",
-    placeholder: "New owner",
+    label: "RE Leadership",
+    description: "People who can approve bills.",
+    placeholder: "New name",
+    listPhrase: "RE Leadership",
   },
   {
     id: "dealingCompanies",
@@ -89,7 +91,7 @@ export const USER_MENU_CATEGORIES = OPTION_CATEGORIES.filter((category) =>
   userMenuCategoryIdSet.has(category.id),
 );
 
-/** Option lists under Masters → Options (excludes Team/Owner in Users menu). */
+/** Option lists under Masters → Options (excludes Team/RE Leadership in Users menu). */
 export const MASTER_OPTION_CATEGORIES = OPTION_CATEGORIES.filter(
   (category) => !userMenuCategoryIdSet.has(category.id),
 );

@@ -93,15 +93,40 @@ export function timeWeightedInvestedCapital(input: {
   return (weightedSum / periodDays).toFixed(2);
 }
 
-/** Profit/loss as % of time-weighted invested capital. */
-export function investmentPeriodPercent(
-  amount: number | string | null | undefined,
-  investedCapital: number | string | null | undefined,
+/**
+ * Profit / loss + interest treated as received on the period end date.
+ * Empty values count as 0.
+ */
+export function periodReturnDelta(
+  profit: number | string | null | undefined,
+  interest: number | string | null | undefined,
 ): string {
-  if (amount == null || amount === "" || amount === "-") return "—";
+  const profitValue =
+    profit == null || profit === "" || profit === "-" ? 0 : toNumber(profit);
+  const interestValue =
+    interest == null || interest === "" || interest === "-"
+      ? 0
+      : toNumber(interest);
+  const total =
+    (Number.isFinite(profitValue) ? profitValue : 0) +
+    (Number.isFinite(interestValue) ? interestValue : 0);
+  return total.toFixed(2);
+}
+
+function hasReturnAmount(value: number | string | null | undefined): boolean {
+  return value != null && value !== "" && value !== "-";
+}
+
+/** (Profit / loss + interest) as % of time-weighted invested capital. */
+export function investmentPeriodPercent(
+  profit: number | string | null | undefined,
+  investedCapital: number | string | null | undefined,
+  interest?: number | string | null | undefined,
+): string {
+  if (!hasReturnAmount(profit) && !hasReturnAmount(interest)) return "—";
   if (investedCapital == null || investedCapital === "") return "—";
   const base = toNumber(investedCapital);
-  const value = toNumber(amount);
+  const value = toNumber(periodReturnDelta(profit, interest));
   if (!Number.isFinite(base) || base === 0 || !Number.isFinite(value)) {
     return "—";
   }

@@ -6,16 +6,21 @@ import {
   type AgeingReportRow,
 } from "@/lib/domain/ageingBuckets";
 
+export type DueOrigin = "DOMESTIC" | "IMPORTED";
+
 export type AgeingMovement = {
   date: Date;
   amount: DecimalLike;
   /** Tie-break after date and debit/credit. */
   sortKey?: string;
+  /** Coal origin of a charge. Credits ignore this; FIFO still clears oldest first. */
+  origin?: DueOrigin;
 };
 
 export type UnpaidDue = {
   date: Date;
   amount: Decimal;
+  origin?: DueOrigin;
 };
 
 function startOfUtcDay(date: Date): Date {
@@ -60,6 +65,7 @@ export function unpaidDueByDate(
       date: startOfUtcDay(movement.date),
       amount: toDecimal(movement.amount),
       sortKey: movement.sortKey ?? "",
+      origin: movement.origin,
       index,
     }))
     .filter(
@@ -91,7 +97,11 @@ export function unpaidDueByDate(
         charge = charge.minus(take);
       }
       if (charge.gt(0)) {
-        open.push({ date: movement.date, amount: charge });
+        open.push({
+          date: movement.date,
+          amount: charge,
+          origin: movement.origin,
+        });
       }
       continue;
     }
@@ -116,8 +126,51 @@ export function unpaidDueByDate(
     .map((row) => ({
       date: row.date,
       amount: row.amount.toDecimalPlaces(2),
+      ...(row.origin ? { origin: row.origin } : {}),
     }))
     .filter((row) => row.amount.gt(0));
+}
+
+/**
+ * Remaining unpaid due split by coal origin.
+ * Untagged charges (opening due, funds sent, etc.) count as imported.
+ */
+export function splitUnpaidDueByOrigin(unpaid: UnpaidDue[]): {
+  domestic: Decimal;
+  imported: Decimal;
+  total: Decimal;
+  domesticPercent: string;
+  importedPercent: string;
+} {
+  let domestic = new Decimal(0);
+  let imported = new Decimal(0);
+  for (const row of unpaid) {
+    if (row.origin === "DOMESTIC") {
+      domestic = domestic.plus(row.amount);
+    } else {
+      imported = imported.plus(row.amount);
+    }
+  }
+  domestic = domestic.toDecimalPlaces(2);
+  imported = imported.toDecimalPlaces(2);
+  const total = domestic.plus(imported).toDecimalPlaces(2);
+  if (total.lte(0)) {
+    return {
+      domestic,
+      imported,
+      total,
+      domesticPercent: "0",
+      importedPercent: "0",
+    };
+  }
+  const domesticPercent = domestic.div(total).mul(100).toDecimalPlaces(1);
+  return {
+    domestic,
+    imported,
+    total,
+    domesticPercent: domesticPercent.toFixed(1),
+    importedPercent: new Decimal(100).minus(domesticPercent).toFixed(1),
+  };
 }
 
 export function bucketUnpaidDue(

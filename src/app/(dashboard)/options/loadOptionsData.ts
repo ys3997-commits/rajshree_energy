@@ -31,6 +31,7 @@ const emptyOptionsData = () => ({
     saleOrderSalesExecs: string[];
     purchaseOrderSalesExecs: string[];
     ageingReportSalesExecs: string[];
+    customerLedgerSalesExecs: string[];
   }[],
   owners: [] as { id: string; name: string }[],
   dealingCompanies: [] as { id: string; name: string }[],
@@ -59,7 +60,10 @@ export async function loadOptionsData(categoryId: CategoryId) {
       data.sectors = await listSectorOptions();
       break;
     case "people": {
-      const people = await listStaff();
+      const [people, saleExecutives] = await Promise.all([
+        listStaff(),
+        listSaleExecutiveOptions(),
+      ]);
       data.people = people.map((row) => ({
         id: row.id,
         name: row.name,
@@ -71,7 +75,9 @@ export async function loadOptionsData(categoryId: CategoryId) {
         saleOrderSalesExecs: row.saleOrderSalesExecs,
         purchaseOrderSalesExecs: row.purchaseOrderSalesExecs,
         ageingReportSalesExecs: row.ageingReportSalesExecs,
+        customerLedgerSalesExecs: row.customerLedgerSalesExecs,
       }));
+      data.saleExecutives = saleExecutives;
       break;
     }
     case "owners":

@@ -77,25 +77,27 @@ enum SalesSmsType {
 }
 
 model Staff {
-  id                      String   @id @default(cuid())
-  name                    String
-  role                    String?
+  id                       String   @id @default(cuid())
+  name                     String
+  role                     String?
   /// Set when this person may log in. Owner uses Supabase instead.
-  passwordHash            String?
+  passwordHash             String?
   /// Page keys this person may open. Ignored for the owner account.
-  pageKeys                String[] @default([])
+  pageKeys                 String[] @default([])
   /// Sales executives visible in Collection Engine. ["*"] = all; else executive names.
-  collectionSalesExecs    String[] @default([])
+  collectionSalesExecs     String[] @default([])
   /// Sales executives visible in Sales Engine Report. ["*"] = all; else executive names.
-  salesEngineSalesExecs   String[] @default([])
+  salesEngineSalesExecs    String[] @default([])
   /// Sales executives visible on Sale orders. ["*"] = all; else executive names.
-  saleOrderSalesExecs     String[] @default([])
+  saleOrderSalesExecs      String[] @default([])
   /// Sales executives visible on Purchase orders. ["*"] = all; else executive names.
-  purchaseOrderSalesExecs String[] @default([])
+  purchaseOrderSalesExecs  String[] @default([])
   /// Sales executives visible in Ageing Report. ["*"] = all; else executive names.
-  ageingReportSalesExecs  String[] @default([])
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  ageingReportSalesExecs   String[] @default([])
+  /// Sales executives visible in Customer Ledger. ["*"] = all; else executive names.
+  customerLedgerSalesExecs String[] @default([])
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
   dealByCustomers   Customer[] @relation("DealBy")
   orders            Order[]
@@ -561,12 +563,13 @@ model InvestmentPeriod {
   @@index([createdAt])
 }
 
-/// Profit / loss for one company in one period column.
+/// Profit / loss (and optional interest) for one company in one period column.
 model InvestmentPeriodValue {
   id        String   @id @default(cuid())
   companyId String
   periodId  String
   amount    Decimal  @db.Decimal(18, 2)
+  interest  Decimal? @db.Decimal(18, 2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

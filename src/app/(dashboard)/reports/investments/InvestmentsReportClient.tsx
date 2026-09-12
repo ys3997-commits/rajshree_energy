@@ -78,8 +78,10 @@ export function InvestmentsReportClient({
   const [addCompanyId, setAddCompanyId] = useState("");
   const [addPeriodId, setAddPeriodId] = useState("");
   const [addAmount, setAddAmount] = useState("");
+  const [addInterest, setAddInterest] = useState("");
   const [editingCompanyId, setEditingCompanyId] = useState<string | null>(null);
   const [editAmounts, setEditAmounts] = useState<AmountMap>({});
+  const [editInterests, setEditInterests] = useState<AmountMap>({});
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -112,6 +114,10 @@ export function InvestmentsReportClient({
     () => amountDisplay(addAmount),
     [addAmount],
   );
+  const addInterestDisplay = useMemo(
+    () => amountDisplay(addInterest),
+    [addInterest],
+  );
 
   const downloadColumns = useMemo(
     () => [
@@ -125,6 +131,11 @@ export function InvestmentsReportClient({
         {
           key: `${period.id}_amount`,
           header: `${period.name} Profit / Loss`,
+          align: "right" as const,
+        },
+        {
+          key: `${period.id}_interest`,
+          header: `${period.name} Interest`,
           align: "right" as const,
         },
         {
@@ -146,11 +157,15 @@ export function InvestmentsReportClient({
         };
         for (const period of periods) {
           const amount = row.amounts[period.id];
+          const interest = row.interests[period.id];
           out[`${period.id}_amount`] =
             amount != null ? formatRs(amount) : "—";
+          out[`${period.id}_interest`] =
+            interest != null ? formatRs(interest) : "—";
           out[`${period.id}_pct`] = investmentPeriodPercent(
             amount,
             row.investedByPeriod[period.id],
+            interest,
           );
         }
         return out;
@@ -241,10 +256,12 @@ export function InvestmentsReportClient({
         await saveInvestmentPeriodValues({
           companyId: addCompanyId,
           amounts: { [addPeriodId]: addAmount },
+          interests: { [addPeriodId]: addInterest },
         });
         setAddCompanyId("");
         setAddPeriodId("");
         setAddAmount("");
+        setAddInterest("");
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
@@ -256,10 +273,13 @@ export function InvestmentsReportClient({
     window.setTimeout(() => {
       setEditingCompanyId(row.id);
       const map = emptyAmounts(periods);
+      const interestMap = emptyAmounts(periods);
       for (const period of periods) {
         map[period.id] = row.amounts[period.id] ?? "";
+        interestMap[period.id] = row.interests[period.id] ?? "";
       }
       setEditAmounts(map);
+      setEditInterests(interestMap);
       setError(null);
     }, 0);
   }
@@ -267,6 +287,7 @@ export function InvestmentsReportClient({
   function cancelEdit() {
     setEditingCompanyId(null);
     setEditAmounts({});
+    setEditInterests({});
   }
 
   function saveEdit() {
@@ -278,6 +299,7 @@ export function InvestmentsReportClient({
         await saveInvestmentPeriodValues({
           companyId,
           amounts: editAmounts,
+          interests: editInterests,
         });
         cancelEdit();
         router.refresh();
@@ -296,7 +318,7 @@ export function InvestmentsReportClient({
         if (editingCompanyId === companyId) cancelEdit();
         setRows((prev) =>
           prev.map((row) =>
-            row.id === companyId ? { ...row, amounts: {} } : row,
+            row.id === companyId ? { ...row, amounts: {}, interests: {} } : row,
           ),
         );
         router.refresh();
@@ -312,10 +334,22 @@ export function InvestmentsReportClient({
     setAddAmount(next);
   }
 
+  function patchAddInterest(value: string) {
+    const next = changeAmountValue(value);
+    if (next == null) return;
+    setAddInterest(next);
+  }
+
   function patchEditAmount(periodId: string, value: string) {
     const next = changeAmountValue(value);
     if (next == null) return;
     setEditAmounts((prev) => ({ ...prev, [periodId]: next }));
+  }
+
+  function patchEditInterest(periodId: string, value: string) {
+    const next = changeAmountValue(value);
+    if (next == null) return;
+    setEditInterests((prev) => ({ ...prev, [periodId]: next }));
   }
 
   function onCompanyChange(companyId: string) {
@@ -457,7 +491,8 @@ export function InvestmentsReportClient({
           <div>
             <h2 className="investment-panel-title">Add entry</h2>
             <p className="investment-panel-desc">
-              Choose a company and period, then enter the profit / loss amount.
+              Choose a company and period, then enter the profit / loss and
+              interest amounts.
             </p>
           </div>
         </div>
@@ -523,6 +558,21 @@ export function InvestmentsReportClient({
                 <span className="field-unit">Rs</span>
               </div>
             </label>
+            <label className="investment-field investment-field-amount">
+              <span>Interest</span>
+              <div className="field-with-unit">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="field-input"
+                  placeholder="0.00"
+                  value={addInterestDisplay}
+                  onChange={(e) => patchAddInterest(e.target.value)}
+                  disabled={!addCompanyId || !addPeriodId}
+                />
+                <span className="field-unit">Rs</span>
+              </div>
+            </label>
             <div className="investment-inline-actions">
               <button
                 type="submit"
@@ -547,8 +597,9 @@ export function InvestmentsReportClient({
           <div>
             <h2 className="investment-panel-title">Summary</h2>
             <p className="investment-panel-desc">
-              Current investment and period-wise amounts. % uses fund invested
-              for days within the period only.
+              Profit / loss and interest are received on the period end date
+              and added to current investment. % is (profit / loss + interest)
+              on fund invested for days within the period only.
             </p>
           </div>
           <TableDownloadButtons
@@ -580,7 +631,7 @@ export function InvestmentsReportClient({
                   {periods.map((period, index) => (
                     <th
                       key={period.id}
-                      colSpan={2}
+                      colSpan={3}
                       className="num investment-period-group"
                     >
                       <div className="investment-period-header">
@@ -626,6 +677,7 @@ export function InvestmentsReportClient({
                       <th className="num investment-period-sub">
                         Profit / Loss
                       </th>
+                      <th className="num investment-period-sub">Interest</th>
                       <th className="num investment-period-sub">%</th>
                     </Fragment>
                   ))}
@@ -648,6 +700,7 @@ export function InvestmentsReportClient({
                           <td className="num">{formatRs(row.currentDue)}</td>
                           {periods.map((period) => {
                             const editValue = editAmounts[period.id] ?? "";
+                            const editInterest = editInterests[period.id] ?? "";
                             return (
                               <Fragment key={period.id}>
                                 <td className="num">
@@ -671,9 +724,30 @@ export function InvestmentsReportClient({
                                   </div>
                                 </td>
                                 <td className="num">
+                                  <div className="field-with-unit">
+                                    <input
+                                      form="investment-edit-form"
+                                      type="text"
+                                      inputMode="decimal"
+                                      className="field-input"
+                                      placeholder="0.00"
+                                      aria-label={`${period.name} interest`}
+                                      value={amountDisplay(editInterest)}
+                                      onChange={(e) =>
+                                        patchEditInterest(
+                                          period.id,
+                                          e.target.value,
+                                        )
+                                      }
+                                    />
+                                    <span className="field-unit">Rs</span>
+                                  </div>
+                                </td>
+                                <td className="num">
                                   {investmentPeriodPercent(
                                     editValue === "" ? null : editValue,
                                     row.investedByPeriod[period.id],
+                                    editInterest === "" ? null : editInterest,
                                   )}
                                 </td>
                               </Fragment>
@@ -704,15 +778,20 @@ export function InvestmentsReportClient({
                           <td className="num">{formatRs(row.currentDue)}</td>
                           {periods.map((period) => {
                             const amount = row.amounts[period.id];
+                            const interest = row.interests[period.id];
                             return (
                               <Fragment key={period.id}>
                                 <td className="num">
                                   {amount != null ? formatRs(amount) : "—"}
                                 </td>
                                 <td className="num">
+                                  {interest != null ? formatRs(interest) : "—"}
+                                </td>
+                                <td className="num">
                                   {investmentPeriodPercent(
                                     amount,
                                     row.investedByPeriod[period.id],
+                                    interest,
                                   )}
                                 </td>
                               </Fragment>
@@ -752,7 +831,7 @@ export function InvestmentsReportClient({
                 })}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={3 + periods.length * 2}>
+                    <td colSpan={3 + periods.length * 3}>
                       No investment companies yet. Add them under Masters →
                       Investment.
                     </td>

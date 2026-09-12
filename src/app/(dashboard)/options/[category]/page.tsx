@@ -16,5 +16,5 @@ export default async function OptionsCategoryPage({
 
   const data = await loadOptionsData(categoryId);
 
-  return <OptionsClient categoryId={categoryId} {...data} />;
+  return <OptionsClient key={categoryId} categoryId={categoryId} {...data} />;
 }

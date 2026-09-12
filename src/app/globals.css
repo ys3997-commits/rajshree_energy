@@ -1476,9 +1476,6 @@ table.data.purchase-orders-table tbody td {
 table.data.orders-table tbody tr:hover td,
 table.data.purchase-orders-table tbody tr:hover td,
 table.data.report-table-dispatches tbody tr:hover td,
-table.data.update-purchase-table tbody tr:hover td,
-table.data.update-sale-table tbody tr:hover td,
-table.data.update-transport-table tbody tr:hover td,
 table.data.dispatch-register-table tbody tr:hover td,
 table.data.dispatch-analysis-table tbody tr:hover td {
   background: #f7faf9;
@@ -1522,6 +1519,90 @@ table.data.dispatch-analysis-table tbody td {
   white-space: nowrap;
 }
 
+/* Freeze PO / Date / Customer. Widths keep later columns from sliding underneath. */
+table.data.orders-table {
+  --orders-sticky-po: 8rem;
+  --orders-sticky-date: 6.75rem;
+  --orders-sticky-customer: 12rem;
+}
+
+table.data.orders-table th.orders-sticky-po,
+table.data.orders-table td.orders-sticky-po,
+table.data.orders-table th.orders-sticky-date,
+table.data.orders-table td.orders-sticky-date,
+table.data.orders-table th.orders-sticky-customer,
+table.data.orders-table td.orders-sticky-customer {
+  position: sticky;
+  isolation: isolate;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-clip: padding-box;
+}
+
+table.data.orders-table th.orders-sticky-po,
+table.data.orders-table td.orders-sticky-po {
+  left: 0;
+  width: var(--orders-sticky-po);
+  min-width: var(--orders-sticky-po);
+  max-width: var(--orders-sticky-po);
+}
+
+table.data.orders-table th.orders-sticky-date,
+table.data.orders-table td.orders-sticky-date {
+  left: var(--orders-sticky-po);
+  width: var(--orders-sticky-date);
+  min-width: var(--orders-sticky-date);
+  max-width: var(--orders-sticky-date);
+}
+
+table.data.orders-table th.orders-sticky-customer,
+table.data.orders-table td.orders-sticky-customer {
+  left: calc(var(--orders-sticky-po) + var(--orders-sticky-date));
+  width: var(--orders-sticky-customer);
+  min-width: var(--orders-sticky-customer);
+  max-width: var(--orders-sticky-customer);
+  box-shadow:
+    1px 0 0 var(--line),
+    4px 0 8px -2px rgba(20, 23, 28, 0.08);
+}
+
+.app-main .table-h-scroll > table.data.orders-table thead th.orders-sticky-po,
+.app-main .table-wrap > table.data.orders-table thead th.orders-sticky-po {
+  top: 0;
+  left: 0;
+  z-index: 8;
+  background: #f8fafb;
+}
+
+.app-main .table-h-scroll > table.data.orders-table thead th.orders-sticky-date,
+.app-main .table-wrap > table.data.orders-table thead th.orders-sticky-date {
+  top: 0;
+  left: var(--orders-sticky-po);
+  z-index: 8;
+  background: #f8fafb;
+}
+
+.app-main .table-h-scroll > table.data.orders-table thead th.orders-sticky-customer,
+.app-main .table-wrap > table.data.orders-table thead th.orders-sticky-customer {
+  top: 0;
+  left: calc(var(--orders-sticky-po) + var(--orders-sticky-date));
+  z-index: 8;
+  background: #f8fafb;
+}
+
+table.data.orders-table td.orders-sticky-po,
+table.data.orders-table td.orders-sticky-date,
+table.data.orders-table td.orders-sticky-customer {
+  z-index: 4;
+  background: #ffffff;
+}
+
+table.data.orders-table tbody tr:hover td.orders-sticky-po,
+table.data.orders-table tbody tr:hover td.orders-sticky-date,
+table.data.orders-table tbody tr:hover td.orders-sticky-customer {
+  background: #f7faf9;
+}
+
 .orders-table th.col-lorries,
 .orders-table td.col-lorries {
   width: 5.75rem;
@@ -1545,6 +1626,16 @@ table.data.dispatch-analysis-table tbody td {
   white-space: normal;
   line-height: 1.25;
   vertical-align: middle;
+}
+
+table.data.orders-table th.collection-whatsapp-col,
+table.data.orders-table td.collection-whatsapp-col {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  max-width: 2.75rem;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  text-align: center;
 }
 
 /* Purchase orders list — wider vendor/vessel, compact days column */
@@ -2768,6 +2859,23 @@ table.data.transport-engine-table tbody tr:hover td {
   padding-left: 1.35rem;
 }
 
+.people-exec-heading {
+  flex: 1 1 100%;
+  margin: 0 0 0.1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.people-exec-empty {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
 .people-exec-item {
   display: inline-flex;
   align-items: center;
@@ -3675,6 +3783,105 @@ table.data tbody tr.payment-editing-row .customer-edit-extra select {
   margin-bottom: 1.25rem;
 }
 
+.home-debtor-panel {
+  margin-bottom: 1.25rem;
+  padding: 0.95rem 1.25rem 1rem;
+}
+
+.home-debtor-panel .home-panel-head {
+  margin-bottom: 0.7rem;
+  align-items: center;
+}
+
+.home-debtor-panel .home-panel-title {
+  font-size: 1.15rem;
+}
+
+.home-debtor-metrics {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.65rem;
+}
+
+.home-debtor-metric {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.6rem 0.9rem 0.65rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  overflow: hidden;
+}
+
+.home-debtor-metric::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+}
+
+.home-debtor-metric.is-total::before {
+  background: #3b6ea8;
+}
+
+.home-debtor-metric.is-domestic::before {
+  background: linear-gradient(180deg, #3a9086, var(--accent));
+}
+
+.home-debtor-metric.is-imported::before {
+  background: linear-gradient(180deg, #dbb07a, #9a6b2f);
+}
+
+.home-debtor-metric-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.home-debtor-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 0.2rem;
+}
+
+.home-debtor-metric-value {
+  min-width: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-debtor-metric.is-domestic .home-debtor-metric-value {
+  color: var(--accent);
+}
+
+.home-debtor-metric.is-imported .home-debtor-metric-value {
+  color: #9a6b2f;
+}
+
+.home-debtor-metric-share {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
 .home-eyebrow {
   margin: 0 0 0.2rem;
   font-size: 0.72rem;
@@ -3982,6 +4189,14 @@ a.home-quality-row:hover {
     grid-template-columns: 1fr;
   }
 
+  .home-debtor-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .home-debtor-metric.is-total {
+    grid-column: 1 / -1;
+  }
+
   .home-report-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4014,6 +4229,10 @@ a.home-quality-row:hover {
   }
 
   .home-report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-debtor-metrics {
     grid-template-columns: 1fr;
   }
 
@@ -4253,9 +4472,9 @@ a.home-quality-row:hover {
   border-left: 1px solid var(--line-strong);
 }
 
-/* Transport ledger: wider Dispatch, compact Funds */
+/* Transport ledger: fit both tables, no horizontal slide */
 .ledger-panels-transport {
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem);
+  grid-template-columns: minmax(0, 1fr) 17rem;
 }
 
 .ledger-panels-transport .ledger-panel-title {
@@ -4269,7 +4488,36 @@ a.home-quality-row:hover {
 
 .ledger-panels-transport .ledger-panel-body .table-h-scroll {
   display: block;
-  overflow-x: auto;
+  width: 100%;
+  overflow: visible;
+}
+
+.app-main .ledger-panels-transport .ledger-panel-dispatch > .ledger-panel-body > .table-h-scroll > table.data {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.app-main .ledger-panels-transport .ledger-panel-funds > .ledger-panel-body > .table-h-scroll > table.data {
+  width: 100%;
+  min-width: 0;
+  table-layout: auto;
+}
+
+.ledger-panels-transport .ledger-panel-body table.data thead th,
+.ledger-panels-transport .ledger-panel-body table.data tbody td {
+  padding-left: 0.38rem;
+  padding-right: 0.38rem;
+}
+
+.ledger-panels-transport .ledger-panel-body table.data thead th:first-child,
+.ledger-panels-transport .ledger-panel-body table.data tbody td:first-child {
+  padding-left: 0.55rem;
+}
+
+.ledger-panels-transport .ledger-panel-body table.data thead th:last-child,
+.ledger-panels-transport .ledger-panel-body table.data tbody td:last-child {
+  padding-right: 0.55rem;
 }
 
 .ledger-panels-transport .ledger-panel-body table.data thead th {
@@ -4303,12 +4551,59 @@ a.home-quality-row:hover {
 
 .ledger-panels-transport .ledger-panel-dispatch table.data td,
 .ledger-panels-transport .ledger-panel-funds table.data td {
+  white-space: normal;
+  overflow-wrap: break-word;
+  line-height: 1.3;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data td.cell-num,
+.ledger-panels-transport .ledger-panel-funds table.data td.cell-num {
   white-space: nowrap;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(1),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(1),
+.ledger-panels-transport .ledger-panel-funds table.data th:nth-child(1),
+.ledger-panels-transport .ledger-panel-funds table.data td:nth-child(1) {
+  width: 5.4rem;
+  white-space: nowrap;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(2),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(2) {
+  width: 6.2rem;
+  white-space: nowrap;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(3),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(3),
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(4),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(4) {
+  width: 5.2rem;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(5),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(5),
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(6),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(6) {
+  width: 6.25rem;
+}
+
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(7),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(7),
+.ledger-panels-transport .ledger-panel-dispatch table.data th:nth-child(8),
+.ledger-panels-transport .ledger-panel-dispatch table.data td:nth-child(8) {
+  width: 6.6rem;
 }
 
 .ledger-panels-transport .ledger-panel-funds table.data th:nth-child(2),
 .ledger-panels-transport .ledger-panel-funds table.data td:nth-child(2) {
-  width: 100%;
+  width: auto;
+}
+
+.ledger-panels-transport .ledger-panel-funds table.data th:nth-child(3),
+.ledger-panels-transport .ledger-panel-funds table.data td:nth-child(3) {
+  width: 6rem;
 }
 
 .ledger-panel-title {
@@ -5097,12 +5392,24 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
   border-right: none;
 }
 
+.update-page .table-wrap.update-sale-table-wrap {
+  max-width: none;
+  width: max-content;
+  min-width: calc(100% + 4rem);
+  background: #ffffff;
+}
+
 @media (max-width: 768px) {
   .update-page .table-wrap.update-purchase-table-wrap,
   .update-page .table-wrap.update-sale-table-wrap,
   .update-page .table-wrap.update-transport-table-wrap {
     margin-inline: -1rem;
     width: calc(100% + 2rem);
+  }
+
+  .update-page .table-wrap.update-sale-table-wrap {
+    width: max-content;
+    min-width: calc(100% + 2rem);
   }
 }
 
@@ -5480,9 +5787,26 @@ table.data.update-purchase-table td.update-purchase-date-col {
   background: #ffffff;
 }
 
-table.data.update-purchase-table tbody tr:hover td.update-purchase-dispatch-col,
-table.data.update-purchase-table tbody tr:hover td.update-purchase-date-col {
-  background: #f7faf9;
+table.data.update-purchase-table:not(.update-table-hold-active) tbody tr:hover td,
+table.data.update-purchase-table tbody tr.update-table-row-held td {
+  background: #d4e0dc;
+}
+
+table.data.update-purchase-table tbody tr.update-table-row-held td {
+  background: #d4e0dc !important;
+}
+
+table.data.update-purchase-table:not(.update-table-hold-active) tbody tr:hover td.update-purchase-dispatch-col,
+table.data.update-purchase-table:not(.update-table-hold-active) tbody tr:hover td.update-purchase-date-col,
+table.data.update-purchase-table tbody tr.update-table-row-held td.update-purchase-dispatch-col,
+table.data.update-purchase-table tbody tr.update-table-row-held td.update-purchase-date-col {
+  background: #d4e0dc;
+}
+
+table.data.update-purchase-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td,
+table.data.update-purchase-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-purchase-dispatch-col,
+table.data.update-purchase-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-purchase-date-col {
+  background: #ffffff !important;
 }
 
 table.data.update-purchase-table .update-purchase-vendor-cell {
@@ -5500,11 +5824,17 @@ table.data.update-purchase-table .dispatch-edit-actions {
 }
 
 table.data.update-sale-table {
+  --update-sale-sticky-dispatch: 5rem;
+  --update-sale-sticky-date: 7rem;
+  --update-sale-sticky-invoice: 7rem;
+  --update-sale-sticky-lorry: 7.5rem;
+  --update-sale-sticky-weight: 6.75rem;
   table-layout: fixed;
   width: max-content;
   min-width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  background: #ffffff;
 }
 
 table.data.update-sale-table col.update-sale-col-dispatch {
@@ -5523,12 +5853,13 @@ table.data.update-sale-table col.update-sale-col-lorry {
   width: 7.5rem;
 }
 
+table.data.update-sale-table col.update-sale-col-weight,
 table.data.update-sale-table col.update-sale-col-qty {
   width: 6.75rem;
 }
 
 table.data.update-sale-table col.update-sale-col-amt {
-  width: 5.75rem;
+  width: 6.75rem;
 }
 
 table.data.update-sale-table col.update-sale-col-customer {
@@ -5576,55 +5907,192 @@ table.data.update-sale-table tbody td {
   white-space: nowrap;
 }
 
-/* Sticky Dispatch No + Date when scrolling horizontally */
+/* Sticky Dispatch No + Date + Sale Invoice + Lorry No + Weight */
+table.data.update-sale-table th.update-sale-dispatch-col,
+table.data.update-sale-table td.update-sale-dispatch-col,
+table.data.update-sale-table th.update-sale-date-col,
+table.data.update-sale-table td.update-sale-date-col,
+table.data.update-sale-table th.update-sale-invoice-col,
+table.data.update-sale-table td.update-sale-invoice-col,
+table.data.update-sale-table th.update-sale-lorry-col,
+table.data.update-sale-table td.update-sale-lorry-col,
+table.data.update-sale-table th.update-sale-weight-col,
+table.data.update-sale-table td.update-sale-weight-col {
+  position: sticky;
+  background-clip: padding-box;
+}
+
 table.data.update-sale-table th.update-sale-dispatch-col,
 table.data.update-sale-table td.update-sale-dispatch-col {
-  position: sticky;
   left: 0;
-  width: 5rem;
-  min-width: 5rem;
-  max-width: 5rem;
-  isolation: isolate;
+  width: var(--update-sale-sticky-dispatch);
+  min-width: var(--update-sale-sticky-dispatch);
+  max-width: var(--update-sale-sticky-dispatch);
 }
 
 table.data.update-sale-table th.update-sale-date-col,
 table.data.update-sale-table td.update-sale-date-col {
-  position: sticky;
-  left: 5rem;
-  width: 7rem;
-  min-width: 7rem;
-  max-width: 7rem;
-  isolation: isolate;
+  left: var(--update-sale-sticky-dispatch);
+  width: var(--update-sale-sticky-date);
+  min-width: var(--update-sale-sticky-date);
+  max-width: var(--update-sale-sticky-date);
+}
+
+table.data.update-sale-table th.update-sale-invoice-col,
+table.data.update-sale-table td.update-sale-invoice-col {
+  left: calc(var(--update-sale-sticky-dispatch) + var(--update-sale-sticky-date));
+  width: var(--update-sale-sticky-invoice);
+  min-width: var(--update-sale-sticky-invoice);
+  max-width: var(--update-sale-sticky-invoice);
+}
+
+table.data.update-sale-table th.update-sale-lorry-col,
+table.data.update-sale-table td.update-sale-lorry-col {
+  left: calc(
+    var(--update-sale-sticky-dispatch) + var(--update-sale-sticky-date) +
+      var(--update-sale-sticky-invoice)
+  );
+  width: var(--update-sale-sticky-lorry);
+  min-width: var(--update-sale-sticky-lorry);
+  max-width: var(--update-sale-sticky-lorry);
+}
+
+table.data.update-sale-table th.update-sale-weight-col,
+table.data.update-sale-table td.update-sale-weight-col {
+  left: calc(
+    var(--update-sale-sticky-dispatch) + var(--update-sale-sticky-date) +
+      var(--update-sale-sticky-invoice) + var(--update-sale-sticky-lorry)
+  );
+  width: var(--update-sale-sticky-weight);
+  min-width: var(--update-sale-sticky-weight);
+  max-width: var(--update-sale-sticky-weight);
   box-shadow:
     1px 0 0 var(--line),
     4px 0 8px -2px rgba(20, 23, 28, 0.08);
 }
 
+.app-main .update-sale-table-wrap table.data.update-sale-table thead th.update-sale-dispatch-col,
 .app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-dispatch-col,
 .app-main .table-wrap > table.data.update-sale-table thead th.update-sale-dispatch-col {
   top: 0;
   left: 0;
-  z-index: 8;
+  z-index: 12;
   background: #f8fafb;
 }
 
+.app-main .update-sale-table-wrap table.data.update-sale-table thead th.update-sale-date-col,
 .app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-date-col,
 .app-main .table-wrap > table.data.update-sale-table thead th.update-sale-date-col {
   top: 0;
-  left: 5rem;
-  z-index: 7;
+  left: var(--update-sale-sticky-dispatch);
+  z-index: 12;
+  background: #f8fafb;
+}
+
+.app-main .update-sale-table-wrap table.data.update-sale-table thead th.update-sale-invoice-col,
+.app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-invoice-col,
+.app-main .table-wrap > table.data.update-sale-table thead th.update-sale-invoice-col {
+  top: 0;
+  left: calc(var(--update-sale-sticky-dispatch) + var(--update-sale-sticky-date));
+  z-index: 12;
+  background: #f8fafb;
+}
+
+.app-main .update-sale-table-wrap table.data.update-sale-table thead th.update-sale-lorry-col,
+.app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-lorry-col,
+.app-main .table-wrap > table.data.update-sale-table thead th.update-sale-lorry-col {
+  top: 0;
+  left: calc(
+    var(--update-sale-sticky-dispatch) + var(--update-sale-sticky-date) +
+      var(--update-sale-sticky-invoice)
+  );
+  z-index: 12;
+  background: #f8fafb;
+}
+
+.app-main .update-sale-table-wrap table.data.update-sale-table thead th.update-sale-weight-col,
+.app-main .table-h-scroll > table.data.update-sale-table thead th.update-sale-weight-col,
+.app-main .table-wrap > table.data.update-sale-table thead th.update-sale-weight-col {
+  top: 0;
+  left: calc(
+    var(--update-sale-sticky-dispatch) + var(--update-sale-sticky-date) +
+      var(--update-sale-sticky-invoice) + var(--update-sale-sticky-lorry)
+  );
+  z-index: 12;
   background: #f8fafb;
 }
 
 table.data.update-sale-table td.update-sale-dispatch-col,
-table.data.update-sale-table td.update-sale-date-col {
-  z-index: 4;
+table.data.update-sale-table td.update-sale-date-col,
+table.data.update-sale-table td.update-sale-invoice-col,
+table.data.update-sale-table td.update-sale-lorry-col,
+table.data.update-sale-table td.update-sale-weight-col {
+  z-index: 6;
   background: #ffffff;
 }
 
-table.data.update-sale-table tbody tr:hover td.update-sale-dispatch-col,
-table.data.update-sale-table tbody tr:hover td.update-sale-date-col {
-  background: #f7faf9;
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr:hover td,
+table.data.update-sale-table tbody tr.update-table-row-held td {
+  background: #d4e0dc;
+}
+
+table.data.update-sale-table tbody tr.update-table-row-held td {
+  background: #d4e0dc !important;
+}
+
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr:hover td.update-sale-dispatch-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr:hover td.update-sale-date-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr:hover td.update-sale-invoice-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr:hover td.update-sale-lorry-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr:hover td.update-sale-weight-col,
+table.data.update-sale-table tbody tr.update-table-row-held td.update-sale-dispatch-col,
+table.data.update-sale-table tbody tr.update-table-row-held td.update-sale-date-col,
+table.data.update-sale-table tbody tr.update-table-row-held td.update-sale-invoice-col,
+table.data.update-sale-table tbody tr.update-table-row-held td.update-sale-lorry-col,
+table.data.update-sale-table tbody tr.update-table-row-held td.update-sale-weight-col {
+  background: #d4e0dc;
+}
+
+table.data.update-sale-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td,
+table.data.update-sale-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-sale-dispatch-col,
+table.data.update-sale-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-sale-date-col,
+table.data.update-sale-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-sale-invoice-col,
+table.data.update-sale-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-sale-lorry-col,
+table.data.update-sale-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-sale-weight-col {
+  background: #ffffff !important;
+}
+
+table.data.update-sale-table tbody tr.collection-row-due-call td,
+table.data.update-sale-table tbody tr.collection-row-due-call td.update-sale-dispatch-col,
+table.data.update-sale-table tbody tr.collection-row-due-call td.update-sale-date-col,
+table.data.update-sale-table tbody tr.collection-row-due-call td.update-sale-invoice-col,
+table.data.update-sale-table tbody tr.collection-row-due-call td.update-sale-lorry-col,
+table.data.update-sale-table tbody tr.collection-row-due-call td.update-sale-weight-col {
+  background: #f7eeee !important;
+}
+
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.update-sale-dispatch-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.update-sale-date-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.update-sale-invoice-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.update-sale-lorry-col,
+table.data.update-sale-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.update-sale-weight-col,
+table.data.update-sale-table tbody tr.collection-row-due-call.update-table-row-held td,
+table.data.update-sale-table tbody tr.collection-row-due-call.update-table-row-held td.update-sale-dispatch-col,
+table.data.update-sale-table tbody tr.collection-row-due-call.update-table-row-held td.update-sale-date-col,
+table.data.update-sale-table tbody tr.collection-row-due-call.update-table-row-held td.update-sale-invoice-col,
+table.data.update-sale-table tbody tr.collection-row-due-call.update-table-row-held td.update-sale-lorry-col,
+table.data.update-sale-table tbody tr.collection-row-due-call.update-table-row-held td.update-sale-weight-col {
+  background: #f1e1e1 !important;
+}
+
+table.data.update-sale-table.update-table-hold-active tbody tr.collection-row-due-call:not(.update-table-row-held):hover td,
+table.data.update-sale-table.update-table-hold-active tbody tr.collection-row-due-call:not(.update-table-row-held):hover td.update-sale-dispatch-col,
+table.data.update-sale-table.update-table-hold-active tbody tr.collection-row-due-call:not(.update-table-row-held):hover td.update-sale-date-col,
+table.data.update-sale-table.update-table-hold-active tbody tr.collection-row-due-call:not(.update-table-row-held):hover td.update-sale-invoice-col,
+table.data.update-sale-table.update-table-hold-active tbody tr.collection-row-due-call:not(.update-table-row-held):hover td.update-sale-lorry-col,
+table.data.update-sale-table.update-table-hold-active tbody tr.collection-row-due-call:not(.update-table-row-held):hover td.update-sale-weight-col {
+  background: #f7eeee !important;
 }
 
 table.data.update-sale-table .update-sale-transporter-cell {
@@ -5685,6 +6153,10 @@ table.data.update-transport-table col.update-transport-col-port {
   width: 8rem;
 }
 
+table.data.update-transport-table col.update-transport-col-place {
+  width: 8.5rem;
+}
+
 table.data.update-transport-table col.update-transport-col-terms {
   width: 7rem;
 }
@@ -5706,7 +6178,7 @@ table.data.update-transport-table col.update-transport-col-tally {
 }
 
 table.data.update-transport-table col.update-transport-col-actions {
-  width: 8.5rem;
+  width: 15.5rem;
 }
 
 table.data.update-transport-table thead th,
@@ -5728,6 +6200,10 @@ table.data.update-transport-table thead th.cell-center {
   letter-spacing: normal;
   font-size: 0.8125rem;
   color: var(--ink-soft);
+}
+
+table.data.update-transport-table thead th button.th-sort {
+  white-space: nowrap;
 }
 
 table.data.update-transport-table tbody td {
@@ -5785,9 +6261,26 @@ table.data.update-transport-table td.update-transport-date-col {
   background: #ffffff;
 }
 
-table.data.update-transport-table tbody tr:hover td.update-transport-dispatch-col,
-table.data.update-transport-table tbody tr:hover td.update-transport-date-col {
-  background: #f7faf9;
+table.data.update-transport-table:not(.update-table-hold-active) tbody tr:hover td,
+table.data.update-transport-table tbody tr.update-table-row-held td {
+  background: #d4e0dc;
+}
+
+table.data.update-transport-table tbody tr.update-table-row-held td {
+  background: #d4e0dc !important;
+}
+
+table.data.update-transport-table:not(.update-table-hold-active) tbody tr:hover td.update-transport-dispatch-col,
+table.data.update-transport-table:not(.update-table-hold-active) tbody tr:hover td.update-transport-date-col,
+table.data.update-transport-table tbody tr.update-table-row-held td.update-transport-dispatch-col,
+table.data.update-transport-table tbody tr.update-table-row-held td.update-transport-date-col {
+  background: #d4e0dc;
+}
+
+table.data.update-transport-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td,
+table.data.update-transport-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-transport-dispatch-col,
+table.data.update-transport-table.update-table-hold-active tbody tr:not(.update-table-row-held):hover td.update-transport-date-col {
+  background: #ffffff !important;
 }
 
 table.data.update-transport-table .update-transport-name-cell {
@@ -5805,7 +6298,7 @@ table.data.update-transport-table td.update-transport-actions-col {
 }
 
 table.data.update-transport-table .dispatch-edit-actions {
-  gap: 0;
+  gap: 0.4rem;
 }
 
 table.data.collection-table.report-screen-table {

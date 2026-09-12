@@ -135,7 +135,7 @@ export type InvestmentOpenDue = $Result.DefaultSelection<Prisma.$InvestmentOpenD
 export type InvestmentPeriod = $Result.DefaultSelection<Prisma.$InvestmentPeriodPayload>
 /**
  * Model InvestmentPeriodValue
- * Profit / loss for one company in one period column.
+ * Profit / loss (and optional interest) for one company in one period column.
  */
 export type InvestmentPeriodValue = $Result.DefaultSelection<Prisma.$InvestmentPeriodValuePayload>
 
@@ -3662,6 +3662,7 @@ export namespace Prisma {
     saleOrderSalesExecs: number
     purchaseOrderSalesExecs: number
     ageingReportSalesExecs: number
+    customerLedgerSalesExecs: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3697,6 +3698,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: true
     purchaseOrderSalesExecs?: true
     ageingReportSalesExecs?: true
+    customerLedgerSalesExecs?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3785,6 +3787,7 @@ export namespace Prisma {
     saleOrderSalesExecs: string[]
     purchaseOrderSalesExecs: string[]
     ageingReportSalesExecs: string[]
+    customerLedgerSalesExecs: string[]
     createdAt: Date
     updatedAt: Date
     _count: StaffCountAggregateOutputType | null
@@ -3817,6 +3820,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: boolean
     purchaseOrderSalesExecs?: boolean
     ageingReportSalesExecs?: boolean
+    customerLedgerSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     dealByCustomers?: boolean | Staff$dealByCustomersArgs<ExtArgs>
@@ -3839,6 +3843,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: boolean
     purchaseOrderSalesExecs?: boolean
     ageingReportSalesExecs?: boolean
+    customerLedgerSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["staff"]>
@@ -3854,6 +3859,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: boolean
     purchaseOrderSalesExecs?: boolean
     ageingReportSalesExecs?: boolean
+    customerLedgerSalesExecs?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -3911,6 +3917,10 @@ export namespace Prisma {
        * Sales executives visible in Ageing Report. ["*"] = all; else executive names.
        */
       ageingReportSalesExecs: string[]
+      /**
+       * Sales executives visible in Customer Ledger. ["*"] = all; else executive names.
+       */
+      customerLedgerSalesExecs: string[]
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["staff"]>
@@ -4322,6 +4332,7 @@ export namespace Prisma {
     readonly saleOrderSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly purchaseOrderSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly ageingReportSalesExecs: FieldRef<"Staff", 'String[]'>
+    readonly customerLedgerSalesExecs: FieldRef<"Staff", 'String[]'>
     readonly createdAt: FieldRef<"Staff", 'DateTime'>
     readonly updatedAt: FieldRef<"Staff", 'DateTime'>
   }
@@ -28760,10 +28771,12 @@ export namespace Prisma {
 
   export type InvestmentPeriodValueAvgAggregateOutputType = {
     amount: Decimal | null
+    interest: Decimal | null
   }
 
   export type InvestmentPeriodValueSumAggregateOutputType = {
     amount: Decimal | null
+    interest: Decimal | null
   }
 
   export type InvestmentPeriodValueMinAggregateOutputType = {
@@ -28771,6 +28784,7 @@ export namespace Prisma {
     companyId: string | null
     periodId: string | null
     amount: Decimal | null
+    interest: Decimal | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -28780,6 +28794,7 @@ export namespace Prisma {
     companyId: string | null
     periodId: string | null
     amount: Decimal | null
+    interest: Decimal | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -28789,6 +28804,7 @@ export namespace Prisma {
     companyId: number
     periodId: number
     amount: number
+    interest: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -28797,10 +28813,12 @@ export namespace Prisma {
 
   export type InvestmentPeriodValueAvgAggregateInputType = {
     amount?: true
+    interest?: true
   }
 
   export type InvestmentPeriodValueSumAggregateInputType = {
     amount?: true
+    interest?: true
   }
 
   export type InvestmentPeriodValueMinAggregateInputType = {
@@ -28808,6 +28826,7 @@ export namespace Prisma {
     companyId?: true
     periodId?: true
     amount?: true
+    interest?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -28817,6 +28836,7 @@ export namespace Prisma {
     companyId?: true
     periodId?: true
     amount?: true
+    interest?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -28826,6 +28846,7 @@ export namespace Prisma {
     companyId?: true
     periodId?: true
     amount?: true
+    interest?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -28922,6 +28943,7 @@ export namespace Prisma {
     companyId: string
     periodId: string
     amount: Decimal
+    interest: Decimal | null
     createdAt: Date
     updatedAt: Date
     _count: InvestmentPeriodValueCountAggregateOutputType | null
@@ -28950,6 +28972,7 @@ export namespace Prisma {
     companyId?: boolean
     periodId?: boolean
     amount?: boolean
+    interest?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
@@ -28961,6 +28984,7 @@ export namespace Prisma {
     companyId?: boolean
     periodId?: boolean
     amount?: boolean
+    interest?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     company?: boolean | InvestmentCompanyDefaultArgs<ExtArgs>
@@ -28972,6 +28996,7 @@ export namespace Prisma {
     companyId?: boolean
     periodId?: boolean
     amount?: boolean
+    interest?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -28996,6 +29021,7 @@ export namespace Prisma {
       companyId: string
       periodId: string
       amount: Prisma.Decimal
+      interest: Prisma.Decimal | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["investmentPeriodValue"]>
@@ -29397,6 +29423,7 @@ export namespace Prisma {
     readonly companyId: FieldRef<"InvestmentPeriodValue", 'String'>
     readonly periodId: FieldRef<"InvestmentPeriodValue", 'String'>
     readonly amount: FieldRef<"InvestmentPeriodValue", 'Decimal'>
+    readonly interest: FieldRef<"InvestmentPeriodValue", 'Decimal'>
     readonly createdAt: FieldRef<"InvestmentPeriodValue", 'DateTime'>
     readonly updatedAt: FieldRef<"InvestmentPeriodValue", 'DateTime'>
   }
@@ -29756,6 +29783,7 @@ export namespace Prisma {
     saleOrderSalesExecs: 'saleOrderSalesExecs',
     purchaseOrderSalesExecs: 'purchaseOrderSalesExecs',
     ageingReportSalesExecs: 'ageingReportSalesExecs',
+    customerLedgerSalesExecs: 'customerLedgerSalesExecs',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -30130,6 +30158,7 @@ export namespace Prisma {
     companyId: 'companyId',
     periodId: 'periodId',
     amount: 'amount',
+    interest: 'interest',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -30442,6 +30471,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StringNullableListFilter<"Staff">
     purchaseOrderSalesExecs?: StringNullableListFilter<"Staff">
     ageingReportSalesExecs?: StringNullableListFilter<"Staff">
+    customerLedgerSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
@@ -30463,6 +30493,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: SortOrder
     purchaseOrderSalesExecs?: SortOrder
     ageingReportSalesExecs?: SortOrder
+    customerLedgerSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     dealByCustomers?: CustomerOrderByRelationAggregateInput
@@ -30487,6 +30518,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StringNullableListFilter<"Staff">
     purchaseOrderSalesExecs?: StringNullableListFilter<"Staff">
     ageingReportSalesExecs?: StringNullableListFilter<"Staff">
+    customerLedgerSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeFilter<"Staff"> | Date | string
     updatedAt?: DateTimeFilter<"Staff"> | Date | string
     dealByCustomers?: CustomerListRelationFilter
@@ -30508,6 +30540,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: SortOrder
     purchaseOrderSalesExecs?: SortOrder
     ageingReportSalesExecs?: SortOrder
+    customerLedgerSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: StaffCountOrderByAggregateInput
@@ -30529,6 +30562,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StringNullableListFilter<"Staff">
     purchaseOrderSalesExecs?: StringNullableListFilter<"Staff">
     ageingReportSalesExecs?: StringNullableListFilter<"Staff">
+    customerLedgerSalesExecs?: StringNullableListFilter<"Staff">
     createdAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Staff"> | Date | string
   }
@@ -32469,6 +32503,7 @@ export namespace Prisma {
     companyId?: StringFilter<"InvestmentPeriodValue"> | string
     periodId?: StringFilter<"InvestmentPeriodValue"> | string
     amount?: DecimalFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    interest?: DecimalNullableFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
     updatedAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
     company?: XOR<InvestmentCompanyRelationFilter, InvestmentCompanyWhereInput>
@@ -32480,6 +32515,7 @@ export namespace Prisma {
     companyId?: SortOrder
     periodId?: SortOrder
     amount?: SortOrder
+    interest?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     company?: InvestmentCompanyOrderByWithRelationInput
@@ -32495,6 +32531,7 @@ export namespace Prisma {
     companyId?: StringFilter<"InvestmentPeriodValue"> | string
     periodId?: StringFilter<"InvestmentPeriodValue"> | string
     amount?: DecimalFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    interest?: DecimalNullableFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
     updatedAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
     company?: XOR<InvestmentCompanyRelationFilter, InvestmentCompanyWhereInput>
@@ -32506,6 +32543,7 @@ export namespace Prisma {
     companyId?: SortOrder
     periodId?: SortOrder
     amount?: SortOrder
+    interest?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: InvestmentPeriodValueCountOrderByAggregateInput
@@ -32523,6 +32561,7 @@ export namespace Prisma {
     companyId?: StringWithAggregatesFilter<"InvestmentPeriodValue"> | string
     periodId?: StringWithAggregatesFilter<"InvestmentPeriodValue"> | string
     amount?: DecimalWithAggregatesFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    interest?: DecimalNullableWithAggregatesFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeWithAggregatesFilter<"InvestmentPeriodValue"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"InvestmentPeriodValue"> | Date | string
   }
@@ -32538,6 +32577,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -32559,6 +32599,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -32580,6 +32621,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -32601,6 +32643,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -32622,6 +32665,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32637,6 +32681,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32652,6 +32697,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34781,6 +34827,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueCreateInput = {
     id?: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     company: InvestmentCompanyCreateNestedOneWithoutPeriodValuesInput
@@ -34792,6 +34839,7 @@ export namespace Prisma {
     companyId: string
     periodId: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34799,6 +34847,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: InvestmentCompanyUpdateOneRequiredWithoutPeriodValuesNestedInput
@@ -34810,6 +34859,7 @@ export namespace Prisma {
     companyId?: StringFieldUpdateOperationsInput | string
     periodId?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34819,6 +34869,7 @@ export namespace Prisma {
     companyId: string
     periodId: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34826,6 +34877,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34835,6 +34887,7 @@ export namespace Prisma {
     companyId?: StringFieldUpdateOperationsInput | string
     periodId?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34964,6 +35017,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: SortOrder
     purchaseOrderSalesExecs?: SortOrder
     ageingReportSalesExecs?: SortOrder
+    customerLedgerSalesExecs?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -36583,12 +36637,14 @@ export namespace Prisma {
     companyId?: SortOrder
     periodId?: SortOrder
     amount?: SortOrder
+    interest?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type InvestmentPeriodValueAvgOrderByAggregateInput = {
     amount?: SortOrder
+    interest?: SortOrder
   }
 
   export type InvestmentPeriodValueMaxOrderByAggregateInput = {
@@ -36596,6 +36652,7 @@ export namespace Prisma {
     companyId?: SortOrder
     periodId?: SortOrder
     amount?: SortOrder
+    interest?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -36605,12 +36662,14 @@ export namespace Prisma {
     companyId?: SortOrder
     periodId?: SortOrder
     amount?: SortOrder
+    interest?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type InvestmentPeriodValueSumOrderByAggregateInput = {
     amount?: SortOrder
+    interest?: SortOrder
   }
 
   export type StaffCreatepageKeysInput = {
@@ -36634,6 +36693,10 @@ export namespace Prisma {
   }
 
   export type StaffCreateageingReportSalesExecsInput = {
+    set: string[]
+  }
+
+  export type StaffCreatecustomerLedgerSalesExecsInput = {
     set: string[]
   }
 
@@ -36755,6 +36818,11 @@ export namespace Prisma {
   }
 
   export type StaffUpdateageingReportSalesExecsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type StaffUpdatecustomerLedgerSalesExecsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -40361,6 +40429,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutOrderByInput
@@ -40381,6 +40450,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
@@ -40661,6 +40731,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutOrderByNestedInput
@@ -40681,6 +40752,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
@@ -41134,6 +41206,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -41154,6 +41227,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -41409,6 +41483,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -41429,6 +41504,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -42168,6 +42244,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -42188,6 +42265,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -42499,6 +42577,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -42519,6 +42598,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -42696,6 +42776,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -42716,6 +42797,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -42927,6 +43009,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -42947,6 +43030,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -43124,6 +43208,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -43144,6 +43229,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -43355,6 +43441,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -43375,6 +43462,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -43395,6 +43483,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
@@ -43415,6 +43504,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
     createdAt?: Date | string
     updatedAt?: Date | string
     dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
@@ -43479,6 +43569,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
@@ -43499,6 +43590,7 @@ export namespace Prisma {
     saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
     purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
     ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
@@ -43724,6 +43816,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueCreateWithoutCompanyInput = {
     id?: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     period: InvestmentPeriodCreateNestedOneWithoutValuesInput
@@ -43733,6 +43826,7 @@ export namespace Prisma {
     id?: string
     periodId: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -43832,6 +43926,7 @@ export namespace Prisma {
     companyId?: StringFilter<"InvestmentPeriodValue"> | string
     periodId?: StringFilter<"InvestmentPeriodValue"> | string
     amount?: DecimalFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string
+    interest?: DecimalNullableFilter<"InvestmentPeriodValue"> | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
     updatedAt?: DateTimeFilter<"InvestmentPeriodValue"> | Date | string
   }
@@ -43903,6 +43998,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueCreateWithoutPeriodInput = {
     id?: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     company: InvestmentCompanyCreateNestedOneWithoutPeriodValuesInput
@@ -43912,6 +44008,7 @@ export namespace Prisma {
     id?: string
     companyId: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -46131,6 +46228,7 @@ export namespace Prisma {
     id?: string
     periodId: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -46243,6 +46341,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueUpdateWithoutCompanyInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     period?: InvestmentPeriodUpdateOneRequiredWithoutValuesNestedInput
@@ -46252,6 +46351,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     periodId?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -46260,6 +46360,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     periodId?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -46268,6 +46369,7 @@ export namespace Prisma {
     id?: string
     companyId: string
     amount: Decimal | DecimalJsLike | number | string
+    interest?: Decimal | DecimalJsLike | number | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -46275,6 +46377,7 @@ export namespace Prisma {
   export type InvestmentPeriodValueUpdateWithoutPeriodInput = {
     id?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: InvestmentCompanyUpdateOneRequiredWithoutPeriodValuesNestedInput
@@ -46284,6 +46387,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     companyId?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -46292,6 +46396,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     companyId?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    interest?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

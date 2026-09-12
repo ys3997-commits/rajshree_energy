@@ -29,6 +29,7 @@ export type TransportLedgerRow = {
   freightAmountAfterTds: string | null;
   customerName: string | null;
   portName: string | null;
+  customerCity: string | null;
   /** Payment / discount date. */
   fundDate: string | null;
   fundType:
@@ -143,7 +144,7 @@ export async function getTransportLedger(
         createdAt: true,
         order: {
           select: {
-            customer: { select: { name: true } },
+            customer: { select: { name: true, city: true } },
             port: { select: { name: true } },
           },
         },
@@ -195,6 +196,7 @@ export async function getTransportLedger(
       freightAmountAfterTds: freightAmountAfterTds.toString(),
       customerName: d.order?.customer?.name ?? null,
       portName: d.order?.port?.name ?? d.vessel?.port?.name ?? null,
+      customerCity: d.order?.customer?.city ?? null,
       fundDate: null,
       fundType: null,
       fundAmount: null,
@@ -215,6 +217,7 @@ export async function getTransportLedger(
       freightAmountAfterTds: null,
       customerName: null,
       portName: null,
+      customerCity: null,
       fundDate: date,
       fundType: p.direction === "RECEIVED" ? "Fund received" : "Fund paid",
       fundAmount: p.amount.toString(),
@@ -235,6 +238,7 @@ export async function getTransportLedger(
       freightAmountAfterTds: null,
       customerName: null,
       portName: null,
+      customerCity: null,
       fundDate: date,
       fundType:
         d.status === "RECEIVED" ? "Discount received" : "Discount paid",

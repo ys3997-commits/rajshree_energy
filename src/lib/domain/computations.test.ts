@@ -16,6 +16,7 @@ import {
   computeSaleFinalRate,
   diffInQuantity,
   effectiveSaleRate,
+  freightBillQuantity,
   lineProfit,
   profitPerMt,
 } from "./computations";
@@ -203,6 +204,17 @@ describe("computed balances", () => {
         receivingQuantity: new Decimal(9.5),
       })?.toString(),
     ).toBe("0.5");
+  });
+});
+
+describe("freightBillQuantity", () => {
+  it("uses loading weight when receiving is missing", () => {
+    expect(freightBillQuantity(30, null).toString()).toBe("30");
+  });
+
+  it("uses the lesser of loading and receiving", () => {
+    expect(freightBillQuantity(30, 28).toString()).toBe("28");
+    expect(freightBillQuantity(27, 29).toString()).toBe("27");
   });
 });
 
