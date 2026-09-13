@@ -21,6 +21,8 @@ import {
 export type SalesEngineRow = {
   id: string;
   name: string;
+  ownerName: string | null;
+  ownerContact: string | null;
   purchaserName: string | null;
   purchaserContact: string | null;
   purchaserRole: string | null;
@@ -123,6 +125,8 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     select: {
       id: true,
       name: true,
+      ownerName: true,
+      ownerContact: true,
       purchaserName: true,
       purchaserContact: true,
       purchaserRole: true,
@@ -230,6 +234,8 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     return {
       id: customer.id,
       name: customer.name,
+      ownerName: customer.ownerName,
+      ownerContact: customer.ownerContact,
       purchaserName: customer.purchaserName,
       purchaserContact: customer.purchaserContact,
       purchaserRole: customer.purchaserRole,

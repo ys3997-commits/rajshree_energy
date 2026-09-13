@@ -21,6 +21,11 @@ describe("pageForPath", () => {
       "reports-vessel-supplied",
     );
     expect(pageForPath("/reports/vessel/xyz")?.key).toBe("reports-vessel");
+    expect(pageForPath("/reports/veg")?.key).toBe("reports-veg-payment");
+    expect(pageForPath("/reports/veg/discount")?.key).toBe(
+      "reports-veg-discount",
+    );
+    expect(pageForPath("/reports/veg/ledger")?.key).toBe("reports-veg-ledger");
   });
 
   it("maps old report URLs to current pages", () => {
@@ -90,7 +95,23 @@ describe("canAccessPath", () => {
   it("allows master entity pages when the key is granted", () => {
     expect(canAccessPath(["customers"], "/customers")).toBe(true);
     expect(canAccessPath(["vessels"], "/vessels")).toBe(true);
+    expect(canAccessPath(["veg"], "/veg")).toBe(true);
     expect(canAccessPath(["options-ports"], "/customers")).toBe(false);
+    expect(canAccessPath(["customers"], "/veg")).toBe(false);
+  });
+
+  it("scopes veg report sub-pages separately", () => {
+    expect(canAccessPath(["reports-veg-payment"], "/reports/veg")).toBe(true);
+    expect(
+      canAccessPath(["reports-veg-payment"], "/reports/veg/discount"),
+    ).toBe(false);
+    expect(
+      canAccessPath(["reports-veg-discount"], "/reports/veg/discount"),
+    ).toBe(true);
+    expect(canAccessPath(["reports-veg-ledger"], "/reports/veg/ledger")).toBe(
+      true,
+    );
+    expect(canAccessPath(["reports-veg-ledger"], "/reports/veg")).toBe(false);
   });
 });
 

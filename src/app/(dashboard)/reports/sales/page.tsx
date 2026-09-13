@@ -35,6 +35,7 @@ export default async function SalesEnginePage() {
       <SalesEngineClient
         initialRows={filteredRows}
         allowedSaleExecutives={execScope}
+        canMessageOwner={access.kind === "owner"}
       />
     </div>
   );

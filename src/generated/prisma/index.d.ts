@@ -65,7 +65,7 @@ export type SectorOption = $Result.DefaultSelection<Prisma.$SectorOptionPayload>
 export type DealingCompanyOption = $Result.DefaultSelection<Prisma.$DealingCompanyOptionPayload>
 /**
  * Model OwnerOption
- * Managed list of owner names (suggested on customers and transporters; stored as text).
+ * Managed list of RE Leadership names (bill approvers).
  */
 export type OwnerOption = $Result.DefaultSelection<Prisma.$OwnerOptionPayload>
 /**
@@ -78,6 +78,11 @@ export type QualityClass = $Result.DefaultSelection<Prisma.$QualityClassPayload>
  * 
  */
 export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
+/**
+ * Model Veg
+ * Industry-customer veg contact and payment rate (Masters → Veg).
+ */
+export type Veg = $Result.DefaultSelection<Prisma.$VegPayload>
 /**
  * Model Vessel
  * 
@@ -108,6 +113,16 @@ export type Payment = $Result.DefaultSelection<Prisma.$PaymentPayload>
  * Discount received from or paid to a customer, transporter, or investment company.
  */
 export type Discount = $Result.DefaultSelection<Prisma.$DiscountPayload>
+/**
+ * Model VegPayment
+ * Money paid to an industry-customer veg contact (Report → Veg → Veg Payment).
+ */
+export type VegPayment = $Result.DefaultSelection<Prisma.$VegPaymentPayload>
+/**
+ * Model VegDiscount
+ * Discount received from or paid to an industry-customer veg contact.
+ */
+export type VegDiscount = $Result.DefaultSelection<Prisma.$VegDiscountPayload>
 /**
  * Model Bill
  * Staff-uploaded bill awaiting owner approval.
@@ -167,6 +182,14 @@ export const SalesSmsType: {
 };
 
 export type SalesSmsType = (typeof SalesSmsType)[keyof typeof SalesSmsType]
+
+
+export const VegPaymentBasis: {
+  PER_MT: 'PER_MT',
+  PER_LORRY: 'PER_LORRY'
+};
+
+export type VegPaymentBasis = (typeof VegPaymentBasis)[keyof typeof VegPaymentBasis]
 
 
 export const OrderType: {
@@ -254,6 +277,10 @@ export const CollectionThrough: typeof $Enums.CollectionThrough
 export type SalesSmsType = $Enums.SalesSmsType
 
 export const SalesSmsType: typeof $Enums.SalesSmsType
+
+export type VegPaymentBasis = $Enums.VegPaymentBasis
+
+export const VegPaymentBasis: typeof $Enums.VegPaymentBasis
 
 export type OrderType = $Enums.OrderType
 
@@ -545,6 +572,16 @@ export class PrismaClient<
   get customer(): Prisma.CustomerDelegate<ExtArgs>;
 
   /**
+   * `prisma.veg`: Exposes CRUD operations for the **Veg** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Vegs
+    * const vegs = await prisma.veg.findMany()
+    * ```
+    */
+  get veg(): Prisma.VegDelegate<ExtArgs>;
+
+  /**
    * `prisma.vessel`: Exposes CRUD operations for the **Vessel** model.
     * Example usage:
     * ```ts
@@ -603,6 +640,26 @@ export class PrismaClient<
     * ```
     */
   get discount(): Prisma.DiscountDelegate<ExtArgs>;
+
+  /**
+   * `prisma.vegPayment`: Exposes CRUD operations for the **VegPayment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more VegPayments
+    * const vegPayments = await prisma.vegPayment.findMany()
+    * ```
+    */
+  get vegPayment(): Prisma.VegPaymentDelegate<ExtArgs>;
+
+  /**
+   * `prisma.vegDiscount`: Exposes CRUD operations for the **VegDiscount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more VegDiscounts
+    * const vegDiscounts = await prisma.vegDiscount.findMany()
+    * ```
+    */
+  get vegDiscount(): Prisma.VegDiscountDelegate<ExtArgs>;
 
   /**
    * `prisma.bill`: Exposes CRUD operations for the **Bill** model.
@@ -1117,12 +1174,15 @@ export namespace Prisma {
     OwnerOption: 'OwnerOption',
     QualityClass: 'QualityClass',
     Customer: 'Customer',
+    Veg: 'Veg',
     Vessel: 'Vessel',
     Order: 'Order',
     PurchaseOrder: 'PurchaseOrder',
     Dispatch: 'Dispatch',
     Payment: 'Payment',
     Discount: 'Discount',
+    VegPayment: 'VegPayment',
+    VegDiscount: 'VegDiscount',
     Bill: 'Bill',
     BillFile: 'BillFile',
     InvestmentCompany: 'InvestmentCompany',
@@ -1144,7 +1204,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "ownerOption" | "qualityClass" | "customer" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2058,6 +2118,76 @@ export namespace Prisma {
           }
         }
       }
+      Veg: {
+        payload: Prisma.$VegPayload<ExtArgs>
+        fields: Prisma.VegFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.VegFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.VegFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>
+          }
+          findFirst: {
+            args: Prisma.VegFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.VegFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>
+          }
+          findMany: {
+            args: Prisma.VegFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>[]
+          }
+          create: {
+            args: Prisma.VegCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>
+          }
+          createMany: {
+            args: Prisma.VegCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.VegCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>[]
+          }
+          delete: {
+            args: Prisma.VegDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>
+          }
+          update: {
+            args: Prisma.VegUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>
+          }
+          deleteMany: {
+            args: Prisma.VegDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.VegUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.VegUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPayload>
+          }
+          aggregate: {
+            args: Prisma.VegAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVeg>
+          }
+          groupBy: {
+            args: Prisma.VegGroupByArgs<ExtArgs>
+            result: $Utils.Optional<VegGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.VegCountArgs<ExtArgs>
+            result: $Utils.Optional<VegCountAggregateOutputType> | number
+          }
+        }
+      }
       Vessel: {
         payload: Prisma.$VesselPayload<ExtArgs>
         fields: Prisma.VesselFieldRefs
@@ -2475,6 +2605,146 @@ export namespace Prisma {
           count: {
             args: Prisma.DiscountCountArgs<ExtArgs>
             result: $Utils.Optional<DiscountCountAggregateOutputType> | number
+          }
+        }
+      }
+      VegPayment: {
+        payload: Prisma.$VegPaymentPayload<ExtArgs>
+        fields: Prisma.VegPaymentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.VegPaymentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.VegPaymentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>
+          }
+          findFirst: {
+            args: Prisma.VegPaymentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.VegPaymentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>
+          }
+          findMany: {
+            args: Prisma.VegPaymentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>[]
+          }
+          create: {
+            args: Prisma.VegPaymentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>
+          }
+          createMany: {
+            args: Prisma.VegPaymentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.VegPaymentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>[]
+          }
+          delete: {
+            args: Prisma.VegPaymentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>
+          }
+          update: {
+            args: Prisma.VegPaymentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>
+          }
+          deleteMany: {
+            args: Prisma.VegPaymentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.VegPaymentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.VegPaymentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegPaymentPayload>
+          }
+          aggregate: {
+            args: Prisma.VegPaymentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVegPayment>
+          }
+          groupBy: {
+            args: Prisma.VegPaymentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<VegPaymentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.VegPaymentCountArgs<ExtArgs>
+            result: $Utils.Optional<VegPaymentCountAggregateOutputType> | number
+          }
+        }
+      }
+      VegDiscount: {
+        payload: Prisma.$VegDiscountPayload<ExtArgs>
+        fields: Prisma.VegDiscountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.VegDiscountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.VegDiscountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>
+          }
+          findFirst: {
+            args: Prisma.VegDiscountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.VegDiscountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>
+          }
+          findMany: {
+            args: Prisma.VegDiscountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>[]
+          }
+          create: {
+            args: Prisma.VegDiscountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>
+          }
+          createMany: {
+            args: Prisma.VegDiscountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.VegDiscountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>[]
+          }
+          delete: {
+            args: Prisma.VegDiscountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>
+          }
+          update: {
+            args: Prisma.VegDiscountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>
+          }
+          deleteMany: {
+            args: Prisma.VegDiscountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.VegDiscountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.VegDiscountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$VegDiscountPayload>
+          }
+          aggregate: {
+            args: Prisma.VegDiscountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateVegDiscount>
+          }
+          groupBy: {
+            args: Prisma.VegDiscountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<VegDiscountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.VegDiscountCountArgs<ExtArgs>
+            result: $Utils.Optional<VegDiscountCountAggregateOutputType> | number
           }
         }
       }
@@ -3065,6 +3335,8 @@ export namespace Prisma {
     createdPayments: number
     createdDiscounts: number
     createdDispatches: number
+    createdVegPayments: number
+    createdVegDiscounts: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3074,6 +3346,8 @@ export namespace Prisma {
     createdPayments?: boolean | StaffCountOutputTypeCountCreatedPaymentsArgs
     createdDiscounts?: boolean | StaffCountOutputTypeCountCreatedDiscountsArgs
     createdDispatches?: boolean | StaffCountOutputTypeCountCreatedDispatchesArgs
+    createdVegPayments?: boolean | StaffCountOutputTypeCountCreatedVegPaymentsArgs
+    createdVegDiscounts?: boolean | StaffCountOutputTypeCountCreatedVegDiscountsArgs
   }
 
   // Custom InputTypes
@@ -3127,6 +3401,20 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountCreatedDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DispatchWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedVegPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegPaymentWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedVegDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegDiscountWhereInput
   }
 
 
@@ -3340,6 +3628,7 @@ export namespace Prisma {
     dispatches: number
     payments: number
     discounts: number
+    vegs: number
   }
 
   export type CustomerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3348,6 +3637,7 @@ export namespace Prisma {
     dispatches?: boolean | CustomerCountOutputTypeCountDispatchesArgs
     payments?: boolean | CustomerCountOutputTypeCountPaymentsArgs
     discounts?: boolean | CustomerCountOutputTypeCountDiscountsArgs
+    vegs?: boolean | CustomerCountOutputTypeCountVegsArgs
   }
 
   // Custom InputTypes
@@ -3394,6 +3684,53 @@ export namespace Prisma {
    */
   export type CustomerCountOutputTypeCountDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DiscountWhereInput
+  }
+
+  /**
+   * CustomerCountOutputType without action
+   */
+  export type CustomerCountOutputTypeCountVegsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegWhereInput
+  }
+
+
+  /**
+   * Count Type VegCountOutputType
+   */
+
+  export type VegCountOutputType = {
+    payments: number
+    discounts: number
+  }
+
+  export type VegCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payments?: boolean | VegCountOutputTypeCountPaymentsArgs
+    discounts?: boolean | VegCountOutputTypeCountDiscountsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * VegCountOutputType without action
+   */
+  export type VegCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegCountOutputType
+     */
+    select?: VegCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * VegCountOutputType without action
+   */
+  export type VegCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegPaymentWhereInput
+  }
+
+  /**
+   * VegCountOutputType without action
+   */
+  export type VegCountOutputTypeCountDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegDiscountWhereInput
   }
 
 
@@ -3829,6 +4166,8 @@ export namespace Prisma {
     createdPayments?: boolean | Staff$createdPaymentsArgs<ExtArgs>
     createdDiscounts?: boolean | Staff$createdDiscountsArgs<ExtArgs>
     createdDispatches?: boolean | Staff$createdDispatchesArgs<ExtArgs>
+    createdVegPayments?: boolean | Staff$createdVegPaymentsArgs<ExtArgs>
+    createdVegDiscounts?: boolean | Staff$createdVegDiscountsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -3871,6 +4210,8 @@ export namespace Prisma {
     createdPayments?: boolean | Staff$createdPaymentsArgs<ExtArgs>
     createdDiscounts?: boolean | Staff$createdDiscountsArgs<ExtArgs>
     createdDispatches?: boolean | Staff$createdDispatchesArgs<ExtArgs>
+    createdVegPayments?: boolean | Staff$createdVegPaymentsArgs<ExtArgs>
+    createdVegDiscounts?: boolean | Staff$createdVegDiscountsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StaffIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3884,6 +4225,8 @@ export namespace Prisma {
       createdPayments: Prisma.$PaymentPayload<ExtArgs>[]
       createdDiscounts: Prisma.$DiscountPayload<ExtArgs>[]
       createdDispatches: Prisma.$DispatchPayload<ExtArgs>[]
+      createdVegPayments: Prisma.$VegPaymentPayload<ExtArgs>[]
+      createdVegDiscounts: Prisma.$VegDiscountPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4293,6 +4636,8 @@ export namespace Prisma {
     createdPayments<T extends Staff$createdPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
     createdDiscounts<T extends Staff$createdDiscountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdDiscountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany"> | Null>
     createdDispatches<T extends Staff$createdDispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdDispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
+    createdVegPayments<T extends Staff$createdVegPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdVegPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    createdVegDiscounts<T extends Staff$createdVegDiscountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdVegDiscountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4766,6 +5111,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DispatchScalarFieldEnum | DispatchScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdVegPayments
+   */
+  export type Staff$createdVegPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    where?: VegPaymentWhereInput
+    orderBy?: VegPaymentOrderByWithRelationInput | VegPaymentOrderByWithRelationInput[]
+    cursor?: VegPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VegPaymentScalarFieldEnum | VegPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdVegDiscounts
+   */
+  export type Staff$createdVegDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    where?: VegDiscountWhereInput
+    orderBy?: VegDiscountOrderByWithRelationInput | VegDiscountOrderByWithRelationInput[]
+    cursor?: VegDiscountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VegDiscountScalarFieldEnum | VegDiscountScalarFieldEnum[]
   }
 
   /**
@@ -15439,6 +15824,7 @@ export namespace Prisma {
     dispatches?: boolean | Customer$dispatchesArgs<ExtArgs>
     payments?: boolean | Customer$paymentsArgs<ExtArgs>
     discounts?: boolean | Customer$discountsArgs<ExtArgs>
+    vegs?: boolean | Customer$vegsArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["customer"]>
 
@@ -15528,6 +15914,7 @@ export namespace Prisma {
     dispatches?: boolean | Customer$dispatchesArgs<ExtArgs>
     payments?: boolean | Customer$paymentsArgs<ExtArgs>
     discounts?: boolean | Customer$discountsArgs<ExtArgs>
+    vegs?: boolean | Customer$vegsArgs<ExtArgs>
     _count?: boolean | CustomerCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CustomerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -15543,6 +15930,7 @@ export namespace Prisma {
       dispatches: Prisma.$DispatchPayload<ExtArgs>[]
       payments: Prisma.$PaymentPayload<ExtArgs>[]
       discounts: Prisma.$DiscountPayload<ExtArgs>[]
+      vegs: Prisma.$VegPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -15978,6 +16366,7 @@ export namespace Prisma {
     dispatches<T extends Customer$dispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Customer$dispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
     payments<T extends Customer$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
     discounts<T extends Customer$discountsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DiscountPayload<ExtArgs>, T, "findMany"> | Null>
+    vegs<T extends Customer$vegsArgs<ExtArgs> = {}>(args?: Subset<T, Customer$vegsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16476,6 +16865,26 @@ export namespace Prisma {
   }
 
   /**
+   * Customer.vegs
+   */
+  export type Customer$vegsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    where?: VegWhereInput
+    orderBy?: VegOrderByWithRelationInput | VegOrderByWithRelationInput[]
+    cursor?: VegWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VegScalarFieldEnum | VegScalarFieldEnum[]
+  }
+
+  /**
    * Customer without action
    */
   export type CustomerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16487,6 +16896,1083 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CustomerInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Veg
+   */
+
+  export type AggregateVeg = {
+    _count: VegCountAggregateOutputType | null
+    _avg: VegAvgAggregateOutputType | null
+    _sum: VegSumAggregateOutputType | null
+    _min: VegMinAggregateOutputType | null
+    _max: VegMaxAggregateOutputType | null
+  }
+
+  export type VegAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type VegSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type VegMinAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    name: string | null
+    mobile: string | null
+    role: string | null
+    paymentBasis: $Enums.VegPaymentBasis | null
+    amount: Decimal | null
+    active: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VegMaxAggregateOutputType = {
+    id: string | null
+    customerId: string | null
+    name: string | null
+    mobile: string | null
+    role: string | null
+    paymentBasis: $Enums.VegPaymentBasis | null
+    amount: Decimal | null
+    active: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VegCountAggregateOutputType = {
+    id: number
+    customerId: number
+    name: number
+    mobile: number
+    role: number
+    paymentBasis: number
+    amount: number
+    active: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type VegAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type VegSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type VegMinAggregateInputType = {
+    id?: true
+    customerId?: true
+    name?: true
+    mobile?: true
+    role?: true
+    paymentBasis?: true
+    amount?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VegMaxAggregateInputType = {
+    id?: true
+    customerId?: true
+    name?: true
+    mobile?: true
+    role?: true
+    paymentBasis?: true
+    amount?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VegCountAggregateInputType = {
+    id?: true
+    customerId?: true
+    name?: true
+    mobile?: true
+    role?: true
+    paymentBasis?: true
+    amount?: true
+    active?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type VegAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Veg to aggregate.
+     */
+    where?: VegWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Vegs to fetch.
+     */
+    orderBy?: VegOrderByWithRelationInput | VegOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: VegWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Vegs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Vegs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Vegs
+    **/
+    _count?: true | VegCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: VegAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: VegSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VegMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VegMaxAggregateInputType
+  }
+
+  export type GetVegAggregateType<T extends VegAggregateArgs> = {
+        [P in keyof T & keyof AggregateVeg]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVeg[P]>
+      : GetScalarType<T[P], AggregateVeg[P]>
+  }
+
+
+
+
+  export type VegGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegWhereInput
+    orderBy?: VegOrderByWithAggregationInput | VegOrderByWithAggregationInput[]
+    by: VegScalarFieldEnum[] | VegScalarFieldEnum
+    having?: VegScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VegCountAggregateInputType | true
+    _avg?: VegAvgAggregateInputType
+    _sum?: VegSumAggregateInputType
+    _min?: VegMinAggregateInputType
+    _max?: VegMaxAggregateInputType
+  }
+
+  export type VegGroupByOutputType = {
+    id: string
+    customerId: string
+    name: string
+    mobile: string | null
+    role: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal
+    active: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: VegCountAggregateOutputType | null
+    _avg: VegAvgAggregateOutputType | null
+    _sum: VegSumAggregateOutputType | null
+    _min: VegMinAggregateOutputType | null
+    _max: VegMaxAggregateOutputType | null
+  }
+
+  type GetVegGroupByPayload<T extends VegGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<VegGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof VegGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VegGroupByOutputType[P]>
+            : GetScalarType<T[P], VegGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type VegSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    mobile?: boolean
+    role?: boolean
+    paymentBasis?: boolean
+    amount?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    payments?: boolean | Veg$paymentsArgs<ExtArgs>
+    discounts?: boolean | Veg$discountsArgs<ExtArgs>
+    _count?: boolean | VegCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["veg"]>
+
+  export type VegSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    mobile?: boolean
+    role?: boolean
+    paymentBasis?: boolean
+    amount?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["veg"]>
+
+  export type VegSelectScalar = {
+    id?: boolean
+    customerId?: boolean
+    name?: boolean
+    mobile?: boolean
+    role?: boolean
+    paymentBasis?: boolean
+    amount?: boolean
+    active?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type VegInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+    payments?: boolean | Veg$paymentsArgs<ExtArgs>
+    discounts?: boolean | Veg$discountsArgs<ExtArgs>
+    _count?: boolean | VegCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type VegIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    customer?: boolean | CustomerDefaultArgs<ExtArgs>
+  }
+
+  export type $VegPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Veg"
+    objects: {
+      customer: Prisma.$CustomerPayload<ExtArgs>
+      payments: Prisma.$VegPaymentPayload<ExtArgs>[]
+      discounts: Prisma.$VegDiscountPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      customerId: string
+      name: string
+      mobile: string | null
+      role: string | null
+      paymentBasis: $Enums.VegPaymentBasis
+      amount: Prisma.Decimal
+      active: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["veg"]>
+    composites: {}
+  }
+
+  type VegGetPayload<S extends boolean | null | undefined | VegDefaultArgs> = $Result.GetResult<Prisma.$VegPayload, S>
+
+  type VegCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<VegFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: VegCountAggregateInputType | true
+    }
+
+  export interface VegDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Veg'], meta: { name: 'Veg' } }
+    /**
+     * Find zero or one Veg that matches the filter.
+     * @param {VegFindUniqueArgs} args - Arguments to find a Veg
+     * @example
+     * // Get one Veg
+     * const veg = await prisma.veg.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends VegFindUniqueArgs>(args: SelectSubset<T, VegFindUniqueArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one Veg that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {VegFindUniqueOrThrowArgs} args - Arguments to find a Veg
+     * @example
+     * // Get one Veg
+     * const veg = await prisma.veg.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends VegFindUniqueOrThrowArgs>(args: SelectSubset<T, VegFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first Veg that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegFindFirstArgs} args - Arguments to find a Veg
+     * @example
+     * // Get one Veg
+     * const veg = await prisma.veg.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends VegFindFirstArgs>(args?: SelectSubset<T, VegFindFirstArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first Veg that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegFindFirstOrThrowArgs} args - Arguments to find a Veg
+     * @example
+     * // Get one Veg
+     * const veg = await prisma.veg.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends VegFindFirstOrThrowArgs>(args?: SelectSubset<T, VegFindFirstOrThrowArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more Vegs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Vegs
+     * const vegs = await prisma.veg.findMany()
+     * 
+     * // Get first 10 Vegs
+     * const vegs = await prisma.veg.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const vegWithIdOnly = await prisma.veg.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends VegFindManyArgs>(args?: SelectSubset<T, VegFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a Veg.
+     * @param {VegCreateArgs} args - Arguments to create a Veg.
+     * @example
+     * // Create one Veg
+     * const Veg = await prisma.veg.create({
+     *   data: {
+     *     // ... data to create a Veg
+     *   }
+     * })
+     * 
+     */
+    create<T extends VegCreateArgs>(args: SelectSubset<T, VegCreateArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many Vegs.
+     * @param {VegCreateManyArgs} args - Arguments to create many Vegs.
+     * @example
+     * // Create many Vegs
+     * const veg = await prisma.veg.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends VegCreateManyArgs>(args?: SelectSubset<T, VegCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Vegs and returns the data saved in the database.
+     * @param {VegCreateManyAndReturnArgs} args - Arguments to create many Vegs.
+     * @example
+     * // Create many Vegs
+     * const veg = await prisma.veg.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Vegs and only return the `id`
+     * const vegWithIdOnly = await prisma.veg.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VegCreateManyAndReturnArgs>(args?: SelectSubset<T, VegCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a Veg.
+     * @param {VegDeleteArgs} args - Arguments to delete one Veg.
+     * @example
+     * // Delete one Veg
+     * const Veg = await prisma.veg.delete({
+     *   where: {
+     *     // ... filter to delete one Veg
+     *   }
+     * })
+     * 
+     */
+    delete<T extends VegDeleteArgs>(args: SelectSubset<T, VegDeleteArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one Veg.
+     * @param {VegUpdateArgs} args - Arguments to update one Veg.
+     * @example
+     * // Update one Veg
+     * const veg = await prisma.veg.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends VegUpdateArgs>(args: SelectSubset<T, VegUpdateArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more Vegs.
+     * @param {VegDeleteManyArgs} args - Arguments to filter Vegs to delete.
+     * @example
+     * // Delete a few Vegs
+     * const { count } = await prisma.veg.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends VegDeleteManyArgs>(args?: SelectSubset<T, VegDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Vegs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Vegs
+     * const veg = await prisma.veg.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends VegUpdateManyArgs>(args: SelectSubset<T, VegUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Veg.
+     * @param {VegUpsertArgs} args - Arguments to update or create a Veg.
+     * @example
+     * // Update or create a Veg
+     * const veg = await prisma.veg.upsert({
+     *   create: {
+     *     // ... data to create a Veg
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Veg we want to update
+     *   }
+     * })
+     */
+    upsert<T extends VegUpsertArgs>(args: SelectSubset<T, VegUpsertArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of Vegs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegCountArgs} args - Arguments to filter Vegs to count.
+     * @example
+     * // Count the number of Vegs
+     * const count = await prisma.veg.count({
+     *   where: {
+     *     // ... the filter for the Vegs we want to count
+     *   }
+     * })
+    **/
+    count<T extends VegCountArgs>(
+      args?: Subset<T, VegCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VegCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Veg.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VegAggregateArgs>(args: Subset<T, VegAggregateArgs>): Prisma.PrismaPromise<GetVegAggregateType<T>>
+
+    /**
+     * Group by Veg.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VegGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VegGroupByArgs['orderBy'] }
+        : { orderBy?: VegGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VegGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVegGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Veg model
+   */
+  readonly fields: VegFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Veg.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__VegClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    customer<T extends CustomerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CustomerDefaultArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    payments<T extends Veg$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, Veg$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    discounts<T extends Veg$discountsArgs<ExtArgs> = {}>(args?: Subset<T, Veg$discountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Veg model
+   */ 
+  interface VegFieldRefs {
+    readonly id: FieldRef<"Veg", 'String'>
+    readonly customerId: FieldRef<"Veg", 'String'>
+    readonly name: FieldRef<"Veg", 'String'>
+    readonly mobile: FieldRef<"Veg", 'String'>
+    readonly role: FieldRef<"Veg", 'String'>
+    readonly paymentBasis: FieldRef<"Veg", 'VegPaymentBasis'>
+    readonly amount: FieldRef<"Veg", 'Decimal'>
+    readonly active: FieldRef<"Veg", 'Boolean'>
+    readonly createdAt: FieldRef<"Veg", 'DateTime'>
+    readonly updatedAt: FieldRef<"Veg", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Veg findUnique
+   */
+  export type VegFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * Filter, which Veg to fetch.
+     */
+    where: VegWhereUniqueInput
+  }
+
+  /**
+   * Veg findUniqueOrThrow
+   */
+  export type VegFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * Filter, which Veg to fetch.
+     */
+    where: VegWhereUniqueInput
+  }
+
+  /**
+   * Veg findFirst
+   */
+  export type VegFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * Filter, which Veg to fetch.
+     */
+    where?: VegWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Vegs to fetch.
+     */
+    orderBy?: VegOrderByWithRelationInput | VegOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Vegs.
+     */
+    cursor?: VegWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Vegs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Vegs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Vegs.
+     */
+    distinct?: VegScalarFieldEnum | VegScalarFieldEnum[]
+  }
+
+  /**
+   * Veg findFirstOrThrow
+   */
+  export type VegFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * Filter, which Veg to fetch.
+     */
+    where?: VegWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Vegs to fetch.
+     */
+    orderBy?: VegOrderByWithRelationInput | VegOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Vegs.
+     */
+    cursor?: VegWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Vegs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Vegs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Vegs.
+     */
+    distinct?: VegScalarFieldEnum | VegScalarFieldEnum[]
+  }
+
+  /**
+   * Veg findMany
+   */
+  export type VegFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * Filter, which Vegs to fetch.
+     */
+    where?: VegWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Vegs to fetch.
+     */
+    orderBy?: VegOrderByWithRelationInput | VegOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Vegs.
+     */
+    cursor?: VegWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Vegs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Vegs.
+     */
+    skip?: number
+    distinct?: VegScalarFieldEnum | VegScalarFieldEnum[]
+  }
+
+  /**
+   * Veg create
+   */
+  export type VegCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Veg.
+     */
+    data: XOR<VegCreateInput, VegUncheckedCreateInput>
+  }
+
+  /**
+   * Veg createMany
+   */
+  export type VegCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Vegs.
+     */
+    data: VegCreateManyInput | VegCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Veg createManyAndReturn
+   */
+  export type VegCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many Vegs.
+     */
+    data: VegCreateManyInput | VegCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Veg update
+   */
+  export type VegUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Veg.
+     */
+    data: XOR<VegUpdateInput, VegUncheckedUpdateInput>
+    /**
+     * Choose, which Veg to update.
+     */
+    where: VegWhereUniqueInput
+  }
+
+  /**
+   * Veg updateMany
+   */
+  export type VegUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Vegs.
+     */
+    data: XOR<VegUpdateManyMutationInput, VegUncheckedUpdateManyInput>
+    /**
+     * Filter which Vegs to update
+     */
+    where?: VegWhereInput
+  }
+
+  /**
+   * Veg upsert
+   */
+  export type VegUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Veg to update in case it exists.
+     */
+    where: VegWhereUniqueInput
+    /**
+     * In case the Veg found by the `where` argument doesn't exist, create a new Veg with this data.
+     */
+    create: XOR<VegCreateInput, VegUncheckedCreateInput>
+    /**
+     * In case the Veg was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<VegUpdateInput, VegUncheckedUpdateInput>
+  }
+
+  /**
+   * Veg delete
+   */
+  export type VegDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
+    /**
+     * Filter which Veg to delete.
+     */
+    where: VegWhereUniqueInput
+  }
+
+  /**
+   * Veg deleteMany
+   */
+  export type VegDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Vegs to delete
+     */
+    where?: VegWhereInput
+  }
+
+  /**
+   * Veg.payments
+   */
+  export type Veg$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    where?: VegPaymentWhereInput
+    orderBy?: VegPaymentOrderByWithRelationInput | VegPaymentOrderByWithRelationInput[]
+    cursor?: VegPaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VegPaymentScalarFieldEnum | VegPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * Veg.discounts
+   */
+  export type Veg$discountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    where?: VegDiscountWhereInput
+    orderBy?: VegDiscountOrderByWithRelationInput | VegDiscountOrderByWithRelationInput[]
+    cursor?: VegDiscountWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: VegDiscountScalarFieldEnum | VegDiscountScalarFieldEnum[]
+  }
+
+  /**
+   * Veg without action
+   */
+  export type VegDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Veg
+     */
+    select?: VegSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegInclude<ExtArgs> | null
   }
 
 
@@ -23576,6 +25062,2054 @@ export namespace Prisma {
 
 
   /**
+   * Model VegPayment
+   */
+
+  export type AggregateVegPayment = {
+    _count: VegPaymentCountAggregateOutputType | null
+    _avg: VegPaymentAvgAggregateOutputType | null
+    _sum: VegPaymentSumAggregateOutputType | null
+    _min: VegPaymentMinAggregateOutputType | null
+    _max: VegPaymentMaxAggregateOutputType | null
+  }
+
+  export type VegPaymentAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type VegPaymentSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type VegPaymentMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    vegId: string | null
+    createdByStaffId: string | null
+    amount: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VegPaymentMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    vegId: string | null
+    createdByStaffId: string | null
+    amount: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VegPaymentCountAggregateOutputType = {
+    id: number
+    date: number
+    vegId: number
+    createdByStaffId: number
+    amount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type VegPaymentAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type VegPaymentSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type VegPaymentMinAggregateInputType = {
+    id?: true
+    date?: true
+    vegId?: true
+    createdByStaffId?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VegPaymentMaxAggregateInputType = {
+    id?: true
+    date?: true
+    vegId?: true
+    createdByStaffId?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VegPaymentCountAggregateInputType = {
+    id?: true
+    date?: true
+    vegId?: true
+    createdByStaffId?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type VegPaymentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VegPayment to aggregate.
+     */
+    where?: VegPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegPayments to fetch.
+     */
+    orderBy?: VegPaymentOrderByWithRelationInput | VegPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: VegPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned VegPayments
+    **/
+    _count?: true | VegPaymentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: VegPaymentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: VegPaymentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VegPaymentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VegPaymentMaxAggregateInputType
+  }
+
+  export type GetVegPaymentAggregateType<T extends VegPaymentAggregateArgs> = {
+        [P in keyof T & keyof AggregateVegPayment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVegPayment[P]>
+      : GetScalarType<T[P], AggregateVegPayment[P]>
+  }
+
+
+
+
+  export type VegPaymentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegPaymentWhereInput
+    orderBy?: VegPaymentOrderByWithAggregationInput | VegPaymentOrderByWithAggregationInput[]
+    by: VegPaymentScalarFieldEnum[] | VegPaymentScalarFieldEnum
+    having?: VegPaymentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VegPaymentCountAggregateInputType | true
+    _avg?: VegPaymentAvgAggregateInputType
+    _sum?: VegPaymentSumAggregateInputType
+    _min?: VegPaymentMinAggregateInputType
+    _max?: VegPaymentMaxAggregateInputType
+  }
+
+  export type VegPaymentGroupByOutputType = {
+    id: string
+    date: Date
+    vegId: string
+    createdByStaffId: string | null
+    amount: Decimal
+    createdAt: Date
+    updatedAt: Date
+    _count: VegPaymentCountAggregateOutputType | null
+    _avg: VegPaymentAvgAggregateOutputType | null
+    _sum: VegPaymentSumAggregateOutputType | null
+    _min: VegPaymentMinAggregateOutputType | null
+    _max: VegPaymentMaxAggregateOutputType | null
+  }
+
+  type GetVegPaymentGroupByPayload<T extends VegPaymentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<VegPaymentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof VegPaymentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VegPaymentGroupByOutputType[P]>
+            : GetScalarType<T[P], VegPaymentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type VegPaymentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    vegId?: boolean
+    createdByStaffId?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegPayment$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["vegPayment"]>
+
+  export type VegPaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    vegId?: boolean
+    createdByStaffId?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegPayment$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["vegPayment"]>
+
+  export type VegPaymentSelectScalar = {
+    id?: boolean
+    date?: boolean
+    vegId?: boolean
+    createdByStaffId?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type VegPaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegPayment$createdByStaffArgs<ExtArgs>
+  }
+  export type VegPaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegPayment$createdByStaffArgs<ExtArgs>
+  }
+
+  export type $VegPaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "VegPayment"
+    objects: {
+      veg: Prisma.$VegPayload<ExtArgs>
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      vegId: string
+      createdByStaffId: string | null
+      amount: Prisma.Decimal
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["vegPayment"]>
+    composites: {}
+  }
+
+  type VegPaymentGetPayload<S extends boolean | null | undefined | VegPaymentDefaultArgs> = $Result.GetResult<Prisma.$VegPaymentPayload, S>
+
+  type VegPaymentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<VegPaymentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: VegPaymentCountAggregateInputType | true
+    }
+
+  export interface VegPaymentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['VegPayment'], meta: { name: 'VegPayment' } }
+    /**
+     * Find zero or one VegPayment that matches the filter.
+     * @param {VegPaymentFindUniqueArgs} args - Arguments to find a VegPayment
+     * @example
+     * // Get one VegPayment
+     * const vegPayment = await prisma.vegPayment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends VegPaymentFindUniqueArgs>(args: SelectSubset<T, VegPaymentFindUniqueArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one VegPayment that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {VegPaymentFindUniqueOrThrowArgs} args - Arguments to find a VegPayment
+     * @example
+     * // Get one VegPayment
+     * const vegPayment = await prisma.vegPayment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends VegPaymentFindUniqueOrThrowArgs>(args: SelectSubset<T, VegPaymentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first VegPayment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentFindFirstArgs} args - Arguments to find a VegPayment
+     * @example
+     * // Get one VegPayment
+     * const vegPayment = await prisma.vegPayment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends VegPaymentFindFirstArgs>(args?: SelectSubset<T, VegPaymentFindFirstArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first VegPayment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentFindFirstOrThrowArgs} args - Arguments to find a VegPayment
+     * @example
+     * // Get one VegPayment
+     * const vegPayment = await prisma.vegPayment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends VegPaymentFindFirstOrThrowArgs>(args?: SelectSubset<T, VegPaymentFindFirstOrThrowArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more VegPayments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VegPayments
+     * const vegPayments = await prisma.vegPayment.findMany()
+     * 
+     * // Get first 10 VegPayments
+     * const vegPayments = await prisma.vegPayment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const vegPaymentWithIdOnly = await prisma.vegPayment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends VegPaymentFindManyArgs>(args?: SelectSubset<T, VegPaymentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a VegPayment.
+     * @param {VegPaymentCreateArgs} args - Arguments to create a VegPayment.
+     * @example
+     * // Create one VegPayment
+     * const VegPayment = await prisma.vegPayment.create({
+     *   data: {
+     *     // ... data to create a VegPayment
+     *   }
+     * })
+     * 
+     */
+    create<T extends VegPaymentCreateArgs>(args: SelectSubset<T, VegPaymentCreateArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many VegPayments.
+     * @param {VegPaymentCreateManyArgs} args - Arguments to create many VegPayments.
+     * @example
+     * // Create many VegPayments
+     * const vegPayment = await prisma.vegPayment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends VegPaymentCreateManyArgs>(args?: SelectSubset<T, VegPaymentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many VegPayments and returns the data saved in the database.
+     * @param {VegPaymentCreateManyAndReturnArgs} args - Arguments to create many VegPayments.
+     * @example
+     * // Create many VegPayments
+     * const vegPayment = await prisma.vegPayment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many VegPayments and only return the `id`
+     * const vegPaymentWithIdOnly = await prisma.vegPayment.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VegPaymentCreateManyAndReturnArgs>(args?: SelectSubset<T, VegPaymentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a VegPayment.
+     * @param {VegPaymentDeleteArgs} args - Arguments to delete one VegPayment.
+     * @example
+     * // Delete one VegPayment
+     * const VegPayment = await prisma.vegPayment.delete({
+     *   where: {
+     *     // ... filter to delete one VegPayment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends VegPaymentDeleteArgs>(args: SelectSubset<T, VegPaymentDeleteArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one VegPayment.
+     * @param {VegPaymentUpdateArgs} args - Arguments to update one VegPayment.
+     * @example
+     * // Update one VegPayment
+     * const vegPayment = await prisma.vegPayment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends VegPaymentUpdateArgs>(args: SelectSubset<T, VegPaymentUpdateArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more VegPayments.
+     * @param {VegPaymentDeleteManyArgs} args - Arguments to filter VegPayments to delete.
+     * @example
+     * // Delete a few VegPayments
+     * const { count } = await prisma.vegPayment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends VegPaymentDeleteManyArgs>(args?: SelectSubset<T, VegPaymentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VegPayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many VegPayments
+     * const vegPayment = await prisma.vegPayment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends VegPaymentUpdateManyArgs>(args: SelectSubset<T, VegPaymentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one VegPayment.
+     * @param {VegPaymentUpsertArgs} args - Arguments to update or create a VegPayment.
+     * @example
+     * // Update or create a VegPayment
+     * const vegPayment = await prisma.vegPayment.upsert({
+     *   create: {
+     *     // ... data to create a VegPayment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the VegPayment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends VegPaymentUpsertArgs>(args: SelectSubset<T, VegPaymentUpsertArgs<ExtArgs>>): Prisma__VegPaymentClient<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of VegPayments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentCountArgs} args - Arguments to filter VegPayments to count.
+     * @example
+     * // Count the number of VegPayments
+     * const count = await prisma.vegPayment.count({
+     *   where: {
+     *     // ... the filter for the VegPayments we want to count
+     *   }
+     * })
+    **/
+    count<T extends VegPaymentCountArgs>(
+      args?: Subset<T, VegPaymentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VegPaymentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a VegPayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VegPaymentAggregateArgs>(args: Subset<T, VegPaymentAggregateArgs>): Prisma.PrismaPromise<GetVegPaymentAggregateType<T>>
+
+    /**
+     * Group by VegPayment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegPaymentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VegPaymentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VegPaymentGroupByArgs['orderBy'] }
+        : { orderBy?: VegPaymentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VegPaymentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVegPaymentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the VegPayment model
+   */
+  readonly fields: VegPaymentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for VegPayment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__VegPaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    veg<T extends VegDefaultArgs<ExtArgs> = {}>(args?: Subset<T, VegDefaultArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    createdByStaff<T extends VegPayment$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, VegPayment$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the VegPayment model
+   */ 
+  interface VegPaymentFieldRefs {
+    readonly id: FieldRef<"VegPayment", 'String'>
+    readonly date: FieldRef<"VegPayment", 'DateTime'>
+    readonly vegId: FieldRef<"VegPayment", 'String'>
+    readonly createdByStaffId: FieldRef<"VegPayment", 'String'>
+    readonly amount: FieldRef<"VegPayment", 'Decimal'>
+    readonly createdAt: FieldRef<"VegPayment", 'DateTime'>
+    readonly updatedAt: FieldRef<"VegPayment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * VegPayment findUnique
+   */
+  export type VegPaymentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which VegPayment to fetch.
+     */
+    where: VegPaymentWhereUniqueInput
+  }
+
+  /**
+   * VegPayment findUniqueOrThrow
+   */
+  export type VegPaymentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which VegPayment to fetch.
+     */
+    where: VegPaymentWhereUniqueInput
+  }
+
+  /**
+   * VegPayment findFirst
+   */
+  export type VegPaymentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which VegPayment to fetch.
+     */
+    where?: VegPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegPayments to fetch.
+     */
+    orderBy?: VegPaymentOrderByWithRelationInput | VegPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VegPayments.
+     */
+    cursor?: VegPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VegPayments.
+     */
+    distinct?: VegPaymentScalarFieldEnum | VegPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * VegPayment findFirstOrThrow
+   */
+  export type VegPaymentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which VegPayment to fetch.
+     */
+    where?: VegPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegPayments to fetch.
+     */
+    orderBy?: VegPaymentOrderByWithRelationInput | VegPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VegPayments.
+     */
+    cursor?: VegPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegPayments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VegPayments.
+     */
+    distinct?: VegPaymentScalarFieldEnum | VegPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * VegPayment findMany
+   */
+  export type VegPaymentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * Filter, which VegPayments to fetch.
+     */
+    where?: VegPaymentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegPayments to fetch.
+     */
+    orderBy?: VegPaymentOrderByWithRelationInput | VegPaymentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing VegPayments.
+     */
+    cursor?: VegPaymentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegPayments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegPayments.
+     */
+    skip?: number
+    distinct?: VegPaymentScalarFieldEnum | VegPaymentScalarFieldEnum[]
+  }
+
+  /**
+   * VegPayment create
+   */
+  export type VegPaymentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a VegPayment.
+     */
+    data: XOR<VegPaymentCreateInput, VegPaymentUncheckedCreateInput>
+  }
+
+  /**
+   * VegPayment createMany
+   */
+  export type VegPaymentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many VegPayments.
+     */
+    data: VegPaymentCreateManyInput | VegPaymentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * VegPayment createManyAndReturn
+   */
+  export type VegPaymentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many VegPayments.
+     */
+    data: VegPaymentCreateManyInput | VegPaymentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VegPayment update
+   */
+  export type VegPaymentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a VegPayment.
+     */
+    data: XOR<VegPaymentUpdateInput, VegPaymentUncheckedUpdateInput>
+    /**
+     * Choose, which VegPayment to update.
+     */
+    where: VegPaymentWhereUniqueInput
+  }
+
+  /**
+   * VegPayment updateMany
+   */
+  export type VegPaymentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update VegPayments.
+     */
+    data: XOR<VegPaymentUpdateManyMutationInput, VegPaymentUncheckedUpdateManyInput>
+    /**
+     * Filter which VegPayments to update
+     */
+    where?: VegPaymentWhereInput
+  }
+
+  /**
+   * VegPayment upsert
+   */
+  export type VegPaymentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the VegPayment to update in case it exists.
+     */
+    where: VegPaymentWhereUniqueInput
+    /**
+     * In case the VegPayment found by the `where` argument doesn't exist, create a new VegPayment with this data.
+     */
+    create: XOR<VegPaymentCreateInput, VegPaymentUncheckedCreateInput>
+    /**
+     * In case the VegPayment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<VegPaymentUpdateInput, VegPaymentUncheckedUpdateInput>
+  }
+
+  /**
+   * VegPayment delete
+   */
+  export type VegPaymentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+    /**
+     * Filter which VegPayment to delete.
+     */
+    where: VegPaymentWhereUniqueInput
+  }
+
+  /**
+   * VegPayment deleteMany
+   */
+  export type VegPaymentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VegPayments to delete
+     */
+    where?: VegPaymentWhereInput
+  }
+
+  /**
+   * VegPayment.createdByStaff
+   */
+  export type VegPayment$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * VegPayment without action
+   */
+  export type VegPaymentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegPayment
+     */
+    select?: VegPaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegPaymentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model VegDiscount
+   */
+
+  export type AggregateVegDiscount = {
+    _count: VegDiscountCountAggregateOutputType | null
+    _avg: VegDiscountAvgAggregateOutputType | null
+    _sum: VegDiscountSumAggregateOutputType | null
+    _min: VegDiscountMinAggregateOutputType | null
+    _max: VegDiscountMaxAggregateOutputType | null
+  }
+
+  export type VegDiscountAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type VegDiscountSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type VegDiscountMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    vegId: string | null
+    createdByStaffId: string | null
+    status: $Enums.DiscountStatus | null
+    amount: Decimal | null
+    remarks: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VegDiscountMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    vegId: string | null
+    createdByStaffId: string | null
+    status: $Enums.DiscountStatus | null
+    amount: Decimal | null
+    remarks: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type VegDiscountCountAggregateOutputType = {
+    id: number
+    date: number
+    vegId: number
+    createdByStaffId: number
+    status: number
+    amount: number
+    remarks: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type VegDiscountAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type VegDiscountSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type VegDiscountMinAggregateInputType = {
+    id?: true
+    date?: true
+    vegId?: true
+    createdByStaffId?: true
+    status?: true
+    amount?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VegDiscountMaxAggregateInputType = {
+    id?: true
+    date?: true
+    vegId?: true
+    createdByStaffId?: true
+    status?: true
+    amount?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type VegDiscountCountAggregateInputType = {
+    id?: true
+    date?: true
+    vegId?: true
+    createdByStaffId?: true
+    status?: true
+    amount?: true
+    remarks?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type VegDiscountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VegDiscount to aggregate.
+     */
+    where?: VegDiscountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegDiscounts to fetch.
+     */
+    orderBy?: VegDiscountOrderByWithRelationInput | VegDiscountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: VegDiscountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegDiscounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegDiscounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned VegDiscounts
+    **/
+    _count?: true | VegDiscountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: VegDiscountAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: VegDiscountSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: VegDiscountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: VegDiscountMaxAggregateInputType
+  }
+
+  export type GetVegDiscountAggregateType<T extends VegDiscountAggregateArgs> = {
+        [P in keyof T & keyof AggregateVegDiscount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateVegDiscount[P]>
+      : GetScalarType<T[P], AggregateVegDiscount[P]>
+  }
+
+
+
+
+  export type VegDiscountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: VegDiscountWhereInput
+    orderBy?: VegDiscountOrderByWithAggregationInput | VegDiscountOrderByWithAggregationInput[]
+    by: VegDiscountScalarFieldEnum[] | VegDiscountScalarFieldEnum
+    having?: VegDiscountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: VegDiscountCountAggregateInputType | true
+    _avg?: VegDiscountAvgAggregateInputType
+    _sum?: VegDiscountSumAggregateInputType
+    _min?: VegDiscountMinAggregateInputType
+    _max?: VegDiscountMaxAggregateInputType
+  }
+
+  export type VegDiscountGroupByOutputType = {
+    id: string
+    date: Date
+    vegId: string
+    createdByStaffId: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal
+    remarks: string
+    createdAt: Date
+    updatedAt: Date
+    _count: VegDiscountCountAggregateOutputType | null
+    _avg: VegDiscountAvgAggregateOutputType | null
+    _sum: VegDiscountSumAggregateOutputType | null
+    _min: VegDiscountMinAggregateOutputType | null
+    _max: VegDiscountMaxAggregateOutputType | null
+  }
+
+  type GetVegDiscountGroupByPayload<T extends VegDiscountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<VegDiscountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof VegDiscountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], VegDiscountGroupByOutputType[P]>
+            : GetScalarType<T[P], VegDiscountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type VegDiscountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    vegId?: boolean
+    createdByStaffId?: boolean
+    status?: boolean
+    amount?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegDiscount$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["vegDiscount"]>
+
+  export type VegDiscountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    vegId?: boolean
+    createdByStaffId?: boolean
+    status?: boolean
+    amount?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegDiscount$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["vegDiscount"]>
+
+  export type VegDiscountSelectScalar = {
+    id?: boolean
+    date?: boolean
+    vegId?: boolean
+    createdByStaffId?: boolean
+    status?: boolean
+    amount?: boolean
+    remarks?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type VegDiscountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegDiscount$createdByStaffArgs<ExtArgs>
+  }
+  export type VegDiscountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    veg?: boolean | VegDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | VegDiscount$createdByStaffArgs<ExtArgs>
+  }
+
+  export type $VegDiscountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "VegDiscount"
+    objects: {
+      veg: Prisma.$VegPayload<ExtArgs>
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      vegId: string
+      createdByStaffId: string | null
+      status: $Enums.DiscountStatus
+      amount: Prisma.Decimal
+      remarks: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["vegDiscount"]>
+    composites: {}
+  }
+
+  type VegDiscountGetPayload<S extends boolean | null | undefined | VegDiscountDefaultArgs> = $Result.GetResult<Prisma.$VegDiscountPayload, S>
+
+  type VegDiscountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<VegDiscountFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: VegDiscountCountAggregateInputType | true
+    }
+
+  export interface VegDiscountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['VegDiscount'], meta: { name: 'VegDiscount' } }
+    /**
+     * Find zero or one VegDiscount that matches the filter.
+     * @param {VegDiscountFindUniqueArgs} args - Arguments to find a VegDiscount
+     * @example
+     * // Get one VegDiscount
+     * const vegDiscount = await prisma.vegDiscount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends VegDiscountFindUniqueArgs>(args: SelectSubset<T, VegDiscountFindUniqueArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one VegDiscount that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {VegDiscountFindUniqueOrThrowArgs} args - Arguments to find a VegDiscount
+     * @example
+     * // Get one VegDiscount
+     * const vegDiscount = await prisma.vegDiscount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends VegDiscountFindUniqueOrThrowArgs>(args: SelectSubset<T, VegDiscountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first VegDiscount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountFindFirstArgs} args - Arguments to find a VegDiscount
+     * @example
+     * // Get one VegDiscount
+     * const vegDiscount = await prisma.vegDiscount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends VegDiscountFindFirstArgs>(args?: SelectSubset<T, VegDiscountFindFirstArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first VegDiscount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountFindFirstOrThrowArgs} args - Arguments to find a VegDiscount
+     * @example
+     * // Get one VegDiscount
+     * const vegDiscount = await prisma.vegDiscount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends VegDiscountFindFirstOrThrowArgs>(args?: SelectSubset<T, VegDiscountFindFirstOrThrowArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more VegDiscounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all VegDiscounts
+     * const vegDiscounts = await prisma.vegDiscount.findMany()
+     * 
+     * // Get first 10 VegDiscounts
+     * const vegDiscounts = await prisma.vegDiscount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const vegDiscountWithIdOnly = await prisma.vegDiscount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends VegDiscountFindManyArgs>(args?: SelectSubset<T, VegDiscountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a VegDiscount.
+     * @param {VegDiscountCreateArgs} args - Arguments to create a VegDiscount.
+     * @example
+     * // Create one VegDiscount
+     * const VegDiscount = await prisma.vegDiscount.create({
+     *   data: {
+     *     // ... data to create a VegDiscount
+     *   }
+     * })
+     * 
+     */
+    create<T extends VegDiscountCreateArgs>(args: SelectSubset<T, VegDiscountCreateArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many VegDiscounts.
+     * @param {VegDiscountCreateManyArgs} args - Arguments to create many VegDiscounts.
+     * @example
+     * // Create many VegDiscounts
+     * const vegDiscount = await prisma.vegDiscount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends VegDiscountCreateManyArgs>(args?: SelectSubset<T, VegDiscountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many VegDiscounts and returns the data saved in the database.
+     * @param {VegDiscountCreateManyAndReturnArgs} args - Arguments to create many VegDiscounts.
+     * @example
+     * // Create many VegDiscounts
+     * const vegDiscount = await prisma.vegDiscount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many VegDiscounts and only return the `id`
+     * const vegDiscountWithIdOnly = await prisma.vegDiscount.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends VegDiscountCreateManyAndReturnArgs>(args?: SelectSubset<T, VegDiscountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a VegDiscount.
+     * @param {VegDiscountDeleteArgs} args - Arguments to delete one VegDiscount.
+     * @example
+     * // Delete one VegDiscount
+     * const VegDiscount = await prisma.vegDiscount.delete({
+     *   where: {
+     *     // ... filter to delete one VegDiscount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends VegDiscountDeleteArgs>(args: SelectSubset<T, VegDiscountDeleteArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one VegDiscount.
+     * @param {VegDiscountUpdateArgs} args - Arguments to update one VegDiscount.
+     * @example
+     * // Update one VegDiscount
+     * const vegDiscount = await prisma.vegDiscount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends VegDiscountUpdateArgs>(args: SelectSubset<T, VegDiscountUpdateArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more VegDiscounts.
+     * @param {VegDiscountDeleteManyArgs} args - Arguments to filter VegDiscounts to delete.
+     * @example
+     * // Delete a few VegDiscounts
+     * const { count } = await prisma.vegDiscount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends VegDiscountDeleteManyArgs>(args?: SelectSubset<T, VegDiscountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more VegDiscounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many VegDiscounts
+     * const vegDiscount = await prisma.vegDiscount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends VegDiscountUpdateManyArgs>(args: SelectSubset<T, VegDiscountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one VegDiscount.
+     * @param {VegDiscountUpsertArgs} args - Arguments to update or create a VegDiscount.
+     * @example
+     * // Update or create a VegDiscount
+     * const vegDiscount = await prisma.vegDiscount.upsert({
+     *   create: {
+     *     // ... data to create a VegDiscount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the VegDiscount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends VegDiscountUpsertArgs>(args: SelectSubset<T, VegDiscountUpsertArgs<ExtArgs>>): Prisma__VegDiscountClient<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of VegDiscounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountCountArgs} args - Arguments to filter VegDiscounts to count.
+     * @example
+     * // Count the number of VegDiscounts
+     * const count = await prisma.vegDiscount.count({
+     *   where: {
+     *     // ... the filter for the VegDiscounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends VegDiscountCountArgs>(
+      args?: Subset<T, VegDiscountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], VegDiscountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a VegDiscount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends VegDiscountAggregateArgs>(args: Subset<T, VegDiscountAggregateArgs>): Prisma.PrismaPromise<GetVegDiscountAggregateType<T>>
+
+    /**
+     * Group by VegDiscount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {VegDiscountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends VegDiscountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: VegDiscountGroupByArgs['orderBy'] }
+        : { orderBy?: VegDiscountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, VegDiscountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetVegDiscountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the VegDiscount model
+   */
+  readonly fields: VegDiscountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for VegDiscount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__VegDiscountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    veg<T extends VegDefaultArgs<ExtArgs> = {}>(args?: Subset<T, VegDefaultArgs<ExtArgs>>): Prisma__VegClient<$Result.GetResult<Prisma.$VegPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    createdByStaff<T extends VegDiscount$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, VegDiscount$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the VegDiscount model
+   */ 
+  interface VegDiscountFieldRefs {
+    readonly id: FieldRef<"VegDiscount", 'String'>
+    readonly date: FieldRef<"VegDiscount", 'DateTime'>
+    readonly vegId: FieldRef<"VegDiscount", 'String'>
+    readonly createdByStaffId: FieldRef<"VegDiscount", 'String'>
+    readonly status: FieldRef<"VegDiscount", 'DiscountStatus'>
+    readonly amount: FieldRef<"VegDiscount", 'Decimal'>
+    readonly remarks: FieldRef<"VegDiscount", 'String'>
+    readonly createdAt: FieldRef<"VegDiscount", 'DateTime'>
+    readonly updatedAt: FieldRef<"VegDiscount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * VegDiscount findUnique
+   */
+  export type VegDiscountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * Filter, which VegDiscount to fetch.
+     */
+    where: VegDiscountWhereUniqueInput
+  }
+
+  /**
+   * VegDiscount findUniqueOrThrow
+   */
+  export type VegDiscountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * Filter, which VegDiscount to fetch.
+     */
+    where: VegDiscountWhereUniqueInput
+  }
+
+  /**
+   * VegDiscount findFirst
+   */
+  export type VegDiscountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * Filter, which VegDiscount to fetch.
+     */
+    where?: VegDiscountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegDiscounts to fetch.
+     */
+    orderBy?: VegDiscountOrderByWithRelationInput | VegDiscountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VegDiscounts.
+     */
+    cursor?: VegDiscountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegDiscounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegDiscounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VegDiscounts.
+     */
+    distinct?: VegDiscountScalarFieldEnum | VegDiscountScalarFieldEnum[]
+  }
+
+  /**
+   * VegDiscount findFirstOrThrow
+   */
+  export type VegDiscountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * Filter, which VegDiscount to fetch.
+     */
+    where?: VegDiscountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegDiscounts to fetch.
+     */
+    orderBy?: VegDiscountOrderByWithRelationInput | VegDiscountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for VegDiscounts.
+     */
+    cursor?: VegDiscountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegDiscounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegDiscounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of VegDiscounts.
+     */
+    distinct?: VegDiscountScalarFieldEnum | VegDiscountScalarFieldEnum[]
+  }
+
+  /**
+   * VegDiscount findMany
+   */
+  export type VegDiscountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * Filter, which VegDiscounts to fetch.
+     */
+    where?: VegDiscountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of VegDiscounts to fetch.
+     */
+    orderBy?: VegDiscountOrderByWithRelationInput | VegDiscountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing VegDiscounts.
+     */
+    cursor?: VegDiscountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` VegDiscounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` VegDiscounts.
+     */
+    skip?: number
+    distinct?: VegDiscountScalarFieldEnum | VegDiscountScalarFieldEnum[]
+  }
+
+  /**
+   * VegDiscount create
+   */
+  export type VegDiscountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a VegDiscount.
+     */
+    data: XOR<VegDiscountCreateInput, VegDiscountUncheckedCreateInput>
+  }
+
+  /**
+   * VegDiscount createMany
+   */
+  export type VegDiscountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many VegDiscounts.
+     */
+    data: VegDiscountCreateManyInput | VegDiscountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * VegDiscount createManyAndReturn
+   */
+  export type VegDiscountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many VegDiscounts.
+     */
+    data: VegDiscountCreateManyInput | VegDiscountCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * VegDiscount update
+   */
+  export type VegDiscountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a VegDiscount.
+     */
+    data: XOR<VegDiscountUpdateInput, VegDiscountUncheckedUpdateInput>
+    /**
+     * Choose, which VegDiscount to update.
+     */
+    where: VegDiscountWhereUniqueInput
+  }
+
+  /**
+   * VegDiscount updateMany
+   */
+  export type VegDiscountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update VegDiscounts.
+     */
+    data: XOR<VegDiscountUpdateManyMutationInput, VegDiscountUncheckedUpdateManyInput>
+    /**
+     * Filter which VegDiscounts to update
+     */
+    where?: VegDiscountWhereInput
+  }
+
+  /**
+   * VegDiscount upsert
+   */
+  export type VegDiscountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the VegDiscount to update in case it exists.
+     */
+    where: VegDiscountWhereUniqueInput
+    /**
+     * In case the VegDiscount found by the `where` argument doesn't exist, create a new VegDiscount with this data.
+     */
+    create: XOR<VegDiscountCreateInput, VegDiscountUncheckedCreateInput>
+    /**
+     * In case the VegDiscount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<VegDiscountUpdateInput, VegDiscountUncheckedUpdateInput>
+  }
+
+  /**
+   * VegDiscount delete
+   */
+  export type VegDiscountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+    /**
+     * Filter which VegDiscount to delete.
+     */
+    where: VegDiscountWhereUniqueInput
+  }
+
+  /**
+   * VegDiscount deleteMany
+   */
+  export type VegDiscountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which VegDiscounts to delete
+     */
+    where?: VegDiscountWhereInput
+  }
+
+  /**
+   * VegDiscount.createdByStaff
+   */
+  export type VegDiscount$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * VegDiscount without action
+   */
+  export type VegDiscountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the VegDiscount
+     */
+    select?: VegDiscountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VegDiscountInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Bill
    */
 
@@ -29954,6 +33488,22 @@ export namespace Prisma {
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
+  export const VegScalarFieldEnum: {
+    id: 'id',
+    customerId: 'customerId',
+    name: 'name',
+    mobile: 'mobile',
+    role: 'role',
+    paymentBasis: 'paymentBasis',
+    amount: 'amount',
+    active: 'active',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type VegScalarFieldEnum = (typeof VegScalarFieldEnum)[keyof typeof VegScalarFieldEnum]
+
+
   export const VesselScalarFieldEnum: {
     id: 'id',
     vesselName: 'vesselName',
@@ -30080,6 +33630,34 @@ export namespace Prisma {
   };
 
   export type DiscountScalarFieldEnum = (typeof DiscountScalarFieldEnum)[keyof typeof DiscountScalarFieldEnum]
+
+
+  export const VegPaymentScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    vegId: 'vegId',
+    createdByStaffId: 'createdByStaffId',
+    amount: 'amount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type VegPaymentScalarFieldEnum = (typeof VegPaymentScalarFieldEnum)[keyof typeof VegPaymentScalarFieldEnum]
+
+
+  export const VegDiscountScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    vegId: 'vegId',
+    createdByStaffId: 'createdByStaffId',
+    status: 'status',
+    amount: 'amount',
+    remarks: 'remarks',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type VegDiscountScalarFieldEnum = (typeof VegDiscountScalarFieldEnum)[keyof typeof VegDiscountScalarFieldEnum]
 
 
   export const BillScalarFieldEnum: {
@@ -30301,6 +33879,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'VegPaymentBasis'
+   */
+  export type EnumVegPaymentBasisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VegPaymentBasis'>
+    
+
+
+  /**
+   * Reference to a field of type 'VegPaymentBasis[]'
+   */
+  export type ListEnumVegPaymentBasisFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VegPaymentBasis[]'>
+    
+
+
+  /**
    * Reference to a field of type 'OrderType'
    */
   export type EnumOrderTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderType'>
@@ -30480,6 +34072,8 @@ export namespace Prisma {
     createdPayments?: PaymentListRelationFilter
     createdDiscounts?: DiscountListRelationFilter
     createdDispatches?: DispatchListRelationFilter
+    createdVegPayments?: VegPaymentListRelationFilter
+    createdVegDiscounts?: VegDiscountListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -30502,6 +34096,8 @@ export namespace Prisma {
     createdPayments?: PaymentOrderByRelationAggregateInput
     createdDiscounts?: DiscountOrderByRelationAggregateInput
     createdDispatches?: DispatchOrderByRelationAggregateInput
+    createdVegPayments?: VegPaymentOrderByRelationAggregateInput
+    createdVegDiscounts?: VegDiscountOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -30527,6 +34123,8 @@ export namespace Prisma {
     createdPayments?: PaymentListRelationFilter
     createdDiscounts?: DiscountListRelationFilter
     createdDispatches?: DispatchListRelationFilter
+    createdVegPayments?: VegPaymentListRelationFilter
+    createdVegDiscounts?: VegDiscountListRelationFilter
   }, "id">
 
   export type StaffOrderByWithAggregationInput = {
@@ -31224,6 +34822,7 @@ export namespace Prisma {
     dispatches?: DispatchListRelationFilter
     payments?: PaymentListRelationFilter
     discounts?: DiscountListRelationFilter
+    vegs?: VegListRelationFilter
   }
 
   export type CustomerOrderByWithRelationInput = {
@@ -31269,6 +34868,7 @@ export namespace Prisma {
     dispatches?: DispatchOrderByRelationAggregateInput
     payments?: PaymentOrderByRelationAggregateInput
     discounts?: DiscountOrderByRelationAggregateInput
+    vegs?: VegOrderByRelationAggregateInput
   }
 
   export type CustomerWhereUniqueInput = Prisma.AtLeast<{
@@ -31317,6 +34917,7 @@ export namespace Prisma {
     dispatches?: DispatchListRelationFilter
     payments?: PaymentListRelationFilter
     discounts?: DiscountListRelationFilter
+    vegs?: VegListRelationFilter
   }, "id">
 
   export type CustomerOrderByWithAggregationInput = {
@@ -31403,6 +35004,94 @@ export namespace Prisma {
     smsType?: EnumSalesSmsTypeNullableWithAggregatesFilter<"Customer"> | $Enums.SalesSmsType | null
     createdAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
+  }
+
+  export type VegWhereInput = {
+    AND?: VegWhereInput | VegWhereInput[]
+    OR?: VegWhereInput[]
+    NOT?: VegWhereInput | VegWhereInput[]
+    id?: StringFilter<"Veg"> | string
+    customerId?: StringFilter<"Veg"> | string
+    name?: StringFilter<"Veg"> | string
+    mobile?: StringNullableFilter<"Veg"> | string | null
+    role?: StringNullableFilter<"Veg"> | string | null
+    paymentBasis?: EnumVegPaymentBasisFilter<"Veg"> | $Enums.VegPaymentBasis
+    amount?: DecimalFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    active?: BoolFilter<"Veg"> | boolean
+    createdAt?: DateTimeFilter<"Veg"> | Date | string
+    updatedAt?: DateTimeFilter<"Veg"> | Date | string
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    payments?: VegPaymentListRelationFilter
+    discounts?: VegDiscountListRelationFilter
+  }
+
+  export type VegOrderByWithRelationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    mobile?: SortOrderInput | SortOrder
+    role?: SortOrderInput | SortOrder
+    paymentBasis?: SortOrder
+    amount?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    customer?: CustomerOrderByWithRelationInput
+    payments?: VegPaymentOrderByRelationAggregateInput
+    discounts?: VegDiscountOrderByRelationAggregateInput
+  }
+
+  export type VegWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: VegWhereInput | VegWhereInput[]
+    OR?: VegWhereInput[]
+    NOT?: VegWhereInput | VegWhereInput[]
+    customerId?: StringFilter<"Veg"> | string
+    name?: StringFilter<"Veg"> | string
+    mobile?: StringNullableFilter<"Veg"> | string | null
+    role?: StringNullableFilter<"Veg"> | string | null
+    paymentBasis?: EnumVegPaymentBasisFilter<"Veg"> | $Enums.VegPaymentBasis
+    amount?: DecimalFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    active?: BoolFilter<"Veg"> | boolean
+    createdAt?: DateTimeFilter<"Veg"> | Date | string
+    updatedAt?: DateTimeFilter<"Veg"> | Date | string
+    customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
+    payments?: VegPaymentListRelationFilter
+    discounts?: VegDiscountListRelationFilter
+  }, "id">
+
+  export type VegOrderByWithAggregationInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    mobile?: SortOrderInput | SortOrder
+    role?: SortOrderInput | SortOrder
+    paymentBasis?: SortOrder
+    amount?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: VegCountOrderByAggregateInput
+    _avg?: VegAvgOrderByAggregateInput
+    _max?: VegMaxOrderByAggregateInput
+    _min?: VegMinOrderByAggregateInput
+    _sum?: VegSumOrderByAggregateInput
+  }
+
+  export type VegScalarWhereWithAggregatesInput = {
+    AND?: VegScalarWhereWithAggregatesInput | VegScalarWhereWithAggregatesInput[]
+    OR?: VegScalarWhereWithAggregatesInput[]
+    NOT?: VegScalarWhereWithAggregatesInput | VegScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Veg"> | string
+    customerId?: StringWithAggregatesFilter<"Veg"> | string
+    name?: StringWithAggregatesFilter<"Veg"> | string
+    mobile?: StringNullableWithAggregatesFilter<"Veg"> | string | null
+    role?: StringNullableWithAggregatesFilter<"Veg"> | string | null
+    paymentBasis?: EnumVegPaymentBasisWithAggregatesFilter<"Veg"> | $Enums.VegPaymentBasis
+    amount?: DecimalWithAggregatesFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    active?: BoolWithAggregatesFilter<"Veg"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"Veg"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Veg"> | Date | string
   }
 
   export type VesselWhereInput = {
@@ -32118,6 +35807,156 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Discount"> | Date | string
   }
 
+  export type VegPaymentWhereInput = {
+    AND?: VegPaymentWhereInput | VegPaymentWhereInput[]
+    OR?: VegPaymentWhereInput[]
+    NOT?: VegPaymentWhereInput | VegPaymentWhereInput[]
+    id?: StringFilter<"VegPayment"> | string
+    date?: DateTimeFilter<"VegPayment"> | Date | string
+    vegId?: StringFilter<"VegPayment"> | string
+    createdByStaffId?: StringNullableFilter<"VegPayment"> | string | null
+    amount?: DecimalFilter<"VegPayment"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"VegPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"VegPayment"> | Date | string
+    veg?: XOR<VegRelationFilter, VegWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type VegPaymentOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    veg?: VegOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
+  }
+
+  export type VegPaymentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: VegPaymentWhereInput | VegPaymentWhereInput[]
+    OR?: VegPaymentWhereInput[]
+    NOT?: VegPaymentWhereInput | VegPaymentWhereInput[]
+    date?: DateTimeFilter<"VegPayment"> | Date | string
+    vegId?: StringFilter<"VegPayment"> | string
+    createdByStaffId?: StringNullableFilter<"VegPayment"> | string | null
+    amount?: DecimalFilter<"VegPayment"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"VegPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"VegPayment"> | Date | string
+    veg?: XOR<VegRelationFilter, VegWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type VegPaymentOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: VegPaymentCountOrderByAggregateInput
+    _avg?: VegPaymentAvgOrderByAggregateInput
+    _max?: VegPaymentMaxOrderByAggregateInput
+    _min?: VegPaymentMinOrderByAggregateInput
+    _sum?: VegPaymentSumOrderByAggregateInput
+  }
+
+  export type VegPaymentScalarWhereWithAggregatesInput = {
+    AND?: VegPaymentScalarWhereWithAggregatesInput | VegPaymentScalarWhereWithAggregatesInput[]
+    OR?: VegPaymentScalarWhereWithAggregatesInput[]
+    NOT?: VegPaymentScalarWhereWithAggregatesInput | VegPaymentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"VegPayment"> | string
+    date?: DateTimeWithAggregatesFilter<"VegPayment"> | Date | string
+    vegId?: StringWithAggregatesFilter<"VegPayment"> | string
+    createdByStaffId?: StringNullableWithAggregatesFilter<"VegPayment"> | string | null
+    amount?: DecimalWithAggregatesFilter<"VegPayment"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeWithAggregatesFilter<"VegPayment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"VegPayment"> | Date | string
+  }
+
+  export type VegDiscountWhereInput = {
+    AND?: VegDiscountWhereInput | VegDiscountWhereInput[]
+    OR?: VegDiscountWhereInput[]
+    NOT?: VegDiscountWhereInput | VegDiscountWhereInput[]
+    id?: StringFilter<"VegDiscount"> | string
+    date?: DateTimeFilter<"VegDiscount"> | Date | string
+    vegId?: StringFilter<"VegDiscount"> | string
+    createdByStaffId?: StringNullableFilter<"VegDiscount"> | string | null
+    status?: EnumDiscountStatusFilter<"VegDiscount"> | $Enums.DiscountStatus
+    amount?: DecimalFilter<"VegDiscount"> | Decimal | DecimalJsLike | number | string
+    remarks?: StringFilter<"VegDiscount"> | string
+    createdAt?: DateTimeFilter<"VegDiscount"> | Date | string
+    updatedAt?: DateTimeFilter<"VegDiscount"> | Date | string
+    veg?: XOR<VegRelationFilter, VegWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type VegDiscountOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    amount?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    veg?: VegOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
+  }
+
+  export type VegDiscountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: VegDiscountWhereInput | VegDiscountWhereInput[]
+    OR?: VegDiscountWhereInput[]
+    NOT?: VegDiscountWhereInput | VegDiscountWhereInput[]
+    date?: DateTimeFilter<"VegDiscount"> | Date | string
+    vegId?: StringFilter<"VegDiscount"> | string
+    createdByStaffId?: StringNullableFilter<"VegDiscount"> | string | null
+    status?: EnumDiscountStatusFilter<"VegDiscount"> | $Enums.DiscountStatus
+    amount?: DecimalFilter<"VegDiscount"> | Decimal | DecimalJsLike | number | string
+    remarks?: StringFilter<"VegDiscount"> | string
+    createdAt?: DateTimeFilter<"VegDiscount"> | Date | string
+    updatedAt?: DateTimeFilter<"VegDiscount"> | Date | string
+    veg?: XOR<VegRelationFilter, VegWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type VegDiscountOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    status?: SortOrder
+    amount?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: VegDiscountCountOrderByAggregateInput
+    _avg?: VegDiscountAvgOrderByAggregateInput
+    _max?: VegDiscountMaxOrderByAggregateInput
+    _min?: VegDiscountMinOrderByAggregateInput
+    _sum?: VegDiscountSumOrderByAggregateInput
+  }
+
+  export type VegDiscountScalarWhereWithAggregatesInput = {
+    AND?: VegDiscountScalarWhereWithAggregatesInput | VegDiscountScalarWhereWithAggregatesInput[]
+    OR?: VegDiscountScalarWhereWithAggregatesInput[]
+    NOT?: VegDiscountScalarWhereWithAggregatesInput | VegDiscountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"VegDiscount"> | string
+    date?: DateTimeWithAggregatesFilter<"VegDiscount"> | Date | string
+    vegId?: StringWithAggregatesFilter<"VegDiscount"> | string
+    createdByStaffId?: StringNullableWithAggregatesFilter<"VegDiscount"> | string | null
+    status?: EnumDiscountStatusWithAggregatesFilter<"VegDiscount"> | $Enums.DiscountStatus
+    amount?: DecimalWithAggregatesFilter<"VegDiscount"> | Decimal | DecimalJsLike | number | string
+    remarks?: StringWithAggregatesFilter<"VegDiscount"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"VegDiscount"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"VegDiscount"> | Date | string
+  }
+
   export type BillWhereInput = {
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
@@ -32586,6 +36425,8 @@ export namespace Prisma {
     createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -32608,6 +36449,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUpdateInput = {
@@ -32630,6 +36473,8 @@ export namespace Prisma {
     createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -32652,6 +36497,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -33398,6 +37245,7 @@ export namespace Prisma {
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
     payments?: PaymentCreateNestedManyWithoutCustomerInput
     discounts?: DiscountCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateInput = {
@@ -33442,6 +37290,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
     payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUpdateInput = {
@@ -33486,6 +37335,7 @@ export namespace Prisma {
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
     payments?: PaymentUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateInput = {
@@ -33530,6 +37380,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerCreateManyInput = {
@@ -33644,6 +37495,104 @@ export namespace Prisma {
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegCreateInput = {
+    id?: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutVegsInput
+    payments?: VegPaymentCreateNestedManyWithoutVegInput
+    discounts?: VegDiscountCreateNestedManyWithoutVegInput
+  }
+
+  export type VegUncheckedCreateInput = {
+    id?: string
+    customerId: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: VegPaymentUncheckedCreateNestedManyWithoutVegInput
+    discounts?: VegDiscountUncheckedCreateNestedManyWithoutVegInput
+  }
+
+  export type VegUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutVegsNestedInput
+    payments?: VegPaymentUpdateManyWithoutVegNestedInput
+    discounts?: VegDiscountUpdateManyWithoutVegNestedInput
+  }
+
+  export type VegUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: VegPaymentUncheckedUpdateManyWithoutVegNestedInput
+    discounts?: VegDiscountUncheckedUpdateManyWithoutVegNestedInput
+  }
+
+  export type VegCreateManyInput = {
+    id?: string
+    customerId: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34411,6 +38360,156 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type VegPaymentCreateInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    veg: VegCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedVegPaymentsInput
+  }
+
+  export type VegPaymentUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    createdByStaffId?: string | null
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegPaymentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    veg?: VegUpdateOneRequiredWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedVegPaymentsNestedInput
+  }
+
+  export type VegPaymentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegPaymentCreateManyInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    createdByStaffId?: string | null
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegPaymentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegPaymentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountCreateInput = {
+    id?: string
+    date: Date | string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    veg: VegCreateNestedOneWithoutDiscountsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedVegDiscountsInput
+  }
+
+  export type VegDiscountUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    createdByStaffId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegDiscountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    veg?: VegUpdateOneRequiredWithoutDiscountsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedVegDiscountsNestedInput
+  }
+
+  export type VegDiscountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountCreateManyInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    createdByStaffId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegDiscountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BillCreateInput = {
     id?: string
     approvalNo?: string | null
@@ -34977,6 +39076,18 @@ export namespace Prisma {
     none?: DispatchWhereInput
   }
 
+  export type VegPaymentListRelationFilter = {
+    every?: VegPaymentWhereInput
+    some?: VegPaymentWhereInput
+    none?: VegPaymentWhereInput
+  }
+
+  export type VegDiscountListRelationFilter = {
+    every?: VegDiscountWhereInput
+    some?: VegDiscountWhereInput
+    none?: VegDiscountWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -35003,6 +39114,14 @@ export namespace Prisma {
   }
 
   export type DispatchOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type VegPaymentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type VegDiscountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -35507,6 +39626,16 @@ export namespace Prisma {
     isNot?: StaffWhereInput | null
   }
 
+  export type VegListRelationFilter = {
+    every?: VegWhereInput
+    some?: VegWhereInput
+    none?: VegWhereInput
+  }
+
+  export type VegOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type CustomerCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -35716,6 +39845,75 @@ export namespace Prisma {
     _max?: NestedEnumSalesSmsTypeNullableFilter<$PrismaModel>
   }
 
+  export type EnumVegPaymentBasisFilter<$PrismaModel = never> = {
+    equals?: $Enums.VegPaymentBasis | EnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    in?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    not?: NestedEnumVegPaymentBasisFilter<$PrismaModel> | $Enums.VegPaymentBasis
+  }
+
+  export type CustomerRelationFilter = {
+    is?: CustomerWhereInput
+    isNot?: CustomerWhereInput
+  }
+
+  export type VegCountOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    mobile?: SortOrder
+    role?: SortOrder
+    paymentBasis?: SortOrder
+    amount?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type VegMaxOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    mobile?: SortOrder
+    role?: SortOrder
+    paymentBasis?: SortOrder
+    amount?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegMinOrderByAggregateInput = {
+    id?: SortOrder
+    customerId?: SortOrder
+    name?: SortOrder
+    mobile?: SortOrder
+    role?: SortOrder
+    paymentBasis?: SortOrder
+    amount?: SortOrder
+    active?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type EnumVegPaymentBasisWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.VegPaymentBasis | EnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    in?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    not?: NestedEnumVegPaymentBasisWithAggregatesFilter<$PrismaModel> | $Enums.VegPaymentBasis
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVegPaymentBasisFilter<$PrismaModel>
+    _max?: NestedEnumVegPaymentBasisFilter<$PrismaModel>
+  }
+
   export type QualityClassNullableRelationFilter = {
     is?: QualityClassWhereInput | null
     isNot?: QualityClassWhereInput | null
@@ -35775,11 +39973,6 @@ export namespace Prisma {
     in?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.OrderStatus[] | ListEnumOrderStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
-  }
-
-  export type CustomerRelationFilter = {
-    is?: CustomerWhereInput
-    isNot?: CustomerWhereInput
   }
 
   export type OrderCountOrderByAggregateInput = {
@@ -36308,6 +40501,93 @@ export namespace Prisma {
     _max?: NestedEnumCoalOriginNullableFilter<$PrismaModel>
   }
 
+  export type VegRelationFilter = {
+    is?: VegWhereInput
+    isNot?: VegWhereInput
+  }
+
+  export type VegPaymentCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegPaymentAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type VegPaymentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegPaymentMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegPaymentSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type VegDiscountCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrder
+    status?: SortOrder
+    amount?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegDiscountAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type VegDiscountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrder
+    status?: SortOrder
+    amount?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegDiscountMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    vegId?: SortOrder
+    createdByStaffId?: SortOrder
+    status?: SortOrder
+    amount?: SortOrder
+    remarks?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type VegDiscountSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type EnumBillStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.BillStatus | EnumBillStatusFieldRefInput<$PrismaModel>
     in?: $Enums.BillStatus[] | ListEnumBillStatusFieldRefInput<$PrismaModel>
@@ -36742,6 +41022,20 @@ export namespace Prisma {
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
   }
 
+  export type VegPaymentCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<VegPaymentCreateWithoutCreatedByStaffInput, VegPaymentUncheckedCreateWithoutCreatedByStaffInput> | VegPaymentCreateWithoutCreatedByStaffInput[] | VegPaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutCreatedByStaffInput | VegPaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: VegPaymentCreateManyCreatedByStaffInputEnvelope
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+  }
+
+  export type VegDiscountCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<VegDiscountCreateWithoutCreatedByStaffInput, VegDiscountUncheckedCreateWithoutCreatedByStaffInput> | VegDiscountCreateWithoutCreatedByStaffInput[] | VegDiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutCreatedByStaffInput | VegDiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: VegDiscountCreateManyCreatedByStaffInputEnvelope
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+  }
+
   export type CustomerUncheckedCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -36782,6 +41076,20 @@ export namespace Prisma {
     connectOrCreate?: DispatchCreateOrConnectWithoutCreatedByStaffInput | DispatchCreateOrConnectWithoutCreatedByStaffInput[]
     createMany?: DispatchCreateManyCreatedByStaffInputEnvelope
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+  }
+
+  export type VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<VegPaymentCreateWithoutCreatedByStaffInput, VegPaymentUncheckedCreateWithoutCreatedByStaffInput> | VegPaymentCreateWithoutCreatedByStaffInput[] | VegPaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutCreatedByStaffInput | VegPaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: VegPaymentCreateManyCreatedByStaffInputEnvelope
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+  }
+
+  export type VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<VegDiscountCreateWithoutCreatedByStaffInput, VegDiscountUncheckedCreateWithoutCreatedByStaffInput> | VegDiscountCreateWithoutCreatedByStaffInput[] | VegDiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutCreatedByStaffInput | VegDiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: VegDiscountCreateManyCreatedByStaffInputEnvelope
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -36915,6 +41223,34 @@ export namespace Prisma {
     deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
   }
 
+  export type VegPaymentUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<VegPaymentCreateWithoutCreatedByStaffInput, VegPaymentUncheckedCreateWithoutCreatedByStaffInput> | VegPaymentCreateWithoutCreatedByStaffInput[] | VegPaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutCreatedByStaffInput | VegPaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: VegPaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput | VegPaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: VegPaymentCreateManyCreatedByStaffInputEnvelope
+    set?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    disconnect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    delete?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    update?: VegPaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput | VegPaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: VegPaymentUpdateManyWithWhereWithoutCreatedByStaffInput | VegPaymentUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: VegPaymentScalarWhereInput | VegPaymentScalarWhereInput[]
+  }
+
+  export type VegDiscountUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<VegDiscountCreateWithoutCreatedByStaffInput, VegDiscountUncheckedCreateWithoutCreatedByStaffInput> | VegDiscountCreateWithoutCreatedByStaffInput[] | VegDiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutCreatedByStaffInput | VegDiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: VegDiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput | VegDiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: VegDiscountCreateManyCreatedByStaffInputEnvelope
+    set?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    disconnect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    delete?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    update?: VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput | VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput | VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
+  }
+
   export type CustomerUncheckedUpdateManyWithoutDealByNestedInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -36997,6 +41333,34 @@ export namespace Prisma {
     update?: DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput | DispatchUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
     updateMany?: DispatchUpdateManyWithWhereWithoutCreatedByStaffInput | DispatchUpdateManyWithWhereWithoutCreatedByStaffInput[]
     deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
+  }
+
+  export type VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<VegPaymentCreateWithoutCreatedByStaffInput, VegPaymentUncheckedCreateWithoutCreatedByStaffInput> | VegPaymentCreateWithoutCreatedByStaffInput[] | VegPaymentUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutCreatedByStaffInput | VegPaymentCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: VegPaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput | VegPaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: VegPaymentCreateManyCreatedByStaffInputEnvelope
+    set?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    disconnect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    delete?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    update?: VegPaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput | VegPaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: VegPaymentUpdateManyWithWhereWithoutCreatedByStaffInput | VegPaymentUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: VegPaymentScalarWhereInput | VegPaymentScalarWhereInput[]
+  }
+
+  export type VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<VegDiscountCreateWithoutCreatedByStaffInput, VegDiscountUncheckedCreateWithoutCreatedByStaffInput> | VegDiscountCreateWithoutCreatedByStaffInput[] | VegDiscountUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutCreatedByStaffInput | VegDiscountCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: VegDiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput | VegDiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: VegDiscountCreateManyCreatedByStaffInputEnvelope
+    set?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    disconnect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    delete?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    update?: VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput | VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput | VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
   }
 
   export type DispatchCreateNestedManyWithoutTransporterInput = {
@@ -37500,6 +41864,13 @@ export namespace Prisma {
     connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
   }
 
+  export type VegCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<VegCreateWithoutCustomerInput, VegUncheckedCreateWithoutCustomerInput> | VegCreateWithoutCustomerInput[] | VegUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: VegCreateOrConnectWithoutCustomerInput | VegCreateOrConnectWithoutCustomerInput[]
+    createMany?: VegCreateManyCustomerInputEnvelope
+    connect?: VegWhereUniqueInput | VegWhereUniqueInput[]
+  }
+
   export type OrderUncheckedCreateNestedManyWithoutCustomerInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -37533,6 +41904,13 @@ export namespace Prisma {
     connectOrCreate?: DiscountCreateOrConnectWithoutCustomerInput | DiscountCreateOrConnectWithoutCustomerInput[]
     createMany?: DiscountCreateManyCustomerInputEnvelope
     connect?: DiscountWhereUniqueInput | DiscountWhereUniqueInput[]
+  }
+
+  export type VegUncheckedCreateNestedManyWithoutCustomerInput = {
+    create?: XOR<VegCreateWithoutCustomerInput, VegUncheckedCreateWithoutCustomerInput> | VegCreateWithoutCustomerInput[] | VegUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: VegCreateOrConnectWithoutCustomerInput | VegCreateOrConnectWithoutCustomerInput[]
+    createMany?: VegCreateManyCustomerInputEnvelope
+    connect?: VegWhereUniqueInput | VegWhereUniqueInput[]
   }
 
   export type EnumCustomerCategoryFieldUpdateOperationsInput = {
@@ -37647,6 +42025,20 @@ export namespace Prisma {
     deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
   }
 
+  export type VegUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<VegCreateWithoutCustomerInput, VegUncheckedCreateWithoutCustomerInput> | VegCreateWithoutCustomerInput[] | VegUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: VegCreateOrConnectWithoutCustomerInput | VegCreateOrConnectWithoutCustomerInput[]
+    upsert?: VegUpsertWithWhereUniqueWithoutCustomerInput | VegUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: VegCreateManyCustomerInputEnvelope
+    set?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    disconnect?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    delete?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    connect?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    update?: VegUpdateWithWhereUniqueWithoutCustomerInput | VegUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: VegUpdateManyWithWhereWithoutCustomerInput | VegUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: VegScalarWhereInput | VegScalarWhereInput[]
+  }
+
   export type OrderUncheckedUpdateManyWithoutCustomerNestedInput = {
     create?: XOR<OrderCreateWithoutCustomerInput, OrderUncheckedCreateWithoutCustomerInput> | OrderCreateWithoutCustomerInput[] | OrderUncheckedCreateWithoutCustomerInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutCustomerInput | OrderCreateOrConnectWithoutCustomerInput[]
@@ -37715,6 +42107,122 @@ export namespace Prisma {
     update?: DiscountUpdateWithWhereUniqueWithoutCustomerInput | DiscountUpdateWithWhereUniqueWithoutCustomerInput[]
     updateMany?: DiscountUpdateManyWithWhereWithoutCustomerInput | DiscountUpdateManyWithWhereWithoutCustomerInput[]
     deleteMany?: DiscountScalarWhereInput | DiscountScalarWhereInput[]
+  }
+
+  export type VegUncheckedUpdateManyWithoutCustomerNestedInput = {
+    create?: XOR<VegCreateWithoutCustomerInput, VegUncheckedCreateWithoutCustomerInput> | VegCreateWithoutCustomerInput[] | VegUncheckedCreateWithoutCustomerInput[]
+    connectOrCreate?: VegCreateOrConnectWithoutCustomerInput | VegCreateOrConnectWithoutCustomerInput[]
+    upsert?: VegUpsertWithWhereUniqueWithoutCustomerInput | VegUpsertWithWhereUniqueWithoutCustomerInput[]
+    createMany?: VegCreateManyCustomerInputEnvelope
+    set?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    disconnect?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    delete?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    connect?: VegWhereUniqueInput | VegWhereUniqueInput[]
+    update?: VegUpdateWithWhereUniqueWithoutCustomerInput | VegUpdateWithWhereUniqueWithoutCustomerInput[]
+    updateMany?: VegUpdateManyWithWhereWithoutCustomerInput | VegUpdateManyWithWhereWithoutCustomerInput[]
+    deleteMany?: VegScalarWhereInput | VegScalarWhereInput[]
+  }
+
+  export type CustomerCreateNestedOneWithoutVegsInput = {
+    create?: XOR<CustomerCreateWithoutVegsInput, CustomerUncheckedCreateWithoutVegsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutVegsInput
+    connect?: CustomerWhereUniqueInput
+  }
+
+  export type VegPaymentCreateNestedManyWithoutVegInput = {
+    create?: XOR<VegPaymentCreateWithoutVegInput, VegPaymentUncheckedCreateWithoutVegInput> | VegPaymentCreateWithoutVegInput[] | VegPaymentUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutVegInput | VegPaymentCreateOrConnectWithoutVegInput[]
+    createMany?: VegPaymentCreateManyVegInputEnvelope
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+  }
+
+  export type VegDiscountCreateNestedManyWithoutVegInput = {
+    create?: XOR<VegDiscountCreateWithoutVegInput, VegDiscountUncheckedCreateWithoutVegInput> | VegDiscountCreateWithoutVegInput[] | VegDiscountUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutVegInput | VegDiscountCreateOrConnectWithoutVegInput[]
+    createMany?: VegDiscountCreateManyVegInputEnvelope
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+  }
+
+  export type VegPaymentUncheckedCreateNestedManyWithoutVegInput = {
+    create?: XOR<VegPaymentCreateWithoutVegInput, VegPaymentUncheckedCreateWithoutVegInput> | VegPaymentCreateWithoutVegInput[] | VegPaymentUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutVegInput | VegPaymentCreateOrConnectWithoutVegInput[]
+    createMany?: VegPaymentCreateManyVegInputEnvelope
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+  }
+
+  export type VegDiscountUncheckedCreateNestedManyWithoutVegInput = {
+    create?: XOR<VegDiscountCreateWithoutVegInput, VegDiscountUncheckedCreateWithoutVegInput> | VegDiscountCreateWithoutVegInput[] | VegDiscountUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutVegInput | VegDiscountCreateOrConnectWithoutVegInput[]
+    createMany?: VegDiscountCreateManyVegInputEnvelope
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+  }
+
+  export type EnumVegPaymentBasisFieldUpdateOperationsInput = {
+    set?: $Enums.VegPaymentBasis
+  }
+
+  export type CustomerUpdateOneRequiredWithoutVegsNestedInput = {
+    create?: XOR<CustomerCreateWithoutVegsInput, CustomerUncheckedCreateWithoutVegsInput>
+    connectOrCreate?: CustomerCreateOrConnectWithoutVegsInput
+    upsert?: CustomerUpsertWithoutVegsInput
+    connect?: CustomerWhereUniqueInput
+    update?: XOR<XOR<CustomerUpdateToOneWithWhereWithoutVegsInput, CustomerUpdateWithoutVegsInput>, CustomerUncheckedUpdateWithoutVegsInput>
+  }
+
+  export type VegPaymentUpdateManyWithoutVegNestedInput = {
+    create?: XOR<VegPaymentCreateWithoutVegInput, VegPaymentUncheckedCreateWithoutVegInput> | VegPaymentCreateWithoutVegInput[] | VegPaymentUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutVegInput | VegPaymentCreateOrConnectWithoutVegInput[]
+    upsert?: VegPaymentUpsertWithWhereUniqueWithoutVegInput | VegPaymentUpsertWithWhereUniqueWithoutVegInput[]
+    createMany?: VegPaymentCreateManyVegInputEnvelope
+    set?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    disconnect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    delete?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    update?: VegPaymentUpdateWithWhereUniqueWithoutVegInput | VegPaymentUpdateWithWhereUniqueWithoutVegInput[]
+    updateMany?: VegPaymentUpdateManyWithWhereWithoutVegInput | VegPaymentUpdateManyWithWhereWithoutVegInput[]
+    deleteMany?: VegPaymentScalarWhereInput | VegPaymentScalarWhereInput[]
+  }
+
+  export type VegDiscountUpdateManyWithoutVegNestedInput = {
+    create?: XOR<VegDiscountCreateWithoutVegInput, VegDiscountUncheckedCreateWithoutVegInput> | VegDiscountCreateWithoutVegInput[] | VegDiscountUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutVegInput | VegDiscountCreateOrConnectWithoutVegInput[]
+    upsert?: VegDiscountUpsertWithWhereUniqueWithoutVegInput | VegDiscountUpsertWithWhereUniqueWithoutVegInput[]
+    createMany?: VegDiscountCreateManyVegInputEnvelope
+    set?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    disconnect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    delete?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    update?: VegDiscountUpdateWithWhereUniqueWithoutVegInput | VegDiscountUpdateWithWhereUniqueWithoutVegInput[]
+    updateMany?: VegDiscountUpdateManyWithWhereWithoutVegInput | VegDiscountUpdateManyWithWhereWithoutVegInput[]
+    deleteMany?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
+  }
+
+  export type VegPaymentUncheckedUpdateManyWithoutVegNestedInput = {
+    create?: XOR<VegPaymentCreateWithoutVegInput, VegPaymentUncheckedCreateWithoutVegInput> | VegPaymentCreateWithoutVegInput[] | VegPaymentUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegPaymentCreateOrConnectWithoutVegInput | VegPaymentCreateOrConnectWithoutVegInput[]
+    upsert?: VegPaymentUpsertWithWhereUniqueWithoutVegInput | VegPaymentUpsertWithWhereUniqueWithoutVegInput[]
+    createMany?: VegPaymentCreateManyVegInputEnvelope
+    set?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    disconnect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    delete?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    connect?: VegPaymentWhereUniqueInput | VegPaymentWhereUniqueInput[]
+    update?: VegPaymentUpdateWithWhereUniqueWithoutVegInput | VegPaymentUpdateWithWhereUniqueWithoutVegInput[]
+    updateMany?: VegPaymentUpdateManyWithWhereWithoutVegInput | VegPaymentUpdateManyWithWhereWithoutVegInput[]
+    deleteMany?: VegPaymentScalarWhereInput | VegPaymentScalarWhereInput[]
+  }
+
+  export type VegDiscountUncheckedUpdateManyWithoutVegNestedInput = {
+    create?: XOR<VegDiscountCreateWithoutVegInput, VegDiscountUncheckedCreateWithoutVegInput> | VegDiscountCreateWithoutVegInput[] | VegDiscountUncheckedCreateWithoutVegInput[]
+    connectOrCreate?: VegDiscountCreateOrConnectWithoutVegInput | VegDiscountCreateOrConnectWithoutVegInput[]
+    upsert?: VegDiscountUpsertWithWhereUniqueWithoutVegInput | VegDiscountUpsertWithWhereUniqueWithoutVegInput[]
+    createMany?: VegDiscountCreateManyVegInputEnvelope
+    set?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    disconnect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    delete?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+    update?: VegDiscountUpdateWithWhereUniqueWithoutVegInput | VegDiscountUpdateWithWhereUniqueWithoutVegInput[]
+    updateMany?: VegDiscountUpdateManyWithWhereWithoutVegInput | VegDiscountUpdateManyWithWhereWithoutVegInput[]
+    deleteMany?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
   }
 
   export type QualityClassCreateNestedOneWithoutVesselsInput = {
@@ -38275,6 +42783,66 @@ export namespace Prisma {
     delete?: StaffWhereInput | boolean
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedDiscountsInput, StaffUpdateWithoutCreatedDiscountsInput>, StaffUncheckedUpdateWithoutCreatedDiscountsInput>
+  }
+
+  export type VegCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<VegCreateWithoutPaymentsInput, VegUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: VegCreateOrConnectWithoutPaymentsInput
+    connect?: VegWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedVegPaymentsInput = {
+    create?: XOR<StaffCreateWithoutCreatedVegPaymentsInput, StaffUncheckedCreateWithoutCreatedVegPaymentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedVegPaymentsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type VegUpdateOneRequiredWithoutPaymentsNestedInput = {
+    create?: XOR<VegCreateWithoutPaymentsInput, VegUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: VegCreateOrConnectWithoutPaymentsInput
+    upsert?: VegUpsertWithoutPaymentsInput
+    connect?: VegWhereUniqueInput
+    update?: XOR<XOR<VegUpdateToOneWithWhereWithoutPaymentsInput, VegUpdateWithoutPaymentsInput>, VegUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedVegPaymentsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedVegPaymentsInput, StaffUncheckedCreateWithoutCreatedVegPaymentsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedVegPaymentsInput
+    upsert?: StaffUpsertWithoutCreatedVegPaymentsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedVegPaymentsInput, StaffUpdateWithoutCreatedVegPaymentsInput>, StaffUncheckedUpdateWithoutCreatedVegPaymentsInput>
+  }
+
+  export type VegCreateNestedOneWithoutDiscountsInput = {
+    create?: XOR<VegCreateWithoutDiscountsInput, VegUncheckedCreateWithoutDiscountsInput>
+    connectOrCreate?: VegCreateOrConnectWithoutDiscountsInput
+    connect?: VegWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedVegDiscountsInput = {
+    create?: XOR<StaffCreateWithoutCreatedVegDiscountsInput, StaffUncheckedCreateWithoutCreatedVegDiscountsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedVegDiscountsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type VegUpdateOneRequiredWithoutDiscountsNestedInput = {
+    create?: XOR<VegCreateWithoutDiscountsInput, VegUncheckedCreateWithoutDiscountsInput>
+    connectOrCreate?: VegCreateOrConnectWithoutDiscountsInput
+    upsert?: VegUpsertWithoutDiscountsInput
+    connect?: VegWhereUniqueInput
+    update?: XOR<XOR<VegUpdateToOneWithWhereWithoutDiscountsInput, VegUpdateWithoutDiscountsInput>, VegUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedVegDiscountsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedVegDiscountsInput, StaffUncheckedCreateWithoutCreatedVegDiscountsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedVegDiscountsInput
+    upsert?: StaffUpsertWithoutCreatedVegDiscountsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedVegDiscountsInput, StaffUpdateWithoutCreatedVegDiscountsInput>, StaffUncheckedUpdateWithoutCreatedVegDiscountsInput>
   }
 
   export type StaffCreateNestedOneWithoutBillsInput = {
@@ -38894,6 +43462,23 @@ export namespace Prisma {
     _max?: NestedEnumSalesSmsTypeNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumVegPaymentBasisFilter<$PrismaModel = never> = {
+    equals?: $Enums.VegPaymentBasis | EnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    in?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    not?: NestedEnumVegPaymentBasisFilter<$PrismaModel> | $Enums.VegPaymentBasis
+  }
+
+  export type NestedEnumVegPaymentBasisWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.VegPaymentBasis | EnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    in?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    notIn?: $Enums.VegPaymentBasis[] | ListEnumVegPaymentBasisFieldRefInput<$PrismaModel>
+    not?: NestedEnumVegPaymentBasisWithAggregatesFilter<$PrismaModel> | $Enums.VegPaymentBasis
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVegPaymentBasisFilter<$PrismaModel>
+    _max?: NestedEnumVegPaymentBasisFilter<$PrismaModel>
+  }
+
   export type NestedEnumOrderTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderType | EnumOrderTypeFieldRefInput<$PrismaModel>
     in?: $Enums.OrderType[] | ListEnumOrderTypeFieldRefInput<$PrismaModel>
@@ -39149,6 +43734,7 @@ export namespace Prisma {
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
     payments?: PaymentCreateNestedManyWithoutCustomerInput
     discounts?: DiscountCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutDealByInput = {
@@ -39192,6 +43778,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
     payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutDealByInput = {
@@ -39446,6 +44033,66 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type VegPaymentCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    veg: VegCreateNestedOneWithoutPaymentsInput
+  }
+
+  export type VegPaymentUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegPaymentCreateOrConnectWithoutCreatedByStaffInput = {
+    where: VegPaymentWhereUniqueInput
+    create: XOR<VegPaymentCreateWithoutCreatedByStaffInput, VegPaymentUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type VegPaymentCreateManyCreatedByStaffInputEnvelope = {
+    data: VegPaymentCreateManyCreatedByStaffInput | VegPaymentCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type VegDiscountCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    veg: VegCreateNestedOneWithoutDiscountsInput
+  }
+
+  export type VegDiscountUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegDiscountCreateOrConnectWithoutCreatedByStaffInput = {
+    where: VegDiscountWhereUniqueInput
+    create: XOR<VegDiscountCreateWithoutCreatedByStaffInput, VegDiscountUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type VegDiscountCreateManyCreatedByStaffInputEnvelope = {
+    data: VegDiscountCreateManyCreatedByStaffInput | VegDiscountCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithWhereUniqueWithoutDealByInput = {
     where: CustomerWhereUniqueInput
     update: XOR<CustomerUpdateWithoutDealByInput, CustomerUncheckedUpdateWithoutDealByInput>
@@ -39696,6 +44343,66 @@ export namespace Prisma {
     createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
+  }
+
+  export type VegPaymentUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: VegPaymentWhereUniqueInput
+    update: XOR<VegPaymentUpdateWithoutCreatedByStaffInput, VegPaymentUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<VegPaymentCreateWithoutCreatedByStaffInput, VegPaymentUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type VegPaymentUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: VegPaymentWhereUniqueInput
+    data: XOR<VegPaymentUpdateWithoutCreatedByStaffInput, VegPaymentUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type VegPaymentUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: VegPaymentScalarWhereInput
+    data: XOR<VegPaymentUpdateManyMutationInput, VegPaymentUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type VegPaymentScalarWhereInput = {
+    AND?: VegPaymentScalarWhereInput | VegPaymentScalarWhereInput[]
+    OR?: VegPaymentScalarWhereInput[]
+    NOT?: VegPaymentScalarWhereInput | VegPaymentScalarWhereInput[]
+    id?: StringFilter<"VegPayment"> | string
+    date?: DateTimeFilter<"VegPayment"> | Date | string
+    vegId?: StringFilter<"VegPayment"> | string
+    createdByStaffId?: StringNullableFilter<"VegPayment"> | string | null
+    amount?: DecimalFilter<"VegPayment"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"VegPayment"> | Date | string
+    updatedAt?: DateTimeFilter<"VegPayment"> | Date | string
+  }
+
+  export type VegDiscountUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: VegDiscountWhereUniqueInput
+    update: XOR<VegDiscountUpdateWithoutCreatedByStaffInput, VegDiscountUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<VegDiscountCreateWithoutCreatedByStaffInput, VegDiscountUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: VegDiscountWhereUniqueInput
+    data: XOR<VegDiscountUpdateWithoutCreatedByStaffInput, VegDiscountUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: VegDiscountScalarWhereInput
+    data: XOR<VegDiscountUpdateManyMutationInput, VegDiscountUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type VegDiscountScalarWhereInput = {
+    AND?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
+    OR?: VegDiscountScalarWhereInput[]
+    NOT?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
+    id?: StringFilter<"VegDiscount"> | string
+    date?: DateTimeFilter<"VegDiscount"> | Date | string
+    vegId?: StringFilter<"VegDiscount"> | string
+    createdByStaffId?: StringNullableFilter<"VegDiscount"> | string | null
+    status?: EnumDiscountStatusFilter<"VegDiscount"> | $Enums.DiscountStatus
+    amount?: DecimalFilter<"VegDiscount"> | Decimal | DecimalJsLike | number | string
+    remarks?: StringFilter<"VegDiscount"> | string
+    createdAt?: DateTimeFilter<"VegDiscount"> | Date | string
+    updatedAt?: DateTimeFilter<"VegDiscount"> | Date | string
   }
 
   export type DispatchCreateWithoutTransporterInput = {
@@ -40437,6 +45144,8 @@ export namespace Prisma {
     createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutDealByCustomersInput = {
@@ -40458,6 +45167,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutDealByCustomersInput = {
@@ -40709,6 +45420,44 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type VegCreateWithoutCustomerInput = {
+    id?: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: VegPaymentCreateNestedManyWithoutVegInput
+    discounts?: VegDiscountCreateNestedManyWithoutVegInput
+  }
+
+  export type VegUncheckedCreateWithoutCustomerInput = {
+    id?: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: VegPaymentUncheckedCreateNestedManyWithoutVegInput
+    discounts?: VegDiscountUncheckedCreateNestedManyWithoutVegInput
+  }
+
+  export type VegCreateOrConnectWithoutCustomerInput = {
+    where: VegWhereUniqueInput
+    create: XOR<VegCreateWithoutCustomerInput, VegUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type VegCreateManyCustomerInputEnvelope = {
+    data: VegCreateManyCustomerInput | VegCreateManyCustomerInput[]
+    skipDuplicates?: boolean
+  }
+
   export type StaffUpsertWithoutDealByCustomersInput = {
     update: XOR<StaffUpdateWithoutDealByCustomersInput, StaffUncheckedUpdateWithoutDealByCustomersInput>
     create: XOR<StaffCreateWithoutDealByCustomersInput, StaffUncheckedCreateWithoutDealByCustomersInput>
@@ -40739,6 +45488,8 @@ export namespace Prisma {
     createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDealByCustomersInput = {
@@ -40760,6 +45511,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -40840,6 +45593,322 @@ export namespace Prisma {
   export type DiscountUpdateManyWithWhereWithoutCustomerInput = {
     where: DiscountScalarWhereInput
     data: XOR<DiscountUpdateManyMutationInput, DiscountUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type VegUpsertWithWhereUniqueWithoutCustomerInput = {
+    where: VegWhereUniqueInput
+    update: XOR<VegUpdateWithoutCustomerInput, VegUncheckedUpdateWithoutCustomerInput>
+    create: XOR<VegCreateWithoutCustomerInput, VegUncheckedCreateWithoutCustomerInput>
+  }
+
+  export type VegUpdateWithWhereUniqueWithoutCustomerInput = {
+    where: VegWhereUniqueInput
+    data: XOR<VegUpdateWithoutCustomerInput, VegUncheckedUpdateWithoutCustomerInput>
+  }
+
+  export type VegUpdateManyWithWhereWithoutCustomerInput = {
+    where: VegScalarWhereInput
+    data: XOR<VegUpdateManyMutationInput, VegUncheckedUpdateManyWithoutCustomerInput>
+  }
+
+  export type VegScalarWhereInput = {
+    AND?: VegScalarWhereInput | VegScalarWhereInput[]
+    OR?: VegScalarWhereInput[]
+    NOT?: VegScalarWhereInput | VegScalarWhereInput[]
+    id?: StringFilter<"Veg"> | string
+    customerId?: StringFilter<"Veg"> | string
+    name?: StringFilter<"Veg"> | string
+    mobile?: StringNullableFilter<"Veg"> | string | null
+    role?: StringNullableFilter<"Veg"> | string | null
+    paymentBasis?: EnumVegPaymentBasisFilter<"Veg"> | $Enums.VegPaymentBasis
+    amount?: DecimalFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    active?: BoolFilter<"Veg"> | boolean
+    createdAt?: DateTimeFilter<"Veg"> | Date | string
+    updatedAt?: DateTimeFilter<"Veg"> | Date | string
+  }
+
+  export type CustomerCreateWithoutVegsInput = {
+    id?: string
+    name: string
+    category: $Enums.CustomerCategory
+    active?: boolean
+    ownerName?: string | null
+    ownerContact?: string | null
+    purchaserName?: string | null
+    purchaserContact?: string | null
+    purchaserRole?: string | null
+    paymentInChargeName?: string | null
+    paymentInChargeContact?: string | null
+    paymentInChargeRole?: string | null
+    accountantName?: string | null
+    accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
+    email?: string | null
+    city?: string | null
+    state?: string | null
+    creditDays?: number | null
+    sector?: string | null
+    saleExecutive?: string | null
+    approachForFunds?: string | null
+    dealingCompany?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
+    due?: Decimal | DecimalJsLike | number | string
+    plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
+    plannedSaleCallDate?: Date | string | null
+    offerPrice?: Decimal | DecimalJsLike | number | string | null
+    offerFreight?: Decimal | DecimalJsLike | number | string | null
+    smsType?: $Enums.SalesSmsType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealBy?: StaffCreateNestedOneWithoutDealByCustomersInput
+    orders?: OrderCreateNestedManyWithoutCustomerInput
+    purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
+    dispatches?: DispatchCreateNestedManyWithoutImporterInput
+    payments?: PaymentCreateNestedManyWithoutCustomerInput
+    discounts?: DiscountCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerUncheckedCreateWithoutVegsInput = {
+    id?: string
+    name: string
+    category: $Enums.CustomerCategory
+    active?: boolean
+    ownerName?: string | null
+    ownerContact?: string | null
+    purchaserName?: string | null
+    purchaserContact?: string | null
+    purchaserRole?: string | null
+    paymentInChargeName?: string | null
+    paymentInChargeContact?: string | null
+    paymentInChargeRole?: string | null
+    accountantName?: string | null
+    accountantContact?: string | null
+    factoryContactName?: string | null
+    factoryContactContact?: string | null
+    factoryContactRole?: string | null
+    email?: string | null
+    city?: string | null
+    state?: string | null
+    creditDays?: number | null
+    sector?: string | null
+    saleExecutive?: string | null
+    dealById?: string | null
+    approachForFunds?: string | null
+    dealingCompany?: string | null
+    openingDue?: Decimal | DecimalJsLike | number | string
+    due?: Decimal | DecimalJsLike | number | string
+    plannedCollectionCallDate?: Date | string | null
+    collectionThrough?: $Enums.CollectionThrough | null
+    plannedSaleCallDate?: Date | string | null
+    offerPrice?: Decimal | DecimalJsLike | number | string | null
+    offerFreight?: Decimal | DecimalJsLike | number | string | null
+    smsType?: $Enums.SalesSmsType | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutCustomerInput
+    purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
+    dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
+    payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
+    discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+  }
+
+  export type CustomerCreateOrConnectWithoutVegsInput = {
+    where: CustomerWhereUniqueInput
+    create: XOR<CustomerCreateWithoutVegsInput, CustomerUncheckedCreateWithoutVegsInput>
+  }
+
+  export type VegPaymentCreateWithoutVegInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedVegPaymentsInput
+  }
+
+  export type VegPaymentUncheckedCreateWithoutVegInput = {
+    id?: string
+    date: Date | string
+    createdByStaffId?: string | null
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegPaymentCreateOrConnectWithoutVegInput = {
+    where: VegPaymentWhereUniqueInput
+    create: XOR<VegPaymentCreateWithoutVegInput, VegPaymentUncheckedCreateWithoutVegInput>
+  }
+
+  export type VegPaymentCreateManyVegInputEnvelope = {
+    data: VegPaymentCreateManyVegInput | VegPaymentCreateManyVegInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type VegDiscountCreateWithoutVegInput = {
+    id?: string
+    date: Date | string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedVegDiscountsInput
+  }
+
+  export type VegDiscountUncheckedCreateWithoutVegInput = {
+    id?: string
+    date: Date | string
+    createdByStaffId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegDiscountCreateOrConnectWithoutVegInput = {
+    where: VegDiscountWhereUniqueInput
+    create: XOR<VegDiscountCreateWithoutVegInput, VegDiscountUncheckedCreateWithoutVegInput>
+  }
+
+  export type VegDiscountCreateManyVegInputEnvelope = {
+    data: VegDiscountCreateManyVegInput | VegDiscountCreateManyVegInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerUpsertWithoutVegsInput = {
+    update: XOR<CustomerUpdateWithoutVegsInput, CustomerUncheckedUpdateWithoutVegsInput>
+    create: XOR<CustomerCreateWithoutVegsInput, CustomerUncheckedCreateWithoutVegsInput>
+    where?: CustomerWhereInput
+  }
+
+  export type CustomerUpdateToOneWithWhereWithoutVegsInput = {
+    where?: CustomerWhereInput
+    data: XOR<CustomerUpdateWithoutVegsInput, CustomerUncheckedUpdateWithoutVegsInput>
+  }
+
+  export type CustomerUpdateWithoutVegsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaserContact?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaserRole?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentInChargeName?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentInChargeContact?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
+    accountantName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    creditDays?: NullableIntFieldUpdateOperationsInput | number | null
+    sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealBy?: StaffUpdateOneWithoutDealByCustomersNestedInput
+    orders?: OrderUpdateManyWithoutCustomerNestedInput
+    purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
+    dispatches?: DispatchUpdateManyWithoutImporterNestedInput
+    payments?: PaymentUpdateManyWithoutCustomerNestedInput
+    discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type CustomerUncheckedUpdateWithoutVegsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    category?: EnumCustomerCategoryFieldUpdateOperationsInput | $Enums.CustomerCategory
+    active?: BoolFieldUpdateOperationsInput | boolean
+    ownerName?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerContact?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaserName?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaserContact?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaserRole?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentInChargeName?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentInChargeContact?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentInChargeRole?: NullableStringFieldUpdateOperationsInput | string | null
+    accountantName?: NullableStringFieldUpdateOperationsInput | string | null
+    accountantContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactName?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactContact?: NullableStringFieldUpdateOperationsInput | string | null
+    factoryContactRole?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableStringFieldUpdateOperationsInput | string | null
+    creditDays?: NullableIntFieldUpdateOperationsInput | number | null
+    sector?: NullableStringFieldUpdateOperationsInput | string | null
+    saleExecutive?: NullableStringFieldUpdateOperationsInput | string | null
+    dealById?: NullableStringFieldUpdateOperationsInput | string | null
+    approachForFunds?: NullableStringFieldUpdateOperationsInput | string | null
+    dealingCompany?: NullableStringFieldUpdateOperationsInput | string | null
+    openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
+    plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutCustomerNestedInput
+    purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
+    dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
+    payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+    discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+  }
+
+  export type VegPaymentUpsertWithWhereUniqueWithoutVegInput = {
+    where: VegPaymentWhereUniqueInput
+    update: XOR<VegPaymentUpdateWithoutVegInput, VegPaymentUncheckedUpdateWithoutVegInput>
+    create: XOR<VegPaymentCreateWithoutVegInput, VegPaymentUncheckedCreateWithoutVegInput>
+  }
+
+  export type VegPaymentUpdateWithWhereUniqueWithoutVegInput = {
+    where: VegPaymentWhereUniqueInput
+    data: XOR<VegPaymentUpdateWithoutVegInput, VegPaymentUncheckedUpdateWithoutVegInput>
+  }
+
+  export type VegPaymentUpdateManyWithWhereWithoutVegInput = {
+    where: VegPaymentScalarWhereInput
+    data: XOR<VegPaymentUpdateManyMutationInput, VegPaymentUncheckedUpdateManyWithoutVegInput>
+  }
+
+  export type VegDiscountUpsertWithWhereUniqueWithoutVegInput = {
+    where: VegDiscountWhereUniqueInput
+    update: XOR<VegDiscountUpdateWithoutVegInput, VegDiscountUncheckedUpdateWithoutVegInput>
+    create: XOR<VegDiscountCreateWithoutVegInput, VegDiscountUncheckedCreateWithoutVegInput>
+  }
+
+  export type VegDiscountUpdateWithWhereUniqueWithoutVegInput = {
+    where: VegDiscountWhereUniqueInput
+    data: XOR<VegDiscountUpdateWithoutVegInput, VegDiscountUncheckedUpdateWithoutVegInput>
+  }
+
+  export type VegDiscountUpdateManyWithWhereWithoutVegInput = {
+    where: VegDiscountScalarWhereInput
+    data: XOR<VegDiscountUpdateManyMutationInput, VegDiscountUncheckedUpdateManyWithoutVegInput>
   }
 
   export type QualityClassCreateWithoutVesselsInput = {
@@ -41145,6 +46214,7 @@ export namespace Prisma {
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
     payments?: PaymentCreateNestedManyWithoutCustomerInput
     discounts?: DiscountCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutOrdersInput = {
@@ -41188,6 +46258,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
     payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutOrdersInput = {
@@ -41214,6 +46285,8 @@ export namespace Prisma {
     createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutOrdersInput = {
@@ -41235,6 +46308,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutOrdersInput = {
@@ -41416,6 +46491,7 @@ export namespace Prisma {
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
     payments?: PaymentUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutOrdersInput = {
@@ -41459,6 +46535,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type StaffUpsertWithoutOrdersInput = {
@@ -41491,6 +46568,8 @@ export namespace Prisma {
     createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutOrdersInput = {
@@ -41512,6 +46591,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type PortOptionUpsertWithoutOrdersInput = {
@@ -41633,6 +46714,7 @@ export namespace Prisma {
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
     payments?: PaymentCreateNestedManyWithoutCustomerInput
     discounts?: DiscountCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutPurchaseOrdersInput = {
@@ -41676,6 +46758,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
     payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutPurchaseOrdersInput = {
@@ -41861,6 +46944,7 @@ export namespace Prisma {
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
     payments?: PaymentUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutPurchaseOrdersInput = {
@@ -41904,6 +46988,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type VesselUpsertWithoutPurchaseOrdersInput = {
@@ -42183,6 +47268,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
     payments?: PaymentCreateNestedManyWithoutCustomerInput
     discounts?: DiscountCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutDispatchesInput = {
@@ -42226,6 +47312,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
     payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutDispatchesInput = {
@@ -42252,6 +47339,8 @@ export namespace Prisma {
     bills?: BillCreateNestedManyWithoutStaffInput
     createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedDispatchesInput = {
@@ -42273,6 +47362,8 @@ export namespace Prisma {
     bills?: BillUncheckedCreateNestedManyWithoutStaffInput
     createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedDispatchesInput = {
@@ -42510,6 +47601,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
     payments?: PaymentUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutDispatchesInput = {
@@ -42553,6 +47645,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type StaffUpsertWithoutCreatedDispatchesInput = {
@@ -42585,6 +47678,8 @@ export namespace Prisma {
     bills?: BillUpdateManyWithoutStaffNestedInput
     createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedDispatchesInput = {
@@ -42606,6 +47701,8 @@ export namespace Prisma {
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type CustomerCreateWithoutPaymentsInput = {
@@ -42649,6 +47746,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
     discounts?: DiscountCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutPaymentsInput = {
@@ -42692,6 +47790,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
     dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
     discounts?: DiscountUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutPaymentsInput = {
@@ -42784,6 +47883,8 @@ export namespace Prisma {
     bills?: BillCreateNestedManyWithoutStaffInput
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedPaymentsInput = {
@@ -42805,6 +47906,8 @@ export namespace Prisma {
     bills?: BillUncheckedCreateNestedManyWithoutStaffInput
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedPaymentsInput = {
@@ -42864,6 +47967,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
     discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutPaymentsInput = {
@@ -42907,6 +48011,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type TransporterUpsertWithoutPaymentsInput = {
@@ -43017,6 +48122,8 @@ export namespace Prisma {
     bills?: BillUpdateManyWithoutStaffNestedInput
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedPaymentsInput = {
@@ -43038,6 +48145,8 @@ export namespace Prisma {
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type CustomerCreateWithoutDiscountsInput = {
@@ -43081,6 +48190,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutImporterInput
     dispatches?: DispatchCreateNestedManyWithoutImporterInput
     payments?: PaymentCreateNestedManyWithoutCustomerInput
+    vegs?: VegCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerUncheckedCreateWithoutDiscountsInput = {
@@ -43124,6 +48234,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutImporterInput
     dispatches?: DispatchUncheckedCreateNestedManyWithoutImporterInput
     payments?: PaymentUncheckedCreateNestedManyWithoutCustomerInput
+    vegs?: VegUncheckedCreateNestedManyWithoutCustomerInput
   }
 
   export type CustomerCreateOrConnectWithoutDiscountsInput = {
@@ -43216,6 +48327,8 @@ export namespace Prisma {
     bills?: BillCreateNestedManyWithoutStaffInput
     createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedDiscountsInput = {
@@ -43237,6 +48350,8 @@ export namespace Prisma {
     bills?: BillUncheckedCreateNestedManyWithoutStaffInput
     createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedDiscountsInput = {
@@ -43296,6 +48411,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
     payments?: PaymentUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutDiscountsInput = {
@@ -43339,6 +48455,7 @@ export namespace Prisma {
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutImporterNestedInput
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type TransporterUpsertWithoutDiscountsInput = {
@@ -43449,6 +48566,8 @@ export namespace Prisma {
     bills?: BillUpdateManyWithoutStaffNestedInput
     createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedDiscountsInput = {
@@ -43470,6 +48589,368 @@ export namespace Prisma {
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type VegCreateWithoutPaymentsInput = {
+    id?: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutVegsInput
+    discounts?: VegDiscountCreateNestedManyWithoutVegInput
+  }
+
+  export type VegUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    customerId: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    discounts?: VegDiscountUncheckedCreateNestedManyWithoutVegInput
+  }
+
+  export type VegCreateOrConnectWithoutPaymentsInput = {
+    where: VegWhereUniqueInput
+    create: XOR<VegCreateWithoutPaymentsInput, VegUncheckedCreateWithoutPaymentsInput>
+  }
+
+  export type StaffCreateWithoutCreatedVegPaymentsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedVegPaymentsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedVegPaymentsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedVegPaymentsInput, StaffUncheckedCreateWithoutCreatedVegPaymentsInput>
+  }
+
+  export type VegUpsertWithoutPaymentsInput = {
+    update: XOR<VegUpdateWithoutPaymentsInput, VegUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<VegCreateWithoutPaymentsInput, VegUncheckedCreateWithoutPaymentsInput>
+    where?: VegWhereInput
+  }
+
+  export type VegUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: VegWhereInput
+    data: XOR<VegUpdateWithoutPaymentsInput, VegUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type VegUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutVegsNestedInput
+    discounts?: VegDiscountUpdateManyWithoutVegNestedInput
+  }
+
+  export type VegUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    discounts?: VegDiscountUncheckedUpdateManyWithoutVegNestedInput
+  }
+
+  export type StaffUpsertWithoutCreatedVegPaymentsInput = {
+    update: XOR<StaffUpdateWithoutCreatedVegPaymentsInput, StaffUncheckedUpdateWithoutCreatedVegPaymentsInput>
+    create: XOR<StaffCreateWithoutCreatedVegPaymentsInput, StaffUncheckedCreateWithoutCreatedVegPaymentsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedVegPaymentsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedVegPaymentsInput, StaffUncheckedUpdateWithoutCreatedVegPaymentsInput>
+  }
+
+  export type StaffUpdateWithoutCreatedVegPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedVegPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type VegCreateWithoutDiscountsInput = {
+    id?: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer: CustomerCreateNestedOneWithoutVegsInput
+    payments?: VegPaymentCreateNestedManyWithoutVegInput
+  }
+
+  export type VegUncheckedCreateWithoutDiscountsInput = {
+    id?: string
+    customerId: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: VegPaymentUncheckedCreateNestedManyWithoutVegInput
+  }
+
+  export type VegCreateOrConnectWithoutDiscountsInput = {
+    where: VegWhereUniqueInput
+    create: XOR<VegCreateWithoutDiscountsInput, VegUncheckedCreateWithoutDiscountsInput>
+  }
+
+  export type StaffCreateWithoutCreatedVegDiscountsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedVegDiscountsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedVegDiscountsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedVegDiscountsInput, StaffUncheckedCreateWithoutCreatedVegDiscountsInput>
+  }
+
+  export type VegUpsertWithoutDiscountsInput = {
+    update: XOR<VegUpdateWithoutDiscountsInput, VegUncheckedUpdateWithoutDiscountsInput>
+    create: XOR<VegCreateWithoutDiscountsInput, VegUncheckedCreateWithoutDiscountsInput>
+    where?: VegWhereInput
+  }
+
+  export type VegUpdateToOneWithWhereWithoutDiscountsInput = {
+    where?: VegWhereInput
+    data: XOR<VegUpdateWithoutDiscountsInput, VegUncheckedUpdateWithoutDiscountsInput>
+  }
+
+  export type VegUpdateWithoutDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneRequiredWithoutVegsNestedInput
+    payments?: VegPaymentUpdateManyWithoutVegNestedInput
+  }
+
+  export type VegUncheckedUpdateWithoutDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    customerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: VegPaymentUncheckedUpdateManyWithoutVegNestedInput
+  }
+
+  export type StaffUpsertWithoutCreatedVegDiscountsInput = {
+    update: XOR<StaffUpdateWithoutCreatedVegDiscountsInput, StaffUncheckedUpdateWithoutCreatedVegDiscountsInput>
+    create: XOR<StaffCreateWithoutCreatedVegDiscountsInput, StaffUncheckedCreateWithoutCreatedVegDiscountsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedVegDiscountsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedVegDiscountsInput, StaffUncheckedUpdateWithoutCreatedVegDiscountsInput>
+  }
+
+  export type StaffUpdateWithoutCreatedVegDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedVegDiscountsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateWithoutBillsInput = {
@@ -43491,6 +48972,8 @@ export namespace Prisma {
     createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutBillsInput = {
@@ -43512,6 +48995,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutBillsInput = {
@@ -43577,6 +49062,8 @@ export namespace Prisma {
     createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutBillsInput = {
@@ -43598,6 +49085,8 @@ export namespace Prisma {
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type BillFileUpsertWithWhereUniqueWithoutBillInput = {
@@ -44291,6 +49780,26 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type VegPaymentCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegDiscountCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    vegId: string
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type CustomerUpdateWithoutDealByInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -44332,6 +49841,7 @@ export namespace Prisma {
     dispatches?: DispatchUpdateManyWithoutImporterNestedInput
     payments?: PaymentUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateWithoutDealByInput = {
@@ -44375,6 +49885,7 @@ export namespace Prisma {
     dispatches?: DispatchUncheckedUpdateManyWithoutImporterNestedInput
     payments?: PaymentUncheckedUpdateManyWithoutCustomerNestedInput
     discounts?: DiscountUncheckedUpdateManyWithoutCustomerNestedInput
+    vegs?: VegUncheckedUpdateManyWithoutCustomerNestedInput
   }
 
   export type CustomerUncheckedUpdateManyWithoutDealByInput = {
@@ -44697,6 +50208,66 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegPaymentUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    veg?: VegUpdateOneRequiredWithoutPaymentsNestedInput
+  }
+
+  export type VegPaymentUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegPaymentUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    veg?: VegUpdateOneRequiredWithoutDiscountsNestedInput
+  }
+
+  export type VegDiscountUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    vegId?: StringFieldUpdateOperationsInput | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -45422,6 +50993,18 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type VegCreateManyCustomerInput = {
+    id?: string
+    name: string
+    mobile?: string | null
+    role?: string | null
+    paymentBasis: $Enums.VegPaymentBasis
+    amount: Decimal | DecimalJsLike | number | string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type OrderUpdateWithoutCustomerInput = {
     id?: StringFieldUpdateOperationsInput | string
     poNumber?: StringFieldUpdateOperationsInput | string
@@ -45706,6 +51289,126 @@ export namespace Prisma {
     status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     coalOrigin?: NullableEnumCoalOriginFieldUpdateOperationsInput | $Enums.CoalOrigin | null
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: VegPaymentUpdateManyWithoutVegNestedInput
+    discounts?: VegDiscountUpdateManyWithoutVegNestedInput
+  }
+
+  export type VegUncheckedUpdateWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: VegPaymentUncheckedUpdateManyWithoutVegNestedInput
+    discounts?: VegDiscountUncheckedUpdateManyWithoutVegNestedInput
+  }
+
+  export type VegUncheckedUpdateManyWithoutCustomerInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    mobile?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegPaymentCreateManyVegInput = {
+    id?: string
+    date: Date | string
+    createdByStaffId?: string | null
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegDiscountCreateManyVegInput = {
+    id?: string
+    date: Date | string
+    createdByStaffId?: string | null
+    status: $Enums.DiscountStatus
+    amount: Decimal | DecimalJsLike | number | string
+    remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type VegPaymentUpdateWithoutVegInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaff?: StaffUpdateOneWithoutCreatedVegPaymentsNestedInput
+  }
+
+  export type VegPaymentUncheckedUpdateWithoutVegInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegPaymentUncheckedUpdateManyWithoutVegInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountUpdateWithoutVegInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaff?: StaffUpdateOneWithoutCreatedVegDiscountsNestedInput
+  }
+
+  export type VegDiscountUncheckedUpdateWithoutVegInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type VegDiscountUncheckedUpdateManyWithoutVegInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumDiscountStatusFieldUpdateOperationsInput | $Enums.DiscountStatus
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     remarks?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -46435,6 +52138,10 @@ export namespace Prisma {
      */
     export type CustomerCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CustomerCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use VegCountOutputTypeDefaultArgs instead
+     */
+    export type VegCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VegCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use VesselCountOutputTypeDefaultArgs instead
      */
     export type VesselCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VesselCountOutputTypeDefaultArgs<ExtArgs>
@@ -46511,6 +52218,10 @@ export namespace Prisma {
      */
     export type CustomerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CustomerDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use VegDefaultArgs instead
+     */
+    export type VegArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VegDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use VesselDefaultArgs instead
      */
     export type VesselArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VesselDefaultArgs<ExtArgs>
@@ -46534,6 +52245,14 @@ export namespace Prisma {
      * @deprecated Use DiscountDefaultArgs instead
      */
     export type DiscountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DiscountDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use VegPaymentDefaultArgs instead
+     */
+    export type VegPaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VegPaymentDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use VegDiscountDefaultArgs instead
+     */
+    export type VegDiscountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = VegDiscountDefaultArgs<ExtArgs>
     /**
      * @deprecated Use BillDefaultArgs instead
      */

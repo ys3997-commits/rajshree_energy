@@ -58,6 +58,7 @@ const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [
   },
   { href: "/qualities", label: "Qualities" },
   { href: "/transporters", label: "Transporters" },
+  { href: "/veg", label: "Veg" },
   { href: "/vessels", label: "Vessels" },
 ];
 
@@ -143,6 +144,14 @@ const reportLinks: ReportItem[] = [
       { href: "/reports/transport", label: "Transport Engine Report" },
       { href: "/reports/transport/due", label: "Transport Due" },
       { href: "/reports/transport/ledger", label: "Ledger" },
+    ],
+  },
+  {
+    label: "Veg",
+    children: [
+      { href: "/reports/veg", label: "Veg Payment" },
+      { href: "/reports/veg/discount", label: "Veg Discount" },
+      { href: "/reports/veg/ledger", label: "Veg Ledger" },
     ],
   },
   {

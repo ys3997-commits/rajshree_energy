@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
-import { updatePlannedCollectionCall, updateCollectionThrough } from "@/lib/actions/collection";
+import { updatePlannedCollectionCall } from "@/lib/actions/collection";
 import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
   capitalizeName,
@@ -15,6 +15,7 @@ import {
 import {
   collectionWhatsAppDisabledReason,
   collectionWhatsAppLinks,
+  type CollectionWhatsAppInput,
 } from "@/lib/domain/collectionWhatsApp";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 import { Modal } from "@/components/Modal";
@@ -126,9 +127,11 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 export function CollectionClient({
   initialRows,
   allowedSaleExecutives,
+  canMessageOwner,
 }: {
   initialRows: CustomerDueRow[];
   allowedSaleExecutives: ExecScopeFilter;
+  canMessageOwner: boolean;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
@@ -149,7 +152,6 @@ export function CollectionClient({
   const [categoryFilter, setCategoryFilter] = useState("");
   const [sectorFilter, setSectorFilter] = useState("");
   const [savingCallId, setSavingCallId] = useState<string | null>(null);
-  const [savingThroughId, setSavingThroughId] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<CollectionSortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
@@ -315,43 +317,6 @@ export function CollectionClient({
         router.refresh();
       } finally {
         setSavingCallId(null);
-      }
-    });
-  }
-
-  function onThroughChange(
-    customerId: string,
-    value: string,
-  ) {
-    const nextThrough =
-      value === "CALL" || value === "SMS" ? value : null;
-    setError(null);
-    setRows((prev) =>
-      prev.map((row) =>
-        row.id === customerId
-          ? { ...row, collectionThrough: nextThrough }
-          : row,
-      ),
-    );
-    setSavingThroughId(customerId);
-    startTransition(async () => {
-      try {
-        const result = await updateCollectionThrough(customerId, nextThrough);
-        setRows((prev) =>
-          prev.map((row) =>
-            row.id === customerId
-              ? { ...row, collectionThrough: result.collectionThrough }
-              : row,
-          ),
-        );
-        router.refresh();
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to save through",
-        );
-        router.refresh();
-      } finally {
-        setSavingThroughId(null);
       }
     });
   }
@@ -552,25 +517,37 @@ export function CollectionClient({
               <th className="cell-num">Last Payment<br />Amount</th>
               <th className="cell-num">Credit<br />Period</th>
               <th className="collection-date-col">Planned Call<br />Date</th>
-              <th className="collection-through-col">Through</th>
-              <th className="collection-whatsapp-col" aria-label="WhatsApp" />
+              <th className="collection-whatsapp-col">Payment</th>
+              <th className="collection-whatsapp-col">Owner</th>
             </tr>
           </thead>
           <tbody>
             {filteredRows.map((row) => {
               const lastPaidYesterday =
                 normalizePlannedDate(row.lastPaymentDate) === yesterday;
-              const waDisabledReason = collectionWhatsAppDisabledReason({
-                dealingCompany: row.dealingCompany,
-                paymentInChargeContact: row.paymentInChargeContact,
-              });
-              const waLinks = collectionWhatsAppLinks({
-                paymentInChargeName: row.paymentInChargeName,
-                paymentInChargeContact: row.paymentInChargeContact,
+              const paymentWaInput: CollectionWhatsAppInput = {
+                recipientName: row.paymentInChargeName,
+                recipientContact: row.paymentInChargeContact,
                 dealingCompany: row.dealingCompany,
                 due: row.due,
                 overdue: row.overdue,
-              });
+                recipient: "payment",
+              };
+              const ownerWaInput: CollectionWhatsAppInput = {
+                recipientName: row.ownerName,
+                recipientContact: row.ownerContact,
+                dealingCompany: row.dealingCompany,
+                due: row.due,
+                overdue: row.overdue,
+                recipient: "owner",
+                canMessageOwner,
+              };
+              const paymentWaDisabledReason =
+                collectionWhatsAppDisabledReason(paymentWaInput);
+              const paymentWaLinks = collectionWhatsAppLinks(paymentWaInput);
+              const ownerWaDisabledReason =
+                collectionWhatsAppDisabledReason(ownerWaInput);
+              const ownerWaLinks = collectionWhatsAppLinks(ownerWaInput);
               return (
                 <tr
                   key={row.id}
@@ -636,73 +613,46 @@ export function CollectionClient({
                       }
                     />
                   </td>
-                  <td className="collection-through-col">
-                    <select
-                      className="field-input collection-through-select"
-                      aria-label={`Through for ${row.name}`}
-                      value={row.collectionThrough ?? ""}
-                      disabled={savingThroughId === row.id || pending}
-                      onChange={(e) =>
-                        onThroughChange(row.id, e.target.value)
+                  <td className="collection-whatsapp-col">
+                    <CollectionWhatsAppButton
+                      links={paymentWaLinks}
+                      disabledReason={paymentWaDisabledReason}
+                      ariaLabel={
+                        paymentWaLinks
+                          ? `WhatsApp ${row.paymentInChargeName ?? row.name}`
+                          : (paymentWaDisabledReason ?? "WhatsApp unavailable")
                       }
-                    >
-                      <option value="">-</option>
-                      <option value="CALL">Call</option>
-                      <option value="SMS">SMS</option>
-                    </select>
+                      title={
+                        paymentWaLinks
+                          ? "Open WhatsApp with collection message for payment in-charge"
+                          : (paymentWaDisabledReason ?? "WhatsApp unavailable")
+                      }
+                      onError={setError}
+                    />
                   </td>
                   <td className="collection-whatsapp-col">
-                    <a
-                      className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
-                        href={waLinks?.web}
-                        rel="noopener noreferrer"
-                        aria-disabled={!waLinks}
-                        aria-label={
-                          waLinks
-                            ? `WhatsApp ${row.paymentInChargeName ?? row.name}`
-                            : (waDisabledReason ?? "WhatsApp unavailable")
-                        }
-                        tabIndex={waLinks ? undefined : -1}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          if (!waLinks) {
-                            setError(
-                              waDisabledReason ??
-                                "WhatsApp is unavailable for this row.",
-                            );
-                            return;
-                          }
-                          // One named tab for Web — later clicks reuse it.
-                          const opened = openWhatsAppMessage(waLinks);
-                          if (!opened) {
-                            setError("Open WhatsApp First");
-                            return;
-                          }
-                        }}
-                        title={
-                          waLinks
-                            ? "Open WhatsApp with collection message"
-                            : (waDisabledReason ?? "WhatsApp unavailable")
-                        }
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path
-                            fill="currentColor"
-                            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
-                          />
-                        </svg>
-                      </a>
+                    <CollectionWhatsAppButton
+                      links={ownerWaLinks}
+                      disabledReason={ownerWaDisabledReason}
+                      ariaLabel={
+                        ownerWaLinks
+                          ? `WhatsApp ${row.ownerName ?? row.name}`
+                          : (ownerWaDisabledReason ?? "WhatsApp unavailable")
+                      }
+                      title={
+                        ownerWaLinks
+                          ? "Open WhatsApp with collection message for owner"
+                          : (ownerWaDisabledReason ?? "WhatsApp unavailable")
+                      }
+                      onError={setError}
+                    />
                   </td>
                 </tr>
               );
             })}
             {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={13}>
+                <td colSpan={14}>
                   {buyerRows.length === 0
                     ? "No outstanding dues."
                     : "No customers match these filters."}
@@ -714,5 +664,49 @@ export function CollectionClient({
         </div>
       </div>
     </>
+  );
+}
+
+function CollectionWhatsAppButton({
+  links,
+  disabledReason,
+  ariaLabel,
+  title,
+  onError,
+}: {
+  links: { app: string; web: string } | null;
+  disabledReason: string | null;
+  ariaLabel: string;
+  title: string;
+  onError: (message: string) => void;
+}) {
+  return (
+    <a
+      className={`btn-whatsapp-icon${links ? "" : " disabled"}`}
+      href={links?.web}
+      rel="noopener noreferrer"
+      aria-disabled={!links}
+      aria-label={ariaLabel}
+      tabIndex={links ? undefined : -1}
+      onClick={(e) => {
+        e.preventDefault();
+        if (!links) {
+          onError(disabledReason ?? "WhatsApp is unavailable for this row.");
+          return;
+        }
+        const opened = openWhatsAppMessage(links);
+        if (!opened) {
+          onError("Open WhatsApp First");
+        }
+      }}
+      title={title}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          fill="currentColor"
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
+    </a>
   );
 }

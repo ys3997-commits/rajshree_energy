@@ -265,6 +265,19 @@ exports.Prisma.CustomerScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.VegScalarFieldEnum = {
+  id: 'id',
+  customerId: 'customerId',
+  name: 'name',
+  mobile: 'mobile',
+  role: 'role',
+  paymentBasis: 'paymentBasis',
+  amount: 'amount',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.VesselScalarFieldEnum = {
   id: 'id',
   vesselName: 'vesselName',
@@ -375,6 +388,28 @@ exports.Prisma.DiscountScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.VegPaymentScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  vegId: 'vegId',
+  createdByStaffId: 'createdByStaffId',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.VegDiscountScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  vegId: 'vegId',
+  createdByStaffId: 'createdByStaffId',
+  status: 'status',
+  amount: 'amount',
+  remarks: 'remarks',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
   approvalNo: 'approvalNo',
@@ -472,6 +507,11 @@ exports.SalesSmsType = exports.$Enums.SalesSmsType = {
   REQUIREMENT: 'REQUIREMENT'
 };
 
+exports.VegPaymentBasis = exports.$Enums.VegPaymentBasis = {
+  PER_MT: 'PER_MT',
+  PER_LORRY: 'PER_LORRY'
+};
+
 exports.OrderType = exports.$Enums.OrderType = {
   REGULAR: 'REGULAR',
   OPEN: 'OPEN'
@@ -532,12 +572,15 @@ exports.Prisma.ModelName = {
   OwnerOption: 'OwnerOption',
   QualityClass: 'QualityClass',
   Customer: 'Customer',
+  Veg: 'Veg',
   Vessel: 'Vessel',
   Order: 'Order',
   PurchaseOrder: 'PurchaseOrder',
   Dispatch: 'Dispatch',
   Payment: 'Payment',
   Discount: 'Discount',
+  VegPayment: 'VegPayment',
+  VegDiscount: 'VegDiscount',
   Bill: 'Bill',
   BillFile: 'BillFile',
   InvestmentCompany: 'InvestmentCompany',

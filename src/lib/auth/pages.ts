@@ -109,6 +109,13 @@ export const MASTER_SUB_PAGES = [
     group: "Pages" as const,
     masterSubPage: true,
   },
+  {
+    key: "veg",
+    href: "/veg",
+    label: "Veg",
+    group: "Pages" as const,
+    masterSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const MASTER_SUB_PAGE_KEYS = MASTER_SUB_PAGES.map((page) => page.key);
@@ -268,6 +275,27 @@ export const REPORT_SUB_PAGES = [
     group: "Reports" as const,
     reportSubPage: true,
   },
+  {
+    key: "reports-veg-payment",
+    href: "/reports/veg",
+    label: "Veg Payment",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
+    key: "reports-veg-discount",
+    href: "/reports/veg/discount",
+    label: "Veg Discount",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
+    key: "reports-veg-ledger",
+    href: "/reports/veg/ledger",
+    label: "Veg Ledger",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const REPORT_SUB_PAGE_KEYS = REPORT_SUB_PAGES.map((page) => page.key);
@@ -334,6 +362,15 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
     pages: [
       { key: "reports-vessel", label: "Vessel Report" },
       { key: "reports-vessel-supplied", label: "Vessel Supplied" },
+    ],
+  },
+  {
+    id: "veg",
+    label: "Veg",
+    pages: [
+      { key: "reports-veg-payment", label: "Veg Payment" },
+      { key: "reports-veg-discount", label: "Veg Discount" },
+      { key: "reports-veg-ledger", label: "Veg Ledger" },
     ],
   },
 ];

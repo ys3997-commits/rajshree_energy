@@ -76,6 +76,12 @@ enum SalesSmsType {
   REQUIREMENT
 }
 
+/// Veg payment rate unit (Masters → Veg).
+enum VegPaymentBasis {
+  PER_MT
+  PER_LORRY
+}
+
 model Staff {
   id                       String   @id @default(cuid())
   name                     String
@@ -201,7 +207,7 @@ model DealingCompanyOption {
   updatedAt DateTime @updatedAt
 }
 
-/// Managed list of owner names (suggested on customers and transporters; stored as text).
+/// Managed list of RE Leadership names (bill approvers).
 model OwnerOption {
   id        String   @id @default(cuid())
   name      String   @unique
@@ -280,6 +286,25 @@ model Customer {
   dispatches     Dispatch[]      @relation("DispatchImporter")
   payments       Payment[]
   discounts      Discount[]
+  vegs           Veg[]
+}
+
+/// Industry-customer veg contact and payment rate (Masters → Veg).
+model Veg {
+  id           String          @id @default(cuid())
+  customerId   String
+  name         String
+  mobile       String?
+  role         String?
+  paymentBasis VegPaymentBasis
+  amount       Decimal         @db.Decimal(18, 2)
+  active       Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
 }
 
 model Vessel {

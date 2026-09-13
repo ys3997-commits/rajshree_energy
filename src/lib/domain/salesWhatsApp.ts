@@ -19,14 +19,26 @@ function formatOfferRupee(
   return `₹${formatIndianNumber(Math.round(n))}`;
 }
 
+export type SalesWhatsAppRecipient = "purchaser" | "owner";
+
+export type SalesWhatsAppInput = {
+  recipientName: string | null | undefined;
+  recipientContact: string | null | undefined;
+  smsType: SalesSmsTypeValue | null | undefined;
+  offerPrice: string | null | undefined;
+  offerFreight: string | null | undefined;
+  recipient?: SalesWhatsAppRecipient;
+  canMessageOwner?: boolean;
+};
+
 /** Pre-filled sales follow-up for WhatsApp (click-to-chat). */
 export function buildSalesWhatsAppMessage(input: {
-  purchaserName: string | null | undefined;
+  recipientName: string | null | undefined;
   smsType: SalesSmsTypeValue | null | undefined;
   offerPrice: string | null | undefined;
   offerFreight: string | null | undefined;
 }): string {
-  const name = formatCustomerName(input.purchaserName);
+  const name = formatCustomerName(input.recipientName);
   const offerPrice = formatOfferRupee(input.offerPrice);
   const offerFreight = formatOfferRupee(input.offerFreight);
   const coalOffer = "High GCV Indonesian coal";
@@ -69,14 +81,17 @@ export function buildSalesWhatsAppMessage(input: {
   ].join("\n");
 }
 
-export function salesWhatsAppDisabledReason(input: {
-  purchaserContact: string | null | undefined;
-  smsType: SalesSmsTypeValue | null | undefined;
-  offerPrice: string | null | undefined;
-  offerFreight: string | null | undefined;
-}): string | null {
-  if (!toWhatsAppPhone(input.purchaserContact)) {
-    return "Add purchaser contact in Customers before sending WhatsApp.";
+export function salesWhatsAppDisabledReason(
+  input: SalesWhatsAppInput,
+): string | null {
+  const recipient = input.recipient ?? "purchaser";
+  if (recipient === "owner" && !input.canMessageOwner) {
+    return "Only RE Leadership can message the owner.";
+  }
+  if (!toWhatsAppPhone(input.recipientContact)) {
+    return recipient === "owner"
+      ? "Add owner contact in Customers before sending WhatsApp."
+      : "Add purchaser contact in Customers before sending WhatsApp.";
   }
   if (!input.smsType) {
     return "Select SMS type before sending WhatsApp.";
@@ -95,15 +110,11 @@ export function salesWhatsAppDisabledReason(input: {
   return null;
 }
 
-export function salesWhatsAppLinks(input: {
-  purchaserName: string | null | undefined;
-  purchaserContact: string | null | undefined;
-  smsType: SalesSmsTypeValue | null | undefined;
-  offerPrice: string | null | undefined;
-  offerFreight: string | null | undefined;
-}): { app: string; web: string } | null {
+export function salesWhatsAppLinks(
+  input: SalesWhatsAppInput,
+): { app: string; web: string } | null {
   if (salesWhatsAppDisabledReason(input)) return null;
-  const phone = toWhatsAppPhone(input.purchaserContact);
+  const phone = toWhatsAppPhone(input.recipientContact);
   if (!phone) return null;
   const text = encodeURIComponent(buildSalesWhatsAppMessage(input));
   return {

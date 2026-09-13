@@ -311,6 +311,17 @@ export function capitalizeName(
     .join(" ");
 }
 
+/** First letter capital, remainder lowercase (e.g. "sales head" → "Sales head"). */
+export function toSentenceCase(
+  value: string | null | undefined,
+): string | null {
+  if (value == null) return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}
+
 /** Format lorry number as PREFIX-1234 (last 4 characters must be digits). */
 export function normalizeLorryNumber(
   value: string | null | undefined,

@@ -8,7 +8,7 @@ import {
 describe("buildSalesWhatsAppMessage", () => {
   it("builds the Delivered template", () => {
     const msg = buildSalesWhatsAppMessage({
-      purchaserName: "Vivek Agarwal",
+      recipientName: "Vivek Agarwal",
       smsType: "DELIVERED",
       offerPrice: "10300",
       offerFreight: null,
@@ -29,7 +29,7 @@ describe("buildSalesWhatsAppMessage", () => {
 
   it("builds the Ex-Port template", () => {
     const msg = buildSalesWhatsAppMessage({
-      purchaserName: "Vivek Agarwal",
+      recipientName: "Vivek Agarwal",
       smsType: "EX_PORT",
       offerPrice: "10300",
       offerFreight: "2150",
@@ -50,7 +50,7 @@ describe("buildSalesWhatsAppMessage", () => {
 
   it("builds the Requirement template", () => {
     const msg = buildSalesWhatsAppMessage({
-      purchaserName: "Vivek Agarwal",
+      recipientName: "Vivek Agarwal",
       smsType: "REQUIREMENT",
       offerPrice: null,
       offerFreight: null,
@@ -74,7 +74,8 @@ describe("salesWhatsAppDisabledReason", () => {
   it("requires SMS type", () => {
     expect(
       salesWhatsAppDisabledReason({
-        purchaserContact: "9876543210",
+        recipientName: "Vivek Agarwal",
+        recipientContact: "9876543210",
         smsType: null,
         offerPrice: "10300",
         offerFreight: null,
@@ -85,7 +86,8 @@ describe("salesWhatsAppDisabledReason", () => {
   it("requires offer price for Delivered", () => {
     expect(
       salesWhatsAppDisabledReason({
-        purchaserContact: "9876543210",
+        recipientName: "Vivek Agarwal",
+        recipientContact: "9876543210",
         smsType: "DELIVERED",
         offerPrice: null,
         offerFreight: null,
@@ -96,20 +98,49 @@ describe("salesWhatsAppDisabledReason", () => {
   it("requires offer freight for Ex-Port", () => {
     expect(
       salesWhatsAppDisabledReason({
-        purchaserContact: "9876543210",
+        recipientName: "Vivek Agarwal",
+        recipientContact: "9876543210",
         smsType: "EX_PORT",
         offerPrice: "10300",
         offerFreight: null,
       }),
     ).toBe("Add offer freight before sending WhatsApp.");
   });
+
+  it("blocks owner messages unless RE Leadership is signed in", () => {
+    expect(
+      salesWhatsAppDisabledReason({
+        recipientName: "Vikram Das",
+        recipientContact: "9811100001",
+        smsType: "REQUIREMENT",
+        offerPrice: null,
+        offerFreight: null,
+        recipient: "owner",
+        canMessageOwner: false,
+      }),
+    ).toBe("Only RE Leadership can message the owner.");
+  });
+
+  it("asks for owner contact when RE Leadership is signed in", () => {
+    expect(
+      salesWhatsAppDisabledReason({
+        recipientName: "Vikram Das",
+        recipientContact: null,
+        smsType: "REQUIREMENT",
+        offerPrice: null,
+        offerFreight: null,
+        recipient: "owner",
+        canMessageOwner: true,
+      }),
+    ).toBe("Add owner contact in Customers before sending WhatsApp.");
+  });
 });
 
 describe("salesWhatsAppLinks", () => {
   it("builds app and web links when purchaser contact exists", () => {
     const links = salesWhatsAppLinks({
-      purchaserName: "Vivek Agarwal",
-      purchaserContact: "9876543210",
+      recipientName: "Vivek Agarwal",
+      recipientContact: "9876543210",
       smsType: "REQUIREMENT",
       offerPrice: null,
       offerFreight: null,
@@ -123,12 +154,29 @@ describe("salesWhatsAppLinks", () => {
   it("returns null without a phone", () => {
     expect(
       salesWhatsAppLinks({
-        purchaserName: "Vivek Agarwal",
-        purchaserContact: null,
+        recipientName: "Vivek Agarwal",
+        recipientContact: null,
         smsType: "REQUIREMENT",
         offerPrice: null,
         offerFreight: null,
       }),
     ).toBeNull();
+  });
+
+  it("builds owner links only for RE Leadership", () => {
+    const input = {
+      recipientName: "Vikram Das",
+      recipientContact: "9811100001",
+      smsType: "REQUIREMENT" as const,
+      offerPrice: null,
+      offerFreight: null,
+      recipient: "owner" as const,
+    };
+    expect(
+      salesWhatsAppLinks({ ...input, canMessageOwner: false }),
+    ).toBeNull();
+    const links = salesWhatsAppLinks({ ...input, canMessageOwner: true });
+    expect(links?.app).toMatch(/^whatsapp:\/\/send\?phone=919811100001&text=/);
+    expect(decodeURIComponent(links?.app ?? "")).toContain("Shri Vikram Das");
   });
 });

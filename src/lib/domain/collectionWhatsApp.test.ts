@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCollectionWhatsAppMessage,
+  collectionWhatsAppDisabledReason,
   collectionWhatsAppLinks,
   collectionWhatsAppUrl,
   isRajshreeEnergyDealingCompany,
@@ -34,7 +35,7 @@ describe("isRajshreeEnergyDealingCompany", () => {
 describe("buildCollectionWhatsAppMessage", () => {
   it("matches the collection reminder template", () => {
     const msg = buildCollectionWhatsAppMessage({
-      paymentInChargeName: "Deepak Bothra",
+      recipientName: "Deepak Bothra",
       due: "881696",
       overdue: "481696",
     });
@@ -53,11 +54,41 @@ describe("buildCollectionWhatsAppMessage", () => {
   });
 });
 
+describe("collectionWhatsAppDisabledReason", () => {
+  it("blocks owner messages unless RE Leadership is signed in", () => {
+    expect(
+      collectionWhatsAppDisabledReason({
+        recipientName: "Vikram Das",
+        recipientContact: "9811100001",
+        dealingCompany: "Rajshree Energy",
+        due: "1000",
+        overdue: "500",
+        recipient: "owner",
+        canMessageOwner: false,
+      }),
+    ).toBe("Only RE Leadership can message the owner.");
+  });
+
+  it("asks for owner contact when RE Leadership is signed in", () => {
+    expect(
+      collectionWhatsAppDisabledReason({
+        recipientName: "Vikram Das",
+        recipientContact: null,
+        dealingCompany: "Rajshree Energy",
+        due: "1000",
+        overdue: "500",
+        recipient: "owner",
+        canMessageOwner: true,
+      }),
+    ).toBe("Add owner contact in Customers before sending WhatsApp.");
+  });
+});
+
 describe("collectionWhatsAppLinks", () => {
   it("builds app and web links when phone and Rajshree Energy dealing company exist", () => {
     const links = collectionWhatsAppLinks({
-      paymentInChargeName: "Ramesh",
-      paymentInChargeContact: "9876543210",
+      recipientName: "Ramesh",
+      recipientContact: "9876543210",
       dealingCompany: "Rajshree Energy",
       due: "1000",
       overdue: "500",
@@ -71,8 +102,8 @@ describe("collectionWhatsAppLinks", () => {
   it("returns null without a phone", () => {
     expect(
       collectionWhatsAppLinks({
-        paymentInChargeName: "Ramesh",
-        paymentInChargeContact: null,
+        recipientName: "Ramesh",
+        recipientContact: null,
         dealingCompany: "Rajshree Energy",
         due: "1000",
         overdue: "500",
@@ -83,21 +114,38 @@ describe("collectionWhatsAppLinks", () => {
   it("returns null when dealing company is not Rajshree Energy", () => {
     expect(
       collectionWhatsAppLinks({
-        paymentInChargeName: "Ramesh",
-        paymentInChargeContact: "9876543210",
+        recipientName: "Ramesh",
+        recipientContact: "9876543210",
         dealingCompany: "Other Company",
         due: "1000",
         overdue: "500",
       }),
     ).toBeNull();
   });
+
+  it("builds owner links only for RE Leadership", () => {
+    const input = {
+      recipientName: "Vikram Das",
+      recipientContact: "9811100001",
+      dealingCompany: "Rajshree Energy",
+      due: "1000",
+      overdue: "500",
+      recipient: "owner" as const,
+    };
+    expect(
+      collectionWhatsAppLinks({ ...input, canMessageOwner: false }),
+    ).toBeNull();
+    const links = collectionWhatsAppLinks({ ...input, canMessageOwner: true });
+    expect(links?.app).toMatch(/^whatsapp:\/\/send\?phone=919811100001&text=/);
+    expect(decodeURIComponent(links?.app ?? "")).toContain("Sri Vikram Das");
+  });
 });
 
 describe("collectionWhatsAppUrl", () => {
   it("returns the app deep link", () => {
     const url = collectionWhatsAppUrl({
-      paymentInChargeName: "Ramesh",
-      paymentInChargeContact: "9876543210",
+      recipientName: "Ramesh",
+      recipientContact: "9876543210",
       dealingCompany: "Rajshree Energy",
       due: "1000",
       overdue: "500",

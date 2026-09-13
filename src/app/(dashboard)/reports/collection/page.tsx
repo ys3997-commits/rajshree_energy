@@ -32,6 +32,7 @@ export default async function CollectionReportPage() {
       <CollectionClient
         initialRows={filteredRows}
         allowedSaleExecutives={execScope}
+        canMessageOwner={access.kind === "owner"}
       />
     </div>
   );

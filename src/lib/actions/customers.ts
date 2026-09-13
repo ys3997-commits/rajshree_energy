@@ -188,6 +188,8 @@ export type CustomerDueRow = {
   id: string;
   name: string;
   category: CustomerCategory;
+  ownerName: string | null;
+  ownerContact: string | null;
   paymentInChargeName: string | null;
   paymentInChargeContact: string | null;
   paymentInChargeRole: string | null;
@@ -216,6 +218,8 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       id: true,
       name: true,
       category: true,
+      ownerName: true,
+      ownerContact: true,
       paymentInChargeName: true,
       paymentInChargeContact: true,
       paymentInChargeRole: true,
@@ -310,6 +314,8 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       id: customer.id,
       name: customer.name,
       category: customer.category,
+      ownerName: customer.ownerName,
+      ownerContact: customer.ownerContact,
       paymentInChargeName: customer.paymentInChargeName,
       paymentInChargeContact: customer.paymentInChargeContact,
       paymentInChargeRole: customer.paymentInChargeRole,

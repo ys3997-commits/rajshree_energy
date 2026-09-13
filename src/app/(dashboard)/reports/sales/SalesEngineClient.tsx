@@ -16,6 +16,7 @@ import {
 import {
   salesWhatsAppDisabledReason,
   salesWhatsAppLinks,
+  type SalesWhatsAppInput,
 } from "@/lib/domain/salesWhatsApp";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
@@ -228,9 +229,11 @@ function OfferAmountInput({
 export function SalesEngineClient({
   initialRows,
   allowedSaleExecutives,
+  canMessageOwner,
 }: {
   initialRows: SalesEngineRow[];
   allowedSaleExecutives: ExecScopeFilter;
+  canMessageOwner: boolean;
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(initialRows);
@@ -765,25 +768,36 @@ export function SalesEngineClient({
               <th className="cell-num sales-offer-col">Offer Price</th>
               <th className="cell-num sales-offer-col">Offer Freight</th>
               <th className="sales-sms-type-col">SMS Type</th>
-              <th className="collection-whatsapp-col" aria-label="WhatsApp" />
+              <th className="collection-whatsapp-col">Purchaser</th>
+              <th className="collection-whatsapp-col">Owner</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((row) => {
               const rowClass = rowHighlightClass(row.plannedSaleCallDate, today);
-              const waDisabledReason = salesWhatsAppDisabledReason({
-                purchaserContact: row.purchaserContact,
+              const purchaserWaInput: SalesWhatsAppInput = {
+                recipientName: row.purchaserName,
+                recipientContact: row.purchaserContact,
                 smsType: row.smsType,
                 offerPrice: row.offerPrice,
                 offerFreight: row.offerFreight,
-              });
-              const waLinks = salesWhatsAppLinks({
-                purchaserName: row.purchaserName,
-                purchaserContact: row.purchaserContact,
+                recipient: "purchaser",
+              };
+              const ownerWaInput: SalesWhatsAppInput = {
+                recipientName: row.ownerName,
+                recipientContact: row.ownerContact,
                 smsType: row.smsType,
                 offerPrice: row.offerPrice,
                 offerFreight: row.offerFreight,
-              });
+                recipient: "owner",
+                canMessageOwner,
+              };
+              const purchaserWaDisabledReason =
+                salesWhatsAppDisabledReason(purchaserWaInput);
+              const purchaserWaLinks = salesWhatsAppLinks(purchaserWaInput);
+              const ownerWaDisabledReason =
+                salesWhatsAppDisabledReason(ownerWaInput);
+              const ownerWaLinks = salesWhatsAppLinks(ownerWaInput);
               return (
                 <tr key={row.id} className={rowClass}>
                   <td className="sales-engine-customer-col">
@@ -876,52 +890,45 @@ export function SalesEngineClient({
                     </select>
                   </td>
                   <td className="collection-whatsapp-col">
-                    <a
-                      className={`btn-whatsapp-icon${waLinks ? "" : " disabled"}`}
-                      href={waLinks?.web}
-                      rel="noopener noreferrer"
-                      aria-disabled={!waLinks}
-                      aria-label={
-                        waLinks
+                    <SalesWhatsAppButton
+                      links={purchaserWaLinks}
+                      disabledReason={purchaserWaDisabledReason}
+                      ariaLabel={
+                        purchaserWaLinks
                           ? `WhatsApp ${row.purchaserName ?? row.name}`
-                          : (waDisabledReason ?? "WhatsApp unavailable")
+                          : (purchaserWaDisabledReason ?? "WhatsApp unavailable")
                       }
-                      tabIndex={waLinks ? undefined : -1}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        if (!waLinks) {
-                          setError(
-                            waDisabledReason ??
-                              "WhatsApp is unavailable for this row.",
-                          );
-                          return;
-                        }
-                        const opened = openWhatsAppMessage(waLinks);
-                        if (!opened) {
-                          setError("Open WhatsApp First");
-                          return;
-                        }
-                      }}
                       title={
-                        waLinks
-                          ? "Open WhatsApp with sales message"
-                          : (waDisabledReason ?? "WhatsApp unavailable")
+                        purchaserWaLinks
+                          ? "Open WhatsApp with sales message for purchaser"
+                          : (purchaserWaDisabledReason ?? "WhatsApp unavailable")
                       }
-                    >
-                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <path
-                          fill="currentColor"
-                          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
-                        />
-                      </svg>
-                    </a>
+                      onError={setError}
+                    />
+                  </td>
+                  <td className="collection-whatsapp-col">
+                    <SalesWhatsAppButton
+                      links={ownerWaLinks}
+                      disabledReason={ownerWaDisabledReason}
+                      ariaLabel={
+                        ownerWaLinks
+                          ? `WhatsApp ${row.ownerName ?? row.name}`
+                          : (ownerWaDisabledReason ?? "WhatsApp unavailable")
+                      }
+                      title={
+                        ownerWaLinks
+                          ? "Open WhatsApp with sales message for owner"
+                          : (ownerWaDisabledReason ?? "WhatsApp unavailable")
+                      }
+                      onError={setError}
+                    />
                   </td>
                 </tr>
               );
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={16}>
+                <td colSpan={17}>
                   {rows.length === 0
                     ? "No active customers."
                     : "No customers match these filters."}
@@ -932,5 +939,49 @@ export function SalesEngineClient({
         </table></div>
       </div>
     </div>
+  );
+}
+
+function SalesWhatsAppButton({
+  links,
+  disabledReason,
+  ariaLabel,
+  title,
+  onError,
+}: {
+  links: { app: string; web: string } | null;
+  disabledReason: string | null;
+  ariaLabel: string;
+  title: string;
+  onError: (message: string) => void;
+}) {
+  return (
+    <a
+      className={`btn-whatsapp-icon${links ? "" : " disabled"}`}
+      href={links?.web}
+      rel="noopener noreferrer"
+      aria-disabled={!links}
+      aria-label={ariaLabel}
+      tabIndex={links ? undefined : -1}
+      onClick={(e) => {
+        e.preventDefault();
+        if (!links) {
+          onError(disabledReason ?? "WhatsApp is unavailable for this row.");
+          return;
+        }
+        const opened = openWhatsAppMessage(links);
+        if (!opened) {
+          onError("Open WhatsApp First");
+        }
+      }}
+      title={title}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          fill="currentColor"
+          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+        />
+      </svg>
+    </a>
   );
 }

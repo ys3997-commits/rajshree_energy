@@ -30,13 +30,25 @@ function formatRupeeAmount(
   return `₹${formatIndianNumber(Math.round(n))}`;
 }
 
+export type CollectionWhatsAppRecipient = "payment" | "owner";
+
+export type CollectionWhatsAppInput = {
+  recipientName: string | null | undefined;
+  recipientContact: string | null | undefined;
+  dealingCompany: string | null | undefined;
+  due: string;
+  overdue: string;
+  recipient?: CollectionWhatsAppRecipient;
+  canMessageOwner?: boolean;
+};
+
 /** Pre-filled collection reminder for WhatsApp (click-to-chat). */
 export function buildCollectionWhatsAppMessage(input: {
-  paymentInChargeName: string | null | undefined;
+  recipientName: string | null | undefined;
   due: string;
   overdue: string;
 }): string {
-  const rawName = input.paymentInChargeName?.trim();
+  const rawName = input.recipientName?.trim();
   const name = rawName
     ? (capitalizeName(rawName) ?? rawName)
     : "Sir";
@@ -55,28 +67,29 @@ export function buildCollectionWhatsAppMessage(input: {
   ].join("\n");
 }
 
-export function collectionWhatsAppDisabledReason(input: {
-  dealingCompany: string | null | undefined;
-  paymentInChargeContact: string | null | undefined;
-}): string | null {
+export function collectionWhatsAppDisabledReason(
+  input: CollectionWhatsAppInput,
+): string | null {
+  const recipient = input.recipient ?? "payment";
+  if (recipient === "owner" && !input.canMessageOwner) {
+    return "Only RE Leadership can message the owner.";
+  }
   if (!isRajshreeEnergyDealingCompany(input.dealingCompany)) {
     return "WhatsApp is only available when dealing company is Rajshree Energy.";
   }
-  if (!toWhatsAppPhone(input.paymentInChargeContact)) {
-    return "Add payment-in-charge contact in Customers before sending WhatsApp.";
+  if (!toWhatsAppPhone(input.recipientContact)) {
+    return recipient === "owner"
+      ? "Add owner contact in Customers before sending WhatsApp."
+      : "Add payment-in-charge contact in Customers before sending WhatsApp.";
   }
   return null;
 }
 
-export function collectionWhatsAppLinks(input: {
-  paymentInChargeName: string | null | undefined;
-  paymentInChargeContact: string | null | undefined;
-  dealingCompany: string | null | undefined;
-  due: string;
-  overdue: string;
-}): { app: string; web: string } | null {
+export function collectionWhatsAppLinks(
+  input: CollectionWhatsAppInput,
+): { app: string; web: string } | null {
   if (collectionWhatsAppDisabledReason(input)) return null;
-  const phone = toWhatsAppPhone(input.paymentInChargeContact);
+  const phone = toWhatsAppPhone(input.recipientContact);
   if (!phone) return null;
   const text = encodeURIComponent(buildCollectionWhatsAppMessage(input));
   return {

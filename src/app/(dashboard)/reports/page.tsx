@@ -105,6 +105,21 @@ const reports = [
     title: "Vessel Supplied",
     desc: "Total, industry, and trader/vendor supplied quantities by vessel.",
   },
+  {
+    href: "/reports/veg",
+    title: "Veg Payment",
+    desc: "Fund paid to industry veg contacts.",
+  },
+  {
+    href: "/reports/veg/discount",
+    title: "Veg Discount",
+    desc: "Discounts received from or paid to industry veg contacts.",
+  },
+  {
+    href: "/reports/veg/ledger",
+    title: "Veg Ledger",
+    desc: "Monthly industry supply, veg rates, funds, and discounts.",
+  },
 ].sort((a, b) => a.title.localeCompare(b.title));
 
 export default async function ReportsPage() {

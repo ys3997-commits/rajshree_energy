@@ -2135,6 +2135,23 @@ table.data tr.month-divider:hover td {
   width: fit-content;
 }
 
+.veg-payment-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.veg-payment-row .field-with-unit {
+  flex: 1 1 10rem;
+  max-width: 16rem;
+}
+
+.form-grid .search-select {
+  width: 100%;
+  min-width: 0;
+}
+
 .status-toggle-pending {
   opacity: 0.65;
   pointer-events: none;
@@ -3039,6 +3056,15 @@ table.data.transport-engine-table tbody tr:hover td {
 
 .vessel-row-inactive td:first-child {
   color: var(--ink-soft);
+}
+
+.veg-row-inactive td {
+  color: var(--danger);
+  background: var(--danger-soft) !important;
+}
+
+table.data tbody tr.veg-row-inactive:hover td {
+  background: #f8e4e4 !important;
 }
 
 .customers-table-toolbar {
@@ -5015,27 +5041,18 @@ table.data.collection-engine-table td.collection-date-col {
   max-width: 10.5rem;
 }
 
-table.data.collection-engine-table th.collection-through-col,
-table.data.collection-engine-table td.collection-through-col {
-  width: 6.5rem;
-  min-width: 6.5rem;
-  max-width: 6.5rem;
-}
-
 table.data.collection-engine-table th.collection-whatsapp-col,
 table.data.collection-engine-table td.collection-whatsapp-col {
-  width: 2.75rem;
-  min-width: 2.75rem;
-  max-width: 2.75rem;
+  width: 4.75rem;
+  min-width: 4.75rem;
+  max-width: 4.75rem;
   padding-left: 0.35rem;
   padding-right: 0.35rem;
+  text-align: center;
 }
 
-table.data.collection-engine-table td.collection-through-col .collection-through-select {
-  width: 100%;
-  min-width: 0;
-  padding: 0.35rem 0.45rem;
-  font-size: 0.8125rem;
+table.data.collection-engine-table th.collection-whatsapp-col {
+  white-space: nowrap;
 }
 
 table.data.collection-engine-table td.collection-date-col .collection-date-input {
@@ -5149,11 +5166,16 @@ table.data.sales-engine-table td.collection-date-col {
 
 table.data.sales-engine-table th.collection-whatsapp-col,
 table.data.sales-engine-table td.collection-whatsapp-col {
-  width: 2.75rem;
-  min-width: 2.75rem;
-  max-width: 2.75rem;
+  width: 5.75rem;
+  min-width: 5.75rem;
+  max-width: 5.75rem;
   padding-left: 0.35rem;
   padding-right: 0.35rem;
+  text-align: center;
+}
+
+table.data.sales-engine-table th.collection-whatsapp-col {
+  white-space: nowrap;
 }
 
 table.data.sales-engine-table td.collection-date-col .collection-date-input {
@@ -6743,6 +6765,45 @@ table.data.transport-engine-table.report-screen-table tfoot td {
   .investment-field {
     min-width: 100%;
     flex: 1 1 100%;
+  }
+}
+
+/* —— Report → Veg —— */
+.veg-type-static {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.veg-ledger-stats {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.ledger-panels-veg {
+  grid-template-columns: minmax(0, 2.15fr) minmax(16rem, 0.78fr);
+}
+
+.ledger-panels-veg .ledger-panel-title {
+  background: rgba(46, 125, 70, 0.1);
+  color: #1f6b3a;
+}
+
+.ledger-panels-veg tr.veg-ledger-month-start td {
+  border-top: 1px solid var(--line-strong);
+}
+
+@media (max-width: 1100px) {
+  .ledger-panels-veg {
+    grid-template-columns: 1fr;
+  }
+
+  .ledger-panels-veg .ledger-panel-funds {
+    border-left: none;
+    border-top: 1px solid var(--line-strong);
   }
 }
 
