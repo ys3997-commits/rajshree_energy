@@ -7,6 +7,7 @@ import {
   LEGACY_BANK_PAGE_KEY,
   LEGACY_OPTIONS_PAGE_KEY,
   LEGACY_UPDATE_PAGE_KEY,
+  LEGACY_DISPATCH_PAGE_KEY,
   UPDATE_SUB_PAGE_KEYS,
 } from "@/lib/auth/pages";
 import {
@@ -31,6 +32,7 @@ const STAFF_PATHS = [
   "/customers",
   "/orders",
   "/dispatches",
+  "/dispatches/reconciliation",
   "/bills",
   "/reports/ledger",
 ] as const;
@@ -55,6 +57,7 @@ function normalizePageKeys(pageKeys: string[] | undefined): string[] {
   for (const key of expandStaffPageKeys(pageKeys ?? [])) {
     if (
       key === LEGACY_UPDATE_PAGE_KEY ||
+      key === LEGACY_DISPATCH_PAGE_KEY ||
       key === LEGACY_BANK_PAGE_KEY ||
       key === LEGACY_OPTIONS_PAGE_KEY
     ) {

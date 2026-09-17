@@ -8,6 +8,73 @@ export type ExportColumn = {
 
 export type ExportRow = Record<string, string>;
 
+/** Keep short all-caps tokens intact when converting headers to title case. */
+const HEADER_ACRONYMS = new Set([
+  "PO",
+  "GST",
+  "TCS",
+  "MT",
+  "PMT",
+  "DN",
+  "FOR",
+  "ID",
+  "HSN",
+  "CSV",
+  "PDF",
+]);
+
+function toTitleCaseWord(word: string): string {
+  const match = word.match(/^([^A-Za-z]*)([A-Za-z]+)([^A-Za-z]*)$/);
+  if (!match) return word;
+  const [, lead, letters, trail] = match;
+  if (HEADER_ACRONYMS.has(letters.toUpperCase())) {
+    return `${lead}${letters.toUpperCase()}${trail}`;
+  }
+  const core =
+    letters.charAt(0).toUpperCase() + letters.slice(1).toLowerCase();
+  return `${lead}${core}${trail}`;
+}
+
+/** Title case for a full header phrase. Commas are dropped; newlines are spaces. */
+export function toTitleCaseHeader(header: string): string {
+  const words = header
+    .replace(/,/g, " ")
+    .replace(/\n/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (words.length === 0) return "";
+  return words.map(toTitleCaseWord).join(" ");
+}
+
+/** Title-case a header and keep wrap points, with no commas. */
+export function exportWrappedHeader(header: string): string {
+  const lines = header
+    .replace(/,/g, " ")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (lines.length === 0) return "";
+  const words = toTitleCaseHeader(header).split(" ");
+  const wrapped: string[] = [];
+  let index = 0;
+  for (const line of lines) {
+    const count = line.split(/\s+/).filter(Boolean).length;
+    wrapped.push(words.slice(index, index + count).join(" "));
+    index += count;
+  }
+  if (index < words.length) {
+    wrapped.push(words.slice(index).join(" "));
+  }
+  return wrapped.join("\n");
+}
+
+/** Keep original wrap points after title-casing, e.g. "Trucks\\nDispatch". */
+export function exportPdfHeader(header: string): string | string[] {
+  const wrapped = exportWrappedHeader(header);
+  return wrapped.includes("\n") ? wrapped.split("\n") : wrapped;
+}
+
 function escapeCsvCell(value: string): string {
   if (/[",\n\r]/.test(value)) {
     return `"${value.replace(/"/g, '""')}"`;
@@ -17,7 +84,7 @@ function escapeCsvCell(value: string): string {
 
 export function buildCsv(columns: ExportColumn[], rows: ExportRow[]): string {
   const header = columns
-    .map((c) => escapeCsvCell(c.header.replace(/\n/g, " ").replace(/,/g, " ")))
+    .map((c) => escapeCsvCell(exportWrappedHeader(c.header)))
     .join(",");
   const body = rows.map((row) =>
     columns.map((c) => escapeCsvCell(row[c.key] ?? "")).join(","),
@@ -53,33 +120,53 @@ export async function buildTablePdfBlob(options: {
     format: "a4",
   });
 
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const dataColumnCount = options.columns.filter((c) => !c.divider).length;
+  const manyColumns = dataColumnCount > 12;
+  const marginX = manyColumns ? 8 : 16;
+  const horizontalPad = manyColumns ? 2 : 5;
+  const fontSize = manyColumns ? 6.5 : 8;
+
   doc.setFontSize(14);
-  doc.text(options.title, 40, 36);
+  doc.text(options.title, marginX, 28);
 
   autoTable(doc, {
-    startY: 50,
+    startY: 38,
+    theme: "grid",
+    tableWidth: pageWidth - marginX * 2,
+    horizontalPageBreak: false,
     head: [
-      options.columns.map((c) => {
-        const cleaned = c.header.replace(/,/g, " ");
-        return cleaned.includes("\n") ? cleaned.split("\n") : cleaned;
-      }),
+      options.columns.map((c) => exportPdfHeader(c.header)),
     ],
     body: options.rows.map((row) =>
       options.columns.map((c) => row[c.key] ?? ""),
     ),
     styles: {
-      fontSize: 7,
-      cellPadding: 3,
+      fontSize,
+      cellPadding: {
+        top: manyColumns ? 2.5 : 4,
+        bottom: manyColumns ? 2.5 : 4,
+        left: horizontalPad,
+        right: horizontalPad,
+      },
       overflow: "linebreak",
       valign: "middle",
+      lineColor: [170, 170, 170],
+      lineWidth: 0.3,
     },
     headStyles: {
       fillColor: [40, 40, 40],
       textColor: 255,
       fontStyle: "bold",
-      fontSize: 7,
+      fontSize,
       valign: "middle",
       overflow: "linebreak",
+      cellPadding: {
+        top: manyColumns ? 3.5 : 6,
+        bottom: manyColumns ? 3.5 : 6,
+        left: horizontalPad,
+        right: horizontalPad,
+      },
     },
     columnStyles: Object.fromEntries(
       options.columns.map((c, i) => {
@@ -95,7 +182,20 @@ export async function buildTablePdfBlob(options: {
         }
         return [
           i,
-          { halign: c.align === "right" ? "right" : c.align === "center" ? "center" : "left" },
+          {
+            halign:
+              c.align === "right"
+                ? "right"
+                : c.align === "center"
+                  ? "center"
+                  : "left",
+            cellPadding: {
+              top: manyColumns ? 2.5 : 4,
+              bottom: manyColumns ? 2.5 : 4,
+              left: horizontalPad,
+              right: horizontalPad,
+            },
+          },
         ];
       }),
     ),
@@ -156,7 +256,7 @@ export async function buildTablePdfBlob(options: {
       data.doc.setLineWidth(2);
       data.doc.line(x, y1, x, y2);
     },
-    margin: { left: 28, right: 28 },
+    margin: { left: marginX, right: marginX },
   });
 
   return doc.output("blob");

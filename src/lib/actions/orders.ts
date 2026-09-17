@@ -80,21 +80,41 @@ async function applySaleOrderExecScope(where: Prisma.OrderWhereInput) {
 }
 
 /**
- * Match Status column display: open orders with no quantity show Completed
- * even when stored orderStatus is still Running.
+ * Completed rows whose displayed balance is not 0 (typically over-supplied).
+ * Stored status is Completed, but the Status column shows Running.
  */
-function orderStatusWhere(status: OrderStatus): Prisma.OrderWhereInput {
+async function runningDisplayCompletedOrderIds(): Promise<string[]> {
+  const rows = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT id FROM "Order"
+    WHERE quantity IS NOT NULL
+      AND "orderStatus"::text = 'COMPLETED'
+      AND (quantity - "dispatchedOrder" - COALESCE("closingQuantity", 0)) <> 0
+  `;
+  return rows.map((row) => row.id);
+}
+
+/**
+ * Match Status column display:
+ * - open orders with no quantity show Completed even when stored Running
+ * - over-supplied orders show Running even when stored Completed (balance < 0)
+ */
+function orderStatusWhere(
+  status: OrderStatus,
+  extraRunningIds: string[] = [],
+): Prisma.OrderWhereInput {
   const openWithNoQuantity: Prisma.OrderWhereInput = {
     AND: [{ orderType: OrderType.OPEN }, { quantity: null }],
   };
 
   if (status === OrderStatus.RUNNING) {
-    return {
+    const running: Prisma.OrderWhereInput = {
       AND: [
         { orderStatus: OrderStatus.RUNNING },
         { NOT: openWithNoQuantity },
       ],
     };
+    if (extraRunningIds.length === 0) return running;
+    return { OR: [running, { id: { in: extraRunningIds } }] };
   }
 
   return {
@@ -105,7 +125,11 @@ function orderStatusWhere(status: OrderStatus): Prisma.OrderWhereInput {
 export async function listOrders(filters: OrderFilters = {}) {
   const where: Prisma.OrderWhereInput = {};
   const status = normalizeOrderStatusFilter(filters.status);
-  if (status) Object.assign(where, orderStatusWhere(status));
+  const extraRunningIds =
+    status === OrderStatus.RUNNING
+      ? await runningDisplayCompletedOrderIds()
+      : [];
+  if (status) Object.assign(where, orderStatusWhere(status, extraRunningIds));
   if (filters.customerId) where.customerId = filters.customerId;
   if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;

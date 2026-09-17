@@ -20,8 +20,8 @@ export default async function DispatchesPage({
         filterPath="/dispatches"
         linkPoNumbers
         showCreateButton
-        exportTitle="Dispatches"
-        exportFilenameBase="dispatches"
+        exportTitle="Complete Dispatch"
+        exportFilenameBase="complete-dispatch"
         data={data}
       />
     </div>

@@ -7,10 +7,11 @@ import {
   lineProfit,
   toDecimal,
 } from "@/lib/domain/computations";
-import { ensureDispatchNumbers } from "@/lib/actions/dispatch";
+import { ensureDispatchNumbers, listDispatchReconciliationFlags } from "@/lib/actions/dispatch";
 import { getCurrentAccess } from "@/lib/auth/access";
 import {
   canEditPurchaseChecklist,
+  canEditReconciliationChecklist,
   canEditSaleChecklist,
 } from "@/lib/auth/checklistEditAccess";
 import {
@@ -28,6 +29,7 @@ export type DispatchFilters = {
   purchaseUpdateStatus?: "PENDING" | "RECEIVED" | "";
   saleUpdateStatus?: "PENDING" | "RECEIVED" | "";
   receivedQtyStatus?: "PENDING" | "RECEIVED" | "";
+  reconciliationStatus?: "PENDING" | "RECONCILED" | "";
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
@@ -198,7 +200,17 @@ export async function listDispatches(filters: DispatchFilters = {}) {
         })
       : rows;
 
-  return filteredRows.map((row) => {
+  const flags = await listDispatchReconciliationFlags(
+    filteredRows.map((row) => row.id),
+  );
+  const statusFilteredRows =
+    filters.reconciliationStatus === "RECONCILED"
+      ? filteredRows.filter((row) => flags.get(row.id)?.reconciled)
+      : filters.reconciliationStatus === "PENDING"
+        ? filteredRows.filter((row) => !flags.get(row.id)?.reconciled)
+        : filteredRows;
+
+  return statusFilteredRows.map((row) => {
     const freightAmount =
       row.freight != null
         ? toDecimal(row.freight).mul(row.dispatchedQuantity)
@@ -209,6 +221,10 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       row.vessel.qualityClass ??
       row.order?.qualityClass ??
       null;
+    const reconciliation = flags.get(row.id) ?? {
+      reconciled: false,
+      reconciliationCompletedAt: null,
+    };
 
     return {
       id: row.id,
@@ -243,6 +259,8 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       freightAmount,
       softCopyStatus: row.softCopyStatus,
       entryInTally: row.entryInTally,
+      reconciled: reconciliation.reconciled,
+      reconciliationCompletedAt: reconciliation.reconciliationCompletedAt,
       // Profit uses basic rates only (same as master dispatch report).
       lineProfit: lineProfit({
         saleRate: row.order?.rate ?? null,
@@ -256,6 +274,10 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       }),
       canEditPurchase: canEditPurchaseChecklist(access, row),
       canEditSale: canEditSaleChecklist(access, row),
+      canEditReconciliation: canEditReconciliationChecklist(access, {
+        reconciled: reconciliation.reconciled,
+        reconciliationCompletedAt: reconciliation.reconciliationCompletedAt,
+      }),
     };
   });
 }

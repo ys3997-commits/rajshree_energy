@@ -10,6 +10,10 @@ describe("pageForPath", () => {
   it("matches home exactly", () => {
     expect(pageForPath("/")?.key).toBe("home");
     expect(pageForPath("/orders")?.key).toBe("orders");
+    expect(pageForPath("/dispatches")?.key).toBe("dispatches-complete");
+    expect(pageForPath("/dispatches/reconciliation")?.key).toBe(
+      "dispatches-reconciliation",
+    );
   });
 
   it("uses the longest report prefix", () => {
@@ -65,6 +69,23 @@ describe("canAccessPath", () => {
     expect(
       canAccessPath(["reports-transport-engine"], "/update/transport"),
     ).toBe(true);
+  });
+
+  it("scopes dispatch sub-pages separately", () => {
+    expect(canAccessPath(["dispatches-complete"], "/dispatches")).toBe(true);
+    expect(
+      canAccessPath(["dispatches-complete"], "/dispatches/reconciliation"),
+    ).toBe(false);
+    expect(
+      canAccessPath(["dispatches-reconciliation"], "/dispatches/reconciliation"),
+    ).toBe(true);
+    expect(canAccessPath(["dispatches-reconciliation"], "/dispatches")).toBe(
+      false,
+    );
+    expect(canAccessPath(["dispatches"], "/dispatches")).toBe(true);
+    expect(canAccessPath(["dispatches"], "/dispatches/reconciliation")).toBe(
+      true,
+    );
   });
 
   it("scopes bank sub-pages separately", () => {

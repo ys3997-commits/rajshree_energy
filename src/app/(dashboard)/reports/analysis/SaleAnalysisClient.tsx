@@ -197,6 +197,18 @@ export function SaleAnalysisClient({
           </span>
         </div>
         <div className="sale-analysis-stat">
+          <span className="sale-analysis-stat-label">Domestic qty</span>
+          <span className="sale-analysis-stat-value">
+            {formatSaleOrderMt(report.domesticQuantity)}
+          </span>
+        </div>
+        <div className="sale-analysis-stat">
+          <span className="sale-analysis-stat-label">Imported qty</span>
+          <span className="sale-analysis-stat-value">
+            {formatSaleOrderMt(report.importedQuantity)}
+          </span>
+        </div>
+        <div className="sale-analysis-stat">
           <span className="sale-analysis-stat-label">Products</span>
           <span className="sale-analysis-stat-value">{report.productCount}</span>
         </div>

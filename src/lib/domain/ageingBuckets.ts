@@ -24,6 +24,13 @@ export type AgeingReportRow = {
   state: string | null;
   saleExecutive: string | null;
   totalDue: string;
+  overdue: string;
+  creditDays: number | null;
+  dealingCompany: string | null;
+  paymentInChargeName: string | null;
+  paymentInChargeContact: string | null;
+  ownerName: string | null;
+  ownerContact: string | null;
 } & Record<AgeingBucketKey, string>;
 
 /** Supplier is treated as trader on the ageing report. */

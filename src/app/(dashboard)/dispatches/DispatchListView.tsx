@@ -5,13 +5,14 @@ import { EditDispatchButton } from "@/components/EditDispatchButton";
 import { EditDispatchPurchaseButton } from "@/components/EditDispatchPurchaseButton";
 import { EditDispatchSaleButton } from "@/components/EditDispatchSaleButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
+import { UpdateTableInteraction } from "@/components/UpdateTableInteraction";
 import {
   formatDateDdMmYyyy,
   formatDispatchMt,
   formatDispatchTerms,
   formatLorryNumber,
   formatQualityClass,
-  formatRs,
+  formatAmount,
 } from "@/lib/domain/format";
 import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
 import {
@@ -60,7 +61,7 @@ export function DispatchListView({
       {showCreateButton ? (
         <div className="page-header">
           <div>
-            <h1 className="page-title">Dispatches</h1>
+            <h1 className="page-title">Complete Dispatch</h1>
             <p className="page-subtitle">
               All truck movements, receipts, and quantity diffs.
             </p>
@@ -157,43 +158,113 @@ export function DispatchListView({
 
       <div className="table-wrap table-wrap-scroll dispatches-table-wrap">
         <div className="table-h-scroll">
-          <table className="data report-table report-table-dispatches">
+          <UpdateTableInteraction className="data report-table report-table-dispatches">
             <thead>
               <tr className="report-group-row">
                 <th colSpan={7}>Dispatch</th>
                 <th colSpan={5}>Purchase</th>
                 <th colSpan={5}>Sale</th>
                 <th colSpan={4}>Transport</th>
-                <th colSpan={1}>Margin</th>
                 <th colSpan={3}>Status</th>
                 <th colSpan={1}></th>
               </tr>
               <tr>
-                <th>Dispatch no</th>
+                <th className="col-wrap-head">
+                  Dispatch
+                  <br />
+                  no
+                </th>
                 <th>Date</th>
-                <th>Lorry no</th>
+                <th className="col-wrap-head">
+                  Lorry
+                  <br />
+                  no
+                </th>
                 <th className="cell-num">Weight</th>
-                <th>Vessel name</th>
+                <th className="col-wrap-head">
+                  Vessel
+                  <br />
+                  name
+                </th>
                 <th>Quality</th>
-                <th>GST state</th>
-                <th>PO no</th>
-                <th>Purchase invoice</th>
+                <th className="col-wrap-head">
+                  GST
+                  <br />
+                  state
+                </th>
+                <th className="col-wrap-head">
+                  PO
+                  <br />
+                  no
+                </th>
+                <th className="col-wrap-head">
+                  Purchase
+                  <br />
+                  invoice
+                </th>
                 <th>Vendor</th>
-                <th className="cell-num">Basic price</th>
-                <th className="cell-num">Total price</th>
-                <th>SO no</th>
-                <th>Sale invoice</th>
-                <th>Customer name</th>
-                <th className="cell-num">Basic price</th>
-                <th className="cell-num">Total price</th>
-                <th>Delivery terms</th>
-                <th>Transporter name</th>
-                <th className="cell-num">Freight PMT</th>
-                <th className="cell-num">Freight amount</th>
-                <th className="cell-num">Profit</th>
+                <th className="cell-num col-wrap-head">
+                  Basic
+                  <br />
+                  price
+                </th>
+                <th className="cell-num col-wrap-head">
+                  Total
+                  <br />
+                  price
+                </th>
+                <th className="col-wrap-head">
+                  SO
+                  <br />
+                  no
+                </th>
+                <th className="col-wrap-head">
+                  Sale
+                  <br />
+                  invoice
+                </th>
+                <th className="col-wrap-head">
+                  Customer
+                  <br />
+                  name
+                </th>
+                <th className="cell-num col-wrap-head">
+                  Basic
+                  <br />
+                  price
+                </th>
+                <th className="cell-num col-wrap-head">
+                  Total
+                  <br />
+                  price
+                </th>
+                <th className="col-wrap-head">
+                  Delivery
+                  <br />
+                  terms
+                </th>
+                <th className="col-wrap-head">
+                  Transporter
+                  <br />
+                  name
+                </th>
+                <th className="cell-num col-wrap-head">
+                  Freight
+                  <br />
+                  PMT
+                </th>
+                <th className="cell-num col-wrap-head">
+                  Freight
+                  <br />
+                  amount
+                </th>
                 <th className="cell-num">Received</th>
                 <th className="cell-num">Diff</th>
-                <th className="cell-center">Purchase in tally</th>
+                <th className="cell-center col-wrap-head">
+                  Purchase
+                  <br />
+                  in tally
+                </th>
                 <th></th>
               </tr>
             </thead>
@@ -211,7 +282,7 @@ export function DispatchListView({
                 const salePoLabel = displayOrderDigits(row.salePoNumber, "sale");
 
                 return (
-                  <tr key={row.id}>
+                  <tr key={row.id} data-dispatch-id={row.id}>
                     <td>{displayDispatchNumber(row.dispatchNumber)}</td>
                     <td>
                       {formatDateDdMmYyyy(
@@ -252,10 +323,10 @@ export function DispatchListView({
                       {row.vendorName ?? "—"}
                     </td>
                     <td className="cell-num">
-                      {formatRs(row.purchaseBasicRate)}
+                      {formatAmount(row.purchaseBasicRate)}
                     </td>
                     <td className="cell-num">
-                      {formatRs(row.purchaseTotalRate)}
+                      {formatAmount(row.purchaseTotalRate)}
                     </td>
                     <td>
                       {linkPoNumbers && row.orderId ? (
@@ -279,17 +350,22 @@ export function DispatchListView({
                     <td className={row.customerName ? undefined : "cell-center"}>
                       {row.customerName ?? "—"}
                     </td>
-                    <td className="cell-num">{formatRs(row.saleBasicRate)}</td>
-                    <td className="cell-num">{formatRs(row.saleTotalRate)}</td>
+                    <td className="cell-num">
+                      {formatAmount(row.saleBasicRate)}
+                    </td>
+                    <td className="cell-num">
+                      {formatAmount(row.saleTotalRate)}
+                    </td>
                     <td>{formatDispatchTerms(row.dispatchTerms)}</td>
                     <td
                       className={row.transporterName ? undefined : "cell-center"}
                     >
                       {row.transporterName ?? "—"}
                     </td>
-                    <td className="cell-num">{formatRs(row.freight)}</td>
-                    <td className="cell-num">{formatRs(row.freightAmount)}</td>
-                    <td className="cell-num">{formatRs(row.lineProfit)}</td>
+                    <td className="cell-num">{formatAmount(row.freight)}</td>
+                    <td className="cell-num">
+                      {formatAmount(row.freightAmount)}
+                    </td>
                     <td
                       className={
                         receivedQty != null ? "cell-num" : "cell-center"
@@ -360,11 +436,11 @@ export function DispatchListView({
               })}
               {dispatches.length === 0 && (
                 <tr>
-                  <td colSpan={26}>No dispatches match filters.</td>
+                  <td colSpan={25}>No dispatches match filters.</td>
                 </tr>
               )}
             </tbody>
-          </table>
+          </UpdateTableInteraction>
         </div>
       </div>
     </>

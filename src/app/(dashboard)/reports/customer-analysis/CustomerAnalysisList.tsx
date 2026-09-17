@@ -9,6 +9,7 @@ import {
   formatCustomerCategory,
   formatAmount,
   formatCreditPeriod,
+  formatIndianNumber,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 
@@ -20,7 +21,10 @@ type SortKey =
   | "due"
   | "totalProfit"
   | "marginPmt"
-  | "recoveryOfFund";
+  | "marginVsInvestment"
+  | "recoveryOfFund"
+  | "creditDays"
+  | "recoveryMinusCredit";
 type SortDir = "asc" | "desc";
 
 const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
@@ -29,13 +33,55 @@ const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
   "due",
   "totalProfit",
   "marginPmt",
+  "marginVsInvestment",
   "recoveryOfFund",
+  "creditDays",
+  "recoveryMinusCredit",
 ]);
 
-function numericValue(value: string | null | undefined): number {
+const PROFIT_PCT_TITLE =
+  "Total Profit × 100 ÷ (total purchase basic + total freight)";
+const DIFF_PERIOD_TITLE =
+  "Recovery Period minus Credit period (positive = slower than credit)";
+
+function numericValue(
+  value: string | number | null | undefined,
+): number {
   if (value == null || value === "") return 0;
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
+}
+
+function formatProfitPct(value: string | null): string {
+  if (value == null || value === "") return "—";
+  return `${value}%`;
+}
+
+function profitPctCalcTitle(row: CustomerAnalysisListRow): string {
+  if (row.marginVsInvestment == null) {
+    return PROFIT_PCT_TITLE;
+  }
+  const cost = (
+    Number(row.purchaseBasic) + Number(row.freightTotal)
+  ).toFixed(2);
+  return `${formatIndianNumber(row.totalProfit, 2)} × 100 ÷ (${formatIndianNumber(row.purchaseBasic, 2)} purchase basic + ${formatIndianNumber(row.freightTotal, 2)} freight = ${formatIndianNumber(cost, 2)}) = ${formatProfitPct(row.marginVsInvestment)}`;
+}
+
+function recoveryMinusCredit(row: CustomerAnalysisListRow): number | null {
+  if (row.recoveryOfFund == null || row.creditDays == null) return null;
+  const recovery = Number(row.recoveryOfFund);
+  if (!Number.isFinite(recovery)) return null;
+  return recovery - row.creditDays;
+}
+
+function sortNumeric(
+  row: CustomerAnalysisListRow,
+  key: Exclude<SortKey, "name">,
+): number {
+  if (key === "recoveryMinusCredit") {
+    return recoveryMinusCredit(row) ?? 0;
+  }
+  return numericValue(row[key]);
 }
 
 function sortIndicator(active: boolean, dir: SortDir): string {
@@ -90,24 +136,34 @@ export function CustomerAnalysisList({
   const summary = useMemo(() => {
     let totalQty = 0;
     let totalDue = 0;
-    let totalMargin: number | null = null;
+    let totalProfit: number | null = null;
+    let purchaseBasic = 0;
+    let freightTotal = 0;
     for (const c of categoryFiltered) {
       totalQty += numericValue(c.totalQuantity);
       totalDue += numericValue(c.due);
+      purchaseBasic += numericValue(c.purchaseBasic);
+      freightTotal += numericValue(c.freightTotal);
       if (c.totalProfit != null) {
         const p = numericValue(c.totalProfit);
-        totalMargin = totalMargin == null ? p : totalMargin + p;
+        totalProfit = totalProfit == null ? p : totalProfit + p;
       }
     }
-    const marginPmt =
-      totalMargin != null && totalQty > 0
-        ? (totalMargin / totalQty).toFixed(2)
+    const profitPmt =
+      totalProfit != null && totalQty > 0
+        ? (totalProfit / totalQty).toFixed(2)
+        : null;
+    const cost = purchaseBasic + freightTotal;
+    const profitPct =
+      totalProfit != null && cost !== 0
+        ? ((totalProfit / cost) * 100).toFixed(2)
         : null;
     return {
       totalQuantity: totalQty.toString(),
       totalDue: totalDue.toFixed(2),
-      totalMargin: totalMargin?.toFixed(2) ?? null,
-      marginPmt,
+      totalProfit: totalProfit?.toFixed(2) ?? null,
+      profitPmt,
+      profitPct,
     };
   }, [categoryFiltered]);
 
@@ -118,7 +174,7 @@ export function CustomerAnalysisList({
       if (sortKey === "name") {
         return a.name.localeCompare(b.name) * dir;
       }
-      return (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir;
+      return (sortNumeric(a, sortKey) - sortNumeric(b, sortKey)) * dir;
     });
   }, [categoryFiltered, sortKey, sortDir]);
 
@@ -132,11 +188,26 @@ export function CustomerAnalysisList({
       align: "right" as const,
     },
     { key: "totalDue", header: "Total due", align: "right" as const },
-    { key: "totalMargin", header: "Total Margin", align: "right" as const },
-    { key: "marginPmt", header: "Margin PMT", align: "right" as const },
+    { key: "totalProfit", header: "Total Profit", align: "right" as const },
+    { key: "profitPmt", header: "Profit PMT", align: "right" as const },
     {
-      key: "recoveryOfFund",
-      header: "Recovery of fund",
+      key: "profitPct",
+      header: "Profit %",
+      align: "right" as const,
+    },
+    {
+      key: "recoveryPeriod",
+      header: "Recovery Period",
+      align: "right" as const,
+    },
+    {
+      key: "creditPeriod",
+      header: "Credit period",
+      align: "right" as const,
+    },
+    {
+      key: "diffPeriod",
+      header: "Diff Period",
       align: "right" as const,
     },
   ];
@@ -149,11 +220,14 @@ export function CustomerAnalysisList({
         category: formatCustomerCategory(c.category),
         totalQuantity: formatSaleOrderMt(c.totalQuantity),
         totalDue: formatAmount(c.due),
-        totalMargin: formatAmount(c.totalProfit),
-        marginPmt: formatAmount(c.marginPmt),
-        recoveryOfFund: formatCreditPeriod(
+        totalProfit: formatAmount(c.totalProfit),
+        profitPmt: formatAmount(c.marginPmt),
+        profitPct: formatProfitPct(c.marginVsInvestment),
+        recoveryPeriod: formatCreditPeriod(
           c.recoveryOfFund == null ? null : Number(c.recoveryOfFund),
         ),
+        creditPeriod: formatCreditPeriod(c.creditDays),
+        diffPeriod: formatCreditPeriod(recoveryMinusCredit(c)),
       })),
     [filtered],
   );
@@ -183,15 +257,24 @@ export function CustomerAnalysisList({
             </span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-label">Total Margin</span>
+            <span className="detail-stat-label">Total Profit</span>
             <span className="detail-stat-value">
-              {formatAmount(summary.totalMargin)}
+              {formatAmount(summary.totalProfit)}
             </span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-label">Margin PMT</span>
+            <span className="detail-stat-label">Profit PMT</span>
             <span className="detail-stat-value">
-              {formatAmount(summary.marginPmt)}
+              {formatAmount(summary.profitPmt)}
+            </span>
+          </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">Profit %</span>
+            <span
+              className="detail-stat-value"
+              title={PROFIT_PCT_TITLE}
+            >
+              {formatProfitPct(summary.profitPct)}
             </span>
           </div>
         </div>
@@ -302,7 +385,7 @@ export function CustomerAnalysisList({
                     className="th-sort"
                     onClick={() => toggleSort("totalProfit")}
                   >
-                    Total Margin
+                    Total Profit
                     {sortIndicator(sortKey === "totalProfit", sortDir)}
                   </button>
                 </th>
@@ -312,8 +395,19 @@ export function CustomerAnalysisList({
                     className="th-sort"
                     onClick={() => toggleSort("marginPmt")}
                   >
-                    Margin PMT
+                    Profit PMT
                     {sortIndicator(sortKey === "marginPmt", sortDir)}
+                  </button>
+                </th>
+                <th className="cell-num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("marginVsInvestment")}
+                    title={PROFIT_PCT_TITLE}
+                  >
+                    Profit %
+                    {sortIndicator(sortKey === "marginVsInvestment", sortDir)}
                   </button>
                 </th>
                 <th className="cell-num">
@@ -323,8 +417,33 @@ export function CustomerAnalysisList({
                     onClick={() => toggleSort("recoveryOfFund")}
                     title="Average days to recover funds after goods are supplied"
                   >
-                    Recovery of fund
+                    Recovery Period
                     {sortIndicator(sortKey === "recoveryOfFund", sortDir)}
+                  </button>
+                </th>
+                <th className="cell-num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("creditDays")}
+                    title="Agreed credit period on the customer master"
+                  >
+                    Credit period
+                    {sortIndicator(sortKey === "creditDays", sortDir)}
+                  </button>
+                </th>
+                <th className="cell-num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => toggleSort("recoveryMinusCredit")}
+                    title={DIFF_PERIOD_TITLE}
+                  >
+                    Diff Period
+                    {sortIndicator(
+                      sortKey === "recoveryMinusCredit",
+                      sortDir,
+                    )}
                   </button>
                 </th>
               </tr>
@@ -355,12 +474,27 @@ export function CustomerAnalysisList({
                   <td className="cell-num">{formatAmount(c.due)}</td>
                   <td className="cell-num">{formatAmount(c.totalProfit)}</td>
                   <td className="cell-num">{formatAmount(c.marginPmt)}</td>
+                  <td
+                    className="cell-num"
+                    title={profitPctCalcTitle(c)}
+                  >
+                    {formatProfitPct(c.marginVsInvestment)}
+                  </td>
                   <td className="cell-num">
                     {formatCreditPeriod(
                       c.recoveryOfFund == null
                         ? null
                         : Number(c.recoveryOfFund),
                     )}
+                  </td>
+                  <td className="cell-num">
+                    {formatCreditPeriod(c.creditDays)}
+                  </td>
+                  <td
+                    className="cell-num"
+                    title={DIFF_PERIOD_TITLE}
+                  >
+                    {formatCreditPeriod(recoveryMinusCredit(c))}
                   </td>
                 </tr>
               ))}

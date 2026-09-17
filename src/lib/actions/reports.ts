@@ -9,7 +9,10 @@ import {
   computePurchaseOrderStatus,
   diffInQuantity,
   effectiveSaleRate,
+  freightAmount,
   lineProfit,
+  marginOnCostPercent,
+  purchaseBasicAmount,
   toDecimal,
 } from "@/lib/domain/computations";
 import {
@@ -178,8 +181,20 @@ export type CustomerAnalysisListRow = {
   due: string;
   totalProfit: string | null;
   marginPmt: string | null;
+  /**
+   * Purchase basic (rate × MT) for dispatches in the report range.
+   */
+  purchaseBasic: string;
+  /** Freight PMT × MT for dispatches in the report range. */
+  freightTotal: string;
+  /**
+   * Total Margin × 100 / (purchase basic + freight). Null when there is no
+   * margin or the cost base is 0.
+   */
+  marginVsInvestment: string | null;
   /** Amount-weighted average days from supply to recovery; null if none recovered. */
   recoveryOfFund: string | null;
+  creditDays: number | null;
 };
 
 function addFundRecoveryMovement(
@@ -213,6 +228,7 @@ export async function listCustomerAnalysisReport(
       state: true,
       openingDue: true,
       due: true,
+      creditDays: true,
     },
   });
 
@@ -300,14 +316,24 @@ export async function listCustomerAnalysisReport(
 
   const byCustomer = new Map<
     string,
-    { volume: Decimal; profit: Decimal | null }
+    {
+      volume: Decimal;
+      profit: Decimal | null;
+      purchaseBasic: Decimal;
+      freight: Decimal;
+    }
   >();
 
   for (const d of dispatches) {
     const customerId = d.order.customerId;
     let agg = byCustomer.get(customerId);
     if (!agg) {
-      agg = { volume: new Decimal(0), profit: null };
+      agg = {
+        volume: new Decimal(0),
+        profit: null,
+        purchaseBasic: new Decimal(0),
+        freight: new Decimal(0),
+      };
       byCustomer.set(customerId, agg);
     }
     agg.volume = agg.volume.plus(d.dispatchedQuantity);
@@ -322,6 +348,15 @@ export async function listCustomerAnalysisReport(
     if (profit != null) {
       agg.profit = agg.profit == null ? profit : agg.profit.plus(profit);
     }
+
+    const purchase = purchaseBasicAmount(
+      d.purchaseOrder?.rate ?? null,
+      d.dispatchedQuantity,
+    );
+    if (purchase != null) agg.purchaseBasic = agg.purchaseBasic.plus(purchase);
+    agg.freight = agg.freight.plus(
+      freightAmount(d.freight, d.dispatchedQuantity),
+    );
   }
 
   const movementsByCustomer = new Map<string, FundRecoveryMovement[]>();
@@ -394,10 +429,14 @@ export async function listCustomerAnalysisReport(
       discountNet.get(c.id),
       volume,
     );
-    const recoveryDays = averageFundRecoveryDays(
-      movementsByCustomer.get(c.id) ?? [],
-      recoveryOptions,
-    );
+    const movements = movementsByCustomer.get(c.id) ?? [];
+    const recoveryDays = averageFundRecoveryDays(movements, recoveryOptions);
+    const purchaseBasic = (agg?.purchaseBasic ?? new Decimal(0))
+      .toDecimalPlaces(2)
+      .toString();
+    const freightTotal = (agg?.freight ?? new Decimal(0))
+      .toDecimalPlaces(2)
+      .toString();
 
     return {
       id: c.id,
@@ -413,8 +452,16 @@ export async function listCustomerAnalysisReport(
         : c.due.toString(),
       totalProfit,
       marginPmt,
+      purchaseBasic,
+      freightTotal,
+      marginVsInvestment: marginOnCostPercent(
+        totalProfit,
+        purchaseBasic,
+        freightTotal,
+      ),
       recoveryOfFund:
         recoveryDays == null ? null : String(recoveryDays),
+      creditDays: c.creditDays,
     };
   });
 }
@@ -434,6 +481,7 @@ export async function listVendorAnalysisReport(
       state: true,
       openingDue: true,
       due: true,
+      creditDays: true,
     },
   });
 
@@ -521,7 +569,11 @@ export async function listVendorAnalysisReport(
         : c.due.toString(),
       totalProfit,
       marginPmt,
+      purchaseBasic: "0.00",
+      freightTotal: "0.00",
+      marginVsInvestment: null,
       recoveryOfFund: null,
+      creditDays: c.creditDays,
     };
   });
 }
@@ -1410,6 +1462,8 @@ export type SaleGeoCityProductRow = {
 
 export type SaleGeoAnalysisReport = {
   totalQuantity: string;
+  domesticQuantity: string;
+  importedQuantity: string;
   productCount: number;
   stateCount: number;
   cityCount: number;
@@ -1479,6 +1533,8 @@ export async function listSaleGeoAnalysisReport(
   const allStates = new Set<string>();
   const allCities = new Set<string>();
   let grandTotal = new Decimal(0);
+  let domesticTotal = new Decimal(0);
+  let importedTotal = new Decimal(0);
 
   for (const row of rows) {
     const qualityClass =
@@ -1501,6 +1557,11 @@ export async function listSaleGeoAnalysisReport(
     const qty = toDecimal(row.dispatchedQuantity);
 
     grandTotal = grandTotal.plus(qty);
+    if (qualityClass?.domestic === true) {
+      domesticTotal = domesticTotal.plus(qty);
+    } else {
+      importedTotal = importedTotal.plus(qty);
+    }
     allStates.add(state);
     allCities.add(`${state}::${city}`);
 
@@ -1624,6 +1685,8 @@ export async function listSaleGeoAnalysisReport(
 
   return {
     totalQuantity: grandTotal.toFixed(2),
+    domesticQuantity: domesticTotal.toFixed(2),
+    importedQuantity: importedTotal.toFixed(2),
     productCount: products.length,
     stateCount: allStates.size,
     cityCount: allCities.size,

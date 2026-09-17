@@ -19,6 +19,7 @@ import {
 } from "@/lib/domain/collectionWhatsApp";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 import { Modal } from "@/components/Modal";
+import { UpdateTableInteraction } from "@/components/UpdateTableInteraction";
 import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
 
 type PlannedCallFilter =
@@ -475,7 +476,7 @@ export function CollectionClient({
 
       <div className="table-wrap">
         <div className="table-h-scroll">
-        <table className="data collection-engine-table">
+        <UpdateTableInteraction className="data collection-engine-table">
           <thead>
             <tr>
               <th className="collection-engine-customer-col">
@@ -551,6 +552,7 @@ export function CollectionClient({
               return (
                 <tr
                   key={row.id}
+                  data-row-id={row.id}
                   className={rowClassName(
                     row.plannedCollectionCallDate,
                     today,
@@ -660,7 +662,7 @@ export function CollectionClient({
               </tr>
             )}
           </tbody>
-        </table>
+        </UpdateTableInteraction>
         </div>
       </div>
     </>

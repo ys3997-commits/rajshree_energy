@@ -4,6 +4,7 @@ import { isBillAccountVoucherComplete } from "@/lib/domain/bills";
 import {
   canStaffEditChecklist,
   isPurchaseChecklistComplete,
+  isReconciliationComplete,
   isSaleChecklistComplete,
   isTransportChecklistComplete,
 } from "@/lib/domain/dispatchChecklist";
@@ -44,6 +45,20 @@ export function canEditPurchaseChecklist(
   return canStaffEditChecklist({
     isComplete: isPurchaseChecklistComplete(row),
     completedAt: row.purchaseChecklistCompletedAt,
+  });
+}
+
+export function canEditReconciliationChecklist(
+  access: Exclude<Access, { kind: "none" }>,
+  row: {
+    reconciled: boolean;
+    reconciliationCompletedAt: Date | null;
+  },
+): boolean {
+  if (access.kind === "owner") return true;
+  return canStaffEditChecklist({
+    isComplete: isReconciliationComplete(row),
+    completedAt: row.reconciliationCompletedAt,
   });
 }
 
@@ -91,6 +106,19 @@ export function assertCanEditPurchaseChecklist(
   if (canEditPurchaseChecklist(access, row)) return;
   throw new AccessDeniedError(
     "Purchase checklist can no longer be edited after the day it was completed.",
+  );
+}
+
+export function assertCanEditReconciliationChecklist(
+  access: Exclude<Access, { kind: "none" }>,
+  row: {
+    reconciled: boolean;
+    reconciliationCompletedAt: Date | null;
+  },
+): void {
+  if (canEditReconciliationChecklist(access, row)) return;
+  throw new AccessDeniedError(
+    "Reconciliation can no longer be edited after the day it was completed.",
   );
 }
 

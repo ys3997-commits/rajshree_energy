@@ -21501,6 +21501,7 @@ export namespace Prisma {
     receiptStatus: $Enums.ReceiptStatus | null
     softCopyStatus: boolean | null
     entryInTally: boolean | null
+    reconciled: boolean | null
     biltyHardCopy: boolean | null
     transportInvoiceNo: string | null
     invoiceHardCopy: boolean | null
@@ -21510,6 +21511,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt: Date | null
     saleChecklistCompletedAt: Date | null
     transportChecklistCompletedAt: Date | null
+    reconciliationCompletedAt: Date | null
     createdByStaffId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -21533,6 +21535,7 @@ export namespace Prisma {
     receiptStatus: $Enums.ReceiptStatus | null
     softCopyStatus: boolean | null
     entryInTally: boolean | null
+    reconciled: boolean | null
     biltyHardCopy: boolean | null
     transportInvoiceNo: string | null
     invoiceHardCopy: boolean | null
@@ -21542,6 +21545,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt: Date | null
     saleChecklistCompletedAt: Date | null
     transportChecklistCompletedAt: Date | null
+    reconciliationCompletedAt: Date | null
     createdByStaffId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -21565,6 +21569,7 @@ export namespace Prisma {
     receiptStatus: number
     softCopyStatus: number
     entryInTally: number
+    reconciled: number
     biltyHardCopy: number
     transportInvoiceNo: number
     invoiceHardCopy: number
@@ -21574,6 +21579,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt: number
     saleChecklistCompletedAt: number
     transportChecklistCompletedAt: number
+    reconciliationCompletedAt: number
     createdByStaffId: number
     createdAt: number
     updatedAt: number
@@ -21611,6 +21617,7 @@ export namespace Prisma {
     receiptStatus?: true
     softCopyStatus?: true
     entryInTally?: true
+    reconciled?: true
     biltyHardCopy?: true
     transportInvoiceNo?: true
     invoiceHardCopy?: true
@@ -21620,6 +21627,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: true
     saleChecklistCompletedAt?: true
     transportChecklistCompletedAt?: true
+    reconciliationCompletedAt?: true
     createdByStaffId?: true
     createdAt?: true
     updatedAt?: true
@@ -21643,6 +21651,7 @@ export namespace Prisma {
     receiptStatus?: true
     softCopyStatus?: true
     entryInTally?: true
+    reconciled?: true
     biltyHardCopy?: true
     transportInvoiceNo?: true
     invoiceHardCopy?: true
@@ -21652,6 +21661,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: true
     saleChecklistCompletedAt?: true
     transportChecklistCompletedAt?: true
+    reconciliationCompletedAt?: true
     createdByStaffId?: true
     createdAt?: true
     updatedAt?: true
@@ -21675,6 +21685,7 @@ export namespace Prisma {
     receiptStatus?: true
     softCopyStatus?: true
     entryInTally?: true
+    reconciled?: true
     biltyHardCopy?: true
     transportInvoiceNo?: true
     invoiceHardCopy?: true
@@ -21684,6 +21695,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: true
     saleChecklistCompletedAt?: true
     transportChecklistCompletedAt?: true
+    reconciliationCompletedAt?: true
     createdByStaffId?: true
     createdAt?: true
     updatedAt?: true
@@ -21794,6 +21806,7 @@ export namespace Prisma {
     receiptStatus: $Enums.ReceiptStatus
     softCopyStatus: boolean
     entryInTally: boolean
+    reconciled: boolean
     biltyHardCopy: boolean
     transportInvoiceNo: string | null
     invoiceHardCopy: boolean
@@ -21803,6 +21816,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt: Date | null
     saleChecklistCompletedAt: Date | null
     transportChecklistCompletedAt: Date | null
+    reconciliationCompletedAt: Date | null
     createdByStaffId: string | null
     createdAt: Date
     updatedAt: Date
@@ -21845,6 +21859,7 @@ export namespace Prisma {
     receiptStatus?: boolean
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: boolean
     invoiceHardCopy?: boolean
@@ -21854,6 +21869,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: boolean
     saleChecklistCompletedAt?: boolean
     transportChecklistCompletedAt?: boolean
+    reconciliationCompletedAt?: boolean
     createdByStaffId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -21883,6 +21899,7 @@ export namespace Prisma {
     receiptStatus?: boolean
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: boolean
     invoiceHardCopy?: boolean
@@ -21892,6 +21909,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: boolean
     saleChecklistCompletedAt?: boolean
     transportChecklistCompletedAt?: boolean
+    reconciliationCompletedAt?: boolean
     createdByStaffId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -21921,6 +21939,7 @@ export namespace Prisma {
     receiptStatus?: boolean
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: boolean
     invoiceHardCopy?: boolean
@@ -21930,6 +21949,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: boolean
     saleChecklistCompletedAt?: boolean
     transportChecklistCompletedAt?: boolean
+    reconciliationCompletedAt?: boolean
     createdByStaffId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -21990,6 +22010,10 @@ export namespace Prisma {
        */
       entryInTally: boolean
       /**
+       * Reconciliation checklist — dispatch marked reconciled.
+       */
+      reconciled: boolean
+      /**
        * Transport checklist — bilty (goods receipt) hard copy received.
        */
       biltyHardCopy: boolean
@@ -22016,6 +22040,7 @@ export namespace Prisma {
       purchaseChecklistCompletedAt: Date | null
       saleChecklistCompletedAt: Date | null
       transportChecklistCompletedAt: Date | null
+      reconciliationCompletedAt: Date | null
       createdByStaffId: string | null
       createdAt: Date
       updatedAt: Date
@@ -22435,6 +22460,7 @@ export namespace Prisma {
     readonly receiptStatus: FieldRef<"Dispatch", 'ReceiptStatus'>
     readonly softCopyStatus: FieldRef<"Dispatch", 'Boolean'>
     readonly entryInTally: FieldRef<"Dispatch", 'Boolean'>
+    readonly reconciled: FieldRef<"Dispatch", 'Boolean'>
     readonly biltyHardCopy: FieldRef<"Dispatch", 'Boolean'>
     readonly transportInvoiceNo: FieldRef<"Dispatch", 'String'>
     readonly invoiceHardCopy: FieldRef<"Dispatch", 'Boolean'>
@@ -22444,6 +22470,7 @@ export namespace Prisma {
     readonly purchaseChecklistCompletedAt: FieldRef<"Dispatch", 'DateTime'>
     readonly saleChecklistCompletedAt: FieldRef<"Dispatch", 'DateTime'>
     readonly transportChecklistCompletedAt: FieldRef<"Dispatch", 'DateTime'>
+    readonly reconciliationCompletedAt: FieldRef<"Dispatch", 'DateTime'>
     readonly createdByStaffId: FieldRef<"Dispatch", 'String'>
     readonly createdAt: FieldRef<"Dispatch", 'DateTime'>
     readonly updatedAt: FieldRef<"Dispatch", 'DateTime'>
@@ -33581,6 +33608,7 @@ export namespace Prisma {
     receiptStatus: 'receiptStatus',
     softCopyStatus: 'softCopyStatus',
     entryInTally: 'entryInTally',
+    reconciled: 'reconciled',
     biltyHardCopy: 'biltyHardCopy',
     transportInvoiceNo: 'transportInvoiceNo',
     invoiceHardCopy: 'invoiceHardCopy',
@@ -33590,6 +33618,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt: 'purchaseChecklistCompletedAt',
     saleChecklistCompletedAt: 'saleChecklistCompletedAt',
     transportChecklistCompletedAt: 'transportChecklistCompletedAt',
+    reconciliationCompletedAt: 'reconciliationCompletedAt',
     createdByStaffId: 'createdByStaffId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -35444,6 +35473,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolFilter<"Dispatch"> | boolean
     entryInTally?: BoolFilter<"Dispatch"> | boolean
+    reconciled?: BoolFilter<"Dispatch"> | boolean
     biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
@@ -35453,6 +35483,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     saleChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     transportChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    reconciliationCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
@@ -35482,6 +35513,7 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    reconciled?: SortOrder
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrderInput | SortOrder
     invoiceHardCopy?: SortOrder
@@ -35491,6 +35523,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: SortOrderInput | SortOrder
     saleChecklistCompletedAt?: SortOrderInput | SortOrder
     transportChecklistCompletedAt?: SortOrderInput | SortOrder
+    reconciliationCompletedAt?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35523,6 +35556,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolFilter<"Dispatch"> | boolean
     entryInTally?: BoolFilter<"Dispatch"> | boolean
+    reconciled?: BoolFilter<"Dispatch"> | boolean
     biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
@@ -35532,6 +35566,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     saleChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     transportChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    reconciliationCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
@@ -35561,6 +35596,7 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    reconciled?: SortOrder
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrderInput | SortOrder
     invoiceHardCopy?: SortOrder
@@ -35570,6 +35606,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: SortOrderInput | SortOrder
     saleChecklistCompletedAt?: SortOrderInput | SortOrder
     transportChecklistCompletedAt?: SortOrderInput | SortOrder
+    reconciliationCompletedAt?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35601,6 +35638,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusWithAggregatesFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     entryInTally?: BoolWithAggregatesFilter<"Dispatch"> | boolean
+    reconciled?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     biltyHardCopy?: BoolWithAggregatesFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolWithAggregatesFilter<"Dispatch"> | boolean
@@ -35610,6 +35648,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
     saleChecklistCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
     transportChecklistCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
+    reconciliationCompletedAt?: DateTimeNullableWithAggregatesFilter<"Dispatch"> | Date | string | null
     createdByStaffId?: StringNullableWithAggregatesFilter<"Dispatch"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Dispatch"> | Date | string
@@ -37967,6 +38006,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -37976,6 +38016,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -38004,6 +38045,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -38013,6 +38055,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38031,6 +38074,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -38040,6 +38084,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -38068,6 +38113,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -38077,6 +38123,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -38100,6 +38147,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -38109,6 +38157,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38127,6 +38176,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -38136,6 +38186,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -38158,6 +38209,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -38167,6 +38219,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -40235,6 +40288,7 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    reconciled?: SortOrder
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrder
     invoiceHardCopy?: SortOrder
@@ -40244,6 +40298,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: SortOrder
     saleChecklistCompletedAt?: SortOrder
     transportChecklistCompletedAt?: SortOrder
+    reconciliationCompletedAt?: SortOrder
     createdByStaffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -40273,6 +40328,7 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    reconciled?: SortOrder
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrder
     invoiceHardCopy?: SortOrder
@@ -40282,6 +40338,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: SortOrder
     saleChecklistCompletedAt?: SortOrder
     transportChecklistCompletedAt?: SortOrder
+    reconciliationCompletedAt?: SortOrder
     createdByStaffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -40305,6 +40362,7 @@ export namespace Prisma {
     receiptStatus?: SortOrder
     softCopyStatus?: SortOrder
     entryInTally?: SortOrder
+    reconciled?: SortOrder
     biltyHardCopy?: SortOrder
     transportInvoiceNo?: SortOrder
     invoiceHardCopy?: SortOrder
@@ -40314,6 +40372,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: SortOrder
     saleChecklistCompletedAt?: SortOrder
     transportChecklistCompletedAt?: SortOrder
+    reconciliationCompletedAt?: SortOrder
     createdByStaffId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -43974,6 +44033,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -43983,6 +44043,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -44010,6 +44071,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -44019,6 +44081,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -44331,6 +44394,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFilter<"Dispatch"> | $Enums.ReceiptStatus
     softCopyStatus?: BoolFilter<"Dispatch"> | boolean
     entryInTally?: BoolFilter<"Dispatch"> | boolean
+    reconciled?: BoolFilter<"Dispatch"> | boolean
     biltyHardCopy?: BoolFilter<"Dispatch"> | boolean
     transportInvoiceNo?: StringNullableFilter<"Dispatch"> | string | null
     invoiceHardCopy?: BoolFilter<"Dispatch"> | boolean
@@ -44340,6 +44404,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     saleChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     transportChecklistCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
+    reconciliationCompletedAt?: DateTimeNullableFilter<"Dispatch"> | Date | string | null
     createdByStaffId?: StringNullableFilter<"Dispatch"> | string | null
     createdAt?: DateTimeFilter<"Dispatch"> | Date | string
     updatedAt?: DateTimeFilter<"Dispatch"> | Date | string
@@ -44418,6 +44483,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -44427,6 +44493,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -44453,6 +44520,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -44462,6 +44530,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -45289,6 +45358,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -45298,6 +45368,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -45324,6 +45395,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -45333,6 +45405,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -46020,6 +46093,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -46029,6 +46103,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -46055,6 +46130,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -46064,6 +46140,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -46380,6 +46457,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -46389,6 +46467,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
@@ -46415,6 +46494,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -46424,6 +46504,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -46833,6 +46914,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -46842,6 +46924,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutDispatchesInput
@@ -46868,6 +46951,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -46877,6 +46961,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -49767,6 +49852,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -49776,6 +49862,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -50132,6 +50219,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -50141,6 +50229,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -50168,6 +50257,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -50177,6 +50267,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -50199,6 +50290,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -50208,6 +50300,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -50289,6 +50382,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -50298,6 +50392,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50342,6 +50437,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -50351,6 +50447,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -50377,6 +50474,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -50386,6 +50484,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50408,6 +50507,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -50417,6 +50517,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50953,6 +51054,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -50962,6 +51064,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51136,6 +51239,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51145,6 +51249,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -51171,6 +51276,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51180,6 +51286,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51202,6 +51309,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51211,6 +51319,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51448,6 +51557,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -51457,6 +51567,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51528,6 +51639,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51537,6 +51649,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -51563,6 +51676,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51572,6 +51686,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51594,6 +51709,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51603,6 +51719,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51625,6 +51742,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -51634,6 +51752,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51652,6 +51771,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51661,6 +51781,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -51687,6 +51808,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51696,6 +51818,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51718,6 +51841,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51727,6 +51851,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51749,6 +51874,7 @@ export namespace Prisma {
     receiptStatus?: $Enums.ReceiptStatus
     softCopyStatus?: boolean
     entryInTally?: boolean
+    reconciled?: boolean
     biltyHardCopy?: boolean
     transportInvoiceNo?: string | null
     invoiceHardCopy?: boolean
@@ -51758,6 +51884,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: Date | string | null
     saleChecklistCompletedAt?: Date | string | null
     transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51776,6 +51903,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51785,6 +51913,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
@@ -51811,6 +51940,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51820,6 +51950,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51842,6 +51973,7 @@ export namespace Prisma {
     receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
     softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
     entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
     biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
     transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
     invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
@@ -51851,6 +51983,7 @@ export namespace Prisma {
     purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

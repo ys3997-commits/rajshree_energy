@@ -70,23 +70,40 @@ async function applyPurchaseOrderExecScope(
 }
 
 /**
- * Match Status column display: open POs with no quantity show Completed
- * even when stored orderStatus is still Running.
+ * Completed POs whose displayed balance is not 0 (typically over-supplied).
+ */
+async function runningDisplayCompletedPurchaseOrderIds(): Promise<string[]> {
+  const rows = await prisma.$queryRaw<Array<{ id: string }>>`
+    SELECT id FROM "PurchaseOrder"
+    WHERE quantity IS NOT NULL
+      AND "orderStatus"::text = 'COMPLETED'
+      AND (quantity - "dispatchedOrder" - COALESCE("closingQuantity", 0)) <> 0
+  `;
+  return rows.map((row) => row.id);
+}
+
+/**
+ * Match Status column display:
+ * - open POs with no quantity show Completed even when stored Running
+ * - over-supplied POs show Running even when stored Completed (balance < 0)
  */
 function purchaseOrderStatusWhere(
   status: PurchaseOrderStatus,
+  extraRunningIds: string[] = [],
 ): Prisma.PurchaseOrderWhereInput {
   const openWithNoQuantity: Prisma.PurchaseOrderWhereInput = {
     AND: [{ orderType: OrderType.OPEN }, { quantity: null }],
   };
 
   if (status === PurchaseOrderStatus.RUNNING) {
-    return {
+    const running: Prisma.PurchaseOrderWhereInput = {
       AND: [
         { orderStatus: PurchaseOrderStatus.RUNNING },
         { NOT: openWithNoQuantity },
       ],
     };
+    if (extraRunningIds.length === 0) return running;
+    return { OR: [running, { id: { in: extraRunningIds } }] };
   }
 
   return {
@@ -99,7 +116,16 @@ function purchaseOrderStatusWhere(
 
 export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
   const where: Prisma.PurchaseOrderWhereInput = {};
-  if (filters.status) Object.assign(where, purchaseOrderStatusWhere(filters.status));
+  const extraRunningIds =
+    filters.status === PurchaseOrderStatus.RUNNING
+      ? await runningDisplayCompletedPurchaseOrderIds()
+      : [];
+  if (filters.status) {
+    Object.assign(
+      where,
+      purchaseOrderStatusWhere(filters.status, extraRunningIds),
+    );
+  }
   if (filters.importerId) where.importerId = filters.importerId;
   if (filters.vesselId) where.vesselId = filters.vesselId;
   if (filters.qualityClassId) where.qualityClassId = filters.qualityClassId;

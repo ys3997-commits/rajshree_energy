@@ -76,25 +76,25 @@ export default async function OrdersPage({
   }));
 
   const exportColumns = [
-    { key: "poNumber", header: "PO number" },
+    { key: "poNumber", header: "PO Number" },
     { key: "date", header: "Date" },
     { key: "customer", header: "Customer" },
-    { key: "quality", header: "Quality class" },
-    { key: "lorries", header: "Number of lorries", align: "right" as const },
-    { key: "orderQty", header: "Order Qty", align: "right" as const },
+    { key: "quality", header: "Quality\nClass" },
+    { key: "lorries", header: "Number Of\nLorries", align: "right" as const },
+    { key: "orderQty", header: "Order\nQty", align: "right" as const },
     {
       key: "dispatchedQty",
-      header: "Dispatched Qty",
+      header: "Dispatched\nQty",
       align: "right" as const,
     },
-    { key: "closingQty", header: "Closing Qty", align: "right" as const },
+    { key: "closingQty", header: "Closing\nQty", align: "right" as const },
     { key: "balance", header: "Balance", align: "right" as const },
-    { key: "lastDispatch", header: "Last dispatch", align: "right" as const },
-    { key: "trucks", header: "Trucks dispatch", align: "right" as const },
-    { key: "daysSince", header: "Days since order", align: "right" as const },
-    { key: "creditPeriod", header: "Credit period", align: "right" as const },
-    { key: "rate", header: "Basic rate", align: "right" as const },
-    { key: "deliveryTerms", header: "Delivery term" },
+    { key: "lastDispatch", header: "Last\nDispatch", align: "right" as const },
+    { key: "trucks", header: "Trucks\nDispatch", align: "right" as const },
+    { key: "daysSince", header: "Days Since\nOrder", align: "right" as const },
+    { key: "creditPeriod", header: "Credit\nPeriod", align: "right" as const },
+    { key: "rate", header: "Basic\nRate", align: "right" as const },
+    { key: "deliveryTerms", header: "Delivery\nTerm" },
     { key: "status", header: "Status" },
   ];
 
@@ -126,7 +126,6 @@ export default async function OrdersPage({
       <div className="page-header">
         <div>
           <h1 className="page-title">Sale orders</h1>
-          <p className="page-subtitle">Track POs, balances, and dispatch progress.</p>
         </div>
         <div className="flex gap-2">
           <CreateOrderButton
@@ -212,33 +211,65 @@ export default async function OrdersPage({
         <div className="table-h-scroll"><table className="data orders-table">
           <thead>
             <tr>
-              <th className="orders-sticky-po">PO number</th>
+              <th className="orders-sticky-po">PO Number</th>
               <th className="orders-sticky-date">Date</th>
               <th className="orders-sticky-customer">Customer</th>
-              <th>Quality class</th>
-              <th className="num col-lorries">
-                Number of
+              <th className="col-wrap-head">
+                Quality
                 <br />
-                lorries
+                Class
               </th>
-              <th className="num">Order Qty</th>
-              <th className="num">Dispatched Qty</th>
-              <th className="num">Closing Qty</th>
+              <th className="num col-lorries">
+                Number Of
+                <br />
+                Lorries
+              </th>
+              <th className="num col-wrap-head">
+                Order
+                <br />
+                Qty
+              </th>
+              <th className="num col-wrap-head">
+                Dispatched
+                <br />
+                Qty
+              </th>
+              <th className="num col-wrap-head">
+                Closing
+                <br />
+                Qty
+              </th>
               <th className="num">Balance</th>
-              <th className="num">
+              <th className="num col-wrap-head">
                 Last
                 <br />
-                dispatch
+                Dispatch
               </th>
-              <th className="num">Trucks dispatch</th>
-              <th className="num col-days-since-order">
-                Days since
+              <th className="num col-trucks-dispatch">
+                Trucks
                 <br />
-                order
+                Dispatch
               </th>
-              <th className="num">Credit period</th>
-              <th className="num">Basic rate</th>
-              <th>Delivery term</th>
+              <th className="num col-days-since-order">
+                Days Since
+                <br />
+                Order
+              </th>
+              <th className="num col-wrap-head">
+                Credit
+                <br />
+                Period
+              </th>
+              <th className="num col-wrap-head">
+                Basic
+                <br />
+                Rate
+              </th>
+              <th className="col-wrap-head">
+                Delivery
+                <br />
+                Term
+              </th>
               <th>Status</th>
               <th className="collection-whatsapp-col" aria-label="WhatsApp" />
               <th className="col-actions">Actions</th>
@@ -277,7 +308,7 @@ export default async function OrdersPage({
                     daysSinceOrder(row.dispatches[0]?.dispatchDate ?? null),
                   )}
                 </td>
-                <td className="num">
+                <td className="num col-trucks-dispatch">
                   {formatIndianNumber(row._count.dispatches)}
                 </td>
                 <td className="num col-days-since-order">

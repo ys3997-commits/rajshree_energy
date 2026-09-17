@@ -20,7 +20,6 @@ import {
   formatLorryNumber,
   formatQualityClass,
   formatAmount,
-  formatRs,
 } from "@/lib/domain/format";
 import { computeGst, toDecimal, type DecimalLike } from "@/lib/domain/computations";
 import {
@@ -36,6 +35,7 @@ export type DispatchSearchParams = {
   purchaseUpdateStatus?: string;
   saleUpdateStatus?: string;
   receivedQtyStatus?: string;
+  reconciliationStatus?: string;
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
@@ -157,51 +157,106 @@ export function formatSaleTotalAmount(
 }
 
 export const dispatchExportColumns = [
-  { key: "dispatchNumber", header: "Dispatch no" },
+  { key: "dispatchNumber", header: "Dispatch\nno" },
   { key: "date", header: "Date" },
-  { key: "lorryNumber", header: "Lorry no" },
+  { key: "lorryNumber", header: "Lorry\nno" },
   { key: "weight", header: "Weight", align: "right" as const },
-  { key: "vesselName", header: "Vessel name" },
+  { key: "vesselName", header: "Vessel\nname" },
   { key: "quality", header: "Quality" },
-  { key: "gstState", header: "GST state" },
-  { key: "purchasePo", header: "PO no" },
-  { key: "purchaseInvoice", header: "Purchase invoice" },
+  { key: "gstState", header: "GST\nstate" },
+  { key: "purchasePo", header: "PO\nno" },
+  { key: "purchaseInvoice", header: "Purchase\ninvoice" },
   { key: "vendor", header: "Vendor" },
   {
     key: "purchaseBasic",
-    header: "Purchase basic price",
+    header: "Purchase basic\nprice",
     align: "right" as const,
   },
   {
     key: "purchaseTotal",
-    header: "Purchase total price",
+    header: "Purchase total\nprice",
     align: "right" as const,
   },
-  { key: "salePo", header: "SO no" },
-  { key: "saleInvoice", header: "Sale invoice" },
-  { key: "customer", header: "Customer name" },
+  { key: "salePo", header: "SO\nno" },
+  { key: "saleInvoice", header: "Sale\ninvoice" },
+  { key: "customer", header: "Customer\nname" },
   {
     key: "saleBasic",
-    header: "Sale basic price",
+    header: "Sale basic\nprice",
     align: "right" as const,
   },
   {
     key: "saleTotal",
-    header: "Sale total price",
+    header: "Sale total\nprice",
     align: "right" as const,
   },
-  { key: "deliveryTerms", header: "Delivery terms" },
-  { key: "transporter", header: "Transporter name" },
-  { key: "freightPmt", header: "Freight PMT", align: "right" as const },
+  { key: "deliveryTerms", header: "Delivery\nterms" },
+  { key: "transporter", header: "Transporter\nname" },
+  { key: "freightPmt", header: "Freight\nPMT", align: "right" as const },
   {
     key: "freightAmount",
-    header: "Freight amount",
+    header: "Freight\namount",
     align: "right" as const,
   },
-  { key: "profit", header: "Profit", align: "right" as const },
   { key: "received", header: "Received", align: "right" as const },
   { key: "diff", header: "Diff", align: "right" as const },
-  { key: "purchaseInTally", header: "Purchase in tally" },
+  { key: "purchaseInTally", header: "Purchase\nin tally" },
+];
+
+export const dispatchExportColumnsReconciliation = [
+  { key: "dispatchNumber", header: "Dispatch\nno" },
+  { key: "date", header: "Date" },
+  { key: "lorryNumber", header: "Lorry\nno" },
+  { key: "weight", header: "Weight", align: "right" as const },
+  { key: "gstState", header: "GST\nstate" },
+  { key: "purchasePo", header: "PO\nno" },
+  { key: "purchaseInvoice", header: "Purchase\ninvoice" },
+  { key: "vendor", header: "Vendor" },
+  {
+    key: "purchaseBasic",
+    header: "Purchase basic\nprice",
+    align: "right" as const,
+  },
+  {
+    key: "purchaseGstAmount",
+    header: "GST",
+    align: "right" as const,
+  },
+  {
+    key: "purchaseTcsAmount",
+    header: "TCS",
+    align: "right" as const,
+  },
+  {
+    key: "purchaseTotalAmount",
+    header: "Total\nAmount",
+    align: "right" as const,
+  },
+  { key: "salePo", header: "SO\nno" },
+  { key: "saleInvoice", header: "Sale\ninvoice" },
+  { key: "customer", header: "Customer\nname" },
+  {
+    key: "saleBasic",
+    header: "Sale basic\nprice",
+    align: "right" as const,
+  },
+  {
+    key: "saleGstAmount",
+    header: "GST",
+    align: "right" as const,
+  },
+  {
+    key: "saleTcsAmount",
+    header: "TCS",
+    align: "right" as const,
+  },
+  {
+    key: "saleTotalAmount",
+    header: "Total\nAmount",
+    align: "right" as const,
+  },
+  { key: "deliveryTerms", header: "Delivery\nterms" },
+  { key: "reconciled", header: "Reconciled" },
 ];
 
 export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
@@ -365,7 +420,7 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
       purchasePo: displayOrderDigits(row.purchasePoNumber, "purchase"),
       purchaseInvoice: row.purchaseInvoiceNumber ?? "—",
       vendor: row.vendorName ?? "—",
-      purchaseBasic: formatRs(row.purchaseBasicRate),
+      purchaseBasic: formatAmount(row.purchaseBasicRate),
       purchaseBasicAmount: formatPurchaseBasicAmount(
         row.dispatchedQuantity,
         row.purchaseBasicRate,
@@ -382,20 +437,34 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
         row.dispatchedQuantity,
         row.purchaseBasicRate,
       ),
-      purchaseTotal: formatRs(row.purchaseTotalRate),
+      purchaseTotal: formatAmount(row.purchaseTotalRate),
       salePo: displayOrderDigits(row.salePoNumber, "sale"),
       saleInvoice: row.saleInvoiceNumber ?? "—",
       customer: row.customerName ?? "—",
-      saleBasic: formatRs(row.saleBasicRate),
-      saleTotal: formatRs(row.saleTotalRate),
+      saleBasic: formatAmount(row.saleBasicRate),
+      saleGstAmount: formatSaleGstAmount(
+        row.dispatchedQuantity,
+        row.saleBasicRate,
+      ),
+      saleTcsAmount: formatSaleTcsAmount(
+        row.dispatchedQuantity,
+        row.saleBasicRate,
+        row.customerCategory,
+      ),
+      saleTotalAmount: formatSaleTotalAmount(
+        row.dispatchedQuantity,
+        row.saleBasicRate,
+        row.customerCategory,
+      ),
+      saleTotal: formatAmount(row.saleTotalRate),
       deliveryTerms: formatDispatchTerms(row.dispatchTerms),
       transporter: row.transporterName ?? "—",
-      freightPmt: formatRs(row.freight),
-      freightAmount: formatRs(row.freightAmount),
-      profit: formatRs(row.lineProfit),
+      freightPmt: formatAmount(row.freight),
+      freightAmount: formatAmount(row.freightAmount),
       received: formatDispatchMt(receivedQty),
       diff: formatDispatchMt(diffQty),
       purchaseInTally: row.entryInTally ? "Yes" : "—",
+      reconciled: row.reconciled ? "Yes" : "—",
     };
   });
 }
@@ -414,6 +483,11 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     sp.receivedQtyStatus === "PENDING" || sp.receivedQtyStatus === "RECEIVED"
       ? sp.receivedQtyStatus
       : "";
+  const reconciliationStatus: DispatchFilters["reconciliationStatus"] =
+    sp.reconciliationStatus === "PENDING" ||
+    sp.reconciliationStatus === "RECONCILED"
+      ? sp.reconciliationStatus
+      : "";
   const dispatchTerms: DispatchFilters["dispatchTerms"] =
     sp.dispatchTerms === DispatchTerms.FOR ||
     sp.dispatchTerms === DispatchTerms.EX_PORT
@@ -429,6 +503,7 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     purchaseUpdateStatus,
     saleUpdateStatus,
     receivedQtyStatus,
+    reconciliationStatus,
     poNumber: sp.poNumber || "",
     purchasePoNumber: sp.purchasePoNumber || "",
     vesselId: sp.vesselId || "",

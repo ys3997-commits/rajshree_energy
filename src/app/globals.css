@@ -669,70 +669,83 @@ body:has(.app-shell) {
   min-width: 11rem; /* Transporter name */
 }
 
-/* Dispatches page: Received/Diff sit under Status (not Dispatch). */
+/* Dispatches page: compact gaps; wrap long headers onto two lines. */
+.report-table-dispatches thead tr:not(.report-group-row) th,
+.report-table-dispatches tbody td {
+  min-width: 0;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th.col-wrap-head {
+  white-space: normal;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(1),
 .report-table-dispatches tbody td:nth-child(1) {
-  min-width: 6.5rem; /* Dispatch no */
+  min-width: 4.5rem; /* Dispatch no */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(2),
+.report-table-dispatches tbody td:nth-child(2) {
+  min-width: 5.5rem; /* Date — override generic lorry width */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(3),
+.report-table-dispatches tbody td:nth-child(3) {
+  min-width: 6.25rem; /* Lorry no */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(4),
+.report-table-dispatches tbody td:nth-child(4) {
+  min-width: 4.5rem; /* Weight — override generic vessel width */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(5),
+.report-table-dispatches tbody td:nth-child(5) {
+  min-width: 8rem; /* Vessel name — override generic quality width */
+}
+
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(6),
+.report-table-dispatches tbody td:nth-child(6) {
+  min-width: 6.5rem; /* Quality — override generic GST width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(9),
 .report-table-dispatches tbody td:nth-child(9) {
-  min-width: 9rem; /* Purchase invoice */
+  min-width: 6.5rem; /* Purchase invoice */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(10),
 .report-table-dispatches tbody td:nth-child(10) {
-  min-width: 11rem; /* Vendor */
+  min-width: 8rem; /* Vendor */
 }
 
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(11),
-.report-table-dispatches tbody td:nth-child(11) {
-  min-width: 0; /* Basic price (purchase) — override master Vendor width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(12),
-.report-table-dispatches tbody td:nth-child(12) {
-  min-width: 0; /* Total price (purchase) */
+.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(13),
+.report-table-dispatches tbody td:nth-child(13) {
+  min-width: 0; /* SO no — override generic invoice width */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(14),
 .report-table-dispatches tbody td:nth-child(14) {
-  min-width: 9rem; /* Sale invoice */
+  min-width: 6.5rem; /* Sale invoice */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(15),
 .report-table-dispatches tbody td:nth-child(15) {
-  min-width: 12rem; /* Customer name */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(16),
-.report-table-dispatches tbody td:nth-child(16) {
-  min-width: 0; /* Basic price (sale) — override master Customer width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(17),
-.report-table-dispatches tbody td:nth-child(17) {
-  min-width: 0; /* Total price (sale) */
+  min-width: 8rem; /* Customer name */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(18),
 .report-table-dispatches tbody td:nth-child(18) {
-  min-width: 7rem; /* Delivery terms */
+  min-width: 5.25rem; /* Delivery terms */
 }
 
 .report-table-dispatches thead tr:not(.report-group-row) th:nth-child(19),
 .report-table-dispatches tbody td:nth-child(19) {
-  min-width: 11rem; /* Transporter name — override master Sale invoice width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(20),
-.report-table-dispatches tbody td:nth-child(20) {
-  min-width: 0; /* Freight PMT — override master Transporter width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(21),
-.report-table-dispatches tbody td:nth-child(21) {
-  min-width: 0; /* Freight amount */
+  min-width: 8rem; /* Transporter name */
 }
 
 .table-wrap-scroll {
@@ -1475,13 +1488,13 @@ table.data.purchase-orders-table tbody td {
 
 table.data.orders-table tbody tr:hover td,
 table.data.purchase-orders-table tbody tr:hover td,
-table.data.report-table-dispatches tbody tr:hover td,
 table.data.dispatch-register-table tbody tr:hover td,
 table.data.dispatch-analysis-table tbody tr:hover td {
   background: #f7faf9;
 }
 
 table.data.report-table-dispatches,
+table.data.report-table-reconciliation,
 table.data.dispatch-register-table,
 table.data.dispatch-analysis-table {
   border-collapse: separate;
@@ -1489,6 +1502,7 @@ table.data.dispatch-analysis-table {
 }
 
 table.data.report-table-dispatches thead tr.report-group-row th,
+table.data.report-table-reconciliation thead tr.report-group-row th,
 table.data.dispatch-register-table thead tr.report-group-row th,
 table.data.dispatch-analysis-table thead tr.report-group-row th {
   position: sticky;
@@ -1499,6 +1513,7 @@ table.data.dispatch-analysis-table thead tr.report-group-row th {
 }
 
 table.data.report-table-dispatches thead tr:not(.report-group-row) th,
+table.data.report-table-reconciliation thead tr:not(.report-group-row) th,
 table.data.dispatch-register-table thead tr:not(.report-group-row) th,
 table.data.dispatch-analysis-table thead tr:not(.report-group-row) th {
   position: sticky;
@@ -1509,9 +1524,27 @@ table.data.dispatch-analysis-table thead tr:not(.report-group-row) th {
 }
 
 table.data.report-table-dispatches tbody td,
+table.data.report-table-reconciliation tbody td,
 table.data.dispatch-register-table tbody td,
 table.data.dispatch-analysis-table tbody td {
   background: #ffffff;
+}
+
+table.data.report-table-dispatches:not(.update-table-hold-active) tbody tr:hover td,
+table.data.report-table-dispatches tbody tr.update-table-row-held td,
+table.data.report-table-reconciliation:not(.update-table-hold-active) tbody tr:hover td,
+table.data.report-table-reconciliation tbody tr.update-table-row-held td {
+  background: #d4e0dc;
+}
+
+table.data.report-table-dispatches tbody tr.update-table-row-held td,
+table.data.report-table-reconciliation tbody tr.update-table-row-held td {
+  background: #d4e0dc !important;
+}
+
+table.data.report-table-dispatches.update-table-hold-active tbody tr:not(.update-table-row-held):hover td,
+table.data.report-table-reconciliation.update-table-hold-active tbody tr:not(.update-table-row-held):hover td {
+  background: #ffffff !important;
 }
 
 .orders-table th,
@@ -1522,7 +1555,7 @@ table.data.dispatch-analysis-table tbody td {
 /* Freeze PO / Date / Customer. Widths keep later columns from sliding underneath. */
 table.data.orders-table {
   --orders-sticky-po: 8rem;
-  --orders-sticky-date: 6.75rem;
+  --orders-sticky-date: 9rem;
   --orders-sticky-customer: 12rem;
 }
 
@@ -1553,6 +1586,9 @@ table.data.orders-table td.orders-sticky-date {
   width: var(--orders-sticky-date);
   min-width: var(--orders-sticky-date);
   max-width: var(--orders-sticky-date);
+  padding-left: 0.55rem;
+  padding-right: 0.55rem;
+  font-variant-numeric: tabular-nums;
 }
 
 table.data.orders-table th.orders-sticky-customer,
@@ -1604,7 +1640,9 @@ table.data.orders-table tbody tr:hover td.orders-sticky-customer {
 }
 
 .orders-table th.col-lorries,
-.orders-table td.col-lorries {
+.orders-table td.col-lorries,
+.orders-table th.col-trucks-dispatch,
+.orders-table td.col-trucks-dispatch {
   width: 5.75rem;
   min-width: 5.75rem;
   max-width: 5.75rem;
@@ -1622,7 +1660,9 @@ table.data.orders-table tbody tr:hover td.orders-sticky-customer {
 }
 
 .orders-table th.col-lorries,
-.orders-table th.col-days-since-order {
+.orders-table th.col-trucks-dispatch,
+.orders-table th.col-days-since-order,
+.orders-table th.col-wrap-head {
   white-space: normal;
   line-height: 1.25;
   vertical-align: middle;
@@ -1636,6 +1676,36 @@ table.data.orders-table td.collection-whatsapp-col {
   padding-left: 0.35rem;
   padding-right: 0.35rem;
   text-align: center;
+}
+
+@media print {
+  .filters,
+  .page-header .flex,
+  table.data.orders-table th.collection-whatsapp-col,
+  table.data.orders-table td.collection-whatsapp-col,
+  table.data.orders-table th.col-actions,
+  table.data.orders-table td.col-actions {
+    display: none !important;
+  }
+
+  table.data.orders-table thead th {
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 600;
+    white-space: normal;
+  }
+
+  table.data.orders-table th.orders-sticky-date,
+  table.data.orders-table td.orders-sticky-date {
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  table.data.orders-table th,
+  table.data.orders-table td {
+    padding-left: 0.55rem;
+    padding-right: 0.55rem;
+  }
 }
 
 /* Purchase orders list — wider vendor/vessel, compact days column */
@@ -2439,7 +2509,135 @@ table.data tr.month-divider:hover td {
 
 .report-table-dispatches thead tr:not(.report-group-row) th:last-child,
 .report-table-dispatches tbody td:last-child {
-  min-width: 20rem;
+  min-width: 16rem;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+.report-table-dispatches .dispatch-edit-actions {
+  gap: 0.4rem;
+}
+
+.app-main .table-h-scroll > table.data.report-table-reconciliation,
+table.data.report-table.report-table-reconciliation {
+  width: max-content;
+  min-width: 0;
+}
+
+table.data.report-table.report-table-reconciliation thead tr.report-group-row th,
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th,
+table.data.report-table.report-table-reconciliation tbody td {
+  min-width: 0;
+  width: 1%;
+  padding-left: 0.42rem;
+  padding-right: 0.42rem;
+}
+
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th,
+table.data.report-table.report-table-reconciliation tbody td {
+  border-left: 1px solid var(--line);
+}
+
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th:first-child,
+table.data.report-table.report-table-reconciliation tbody td:first-child {
+  border-left: none;
+}
+
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th.col-wrap-head {
+  white-space: normal;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th.col-amt,
+table.data.report-table.report-table-reconciliation tbody td.col-amt {
+  min-width: 8.25rem;
+  width: auto;
+  padding-left: 0.85rem;
+  padding-right: 0.7rem;
+}
+
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th:last-child,
+table.data.report-table.report-table-reconciliation tbody td:last-child {
+  white-space: nowrap;
+}
+
+.report-table-reconciliation .dispatch-edit-actions {
+  gap: 0.3rem;
+}
+
+.report-table-reconciliation .dispatch-edit-action .btn {
+  white-space: nowrap;
+}
+
+.app-main .table-h-scroll > table.data.report-table-reconciliation.report-table-resizable,
+table.data.report-table.report-table-reconciliation.report-table-resizable {
+  table-layout: fixed;
+}
+
+table.data.report-table.report-table-reconciliation.report-table-resizable thead tr.report-group-row th,
+table.data.report-table.report-table-reconciliation.report-table-resizable thead tr:not(.report-group-row) th,
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td {
+  width: auto;
+  min-width: 0;
+}
+
+table.data.report-table.report-table-reconciliation.report-table-resizable thead tr:not(.report-group-row) th.col-amt,
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td.col-amt {
+  min-width: 0;
+  width: auto;
+}
+
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td:last-child {
+  overflow: visible;
+  text-overflow: clip;
+}
+
+table.data.report-table.report-table-owner-resize thead tr:not(.report-group-row) th::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 8;
+  touch-action: none;
+}
+
+table.data.report-table.report-table-owner-resize thead tr:not(.report-group-row) th:hover::after {
+  background: linear-gradient(
+    to right,
+    transparent 4px,
+    var(--accent) 4px,
+    var(--accent) 6px,
+    transparent 6px
+  );
+}
+
+body.col-resizing {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
+body.col-resizing table.data.report-table.report-table-owner-resize thead tr:not(.report-group-row) th:hover::after {
+  background: transparent;
+}
+
+.col-resize-guide {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 40;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--accent);
+  pointer-events: none;
 }
 
 /* Transport engine: keep each data row on one line */
@@ -4717,7 +4915,7 @@ a.home-quality-row:hover {
 
 .sale-analysis-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0.75rem;
 }
 
@@ -4951,6 +5149,23 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
   background: #f8fafb;
 }
 
+table.data.ageing-table th.collection-whatsapp-col,
+table.data.ageing-table td.collection-whatsapp-col {
+  width: 4.75rem;
+  min-width: 4.75rem;
+  max-width: 4.75rem;
+  padding-left: 0.35rem;
+  padding-right: 0.35rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .sale-analysis-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .sale-analysis-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4983,8 +5198,13 @@ table.data.collection-engine-table tbody td {
   background: #ffffff;
 }
 
-table.data.collection-engine-table tbody tr:hover td {
-  background: #ffffff;
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr:hover td,
+table.data.collection-engine-table tbody tr.update-table-row-held td {
+  background: #d4e0dc;
+}
+
+table.data.collection-engine-table tbody tr.update-table-row-held td {
+  background: #d4e0dc !important;
 }
 
 table.data.collection-engine-table th.collection-engine-customer-col,
@@ -5013,16 +5233,24 @@ table.data.collection-engine-table td.collection-engine-customer-col {
   background-color: #ffffff;
 }
 
-table.data.collection-engine-table tbody tr:hover td.collection-engine-customer-col {
-  background-color: #ffffff;
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.update-table-row-held td.collection-engine-customer-col {
+  background-color: #d4e0dc;
+}
+
+table.data.collection-engine-table.update-table-hold-active tbody tr:not(.update-table-row-held):not(.payment-row-yesterday):not(.collection-row-call-today):not(.collection-row-due-call):hover td,
+table.data.collection-engine-table.update-table-hold-active tbody tr:not(.update-table-row-held):not(.payment-row-yesterday):not(.collection-row-call-today):not(.collection-row-due-call):hover td.collection-engine-customer-col {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
 }
 
 table.data.collection-engine-table tbody tr.payment-row-yesterday td.collection-engine-customer-col {
   background-color: #e8f2f0;
 }
 
-table.data.collection-engine-table tbody tr.payment-row-yesterday:hover td.collection-engine-customer-col {
-  background-color: #dcebe8;
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.payment-row-yesterday:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.payment-row-yesterday.update-table-row-held td.collection-engine-customer-col {
+  background-color: #dcebe8 !important;
 }
 
 table.data.collection-engine-table th.collection-engine-customer-col button.th-sort {
@@ -5068,40 +5296,45 @@ table.data.collection-engine-table tbody tr.payment-row-yesterday td {
   background: rgba(31, 92, 85, 0.12);
 }
 
-table.data.collection-engine-table tbody tr.payment-row-yesterday:hover td {
-  background: rgba(31, 92, 85, 0.18);
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.payment-row-yesterday:hover td,
+table.data.collection-engine-table tbody tr.payment-row-yesterday.update-table-row-held td {
+  background: rgba(31, 92, 85, 0.18) !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-call-today td {
   background: rgba(180, 140, 20, 0.08);
 }
 
-table.data.collection-engine-table tbody tr.collection-row-call-today:hover td {
-  background: rgba(180, 140, 20, 0.14);
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-today:hover td,
+table.data.collection-engine-table tbody tr.collection-row-call-today.update-table-row-held td {
+  background: rgba(180, 140, 20, 0.14) !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-due-call td {
   background: rgba(155, 44, 44, 0.08);
 }
 
-table.data.collection-engine-table tbody tr.collection-row-due-call:hover td {
-  background: rgba(155, 44, 44, 0.14);
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td,
+table.data.collection-engine-table tbody tr.collection-row-due-call.update-table-row-held td {
+  background: rgba(155, 44, 44, 0.14) !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-call-today td.collection-engine-customer-col {
   background-color: #f9f5ec;
 }
 
-table.data.collection-engine-table tbody tr.collection-row-call-today:hover td.collection-engine-customer-col {
-  background-color: #f4efde;
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-today:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.collection-row-call-today.update-table-row-held td.collection-engine-customer-col {
+  background-color: #f4efde !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-due-call td.collection-engine-customer-col {
   background-color: #f7eeee;
 }
 
-table.data.collection-engine-table tbody tr.collection-row-due-call:hover td.collection-engine-customer-col {
-  background-color: #f1e1e1;
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.collection-row-due-call.update-table-row-held td.collection-engine-customer-col {
+  background-color: #f1e1e1 !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-call-today .collection-date-input {
@@ -5347,9 +5580,29 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
   max-width: 18rem;
 }
 
+.report-page .customer-analysis-list .table-wrap {
+  max-width: none;
+  width: max-content;
+  min-width: calc(100% + 4rem);
+  background: #ffffff;
+}
+
 .report-page .customer-analysis-list table.data.customer-analysis-table tbody td {
   padding: 0.7rem var(--table-cell-padding-x);
   line-height: 1.25;
+  background: #ffffff;
+}
+
+.report-page .customer-analysis-list table.data.customer-analysis-table tbody tr:hover td {
+  background: #f7faf9;
+}
+
+.report-page .customer-analysis-list table.data.customer-analysis-table tbody tr.customer-row-inactive td {
+  background: rgba(20, 23, 28, 0.028);
+}
+
+.report-page .customer-analysis-list table.data.customer-analysis-table tbody tr.customer-row-inactive:hover td {
+  background: rgba(20, 23, 28, 0.045);
 }
 
 .report-page .customer-analysis-list table.data.customer-analysis-table tbody tr {

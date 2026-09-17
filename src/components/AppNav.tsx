@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { Access } from "@/lib/auth/types";
-import { canAccessPath, hasAnyBankPageAccess, hasAnyUpdatePageAccess } from "@/lib/auth/pages";
+import { canAccessPath, hasAnyBankPageAccess, hasAnyDispatchPageAccess, hasAnyUpdatePageAccess } from "@/lib/auth/pages";
 import { LockedLink } from "@/components/LockedLink";
 import { LogoutButton } from "@/components/LogoutButton";
 import {
@@ -41,8 +41,12 @@ const usersLinks: NavLeaf[] = USER_MENU_CATEGORIES.map((category) => ({
   label: category.label,
 }));
 
+const dispatchLinks: NavLeaf[] = [
+  { href: "/dispatches", label: "Complete Dispatch" },
+  { href: "/dispatches/reconciliation", label: "Reconciliation" },
+];
+
 const links = [
-  { href: "/dispatches", label: "Dispatches" },
   { href: "/bills", label: "Approvals" },
 ];
 
@@ -307,6 +311,11 @@ function isBankLinkActive(pathname: string, href: string) {
   return isActivePath(pathname, href);
 }
 
+function isDispatchLinkActive(pathname: string, href: string) {
+  if (href === "/dispatches") return pathname === "/dispatches";
+  return isActivePath(pathname, href);
+}
+
 function isOptionsActive(pathname: string) {
   if (isUsersActive(pathname)) return false;
   return pathname === "/options" || pathname.startsWith("/options/");
@@ -325,6 +334,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
+  const [dispatchOpen, setDispatchOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
   const [bankOpen, setBankOpen] = useState(false);
   const [mastersOpen, setMastersOpen] = useState(false);
@@ -335,12 +345,14 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   );
   const reportMenuId = useId();
   const updateMenuId = useId();
+  const dispatchMenuId = useId();
   const ordersMenuId = useId();
   const bankMenuId = useId();
   const mastersMenuId = useId();
   const usersMenuId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
   const updateRef = useRef<HTMLDivElement>(null);
+  const dispatchRef = useRef<HTMLDivElement>(null);
   const ordersRef = useRef<HTMLDivElement>(null);
   const bankRef = useRef<HTMLDivElement>(null);
   const mastersRef = useRef<HTMLDivElement>(null);
@@ -349,6 +361,8 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
     pathname === "/reports" || pathname.startsWith("/reports/");
   const updateActive =
     pathname === "/update" || pathname.startsWith("/update/");
+  const dispatchActive =
+    pathname === "/dispatches" || pathname.startsWith("/dispatches/");
   const ordersActive = isOrdersActive(pathname);
   const bankActive = isBankActive(pathname);
   const mastersActive = isMastersActive(pathname);
@@ -356,6 +370,8 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const allowed = (href: string) => canAccessPath(access.pageKeys, href);
   const showUpdateNav =
     access.pageKeys === "all" || hasAnyUpdatePageAccess(access.pageKeys);
+  const showDispatchNav =
+    access.pageKeys === "all" || hasAnyDispatchPageAccess(access.pageKeys);
   const showBankNav =
     access.pageKeys === "all" || hasAnyBankPageAccess(access.pageKeys);
   const showUsersNav = access.kind === "owner";
@@ -364,6 +380,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
     setMobileNavOpen(false);
     setReportOpen(false);
     setUpdateOpen(false);
+    setDispatchOpen(false);
     setOrdersOpen(false);
     setBankOpen(false);
     setMastersOpen(false);
@@ -412,6 +429,32 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [updateOpen]);
+
+  useEffect(() => {
+    if (!dispatchOpen) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (
+        dispatchRef.current &&
+        !dispatchRef.current.contains(event.target as Node)
+      ) {
+        setDispatchOpen(false);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setDispatchOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [dispatchOpen]);
 
   useEffect(() => {
     if (!ordersOpen) return;
@@ -553,8 +596,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
     };
   }, [usersOpen]);
 
-  const linksBeforeBank = links.slice(0, 1);
-  const linksAfterBank = links.slice(1);
+  const linksAfterBank = links;
 
   return (
     <header className={`app-header${mobileNavOpen ? " nav-open" : ""}`}>
@@ -628,19 +670,46 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
               </div>
             </div>
 
-            {linksBeforeBank.map((link) => {
-              const active = isActivePath(pathname, link.href);
-              return (
-                <LockedLink
-                  key={link.href}
-                  href={link.href}
-                  allowed={allowed(link.href)}
-                  className={active ? "active" : undefined}
-                >
-                  {link.label}
-                </LockedLink>
-              );
-            })}
+            {showDispatchNav && (
+            <div
+              className={`nav-dropdown${dispatchOpen ? " open" : ""}${dispatchActive ? " active" : ""}`}
+              ref={dispatchRef}
+            >
+              <button
+                type="button"
+                className={`nav-dropdown-trigger${dispatchActive ? " active" : ""}`}
+                aria-expanded={dispatchOpen}
+                aria-controls={dispatchMenuId}
+                aria-haspopup="menu"
+                onClick={() => setDispatchOpen((open) => !open)}
+              >
+                Dispatch
+                <span className="nav-dropdown-caret" aria-hidden="true" />
+              </button>
+              <div
+                id={dispatchMenuId}
+                className="nav-dropdown-menu"
+                role="menu"
+                hidden={!dispatchOpen}
+              >
+                {dispatchLinks.map((item) => {
+                  const active = isDispatchLinkActive(pathname, item.href);
+                  return (
+                    <LockedLink
+                      key={item.href}
+                      href={item.href}
+                      allowed={allowed(item.href)}
+                      role="menuitem"
+                      className={active ? "active" : undefined}
+                      onClick={() => setDispatchOpen(false)}
+                    >
+                      {item.label}
+                    </LockedLink>
+                  );
+                })}
+              </div>
+            </div>
+            )}
 
             {showUpdateNav && (
             <div

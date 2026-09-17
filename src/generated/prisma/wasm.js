@@ -346,6 +346,7 @@ exports.Prisma.DispatchScalarFieldEnum = {
   receiptStatus: 'receiptStatus',
   softCopyStatus: 'softCopyStatus',
   entryInTally: 'entryInTally',
+  reconciled: 'reconciled',
   biltyHardCopy: 'biltyHardCopy',
   transportInvoiceNo: 'transportInvoiceNo',
   invoiceHardCopy: 'invoiceHardCopy',
@@ -355,6 +356,7 @@ exports.Prisma.DispatchScalarFieldEnum = {
   purchaseChecklistCompletedAt: 'purchaseChecklistCompletedAt',
   saleChecklistCompletedAt: 'saleChecklistCompletedAt',
   transportChecklistCompletedAt: 'transportChecklistCompletedAt',
+  reconciliationCompletedAt: 'reconciliationCompletedAt',
   createdByStaffId: 'createdByStaffId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

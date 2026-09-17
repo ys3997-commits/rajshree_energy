@@ -412,6 +412,8 @@ model Dispatch {
   softCopyStatus      Boolean       @default(false)
   /// Purchase checklist — purchase invoice recorded in Tally accounting software.
   entryInTally        Boolean       @default(false)
+  /// Reconciliation checklist — dispatch marked reconciled.
+  reconciled          Boolean       @default(false)
   /// Transport checklist — bilty (goods receipt) hard copy received.
   biltyHardCopy       Boolean       @default(false)
   /// Transport checklist — transporter invoice number.
@@ -427,6 +429,7 @@ model Dispatch {
   purchaseChecklistCompletedAt DateTime?
   saleChecklistCompletedAt     DateTime?
   transportChecklistCompletedAt DateTime?
+  reconciliationCompletedAt DateTime?
   createdByStaffId      String?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt

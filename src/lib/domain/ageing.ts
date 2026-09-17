@@ -195,6 +195,16 @@ export function toAgeingReportRow(
   sector: string | null,
   state: string | null,
   saleExecutive: string | null,
+  contact: Pick<
+    AgeingReportRow,
+    | "overdue"
+    | "creditDays"
+    | "dealingCompany"
+    | "paymentInChargeName"
+    | "paymentInChargeContact"
+    | "ownerName"
+    | "ownerContact"
+  >,
 ): AgeingReportRow {
   const buckets = Object.fromEntries(
     AGEING_BUCKETS.map((bucket) => [
@@ -211,6 +221,7 @@ export function toAgeingReportRow(
     state,
     saleExecutive,
     totalDue: aged.totalDue.toDecimalPlaces(2).toString(),
+    ...contact,
     ...buckets,
   };
 }

@@ -135,7 +135,9 @@ export function computeOrderStatus(order: {
     dispatchedOrder: order.dispatchedOrder,
     closingQuantity: order.closingQuantity,
   });
-  if (bal != null && !bal.gt(0)) {
+  // Only an exact zero balance is Completed. Over-supply (negative balance)
+  // stays Running so it matches the Status column and Running filter.
+  if (bal != null && bal.eq(0)) {
     return OrderStatus.COMPLETED;
   }
   return OrderStatus.RUNNING;
@@ -143,7 +145,7 @@ export function computeOrderStatus(order: {
 
 /**
  * Purchase orders are Running until quantity is set and balance is zero
- * (fully dispatched and/or closed).
+ * (fully dispatched and/or closed). Over-supply stays Running.
  */
 export function computePurchaseOrderStatus(order: {
   quantity: Decimal | null;
@@ -155,7 +157,7 @@ export function computePurchaseOrderStatus(order: {
     dispatchedOrder: order.dispatchedOrder,
     closingQuantity: order.closingQuantity,
   });
-  if (bal != null && !bal.gt(0)) {
+  if (bal != null && bal.eq(0)) {
     return PurchaseOrderStatus.COMPLETED;
   }
   return PurchaseOrderStatus.RUNNING;
@@ -265,4 +267,44 @@ export function lineProfit(args: {
   const perMt = profitPerMt(args);
   if (perMt == null) return null;
   return perMt.mul(args.quantity);
+}
+
+/** Purchase basic rate × dispatched MT. */
+export function purchaseBasicAmount(
+  purchaseRate: DecimalLike | null | undefined,
+  quantity: DecimalLike,
+): Decimal | null {
+  if (purchaseRate == null) return null;
+  const rate = toDecimal(purchaseRate);
+  const qty = toDecimal(quantity);
+  if (!rate.isFinite() || !qty.isFinite()) return null;
+  return rate.mul(qty);
+}
+
+/** Freight PMT × dispatched MT; 0 when freight is missing (Ex-Port). */
+export function freightAmount(
+  freightPmt: DecimalLike | null | undefined,
+  quantity: DecimalLike,
+): Decimal {
+  if (freightPmt == null) return new Decimal(0);
+  const freight = toDecimal(freightPmt);
+  const qty = toDecimal(quantity);
+  if (!freight.isFinite() || !qty.isFinite()) return new Decimal(0);
+  return freight.mul(qty);
+}
+
+/**
+ * Total Margin × 100 / (purchase basic + freight).
+ * Null when margin is missing or the cost base is 0.
+ */
+export function marginOnCostPercent(
+  margin: DecimalLike | null | undefined,
+  purchaseBasic: DecimalLike,
+  freight: DecimalLike,
+): string | null {
+  if (margin == null || margin === "") return null;
+  const value = toDecimal(margin);
+  const base = toDecimal(purchaseBasic).plus(toDecimal(freight));
+  if (!value.isFinite() || !base.isFinite() || base.isZero()) return null;
+  return value.div(base).mul(100).toDecimalPlaces(2).toString();
 }

@@ -14,6 +14,8 @@ export type AppPage = {
   ownerOnly?: boolean;
   /** Shown under Update on the Team access page, not as a top-level row. */
   updateSubPage?: boolean;
+  /** Shown under Dispatch on the Team access page, not as a top-level row. */
+  dispatchSubPage?: boolean;
   /** Shown under Bank on the Team access page, not as a top-level row. */
   bankSubPage?: boolean;
   /** Shown under Master on the Team access page, not as a top-level row. */
@@ -27,6 +29,26 @@ export type AppPage = {
 export const LEGACY_UPDATE_PAGE_KEY = "update";
 export const LEGACY_BANK_PAGE_KEY = "payments";
 export const LEGACY_OPTIONS_PAGE_KEY = "options";
+export const LEGACY_DISPATCH_PAGE_KEY = "dispatches";
+
+export const DISPATCH_SUB_PAGES = [
+  {
+    key: "dispatches-complete",
+    href: "/dispatches",
+    label: "Complete Dispatch",
+    group: "Pages" as const,
+    dispatchSubPage: true,
+  },
+  {
+    key: "dispatches-reconciliation",
+    href: "/dispatches/reconciliation",
+    label: "Reconciliation",
+    group: "Pages" as const,
+    dispatchSubPage: true,
+  },
+] satisfies AppPage[];
+
+export const DISPATCH_SUB_PAGE_KEYS = DISPATCH_SUB_PAGES.map((page) => page.key);
 
 export const UPDATE_SUB_PAGES = [
   {
@@ -417,7 +439,7 @@ export const APP_PAGES: AppPage[] = [
   { key: "home", href: "/", label: "Home", group: "Pages" },
   { key: "orders", href: "/orders", label: "Sale orders", group: "Pages" },
   { key: "purchase-orders", href: "/purchase-orders", label: "Purchase orders", group: "Pages" },
-  { key: "dispatches", href: "/dispatches", label: "Dispatches", group: "Pages" },
+  ...DISPATCH_SUB_PAGES,
   ...UPDATE_SUB_PAGES,
   ...BANK_SUB_PAGES,
   { key: "bills", href: "/bills", label: "Approvals", group: "Pages" },
@@ -433,6 +455,7 @@ export const GRANTABLE_PAGES = APP_PAGES.filter((page) => !page.ownerOnly);
 export const TEAM_ACCESS_PAGES = GRANTABLE_PAGES.filter(
   (page) =>
     !page.updateSubPage &&
+    !page.dispatchSubPage &&
     !page.bankSubPage &&
     !page.masterSubPage &&
     !page.masterOptionsSubPage &&
@@ -444,7 +467,6 @@ export const PAGES_TEAM_ACCESS_ORDER = [
   "home",
   "orders",
   "purchase-orders",
-  "dispatches",
   "bills",
 ] as const;
 
@@ -468,6 +490,14 @@ export function expandLegacyUpdatePageKeys(pageKeys: string[]): string[] {
   return [...new Set([...withoutLegacy, ...UPDATE_SUB_PAGE_KEYS])];
 }
 
+export function expandLegacyDispatchPageKeys(pageKeys: string[]): string[] {
+  if (!pageKeys.includes(LEGACY_DISPATCH_PAGE_KEY)) return pageKeys;
+  const withoutLegacy = pageKeys.filter(
+    (key) => key !== LEGACY_DISPATCH_PAGE_KEY,
+  );
+  return [...new Set([...withoutLegacy, ...DISPATCH_SUB_PAGE_KEYS])];
+}
+
 export function expandLegacyBankPageKeys(pageKeys: string[]): string[] {
   if (!pageKeys.includes(LEGACY_BANK_PAGE_KEY)) return pageKeys;
   const withoutLegacy = pageKeys.filter((key) => key !== LEGACY_BANK_PAGE_KEY);
@@ -484,7 +514,9 @@ export function expandLegacyOptionsPageKeys(pageKeys: string[]): string[] {
 
 export function expandStaffPageKeys(pageKeys: string[]): string[] {
   return expandLegacyOptionsPageKeys(
-    expandLegacyBankPageKeys(expandLegacyUpdatePageKeys(pageKeys)),
+    expandLegacyBankPageKeys(
+      expandLegacyUpdatePageKeys(expandLegacyDispatchPageKeys(pageKeys)),
+    ),
   );
 }
 
@@ -495,6 +527,11 @@ export function staffHasPageKey(pageKeys: string[], pageKey: string): boolean {
 export function hasAnyUpdatePageAccess(pageKeys: string[]): boolean {
   const expanded = expandLegacyUpdatePageKeys(pageKeys);
   return UPDATE_SUB_PAGE_KEYS.some((key) => expanded.includes(key));
+}
+
+export function hasAnyDispatchPageAccess(pageKeys: string[]): boolean {
+  const expanded = expandLegacyDispatchPageKeys(pageKeys);
+  return DISPATCH_SUB_PAGE_KEYS.some((key) => expanded.includes(key));
 }
 
 export function hasAnyBankPageAccess(pageKeys: string[]): boolean {
@@ -528,6 +565,27 @@ function canAccessMasterOptionsPath(pageKeys: string[], pathname: string): boole
   if (path === "/options" || path.startsWith("/options/")) {
     return MASTER_OPTIONS_SUB_PAGE_KEYS.some((key) => expanded.includes(key));
   }
+  return false;
+}
+
+function dispatchSubPageKeyForPath(pathname: string): string | null {
+  const path = canonicalPath(pathname);
+  if (
+    path === "/dispatches/reconciliation" ||
+    path.startsWith("/dispatches/reconciliation/")
+  ) {
+    return "dispatches-reconciliation";
+  }
+  if (path === "/dispatches" || path.startsWith("/dispatches/")) {
+    return "dispatches-complete";
+  }
+  return null;
+}
+
+function canAccessDispatchPath(pageKeys: string[], pathname: string): boolean {
+  const expanded = expandLegacyDispatchPageKeys(pageKeys);
+  const subKey = dispatchSubPageKeyForPath(pathname);
+  if (subKey) return expanded.includes(subKey);
   return false;
 }
 
@@ -627,6 +685,7 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
   if (pageKeys === "all") return true;
   const path = canonicalPath(pathname);
   if (path === "/reports") return hasAnyReportAccess(pageKeys);
+  if (canAccessDispatchPath(pageKeys, pathname)) return true;
   if (canAccessUpdatePath(pageKeys, pathname)) return true;
   if (canAccessBankPath(pageKeys, pathname)) return true;
   if (canAccessMasterOptionsPath(pageKeys, pathname)) return true;

@@ -19,6 +19,8 @@ import {
   TEAM_ACCESS_PAGES,
   UPDATE_SUB_PAGES,
   UPDATE_SUB_PAGE_KEYS,
+  DISPATCH_SUB_PAGES,
+  DISPATCH_SUB_PAGE_KEYS,
 } from "@/lib/auth/pages";
 import {
   AGEING_REPORT_PAGE_KEY,
@@ -105,6 +107,7 @@ export function PeopleManager({
     string[]
   >([]);
   const [updateExpanded, setUpdateExpanded] = useState(false);
+  const [dispatchExpanded, setDispatchExpanded] = useState(false);
   const [bankExpanded, setBankExpanded] = useState(false);
   const [masterExpanded, setMasterExpanded] = useState(false);
   const [masterOptionsExpanded, setMasterOptionsExpanded] = useState(false);
@@ -143,6 +146,7 @@ export function PeopleManager({
     setAgeingReportSalesExecs([]);
     setCustomerLedgerSalesExecs([]);
     setUpdateExpanded(false);
+    setDispatchExpanded(false);
     setBankExpanded(false);
     setMasterExpanded(false);
     setMasterOptionsExpanded(false);
@@ -158,6 +162,10 @@ export function PeopleManager({
     setPassword("");
     setDisableLogin(false);
     setPageKeys(expandStaffPageKeys(item.pageKeys));
+    setDispatchExpanded(
+      DISPATCH_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)) ||
+        item.pageKeys.includes("dispatches"),
+    );
     setUpdateExpanded(
       UPDATE_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)) ||
         item.pageKeys.includes("update"),
@@ -199,6 +207,36 @@ export function PeopleManager({
     setPassword("");
     setDisableLogin(false);
   }
+
+  function toggleDispatchParent() {
+    const turningOn = !dispatchExpanded;
+    setDispatchExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !DISPATCH_SUB_PAGE_KEYS.includes(key)),
+      );
+    }
+  }
+
+  function toggleDispatchAll() {
+    const allOn = DISPATCH_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !DISPATCH_SUB_PAGE_KEYS.includes(key));
+      return allOn ? without : [...without, ...DISPATCH_SUB_PAGE_KEYS];
+    });
+  }
+
+  function toggleDispatchSubPage(key: string) {
+    const allOn = DISPATCH_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    if (allOn) return;
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  const dispatchAllOn = DISPATCH_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
 
   function toggleUpdateParent() {
     const turningOn = !updateExpanded;
@@ -517,6 +555,7 @@ export function PeopleManager({
       ),
       ...(group === "Pages"
         ? [
+            ...DISPATCH_SUB_PAGE_KEYS,
             ...UPDATE_SUB_PAGE_KEYS,
             ...BANK_SUB_PAGE_KEYS,
             ...MASTER_ALL_SUB_PAGE_KEYS,
@@ -547,6 +586,7 @@ export function PeopleManager({
           setCustomerLedgerSalesExecs([]);
         }
         if (group === "Pages") {
+          setDispatchExpanded(false);
           setUpdateExpanded(false);
           setBankExpanded(false);
           setMasterExpanded(false);
@@ -596,6 +636,7 @@ export function PeopleManager({
         setCustomerLedgerSalesExecs([REPORT_EXEC_ALL]);
       }
       if (group === "Pages") {
+        setDispatchExpanded(true);
         setUpdateExpanded(true);
         setBankExpanded(true);
         setMasterExpanded(true);
@@ -870,6 +911,7 @@ export function PeopleManager({
                   >
                     {[
                       ...orderedPagesTeamAccess().map((page) => page.key),
+                      ...DISPATCH_SUB_PAGE_KEYS,
                       ...UPDATE_SUB_PAGE_KEYS,
                       ...BANK_SUB_PAGE_KEYS,
                       ...MASTER_ALL_SUB_PAGE_KEYS,
@@ -912,6 +954,24 @@ export function PeopleManager({
                 </div>
 
                 <div className="people-access-panels">
+                  <AccessPanel
+                    title="Dispatch"
+                    expanded={dispatchExpanded}
+                    onToggleExpanded={toggleDispatchParent}
+                    allOn={dispatchAllOn}
+                    onToggleAll={toggleDispatchAll}
+                  >
+                    {DISPATCH_SUB_PAGES.map((subPage) => (
+                      <AccessCheckbox
+                        key={subPage.key}
+                        checked={pageKeys.includes(subPage.key)}
+                        disabled={dispatchAllOn}
+                        onChange={() => toggleDispatchSubPage(subPage.key)}
+                        label={subPage.label}
+                      />
+                    ))}
+                  </AccessPanel>
+
                   <AccessPanel
                     title="Update"
                     expanded={updateExpanded}

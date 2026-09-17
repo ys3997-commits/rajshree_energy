@@ -13,11 +13,14 @@ import {
 } from "@/lib/domain/ageingBuckets";
 import { toDecimal } from "@/lib/domain/computations";
 import {
+  computeOverdue,
   discountDueDelta,
+  dispatchedAmount,
   OPENING_DUE_DATE,
   paymentDueDelta,
   purchaseDispatchDueDelta,
   saleDispatchDueDelta,
+  sumSalesSuppliedInCreditWindow,
 } from "@/lib/domain/customerDue";
 import { prisma } from "@/lib/prisma";
 
@@ -49,6 +52,13 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
       state: true,
       saleExecutive: true,
       openingDue: true,
+      due: true,
+      creditDays: true,
+      dealingCompany: true,
+      paymentInChargeName: true,
+      paymentInChargeContact: true,
+      ownerName: true,
+      ownerContact: true,
     },
     orderBy: { name: "asc" },
   });
@@ -98,6 +108,10 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
   ]);
 
   const movementsByCustomer = new Map<string, AgeingMovement[]>();
+  const supplyLinesByCustomer = new Map<
+    string,
+    { amount: ReturnType<typeof toDecimal>; supplyDate: Date }[]
+  >();
 
   for (const customer of customers) {
     addMovement(movementsByCustomer, customer.id, {
@@ -114,6 +128,15 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
         amount: saleDispatchDueDelta(row.order.finalRate, row.dispatchedQuantity),
         sortKey: `1|sale|${row.createdAt.toISOString()}|${row.id}`,
       });
+      const amount = dispatchedAmount(
+        row.order.finalRate,
+        row.dispatchedQuantity,
+      );
+      if (amount.gt(0)) {
+        const list = supplyLinesByCustomer.get(row.order.customerId) ?? [];
+        list.push({ amount, supplyDate: row.dispatchDate });
+        supplyLinesByCustomer.set(row.order.customerId, list);
+      }
     }
     if (row.purchaseOrder) {
       addMovement(movementsByCustomer, row.purchaseOrder.importerId, {
@@ -154,6 +177,20 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
       asOf,
     );
     if (aged.totalDue.lte(0)) continue;
+    const recentSales =
+      customer.creditDays == null
+        ? toDecimal(0)
+        : sumSalesSuppliedInCreditWindow(
+            supplyLinesByCustomer.get(customer.id) ?? [],
+            customer.creditDays,
+            asOf,
+            customer.openingDue,
+          );
+    const overdue = computeOverdue(
+      customer.due,
+      customer.creditDays,
+      recentSales,
+    );
     rows.push(
       toAgeingReportRow(
         customer.id,
@@ -163,6 +200,15 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
         customer.sector,
         customer.state,
         customer.saleExecutive,
+        {
+          overdue: overdue.toString(),
+          creditDays: customer.creditDays,
+          dealingCompany: customer.dealingCompany,
+          paymentInChargeName: customer.paymentInChargeName,
+          paymentInChargeContact: customer.paymentInChargeContact,
+          ownerName: customer.ownerName,
+          ownerContact: customer.ownerContact,
+        },
       ),
     );
   }

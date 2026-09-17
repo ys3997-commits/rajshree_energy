@@ -4,9 +4,9 @@ import {
   DispatchTerms,
   OrderStatus,
   OrderType,
+  Prisma,
   PurchaseOrderStatus,
   ReceiptStatus,
-  type Prisma,
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
@@ -37,8 +37,10 @@ import {
 } from "@/lib/domain/orderNumbers";
 import { requireSignedIn } from "@/lib/auth/access";
 import { AccessDeniedError } from "@/lib/auth/errors";
+import type { Access } from "@/lib/auth/types";
 import {
   assertCanEditPurchaseChecklist,
+  assertCanEditReconciliationChecklist,
   assertCanEditSaleChecklist,
 } from "@/lib/auth/checklistEditAccess";
 import {
@@ -47,6 +49,7 @@ import {
 } from "@/lib/auth/sameDayEntryModify";
 import {
   isPurchaseChecklistComplete,
+  isReconciliationComplete,
   isSaleChecklistComplete,
   nextChecklistCompletedAt,
 } from "@/lib/domain/dispatchChecklist";
@@ -105,13 +108,14 @@ export type UpdateDispatchInput = {
   freight?: DecimalLike | null;
   softCopyStatus?: boolean;
   entryInTally?: boolean;
+  reconciled?: boolean;
   saleInvoiceNumber?: string | null;
   purchaseInvoiceNumber?: string | null;
   /** When set, updates received qty and marks receipt RECEIVED. Null clears receipt. */
   receivingQuantity?: DecimalLike | null;
 };
 
-type DispatchChecklistUpdateKind = "purchase" | "sale" | "full";
+type DispatchChecklistUpdateKind = "purchase" | "sale" | "reconciliation" | "full";
 
 function classifyDispatchUpdate(
   changes: UpdateDispatchInput,
@@ -121,11 +125,15 @@ function classifyDispatchUpdate(
   );
   const purchaseKeys = new Set(["purchaseInvoiceNumber", "entryInTally"]);
   const saleKeys = new Set(["saleInvoiceNumber", "receivingQuantity"]);
+  const reconciliationKeys = new Set(["reconciled"]);
   if (keys.length > 0 && keys.every((key) => purchaseKeys.has(key))) {
     return "purchase";
   }
   if (keys.length > 0 && keys.every((key) => saleKeys.has(key))) {
     return "sale";
+  }
+  if (keys.length > 0 && keys.every((key) => reconciliationKeys.has(key))) {
+    return "reconciliation";
   }
   return "full";
 }
@@ -291,6 +299,7 @@ function revalidateDispatchPaths() {
   revalidatePath("/orders");
   revalidatePath("/purchase-orders");
   revalidatePath("/dispatches");
+  revalidatePath("/dispatches/reconciliation");
   revalidatePath("/update/purchase");
   revalidatePath("/update/sale");
   revalidatePath("/vessels");
@@ -300,6 +309,82 @@ function revalidateDispatchPaths() {
   revalidatePath("/payments");
   revalidatePath("/reports/transport/due");
   revalidatePath("/reports/transport/ledger");
+}
+
+export type DispatchReconciliationFlags = {
+  reconciled: boolean;
+  reconciliationCompletedAt: Date | null;
+};
+
+export async function listDispatchReconciliationFlags(
+  ids: string[],
+): Promise<Map<string, DispatchReconciliationFlags>> {
+  const flags = new Map<string, DispatchReconciliationFlags>();
+  if (ids.length === 0) return flags;
+  const placeholders = ids.map((_, index) => `$${index + 1}`).join(", ");
+  const rows = await prisma.$queryRawUnsafe<
+    Array<{
+      id: string;
+      reconciled: boolean;
+      reconciliationCompletedAt: Date | null;
+    }>
+  >(
+    `SELECT id, reconciled, "reconciliationCompletedAt"
+     FROM "Dispatch"
+     WHERE id IN (${placeholders})`,
+    ...ids,
+  );
+  for (const row of rows) {
+    flags.set(row.id, {
+      reconciled: Boolean(row.reconciled),
+      reconciliationCompletedAt: row.reconciliationCompletedAt,
+    });
+  }
+  return flags;
+}
+
+async function updateDispatchReconciliation(
+  access: Exclude<Access, { kind: "none" }>,
+  id: string,
+  reconciled: boolean,
+): Promise<{ id: string }> {
+  const rows = await prisma.$queryRaw<
+    Array<{
+      id: string;
+      reconciled: boolean;
+      reconciliationCompletedAt: Date | null;
+    }>
+  >`
+    SELECT id, reconciled, "reconciliationCompletedAt"
+    FROM "Dispatch"
+    WHERE id = ${id}
+    LIMIT 1
+  `;
+  const existing = rows[0];
+  if (!existing) throw new Error("Dispatch not found");
+
+  assertCanEditReconciliationChecklist(access, {
+    reconciled: Boolean(existing.reconciled),
+    reconciliationCompletedAt: existing.reconciliationCompletedAt,
+  });
+
+  const completedAt = nextChecklistCompletedAt(
+    isReconciliationComplete({ reconciled: Boolean(existing.reconciled) }),
+    isReconciliationComplete({ reconciled }),
+    existing.reconciliationCompletedAt,
+  );
+
+  await prisma.$executeRaw`
+    UPDATE "Dispatch"
+    SET
+      reconciled = ${reconciled},
+      "reconciliationCompletedAt" = ${completedAt},
+      "updatedAt" = NOW()
+    WHERE id = ${id}
+  `;
+
+  revalidateDispatchPaths();
+  return { id };
 }
 
 /**
@@ -650,6 +735,10 @@ export async function updateDispatch(
   changes: UpdateDispatchInput,
 ): Promise<{ id: string }> {
   const access = await requireSignedIn();
+  const updateKind = classifyDispatchUpdate(changes);
+  if (updateKind === "reconciliation") {
+    return updateDispatchReconciliation(access, id, Boolean(changes.reconciled));
+  }
   const existingForAuth = await prisma.dispatch.findUnique({
     where: { id },
     select: {
@@ -666,7 +755,6 @@ export async function updateDispatch(
   });
   if (!existingForAuth) throw new Error("Dispatch not found");
 
-  const updateKind = classifyDispatchUpdate(changes);
   if (updateKind === "purchase") {
     assertCanEditPurchaseChecklist(access, existingForAuth);
   } else if (updateKind === "sale") {

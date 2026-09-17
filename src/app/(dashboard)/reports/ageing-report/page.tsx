@@ -13,5 +13,10 @@ export default async function AgeingReportPage() {
   const execScope = getStaffReportExecScope(access, AGEING_REPORT_PAGE_KEY);
   const filteredRows = filterRowsByExecScope(rows, execScope);
 
-  return <AgeingReportClient rows={filteredRows} />;
+  return (
+    <AgeingReportClient
+      rows={filteredRows}
+      canMessageOwner={access.kind === "owner"}
+    />
+  );
 }

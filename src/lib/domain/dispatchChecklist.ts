@@ -30,6 +30,12 @@ export function isPurchaseChecklistComplete(input: {  purchaseInvoiceNumber: str
   );
 }
 
+export function isReconciliationComplete(input: {
+  reconciled: boolean;
+}): boolean {
+  return Boolean(input.reconciled);
+}
+
 export function isSaleChecklistComplete(input: {
   saleInvoiceNumber: string | null;
   receivingQuantity: DecimalLike | null;

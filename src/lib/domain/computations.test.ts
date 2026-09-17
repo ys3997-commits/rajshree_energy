@@ -17,8 +17,11 @@ import {
   diffInQuantity,
   effectiveSaleRate,
   freightBillQuantity,
+  freightAmount,
   lineProfit,
+  marginOnCostPercent,
   profitPerMt,
+  purchaseBasicAmount,
 } from "./computations";
 
 describe("computeOrderStatus", () => {
@@ -52,7 +55,7 @@ describe("computeOrderStatus", () => {
     ).toBe(OrderStatus.RUNNING);
   });
 
-  it("is COMPLETED when dispatched >= quantity", () => {
+  it("is COMPLETED when dispatched equals quantity", () => {
     expect(
       computeOrderStatus({
         orderType: OrderType.REGULAR,
@@ -60,6 +63,16 @@ describe("computeOrderStatus", () => {
         dispatchedOrder: new Decimal(100),
       }),
     ).toBe(OrderStatus.COMPLETED);
+  });
+
+  it("stays RUNNING when over-dispatched (negative balance)", () => {
+    expect(
+      computeOrderStatus({
+        orderType: OrderType.REGULAR,
+        quantity: new Decimal(300),
+        dispatchedOrder: new Decimal(318),
+      }),
+    ).toBe(OrderStatus.RUNNING);
   });
 
   it("is COMPLETED when remaining balance is closed", () => {
@@ -110,6 +123,15 @@ describe("computePurchaseOrderStatus", () => {
         dispatchedOrder: new Decimal(100),
       }),
     ).toBe(PurchaseOrderStatus.COMPLETED);
+  });
+
+  it("stays RUNNING when over-dispatched (negative balance)", () => {
+    expect(
+      computePurchaseOrderStatus({
+        quantity: new Decimal(300),
+        dispatchedOrder: new Decimal(318),
+      }),
+    ).toBe(PurchaseOrderStatus.RUNNING);
   });
 
   it("is COMPLETED when remaining balance is closed", () => {
@@ -295,5 +317,18 @@ describe("FOR / Ex-Port profit", () => {
         freight: new Decimal(400),
       })?.toString(),
     ).toBe("90000");
+  });
+});
+
+describe("margin on purchase basic + freight", () => {
+  it("is Total Margin × 100 / (purchase basic + freight)", () => {
+    expect(purchaseBasicAmount(7200, 10)?.toString()).toBe("72000");
+    expect(freightAmount(400, 10).toString()).toBe("4000");
+    expect(marginOnCostPercent("2100", "72000", "4000")).toBe("2.76");
+  });
+
+  it("returns null when cost base is zero", () => {
+    expect(marginOnCostPercent("2100", 0, 0)).toBeNull();
+    expect(marginOnCostPercent(null, "72000", "4000")).toBeNull();
   });
 });
