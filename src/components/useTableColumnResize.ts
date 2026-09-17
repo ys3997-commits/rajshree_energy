@@ -92,8 +92,9 @@ export function useTableColumnResize({
 
   useLayoutEffect(() => {
     if (!enabled) return;
-    const table = containerRef.current?.querySelector("table");
-    if (!(table instanceof HTMLTableElement)) return;
+    const found = containerRef.current?.querySelector("table");
+    if (!(found instanceof HTMLTableElement)) return;
+    const table: HTMLTableElement = found;
 
     let drag: {
       index: number;
