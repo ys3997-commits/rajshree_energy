@@ -13,46 +13,70 @@ import {
 import { SearchableSelect } from "@/components/SearchableSelect";
 import {
   capitalizeName,
+  formatDateDdMmYyyy,
   formatIndianNumber,
   toSentenceCase,
 } from "@/lib/domain/format";
 
 type PaymentBasis = VegListRow["paymentBasis"];
-type SortKey = "customer" | "name" | "role";
+type SortKey =
+  | "name"
+  | "mobile"
+  | "role"
+  | "customer"
+  | "amount"
+  | "beginDate"
+  | "stopDate"
+  | "status";
 type SortDir = "asc" | "desc";
 
 const PER_MT: PaymentBasis = "PER_MT";
 const PER_LORRY: PaymentBasis = "PER_LORRY";
 
-type FormState = {
-  customerId: string;
+type PersonForm = {
   name: string;
   mobile: string;
   role: string;
-  paymentBasis: PaymentBasis;
-  amount: string;
 };
 
-function emptyForm(): FormState {
+type FactoryForm = {
+  key: string;
+  id?: string;
+  customerId: string;
+  paymentBasis: PaymentBasis;
+  amount: string;
+  beginDate: string;
+  stopDate: string;
+};
+
+function factoryFromRow(row: VegListRow): FactoryForm {
   return {
-    customerId: "",
-    name: "",
-    mobile: "",
-    role: "",
-    paymentBasis: PER_MT,
-    amount: "",
+    key: `edit-${row.id}`,
+    id: row.id,
+    customerId: row.customerId,
+    paymentBasis: row.paymentBasis,
+    amount: String(Math.round(Number(row.amount)) || 0),
+    beginDate: row.beginDate,
+    stopDate: row.stopDate ?? "",
   };
 }
 
-function formFromRow(row: VegListRow): FormState {
+let factorySeq = 1;
+
+function emptyFactory(): FactoryForm {
+  factorySeq += 1;
   return {
-    customerId: row.customerId,
-    name: row.name,
-    mobile: row.mobile ?? "",
-    role: row.role ?? "",
-    paymentBasis: row.paymentBasis,
-    amount: String(Math.round(Number(row.amount)) || 0),
+    key: `factory-${factorySeq}`,
+    customerId: "",
+    paymentBasis: PER_MT,
+    amount: "",
+    beginDate: "",
+    stopDate: "",
   };
+}
+
+function emptyPerson(): PersonForm {
+  return { name: "", mobile: "", role: "" };
 }
 
 function formatNameField(value: string): string {
@@ -71,6 +95,10 @@ function paymentBasisLabel(basis: PaymentBasis): string {
   return basis === PER_LORRY ? "Per Lorry" : "Per MT";
 }
 
+function personKey(name: string): string {
+  return (capitalizeName(name) ?? name.trim()).toLowerCase();
+}
+
 function sortIndicator(active: boolean, dir: SortDir): string {
   if (!active) return "";
   return dir === "asc" ? " ↑" : " ↓";
@@ -78,6 +106,39 @@ function sortIndicator(active: boolean, dir: SortDir): string {
 
 function compareText(a: string, b: string): number {
   return a.localeCompare(b, undefined, { sensitivity: "base" });
+}
+
+function compareSortValue(a: string | number, b: string | number): number {
+  if (typeof a === "number" && typeof b === "number") {
+    return a - b;
+  }
+  const as = String(a);
+  const bs = String(b);
+  if (!as && !bs) return 0;
+  if (!as) return 1;
+  if (!bs) return -1;
+  return compareText(as, bs);
+}
+
+function rowSortValue(row: VegListRow, key: SortKey): string | number {
+  switch (key) {
+    case "customer":
+      return row.customerName;
+    case "name":
+      return row.name;
+    case "mobile":
+      return row.mobile ?? "";
+    case "role":
+      return row.role ?? "";
+    case "amount":
+      return Number(row.amount);
+    case "beginDate":
+      return row.beginDate;
+    case "stopDate":
+      return row.stopDate ?? "";
+    case "status":
+      return row.active ? "Active" : "Inactive";
+  }
 }
 
 function PaymentBasisSwitch({
@@ -90,7 +151,7 @@ function PaymentBasisSwitch({
   disabled?: boolean;
 }) {
   return (
-    <div className="segment-control" role="radiogroup" aria-label="Payment">
+    <div className="segment-control" role="radiogroup" aria-label="Payment Basis">
       <button
         type="button"
         role="radio"
@@ -118,11 +179,13 @@ function PaymentBasisSwitch({
 function VegStatusToggle({
   vegId,
   active: initialActive,
+  lockedInactive,
   onChange,
   onError,
 }: {
   vegId: string;
   active: boolean;
+  lockedInactive?: boolean;
   onChange?: (active: boolean) => void;
   onError?: (message: string) => void;
 }) {
@@ -137,6 +200,7 @@ function VegStatusToggle({
 
   function setStatus(next: boolean) {
     if (next === active || pending) return;
+    if (next && lockedInactive) return;
     const prev = active;
     setActive(next);
     startTransition(async () => {
@@ -162,7 +226,8 @@ function VegStatusToggle({
         type="button"
         role="radio"
         aria-checked={active}
-        disabled={pending}
+        disabled={pending || lockedInactive}
+        title={lockedInactive ? "Clear stop date before setting Active" : undefined}
         className={`status-toggle-option status-toggle-option-active${active ? " status-toggle-option-selected" : ""}`}
         onClick={() => setStatus(true)}
       >
@@ -182,6 +247,31 @@ function VegStatusToggle({
   );
 }
 
+function SortHeader({
+  label,
+  column,
+  sortKey,
+  sortDir,
+  onSort,
+  className,
+}: {
+  label: string;
+  column: SortKey;
+  sortKey: SortKey;
+  sortDir: SortDir;
+  onSort: (key: SortKey) => void;
+  className?: string;
+}) {
+  return (
+    <th className={className}>
+      <button type="button" className="th-sort" onClick={() => onSort(column)}>
+        {label}
+        {sortIndicator(sortKey === column, sortDir)}
+      </button>
+    </th>
+  );
+}
+
 export function VegClient({
   initial,
   customers,
@@ -197,14 +287,16 @@ export function VegClient({
     setRows(initial);
   }
 
-  const [addForm, setAddForm] = useState<FormState>(() => emptyForm());
-  const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [personForm, setPersonForm] = useState<PersonForm>(() => emptyPerson());
+  const [factories, setFactories] = useState<FactoryForm[]>(() => [
+    emptyFactory(),
+  ]);
+  const [editingKey, setEditingKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [customerFilter, setCustomerFilter] = useState("");
   const [vegNameFilter, setVegNameFilter] = useState("");
-  const [sortKey, setSortKey] = useState<SortKey>("customer");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const customerOptions = useMemo(
@@ -225,7 +317,7 @@ export function VegClient({
     return [...names].sort((a, b) => compareText(a, b));
   }, [rows]);
 
-  const visibleRows = useMemo(() => {
+  const visibleGroups = useMemo(() => {
     const nameQuery = vegNameFilter.trim().toLowerCase();
     const filtered = rows.filter((row) => {
       if (customerFilter && row.customerId !== customerFilter) return false;
@@ -237,18 +329,69 @@ export function VegClient({
       }
       return true;
     });
+
+    const groups = new Map<
+      string,
+      { key: string; name: string; mobile: string | null; role: string | null; factories: VegListRow[] }
+    >();
+    const order: string[] = [];
+    for (const row of filtered) {
+      const key = personKey(row.name);
+      let group = groups.get(key);
+      if (!group) {
+        group = {
+          key,
+          name: row.name,
+          mobile: row.mobile,
+          role: row.role,
+          factories: [],
+        };
+        groups.set(key, group);
+        order.push(key);
+      }
+      group.factories.push(row);
+    }
+
     const dir = sortDir === "asc" ? 1 : -1;
-    return [...filtered].sort((a, b) => {
-      const customerCmp = compareText(a.customerName, b.customerName);
-      const nameCmp = compareText(a.name, b.name);
-      const roleCmp = compareText(a.role ?? "", b.role ?? "");
-      if (sortKey === "customer") {
-        return customerCmp * dir || nameCmp || roleCmp;
-      }
-      if (sortKey === "name") {
-        return nameCmp * dir || customerCmp || roleCmp;
-      }
-      return roleCmp * dir || customerCmp || nameCmp;
+    const factorySortKey: SortKey =
+      sortKey === "name" || sortKey === "mobile" || sortKey === "role"
+        ? "customer"
+        : sortKey;
+
+    const grouped = order.map((key) => {
+      const group = groups.get(key)!;
+      group.factories = [...group.factories].sort((a, b) => {
+        const primary = compareSortValue(
+          rowSortValue(a, factorySortKey),
+          rowSortValue(b, factorySortKey),
+        );
+        if (primary) return primary * dir;
+        return compareText(a.customerName, b.customerName);
+      });
+      return group;
+    });
+
+    return grouped.sort((a, b) => {
+      const aRow = a.factories[0];
+      const bRow = b.factories[0];
+      const primary = compareSortValue(
+        sortKey === "name"
+          ? a.name
+          : sortKey === "mobile"
+            ? (a.mobile ?? "")
+            : sortKey === "role"
+              ? (a.role ?? "")
+              : rowSortValue(aRow, sortKey),
+        sortKey === "name"
+          ? b.name
+          : sortKey === "mobile"
+            ? (b.mobile ?? "")
+            : sortKey === "role"
+              ? (b.role ?? "")
+              : rowSortValue(bRow, sortKey),
+      );
+      if (primary) return primary * dir;
+      return compareText(a.name, b.name);
     });
   }, [rows, customerFilter, vegNameFilter, sortKey, sortDir]);
 
@@ -261,24 +404,94 @@ export function VegClient({
     setSortDir("asc");
   }
 
-  function payloadFrom(form: FormState) {
-    return {
-      customerId: form.customerId,
-      name: form.name,
-      mobile: form.mobile,
-      role: form.role,
-      paymentBasis: form.paymentBasis,
-      amount: form.amount,
-    };
+  function resetForm() {
+    setEditingKey(null);
+    setPersonForm(emptyPerson());
+    setFactories([emptyFactory()]);
   }
 
-  function onAdd(e: FormEvent) {
+  function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!personForm.name.trim()) {
+      setError("Veg name is required");
+      return;
+    }
+    const missingBegin = factories.findIndex((factory) => !factory.beginDate.trim());
+    if (missingBegin >= 0) {
+      setError(
+        factories.length > 1
+          ? `Begin date is required for Factory ${missingBegin + 1}`
+          : "Begin date is required",
+      );
+      return;
+    }
+    const customerIds = factories.map((factory) => factory.customerId);
+    if (customerIds.some((id) => !id)) {
+      setError("Customer is required for every factory");
+      return;
+    }
+    if (new Set(customerIds).size !== customerIds.length) {
+      setError("Each factory can be added only once");
+      return;
+    }
+    const formIds = new Set(
+      factories.map((factory) => factory.id).filter((id): id is string => Boolean(id)),
+    );
+    const nameKey = personKey(personForm.name);
+    const clash = factories.find((factory) =>
+      rows.some(
+        (row) =>
+          !formIds.has(row.id) &&
+          row.customerId === factory.customerId &&
+          personKey(row.name) === nameKey,
+      ),
+    );
+    if (clash) {
+      setError(
+        `${formatNameField(personForm.name)} is already assigned to this factory. Pick another factory, or edit that row.`,
+      );
+      return;
+    }
+    if (editingKey) {
+      startTransition(async () => {
+        try {
+          await updateVeg({
+            name: personForm.name,
+            mobile: personForm.mobile,
+            role: personForm.role,
+            factories: factories.map((factory) => ({
+              id: factory.id,
+              customerId: factory.customerId,
+              paymentBasis: factory.paymentBasis,
+              amount: factory.amount,
+              beginDate: factory.beginDate,
+              stopDate: factory.stopDate,
+            })),
+          });
+          resetForm();
+          router.refresh();
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Save failed");
+        }
+      });
+      return;
+    }
     startTransition(async () => {
       try {
-        await createVeg(payloadFrom(addForm));
-        setAddForm(emptyForm());
+        await createVeg({
+          name: personForm.name,
+          mobile: personForm.mobile,
+          role: personForm.role,
+          factories: factories.map((factory) => ({
+            customerId: factory.customerId,
+            paymentBasis: factory.paymentBasis,
+            amount: factory.amount,
+            beginDate: factory.beginDate,
+            stopDate: factory.stopDate,
+          })),
+        });
+        resetForm();
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
@@ -287,41 +500,43 @@ export function VegClient({
   }
 
   function startEdit(row: VegListRow) {
-    window.setTimeout(() => {
-      setEditingId(row.id);
-      setEditForm(formFromRow(row));
-      setError(null);
-    }, 0);
+    const key = personKey(row.name);
+    const personRows = rows
+      .filter((item) => personKey(item.name) === key)
+      .sort((a, b) => compareText(a.customerName, b.customerName));
+    const first = personRows[0] ?? row;
+    setEditingKey(key);
+    setPersonForm({
+      name: first.name,
+      mobile: first.mobile ?? "",
+      role: first.role ?? "",
+    });
+    setFactories(personRows.map(factoryFromRow));
+    setError(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function cancelEdit() {
-    setEditingId(null);
-    setEditForm(emptyForm());
-  }
-
-  function saveEdit() {
-    if (!editingId) return;
+    resetForm();
     setError(null);
-    const id = editingId;
-    startTransition(async () => {
-      try {
-        await updateVeg(id, payloadFrom(editForm));
-        cancelEdit();
-        router.refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
-      }
-    });
   }
 
   function onDelete(id: string) {
-    if (!confirm("Delete this veg?")) return;
+    if (!confirm("Delete this veg from this factory?")) return;
     setError(null);
     startTransition(async () => {
       try {
         await deleteVeg(id);
-        if (editingId === id) cancelEdit();
+        const deleted = rows.find((row) => row.id === id);
         setRows((prev) => prev.filter((r) => r.id !== id));
+        if (deleted && editingKey && personKey(deleted.name) === editingKey) {
+          const remaining = factories.filter((factory) => factory.id !== id);
+          if (remaining.length === 0) {
+            cancelEdit();
+          } else {
+            setFactories(remaining);
+          }
+        }
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Delete failed");
@@ -329,93 +544,284 @@ export function VegClient({
     });
   }
 
-  function patchAdd(patch: Partial<FormState>) {
-    setAddForm((prev) => ({ ...prev, ...patch }));
+  function patchPerson(patch: Partial<PersonForm>) {
+    setPersonForm((prev) => ({ ...prev, ...patch }));
   }
 
-  function patchEdit(patch: Partial<FormState>) {
-    setEditForm((prev) => ({ ...prev, ...patch }));
+  function patchFactory(key: string, patch: Partial<FactoryForm>) {
+    setFactories((prev) =>
+      prev.map((factory) =>
+        factory.key === key ? { ...factory, ...patch } : factory,
+      ),
+    );
   }
+
+  function addFactory() {
+    setFactories((prev) => [...prev, emptyFactory()]);
+  }
+
+  function removeFactory(key: string) {
+    const target = factories.find((factory) => factory.key === key);
+    if (target?.id) return;
+    setFactories((prev) =>
+      prev.length <= 1 ? prev : prev.filter((factory) => factory.key !== key),
+    );
+  }
+
+  const assignedFactoryIds = useMemo(() => {
+    if (!personForm.name.trim()) return new Set<string>();
+    const key = personKey(personForm.name);
+    const formIds = new Set(
+      factories.map((factory) => factory.id).filter((id): id is string => Boolean(id)),
+    );
+    return new Set(
+      rows
+        .filter(
+          (row) => personKey(row.name) === key && !formIds.has(row.id),
+        )
+        .map((row) => row.customerId),
+    );
+  }, [rows, personForm.name, factories]);
+
+  const canAddMoreFactories = customerOptions.some(
+    (option) =>
+      !assignedFactoryIds.has(option.value) &&
+      !factories.some((factory) => factory.customerId === option.value),
+  );
+
+  const canAdd =
+    Boolean(personForm.name.trim()) &&
+    factories.every(
+      (factory) =>
+        factory.customerId &&
+        factory.amount.trim() &&
+        factory.beginDate.trim(),
+    ) &&
+    new Set(factories.map((factory) => factory.customerId)).size ===
+      factories.length &&
+    !pending;
+
+  const savedFactoryCount = factories.filter((factory) => factory.id).length;
+  const tableSummary = (() => {
+    const people = visibleGroups.length;
+    const factoryCount = visibleGroups.reduce(
+      (count, group) => count + group.factories.length,
+      0,
+    );
+    if (!people) return "";
+    const factoryLabel = factoryCount === 1 ? "factory" : "factories";
+    return `${people} veg · ${factoryCount} ${factoryLabel}`;
+  })();
 
   return (
     <div>
       <h1 className="page-title">Veg</h1>
       {error && <div className="error-box">{error}</div>}
 
-      <form onSubmit={onAdd} className="mb-6 form-grid form-grid-wide">
-        <label>Customer</label>
-        <SearchableSelect
-          required
-          ariaLabel="Customer"
-          placeholder="Select industry customer"
-          value={addForm.customerId}
-          onChange={(customerId) => patchAdd({ customerId })}
-          options={customerOptions}
-        />
-
-        <label>Veg</label>
-        <div className="role-fields role-fields-3">
-          <input
-            required
-            placeholder="Veg name"
-            value={addForm.name}
-            onChange={(e) => patchAdd({ name: e.target.value })}
-            onBlur={() => {
-              if (addForm.name.trim()) {
-                patchAdd({ name: formatNameField(addForm.name) });
+      <form
+        onSubmit={onSubmit}
+        className={`veg-add-form${editingKey ? " veg-add-form-editing" : ""}`}
+      >
+        <div className="veg-form-head">
+          <h2 className="veg-form-title">
+            {editingKey ? "Edit veg" : "Add veg"}
+          </h2>
+          {editingKey ? (
+            <p className="veg-form-note">
+              {savedFactoryCount > 1
+                ? `All ${savedFactoryCount} factories for this veg are shown below. You can add more.`
+                : "You can add more factories for this veg."}
+            </p>
+          ) : null}
+        </div>
+        <div className="veg-person-row">
+          <label>
+            Veg name
+            <input
+              required
+              className="field-input"
+              placeholder="Veg name"
+              value={personForm.name}
+              onChange={(e) => patchPerson({ name: e.target.value })}
+              onBlur={() => {
+                if (personForm.name.trim()) {
+                  patchPerson({ name: formatNameField(personForm.name) });
+                }
+              }}
+            />
+          </label>
+          <label>
+            Mobile no
+            <input
+              className="field-input"
+              placeholder="Mobile no"
+              inputMode="numeric"
+              value={personForm.mobile}
+              onChange={(e) =>
+                patchPerson({ mobile: digitsOnly(e.target.value) })
               }
-            }}
-          />
-          <input
-            placeholder="Mobile no"
-            inputMode="numeric"
-            value={addForm.mobile}
-            onChange={(e) => patchAdd({ mobile: digitsOnly(e.target.value) })}
-          />
-          <input
-            placeholder="Role"
-            value={addForm.role}
-            onChange={(e) => patchAdd({ role: e.target.value })}
-            onBlur={() => {
-              if (addForm.role.trim()) {
-                patchAdd({ role: formatRoleField(addForm.role) });
-              }
-            }}
-          />
+            />
+          </label>
+          <label>
+            Role
+            <input
+              className="field-input"
+              placeholder="Role"
+              value={personForm.role}
+              onChange={(e) => patchPerson({ role: e.target.value })}
+              onBlur={() => {
+                if (personForm.role.trim()) {
+                  patchPerson({ role: formatRoleField(personForm.role) });
+                }
+              }}
+            />
+          </label>
         </div>
 
-        <label>Rate</label>
-        <input
-          required
-          type="number"
-          step="1"
-          min="0"
-          placeholder="0"
-          aria-label="Rate"
-          value={addForm.amount}
-          onChange={(e) => patchAdd({ amount: e.target.value })}
-        />
+        {factories.map((factory, index) => {
+          const taken = new Set(
+            factories
+              .filter((item) => item.key !== factory.key)
+              .map((item) => item.customerId)
+              .filter(Boolean),
+          );
+          const alreadyAssigned = assignedFactoryIds;
+          const factoryCustomerOptions = customerOptions.filter(
+            (option) =>
+              option.value === factory.customerId ||
+              (!taken.has(option.value) && !alreadyAssigned.has(option.value)),
+          );
+          const selectedCustomer = customerOptions.find(
+            (option) => option.value === factory.customerId,
+          )?.label;
+          const factoryLabel =
+            factories.length > 1
+              ? selectedCustomer
+                ? `Factory ${index + 1} · ${selectedCustomer}`
+                : `Factory ${index + 1}`
+              : "Factory";
+          return (
+            <section key={factory.key} className="veg-factory-block">
+              <div className="veg-factory-head">
+                <span className="veg-factory-title">{factoryLabel}</span>
+                {!factory.id && factories.length > 1 ? (
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => removeFactory(factory.key)}
+                    disabled={pending}
+                  >
+                    Remove
+                  </button>
+                ) : null}
+              </div>
 
-        <label>Payment</label>
-        <PaymentBasisSwitch
-          value={addForm.paymentBasis}
-          onChange={(paymentBasis) => patchAdd({ paymentBasis })}
-          disabled={pending || editingId != null}
-        />
+              <div className="veg-factory-fields">
+                <label className="veg-factory-customer">
+                  Customer
+                  <SearchableSelect
+                    required
+                    ariaLabel={`${factoryLabel} customer`}
+                    placeholder="Select industry customer"
+                    value={factory.customerId}
+                    onChange={(customerId) =>
+                      patchFactory(factory.key, { customerId })
+                    }
+                    options={factoryCustomerOptions}
+                  />
+                </label>
 
-        <div />
-        <div className="flex gap-2">
+                <label>
+                  Rate
+                  <input
+                    required
+                    className="field-input"
+                    type="number"
+                    step="1"
+                    min="0"
+                    placeholder="0"
+                    aria-label={`${factoryLabel} rate`}
+                    value={factory.amount}
+                    onChange={(e) =>
+                      patchFactory(factory.key, { amount: e.target.value })
+                    }
+                  />
+                </label>
+
+                <div className="veg-factory-field">
+                  <span>Payment Basis</span>
+                  <PaymentBasisSwitch
+                    value={factory.paymentBasis}
+                    onChange={(paymentBasis) =>
+                      patchFactory(factory.key, { paymentBasis })
+                    }
+                    disabled={pending}
+                  />
+                </div>
+
+                <label>
+                  Begin date
+                  <input
+                    required
+                    className="field-input"
+                    type="date"
+                    aria-label={`${factoryLabel} begin date`}
+                    value={factory.beginDate}
+                    onChange={(e) =>
+                      patchFactory(factory.key, { beginDate: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label>
+                  Stop date
+                  <input
+                    className="field-input"
+                    type="date"
+                    aria-label={`${factoryLabel} stop date`}
+                    min={factory.beginDate || undefined}
+                    value={factory.stopDate}
+                    onChange={(e) =>
+                      patchFactory(factory.key, { stopDate: e.target.value })
+                    }
+                  />
+                </label>
+              </div>
+            </section>
+          );
+        })}
+
+        <div className="veg-add-actions">
           <button
-            type="submit"
-            className="btn"
-            disabled={pending || editingId != null}
+            type="button"
+            className="btn btn-secondary"
+            onClick={addFactory}
+            disabled={pending || !canAddMoreFactories}
           >
-            Add veg
+            Add more factories
           </button>
+          <div className="flex gap-2">
+            <button type="submit" className="btn" disabled={!canAdd}>
+              {editingKey ? "Update" : "Add veg"}
+            </button>
+            {editingKey ? (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={cancelEdit}
+                disabled={pending}
+              >
+                Cancel
+              </button>
+            ) : null}
+          </div>
         </div>
       </form>
 
       <div className="customers-table-toolbar">
+        {tableSummary ? (
+          <div className="veg-table-summary">{tableSummary}</div>
+        ) : null}
         <label className="customers-filter-field">
           Customer
           <select
@@ -452,229 +858,159 @@ export function VegClient({
 
       <div className="table-wrap">
         <div className="table-h-scroll">
-          <table className="data">
+          <table className="data veg-table">
             <thead>
               <tr>
-                <th>
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("customer")}
-                  >
-                    Customer
-                    {sortIndicator(sortKey === "customer", sortDir)}
-                  </button>
-                </th>
-                <th>
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("name")}
-                  >
-                    Veg name
-                    {sortIndicator(sortKey === "name", sortDir)}
-                  </button>
-                </th>
-                <th>Mobile no</th>
-                <th>
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => toggleSort("role")}
-                  >
-                    Role
-                    {sortIndicator(sortKey === "role", sortDir)}
-                  </button>
-                </th>
-                <th className="num">Rate</th>
-                <th>Payment</th>
-                <th>Status</th>
-                <th />
+                <SortHeader
+                  label="Veg name"
+                  column="name"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Mobile no"
+                  column="mobile"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Role"
+                  column="role"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Customer"
+                  column="customer"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Rate"
+                  column="amount"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Begin date"
+                  column="beginDate"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Stop date"
+                  column="stopDate"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <SortHeader
+                  label="Status"
+                  column="status"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggleSort}
+                />
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {visibleRows.map((row) => {
-                const isEditing = editingId === row.id;
-                return (
-                  <tr
-                    key={row.id}
-                    className={
-                      [
-                        isEditing ? "payment-editing-row" : "",
-                        !row.active && !isEditing ? "veg-row-inactive" : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" ") || undefined
-                    }
-                  >
-                    {isEditing ? (
-                      <>
-                        <td>
-                          <SearchableSelect
-                            required
-                            ariaLabel="Customer"
-                            placeholder="Select industry customer"
-                            value={editForm.customerId}
-                            onChange={(customerId) =>
-                              patchEdit({ customerId })
-                            }
-                            options={customerOptions}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            required
-                            className="field-input"
-                            aria-label="Veg name"
-                            value={editForm.name}
-                            onChange={(e) =>
-                              patchEdit({ name: e.target.value })
-                            }
-                            onBlur={() => {
-                              if (editForm.name.trim()) {
-                                patchEdit({
-                                  name: formatNameField(editForm.name),
-                                });
-                              }
-                            }}
-                          />
-                        </td>
-                        <td>
-                          <input
-                            className="field-input"
-                            inputMode="numeric"
-                            aria-label="Mobile no"
-                            value={editForm.mobile}
-                            onChange={(e) =>
-                              patchEdit({ mobile: digitsOnly(e.target.value) })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            className="field-input"
-                            aria-label="Role"
-                            value={editForm.role}
-                            onChange={(e) =>
-                              patchEdit({ role: e.target.value })
-                            }
-                            onBlur={() => {
-                              if (editForm.role.trim()) {
-                                patchEdit({
-                                  role: formatRoleField(editForm.role),
-                                });
-                              }
-                            }}
-                          />
-                        </td>
-                        <td className="num">
-                          <input
-                            required
-                            className="field-input"
-                            type="number"
-                            step="1"
-                            min="0"
-                            aria-label="Rate"
-                            value={editForm.amount}
-                            onChange={(e) =>
-                              patchEdit({ amount: e.target.value })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <PaymentBasisSwitch
-                            value={editForm.paymentBasis}
-                            onChange={(paymentBasis) =>
-                              patchEdit({ paymentBasis })
-                            }
-                            disabled={pending}
-                          />
-                        </td>
-                        <td>
-                          <VegStatusToggle
-                            vegId={row.id}
-                            active={row.active}
-                            onChange={(active) => {
-                              setRows((prev) =>
-                                prev.map((r) =>
-                                  r.id === row.id ? { ...r, active } : r,
-                                ),
-                              );
-                            }}
-                            onError={setError}
-                          />
-                        </td>
-                        <td className="space-x-2 whitespace-nowrap">
-                          <button
-                            type="button"
-                            className="btn btn-sm"
-                            onClick={saveEdit}
-                            disabled={pending}
-                          >
-                            Update
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-secondary btn-sm"
-                            onClick={cancelEdit}
-                            disabled={pending}
-                          >
-                            Cancel
-                          </button>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td>
-                          {capitalizeName(row.customerName) ?? row.customerName}
-                        </td>
-                        <td>{capitalizeName(row.name) ?? row.name}</td>
-                        <td>{row.mobile ?? "—"}</td>
-                        <td>{toSentenceCase(row.role) ?? "—"}</td>
-                        <td className="num">
-                          {formatIndianNumber(row.amount)}
-                        </td>
-                        <td>{paymentBasisLabel(row.paymentBasis)}</td>
-                        <td>
-                          <VegStatusToggle
-                            vegId={row.id}
-                            active={row.active}
-                            onChange={(active) => {
-                              setRows((prev) =>
-                                prev.map((r) =>
-                                  r.id === row.id ? { ...r, active } : r,
-                                ),
-                              );
-                            }}
-                            onError={setError}
-                          />
-                        </td>
-                        <td className="space-x-2 whitespace-nowrap">
-                          <button
-                            type="button"
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => startEdit(row)}
-                            disabled={pending}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-sm"
-                            onClick={() => onDelete(row.id)}
-                            disabled={pending}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                );
+              {visibleGroups.flatMap((group) => {
+                const span = group.factories.length;
+                const isEditingGroup = editingKey === group.key;
+                return group.factories.map((row, index) => {
+                  const isFirst = index === 0;
+                  const statusActive = !row.stopDate && row.active;
+                  return (
+                    <tr
+                      key={row.id}
+                      className={
+                        [
+                          isFirst ? "veg-group-start" : "veg-group-cont",
+                          isEditingGroup ? "payment-editing-row" : "",
+                          !statusActive ? "veg-row-inactive" : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" ") || undefined
+                      }
+                    >
+                      {isFirst ? (
+                        <>
+                          <td className="veg-person-cell" rowSpan={span}>
+                            <div className="veg-person-name">
+                              {capitalizeName(group.name) ?? group.name}
+                            </div>
+                            {span > 1 ? (
+                              <div className="veg-factory-count">
+                                {span} factories
+                              </div>
+                            ) : null}
+                          </td>
+                          <td className="veg-person-cell" rowSpan={span}>
+                            {group.mobile ?? "—"}
+                          </td>
+                          <td className="veg-person-cell" rowSpan={span}>
+                            {toSentenceCase(group.role) ?? "—"}
+                          </td>
+                        </>
+                      ) : null}
+                      <td>
+                        {capitalizeName(row.customerName) ?? row.customerName}
+                      </td>
+                      <td>
+                        {formatIndianNumber(row.amount)}{" "}
+                        <span className="veg-rate-basis">
+                          {paymentBasisLabel(row.paymentBasis)}
+                        </span>
+                      </td>
+                      <td>{formatDateDdMmYyyy(row.beginDate)}</td>
+                      <td>{formatDateDdMmYyyy(row.stopDate)}</td>
+                      <td>
+                        <VegStatusToggle
+                          vegId={row.id}
+                          active={statusActive}
+                          lockedInactive={Boolean(row.stopDate)}
+                          onChange={(active) => {
+                            setRows((prev) =>
+                              prev.map((r) =>
+                                r.id === row.id ? { ...r, active } : r,
+                              ),
+                            );
+                          }}
+                          onError={setError}
+                        />
+                      </td>
+                      <td className="space-x-2 whitespace-nowrap">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          onClick={() => startEdit(row)}
+                          disabled={pending}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger"
+                          onClick={() => onDelete(row.id)}
+                          disabled={pending}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                });
               })}
-              {visibleRows.length === 0 && (
+              {visibleGroups.length === 0 && (
                 <tr>
-                  <td colSpan={8}>
+                  <td colSpan={9}>
                     {rows.length === 0
                       ? "No veg records yet."
                       : "No matching veg records."}

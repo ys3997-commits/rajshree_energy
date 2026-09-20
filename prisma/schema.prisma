@@ -292,6 +292,8 @@ model Customer {
 }
 
 /// Industry-customer veg contact and payment rate (Masters → Veg).
+/// One row per veg-at-factory: the same veg name may be assigned to several
+/// industry customers, each with its own rate, begin date, stop date, and status.
 model Veg {
   id           String          @id @default(cuid())
   customerId   String
@@ -300,6 +302,10 @@ model Veg {
   role         String?
   paymentBasis VegPaymentBasis
   amount       Decimal         @db.Decimal(18, 2)
+  /// Service start at this factory; required before a veg can be added.
+  beginDate    DateTime        @default(now())
+  /// When set, this factory assignment is treated as inactive.
+  stopDate     DateTime?
   active       Boolean         @default(true)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
@@ -308,7 +314,9 @@ model Veg {
   payments VegPayment[]
   discounts VegDiscount[]
 
+  @@unique([customerId, name])
   @@index([customerId])
+  @@index([name])
 }
 
 model Vessel {

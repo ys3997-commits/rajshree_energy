@@ -669,85 +669,6 @@ body:has(.app-shell) {
   min-width: 11rem; /* Transporter name */
 }
 
-/* Dispatches page: compact gaps; wrap long headers onto two lines. */
-.report-table-dispatches thead tr:not(.report-group-row) th,
-.report-table-dispatches tbody td {
-  min-width: 0;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th.col-wrap-head {
-  white-space: normal;
-  line-height: 1.2;
-  vertical-align: middle;
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(1),
-.report-table-dispatches tbody td:nth-child(1) {
-  min-width: 4.5rem; /* Dispatch no */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(2),
-.report-table-dispatches tbody td:nth-child(2) {
-  min-width: 5.5rem; /* Date — override generic lorry width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(3),
-.report-table-dispatches tbody td:nth-child(3) {
-  min-width: 6.25rem; /* Lorry no */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(4),
-.report-table-dispatches tbody td:nth-child(4) {
-  min-width: 4.5rem; /* Weight — override generic vessel width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(5),
-.report-table-dispatches tbody td:nth-child(5) {
-  min-width: 8rem; /* Vessel name — override generic quality width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(6),
-.report-table-dispatches tbody td:nth-child(6) {
-  min-width: 6.5rem; /* Quality — override generic GST width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(9),
-.report-table-dispatches tbody td:nth-child(9) {
-  min-width: 6.5rem; /* Purchase invoice */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(10),
-.report-table-dispatches tbody td:nth-child(10) {
-  min-width: 8rem; /* Vendor */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(13),
-.report-table-dispatches tbody td:nth-child(13) {
-  min-width: 0; /* SO no — override generic invoice width */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(14),
-.report-table-dispatches tbody td:nth-child(14) {
-  min-width: 6.5rem; /* Sale invoice */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(15),
-.report-table-dispatches tbody td:nth-child(15) {
-  min-width: 8rem; /* Customer name */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(18),
-.report-table-dispatches tbody td:nth-child(18) {
-  min-width: 5.25rem; /* Delivery terms */
-}
-
-.report-table-dispatches thead tr:not(.report-group-row) th:nth-child(19),
-.report-table-dispatches tbody td:nth-child(19) {
-  min-width: 8rem; /* Transporter name */
-}
-
 .table-wrap-scroll {
   max-width: 100%;
 }
@@ -1958,6 +1879,123 @@ table.data tr.month-divider:hover td {
   grid-template-columns: 170px minmax(0, 1fr);
 }
 
+.form-grid > label.field-label-top {
+  align-self: start;
+  padding-top: 0.55rem;
+}
+
+.veg-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  max-width: 960px;
+  margin-bottom: 1.5rem;
+  padding: 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-solid);
+  box-shadow: var(--shadow);
+}
+
+.veg-add-form-editing {
+  border-color: #e3c56a;
+  box-shadow: 0 0 0 3px rgba(246, 228, 168, 0.55);
+}
+
+.veg-form-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.veg-form-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.veg-form-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.veg-add-form label,
+.veg-factory-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.veg-person-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.85rem 1rem;
+}
+
+.veg-factory-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding-top: 1.05rem;
+  border-top: 1px solid var(--line);
+}
+
+.veg-factory-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.veg-factory-title {
+  font-weight: 650;
+  font-size: 0.92rem;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+.veg-factory-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.85rem 1rem;
+  align-items: end;
+}
+
+.veg-factory-customer {
+  grid-column: 1 / -1;
+}
+
+.veg-add-form .search-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.veg-factory-field .segment-control {
+  width: fit-content;
+}
+
+.veg-add-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: center;
+  padding-top: 0.35rem;
+}
+
+@media (max-width: 720px) {
+  .veg-person-row,
+  .veg-factory-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .role-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2361,6 +2399,17 @@ table.data tr.month-divider:hover td {
   font-size: 0.8125rem;
 }
 
+.veg-person-hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.veg-person-hint-warn {
+  color: var(--danger, #b42318);
+}
+
 .detail-meta-note {
   margin-left: 0.35rem;
   font-weight: 400;
@@ -2507,26 +2556,20 @@ table.data tr.month-divider:hover td {
   font-variant-numeric: tabular-nums;
 }
 
-.report-table-dispatches thead tr:not(.report-group-row) th:last-child,
-.report-table-dispatches tbody td:last-child {
-  min-width: 16rem;
-  padding-left: 0.4rem;
-  padding-right: 0.4rem;
-}
-
-.report-table-dispatches .dispatch-edit-actions {
-  gap: 0.4rem;
-}
-
 .app-main .table-h-scroll > table.data.report-table-reconciliation,
-table.data.report-table.report-table-reconciliation {
+.app-main .table-h-scroll > table.data.report-table-dispatches,
+table.data.report-table.report-table-reconciliation,
+table.data.report-table.report-table-dispatches {
   width: max-content;
   min-width: 0;
 }
 
 table.data.report-table.report-table-reconciliation thead tr.report-group-row th,
 table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th,
-table.data.report-table.report-table-reconciliation tbody td {
+table.data.report-table.report-table-reconciliation tbody td,
+table.data.report-table.report-table-dispatches thead tr.report-group-row th,
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th,
+table.data.report-table.report-table-dispatches tbody td {
   min-width: 0;
   width: 1%;
   padding-left: 0.42rem;
@@ -2534,23 +2577,30 @@ table.data.report-table.report-table-reconciliation tbody td {
 }
 
 table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th,
-table.data.report-table.report-table-reconciliation tbody td {
+table.data.report-table.report-table-reconciliation tbody td,
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th,
+table.data.report-table.report-table-dispatches tbody td {
   border-left: 1px solid var(--line);
 }
 
 table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th:first-child,
-table.data.report-table.report-table-reconciliation tbody td:first-child {
+table.data.report-table.report-table-reconciliation tbody td:first-child,
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th:first-child,
+table.data.report-table.report-table-dispatches tbody td:first-child {
   border-left: none;
 }
 
-table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th.col-wrap-head {
+table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th.col-wrap-head,
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th.col-wrap-head {
   white-space: normal;
   line-height: 1.2;
   vertical-align: middle;
 }
 
 table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th.col-amt,
-table.data.report-table.report-table-reconciliation tbody td.col-amt {
+table.data.report-table.report-table-reconciliation tbody td.col-amt,
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th.col-amt,
+table.data.report-table.report-table-dispatches tbody td.col-amt {
   min-width: 8.25rem;
   width: auto;
   padding-left: 0.85rem;
@@ -2558,42 +2608,61 @@ table.data.report-table.report-table-reconciliation tbody td.col-amt {
 }
 
 table.data.report-table.report-table-reconciliation thead tr:not(.report-group-row) th:last-child,
-table.data.report-table.report-table-reconciliation tbody td:last-child {
+table.data.report-table.report-table-reconciliation tbody td:last-child,
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th:last-child,
+table.data.report-table.report-table-dispatches tbody td:last-child {
   white-space: nowrap;
 }
 
-.report-table-reconciliation .dispatch-edit-actions {
+table.data.report-table.report-table-dispatches thead tr:not(.report-group-row) th:last-child,
+table.data.report-table.report-table-dispatches tbody td:last-child {
+  min-width: 16rem;
+  width: auto;
+}
+
+.report-table-reconciliation .dispatch-edit-actions,
+.report-table-dispatches .dispatch-edit-actions {
   gap: 0.3rem;
 }
 
-.report-table-reconciliation .dispatch-edit-action .btn {
+.report-table-reconciliation .dispatch-edit-action .btn,
+.report-table-dispatches .dispatch-edit-action .btn {
   white-space: nowrap;
 }
 
 .app-main .table-h-scroll > table.data.report-table-reconciliation.report-table-resizable,
-table.data.report-table.report-table-reconciliation.report-table-resizable {
+.app-main .table-h-scroll > table.data.report-table-dispatches.report-table-resizable,
+table.data.report-table.report-table-reconciliation.report-table-resizable,
+table.data.report-table.report-table-dispatches.report-table-resizable {
   table-layout: fixed;
 }
 
 table.data.report-table.report-table-reconciliation.report-table-resizable thead tr.report-group-row th,
 table.data.report-table.report-table-reconciliation.report-table-resizable thead tr:not(.report-group-row) th,
-table.data.report-table.report-table-reconciliation.report-table-resizable tbody td {
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td,
+table.data.report-table.report-table-dispatches.report-table-resizable thead tr.report-group-row th,
+table.data.report-table.report-table-dispatches.report-table-resizable thead tr:not(.report-group-row) th,
+table.data.report-table.report-table-dispatches.report-table-resizable tbody td {
   width: auto;
   min-width: 0;
 }
 
 table.data.report-table.report-table-reconciliation.report-table-resizable thead tr:not(.report-group-row) th.col-amt,
-table.data.report-table.report-table-reconciliation.report-table-resizable tbody td.col-amt {
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td.col-amt,
+table.data.report-table.report-table-dispatches.report-table-resizable thead tr:not(.report-group-row) th.col-amt,
+table.data.report-table.report-table-dispatches.report-table-resizable tbody td.col-amt {
   min-width: 0;
   width: auto;
 }
 
-table.data.report-table.report-table-reconciliation.report-table-resizable tbody td {
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td,
+table.data.report-table.report-table-dispatches.report-table-resizable tbody td {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-table.data.report-table.report-table-reconciliation.report-table-resizable tbody td:last-child {
+table.data.report-table.report-table-reconciliation.report-table-resizable tbody td:last-child,
+table.data.report-table.report-table-dispatches.report-table-resizable tbody td:last-child {
   overflow: visible;
   text-overflow: clip;
 }
@@ -3263,6 +3332,63 @@ table.data.transport-engine-table tbody tr:hover td {
 
 table.data tbody tr.veg-row-inactive:hover td {
   background: #f8e4e4 !important;
+}
+
+.veg-table td.veg-person-cell {
+  vertical-align: middle;
+  background: #f8fafb;
+}
+
+.veg-table tr.veg-group-start:has(+ .veg-group-cont) td.veg-person-cell {
+  vertical-align: top;
+}
+
+.veg-table-summary {
+  margin-right: auto;
+  align-self: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.veg-table tr.veg-group-start td.veg-person-cell {
+  border-top: 2px solid var(--line-strong);
+}
+
+.veg-table tr.veg-group-start td {
+  border-top: 2px solid var(--line-strong);
+}
+
+.veg-table tbody tr.payment-editing-row td.veg-person-cell,
+.veg-table tbody tr.payment-editing-row:hover td.veg-person-cell {
+  background: #f6e4a8;
+}
+
+.veg-table tbody tr.veg-row-inactive td.veg-person-cell,
+.veg-table tbody tr.veg-row-inactive:hover td.veg-person-cell {
+  color: var(--ink);
+  background: #f8fafb !important;
+}
+
+.veg-table tbody tr.veg-row-inactive.payment-editing-row td.veg-person-cell,
+.veg-table tbody tr.veg-row-inactive.payment-editing-row:hover td.veg-person-cell {
+  background: #f6e4a8 !important;
+}
+
+.veg-person-name {
+  font-weight: 650;
+}
+
+.veg-factory-count {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.veg-rate-basis {
+  color: var(--muted);
+  font-size: 0.8125rem;
 }
 
 .customers-table-toolbar {

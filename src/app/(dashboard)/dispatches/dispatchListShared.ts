@@ -173,8 +173,18 @@ export const dispatchExportColumns = [
     align: "right" as const,
   },
   {
-    key: "purchaseTotal",
-    header: "Purchase total\nprice",
+    key: "purchaseGstAmount",
+    header: "GST",
+    align: "right" as const,
+  },
+  {
+    key: "purchaseTcsAmount",
+    header: "TCS",
+    align: "right" as const,
+  },
+  {
+    key: "purchaseTotalAmount",
+    header: "Invoice\nAmount",
     align: "right" as const,
   },
   { key: "salePo", header: "SO\nno" },
@@ -186,8 +196,18 @@ export const dispatchExportColumns = [
     align: "right" as const,
   },
   {
-    key: "saleTotal",
-    header: "Sale total\nprice",
+    key: "saleGstAmount",
+    header: "GST",
+    align: "right" as const,
+  },
+  {
+    key: "saleTcsAmount",
+    header: "TCS",
+    align: "right" as const,
+  },
+  {
+    key: "saleTotalAmount",
+    header: "Invoice\nAmount",
     align: "right" as const,
   },
   { key: "deliveryTerms", header: "Delivery\nterms" },
@@ -277,21 +297,9 @@ export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
     header: "Basic Amount",
     align: "right" as const,
   });
-  columns.splice(purchaseBasicIndex + 2, 0, {
-    key: "purchaseGstAmount",
-    header: "GST",
-    align: "right" as const,
-  });
-  columns.splice(purchaseBasicIndex + 3, 0, {
-    key: "purchaseTcsAmount",
-    header: "TCS",
-    align: "right" as const,
-  });
-  columns.splice(purchaseBasicIndex + 4, 0, {
-    key: "purchaseTotalAmount",
-    header: "Total amount",
-    align: "right" as const,
-  });
+  moveColumn("purchaseGstAmount", "purchaseBasicAmount");
+  moveColumn("purchaseTcsAmount", "purchaseGstAmount");
+  moveColumn("purchaseTotalAmount", "purchaseTcsAmount");
   moveColumn("vendor", "purchaseTotalAmount");
   moveColumn("gstState", "vendor");
   const hiddenKeys = new Set([
@@ -299,13 +307,14 @@ export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
     "saleInvoice",
     "customer",
     "saleBasic",
-    "saleTotal",
+    "saleGstAmount",
+    "saleTcsAmount",
+    "saleTotalAmount",
     "deliveryTerms",
     "transporter",
     "freightPmt",
     "freightAmount",
     "profit",
-    "purchaseTotal",
     "received",
     "diff",
     "vesselName",
@@ -321,6 +330,9 @@ export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
         .trim();
       if (column.key === "purchaseBasic") {
         header = "Basic price";
+      }
+      if (column.key === "purchaseTotalAmount") {
+        header = "Total amount";
       }
       return { ...column, header };
     });

@@ -105,12 +105,14 @@ model Staff {
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
-  dealByCustomers   Customer[] @relation("DealBy")
-  orders            Order[]
-  bills             Bill[]
-  createdPayments   Payment[]  @relation("PaymentCreatedBy")
-  createdDiscounts  Discount[] @relation("DiscountCreatedBy")
-  createdDispatches Dispatch[] @relation("DispatchCreatedBy")
+  dealByCustomers     Customer[]    @relation("DealBy")
+  orders              Order[]
+  bills               Bill[]
+  createdPayments     Payment[]     @relation("PaymentCreatedBy")
+  createdDiscounts    Discount[]    @relation("DiscountCreatedBy")
+  createdDispatches   Dispatch[]    @relation("DispatchCreatedBy")
+  createdVegPayments  VegPayment[]  @relation("VegPaymentCreatedBy")
+  createdVegDiscounts VegDiscount[] @relation("VegDiscountCreatedBy")
 }
 
 model Transporter {
@@ -298,11 +300,17 @@ model Veg {
   role         String?
   paymentBasis VegPaymentBasis
   amount       Decimal         @db.Decimal(18, 2)
+  /// Service start; required before a veg can be added.
+  beginDate    DateTime        @default(now())
+  /// When set, the veg is treated as inactive.
+  stopDate     DateTime?
   active       Boolean         @default(true)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
-  customer Customer @relation(fields: [customerId], references: [id])
+  customer  Customer      @relation(fields: [customerId], references: [id])
+  payments  VegPayment[]
+  discounts VegDiscount[]
 
   @@index([customerId])
 }
@@ -408,6 +416,8 @@ model Dispatch {
   softCopyStatus                Boolean       @default(false)
   /// Purchase checklist — purchase invoice recorded in Tally accounting software.
   entryInTally                  Boolean       @default(false)
+  /// Reconciliation checklist — dispatch marked reconciled.
+  reconciled                    Boolean       @default(false)
   /// Transport checklist — bilty (goods receipt) hard copy received.
   biltyHardCopy                 Boolean       @default(false)
   /// Transport checklist — transporter invoice number.
@@ -423,6 +433,7 @@ model Dispatch {
   purchaseChecklistCompletedAt  DateTime?
   saleChecklistCompletedAt      DateTime?
   transportChecklistCompletedAt DateTime?
+  reconciliationCompletedAt     DateTime?
   createdByStaffId              String?
   createdAt                     DateTime      @default(now())
   updatedAt                     DateTime      @updatedAt
@@ -489,6 +500,44 @@ model Discount {
   @@index([customerId])
   @@index([transporterId])
   @@index([investmentCompanyId])
+  @@index([createdByStaffId])
+  @@index([date])
+}
+
+/// Money paid to an industry-customer veg contact (Report → Veg → Veg Payment).
+model VegPayment {
+  id               String   @id @default(cuid())
+  date             DateTime
+  vegId            String
+  createdByStaffId String?
+  amount           Decimal  @db.Decimal(18, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  veg            Veg    @relation(fields: [vegId], references: [id])
+  createdByStaff Staff? @relation("VegPaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([vegId])
+  @@index([createdByStaffId])
+  @@index([date])
+}
+
+/// Discount received from or paid to an industry-customer veg contact.
+model VegDiscount {
+  id               String         @id @default(cuid())
+  date             DateTime
+  vegId            String
+  createdByStaffId String?
+  status           DiscountStatus
+  amount           Decimal        @db.Decimal(18, 2)
+  remarks          String         @default("")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  veg            Veg    @relation(fields: [vegId], references: [id])
+  createdByStaff Staff? @relation("VegDiscountCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([vegId])
   @@index([createdByStaffId])
   @@index([date])
 }

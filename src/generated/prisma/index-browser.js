@@ -273,6 +273,8 @@ exports.Prisma.VegScalarFieldEnum = {
   role: 'role',
   paymentBasis: 'paymentBasis',
   amount: 'amount',
+  beginDate: 'beginDate',
+  stopDate: 'stopDate',
   active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

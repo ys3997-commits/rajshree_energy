@@ -16927,6 +16927,8 @@ export namespace Prisma {
     role: string | null
     paymentBasis: $Enums.VegPaymentBasis | null
     amount: Decimal | null
+    beginDate: Date | null
+    stopDate: Date | null
     active: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -16940,6 +16942,8 @@ export namespace Prisma {
     role: string | null
     paymentBasis: $Enums.VegPaymentBasis | null
     amount: Decimal | null
+    beginDate: Date | null
+    stopDate: Date | null
     active: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -16953,6 +16957,8 @@ export namespace Prisma {
     role: number
     paymentBasis: number
     amount: number
+    beginDate: number
+    stopDate: number
     active: number
     createdAt: number
     updatedAt: number
@@ -16976,6 +16982,8 @@ export namespace Prisma {
     role?: true
     paymentBasis?: true
     amount?: true
+    beginDate?: true
+    stopDate?: true
     active?: true
     createdAt?: true
     updatedAt?: true
@@ -16989,6 +16997,8 @@ export namespace Prisma {
     role?: true
     paymentBasis?: true
     amount?: true
+    beginDate?: true
+    stopDate?: true
     active?: true
     createdAt?: true
     updatedAt?: true
@@ -17002,6 +17012,8 @@ export namespace Prisma {
     role?: true
     paymentBasis?: true
     amount?: true
+    beginDate?: true
+    stopDate?: true
     active?: true
     createdAt?: true
     updatedAt?: true
@@ -17102,6 +17114,8 @@ export namespace Prisma {
     role: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal
+    beginDate: Date
+    stopDate: Date | null
     active: boolean
     createdAt: Date
     updatedAt: Date
@@ -17134,6 +17148,8 @@ export namespace Prisma {
     role?: boolean
     paymentBasis?: boolean
     amount?: boolean
+    beginDate?: boolean
+    stopDate?: boolean
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17151,6 +17167,8 @@ export namespace Prisma {
     role?: boolean
     paymentBasis?: boolean
     amount?: boolean
+    beginDate?: boolean
+    stopDate?: boolean
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17165,6 +17183,8 @@ export namespace Prisma {
     role?: boolean
     paymentBasis?: boolean
     amount?: boolean
+    beginDate?: boolean
+    stopDate?: boolean
     active?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -17195,6 +17215,14 @@ export namespace Prisma {
       role: string | null
       paymentBasis: $Enums.VegPaymentBasis
       amount: Prisma.Decimal
+      /**
+       * Service start; required before a veg can be added.
+       */
+      beginDate: Date
+      /**
+       * When set, the veg is treated as inactive.
+       */
+      stopDate: Date | null
       active: boolean
       createdAt: Date
       updatedAt: Date
@@ -17601,6 +17629,8 @@ export namespace Prisma {
     readonly role: FieldRef<"Veg", 'String'>
     readonly paymentBasis: FieldRef<"Veg", 'VegPaymentBasis'>
     readonly amount: FieldRef<"Veg", 'Decimal'>
+    readonly beginDate: FieldRef<"Veg", 'DateTime'>
+    readonly stopDate: FieldRef<"Veg", 'DateTime'>
     readonly active: FieldRef<"Veg", 'Boolean'>
     readonly createdAt: FieldRef<"Veg", 'DateTime'>
     readonly updatedAt: FieldRef<"Veg", 'DateTime'>
@@ -33523,6 +33553,8 @@ export namespace Prisma {
     role: 'role',
     paymentBasis: 'paymentBasis',
     amount: 'amount',
+    beginDate: 'beginDate',
+    stopDate: 'stopDate',
     active: 'active',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -35046,6 +35078,8 @@ export namespace Prisma {
     role?: StringNullableFilter<"Veg"> | string | null
     paymentBasis?: EnumVegPaymentBasisFilter<"Veg"> | $Enums.VegPaymentBasis
     amount?: DecimalFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFilter<"Veg"> | Date | string
+    stopDate?: DateTimeNullableFilter<"Veg"> | Date | string | null
     active?: BoolFilter<"Veg"> | boolean
     createdAt?: DateTimeFilter<"Veg"> | Date | string
     updatedAt?: DateTimeFilter<"Veg"> | Date | string
@@ -35062,6 +35096,8 @@ export namespace Prisma {
     role?: SortOrderInput | SortOrder
     paymentBasis?: SortOrder
     amount?: SortOrder
+    beginDate?: SortOrder
+    stopDate?: SortOrderInput | SortOrder
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35081,6 +35117,8 @@ export namespace Prisma {
     role?: StringNullableFilter<"Veg"> | string | null
     paymentBasis?: EnumVegPaymentBasisFilter<"Veg"> | $Enums.VegPaymentBasis
     amount?: DecimalFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFilter<"Veg"> | Date | string
+    stopDate?: DateTimeNullableFilter<"Veg"> | Date | string | null
     active?: BoolFilter<"Veg"> | boolean
     createdAt?: DateTimeFilter<"Veg"> | Date | string
     updatedAt?: DateTimeFilter<"Veg"> | Date | string
@@ -35097,6 +35135,8 @@ export namespace Prisma {
     role?: SortOrderInput | SortOrder
     paymentBasis?: SortOrder
     amount?: SortOrder
+    beginDate?: SortOrder
+    stopDate?: SortOrderInput | SortOrder
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -35118,6 +35158,8 @@ export namespace Prisma {
     role?: StringNullableWithAggregatesFilter<"Veg"> | string | null
     paymentBasis?: EnumVegPaymentBasisWithAggregatesFilter<"Veg"> | $Enums.VegPaymentBasis
     amount?: DecimalWithAggregatesFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeWithAggregatesFilter<"Veg"> | Date | string
+    stopDate?: DateTimeNullableWithAggregatesFilter<"Veg"> | Date | string | null
     active?: BoolWithAggregatesFilter<"Veg"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Veg"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Veg"> | Date | string
@@ -37545,6 +37587,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37561,6 +37605,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37575,6 +37621,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37591,6 +37639,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37606,6 +37656,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -37618,6 +37670,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37631,6 +37685,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -39918,6 +39974,8 @@ export namespace Prisma {
     role?: SortOrder
     paymentBasis?: SortOrder
     amount?: SortOrder
+    beginDate?: SortOrder
+    stopDate?: SortOrder
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -39935,6 +39993,8 @@ export namespace Prisma {
     role?: SortOrder
     paymentBasis?: SortOrder
     amount?: SortOrder
+    beginDate?: SortOrder
+    stopDate?: SortOrder
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -39948,6 +40008,8 @@ export namespace Prisma {
     role?: SortOrder
     paymentBasis?: SortOrder
     amount?: SortOrder
+    beginDate?: SortOrder
+    stopDate?: SortOrder
     active?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -45500,6 +45562,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -45514,6 +45578,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -45695,6 +45761,8 @@ export namespace Prisma {
     role?: StringNullableFilter<"Veg"> | string | null
     paymentBasis?: EnumVegPaymentBasisFilter<"Veg"> | $Enums.VegPaymentBasis
     amount?: DecimalFilter<"Veg"> | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFilter<"Veg"> | Date | string
+    stopDate?: DateTimeNullableFilter<"Veg"> | Date | string | null
     active?: BoolFilter<"Veg"> | boolean
     createdAt?: DateTimeFilter<"Veg"> | Date | string
     updatedAt?: DateTimeFilter<"Veg"> | Date | string
@@ -48685,6 +48753,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48700,6 +48770,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48780,6 +48852,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48795,6 +48869,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48865,6 +48941,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48880,6 +48958,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48960,6 +49040,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48975,6 +49057,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51103,6 +51187,8 @@ export namespace Prisma {
     role?: string | null
     paymentBasis: $Enums.VegPaymentBasis
     amount: Decimal | DecimalJsLike | number | string
+    beginDate?: Date | string
+    stopDate?: Date | string | null
     active?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -51410,6 +51496,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51424,6 +51512,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51438,6 +51528,8 @@ export namespace Prisma {
     role?: NullableStringFieldUpdateOperationsInput | string | null
     paymentBasis?: EnumVegPaymentBasisFieldUpdateOperationsInput | $Enums.VegPaymentBasis
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    beginDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    stopDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -1,3 +1,4 @@
+import { getCurrentAccess } from "@/lib/auth/access";
 import { DispatchListView } from "./DispatchListView";
 import {
   loadDispatchListData,
@@ -12,7 +13,10 @@ export default async function DispatchesPage({
   searchParams: SearchParams;
 }) {
   const sp = await searchParams;
-  const data = await loadDispatchListData(sp);
+  const [data, access] = await Promise.all([
+    loadDispatchListData(sp),
+    getCurrentAccess(),
+  ]);
 
   return (
     <div>
@@ -23,6 +27,7 @@ export default async function DispatchesPage({
         exportTitle="Complete Dispatch"
         exportFilenameBase="complete-dispatch"
         data={data}
+        canResizeColumns={access.kind === "owner"}
       />
     </div>
   );
