@@ -1,5 +1,6 @@
 import { AppNav } from "@/components/AppNav";
 import { canVisit, getCurrentAccess, landingPath } from "@/lib/auth/access";
+import { listDocumentGroups } from "@/lib/actions/option-lists";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -17,9 +18,11 @@ export default async function DashboardLayout({
     redirect(landingPath(access));
   }
 
+  const documentGroups = await listDocumentGroups();
+
   return (
     <div className="app-shell">
-      <AppNav access={access} />
+      <AppNav access={access} documentGroups={documentGroups} />
       <main className="app-main">
         <div className="app-main-inner">{children}</div>
       </main>

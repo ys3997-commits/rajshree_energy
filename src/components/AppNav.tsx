@@ -12,6 +12,10 @@ import {
   USER_MENU_CATEGORIES,
   USER_MENU_CATEGORY_IDS,
 } from "@/app/(dashboard)/options/optionsCategories";
+import {
+  documentHref,
+  type DocumentGroup,
+} from "@/app/(dashboard)/documents/documentEntities";
 
 type NavLeaf = { href: string; label: string };
 
@@ -52,6 +56,7 @@ const links = [
 
 const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [
   { href: "/customers", label: "Customers" },
+  { href: "/documents", label: "Documents" },
   {
     label: "Options",
     children: optionsLinks,
@@ -72,6 +77,18 @@ function isMastersGroup(
   item: NavLeaf | MastersGroup,
 ): item is MastersGroup {
   return "children" in item;
+}
+
+function documentsNavGroups(groups: DocumentGroup[]): MastersGroup[] {
+  return groups
+    .filter((group) => group.entities.length > 0)
+    .map((group) => ({
+      label: group.label,
+      children: group.entities.map((item) => ({
+        href: documentHref(item),
+        label: item.label,
+      })),
+    }));
 }
 
 type ReportLeaf = NavLeaf;
@@ -290,6 +307,7 @@ function isMastersActive(pathname: string) {
   if (isOptionsActive(pathname)) return true;
   return mastersLinks.some((item) => {
     if (isMastersGroup(item)) return isMastersGroupActive(pathname, item);
+    if (item.href === "/documents") return pathname === "/documents";
     return isActivePath(pathname, item.href);
   });
 }
@@ -329,8 +347,19 @@ function isUsersActive(pathname: string) {
   return usersLinks.some((item) => isActivePath(pathname, item.href));
 }
 
-export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }) {
+function isDocumentsActive(pathname: string) {
+  return pathname.startsWith("/documents/");
+}
+
+export function AppNav({
+  access,
+  documentGroups,
+}: {
+  access: Exclude<Access, { kind: "none" }>;
+  documentGroups: DocumentGroup[];
+}) {
   const pathname = usePathname();
+  const documentsLinks = documentsNavGroups(documentGroups);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -339,10 +368,14 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const [bankOpen, setBankOpen] = useState(false);
   const [mastersOpen, setMastersOpen] = useState(false);
   const [usersOpen, setUsersOpen] = useState(false);
+  const [documentsOpen, setDocumentsOpen] = useState(false);
   const [openSubmenuPath, setOpenSubmenuPath] = useState<string | null>(null);
   const [openMastersSubmenu, setOpenMastersSubmenu] = useState<string | null>(
     null,
   );
+  const [openDocumentsSubmenu, setOpenDocumentsSubmenu] = useState<
+    string | null
+  >(null);
   const reportMenuId = useId();
   const updateMenuId = useId();
   const dispatchMenuId = useId();
@@ -350,6 +383,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const bankMenuId = useId();
   const mastersMenuId = useId();
   const usersMenuId = useId();
+  const documentsMenuId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
   const updateRef = useRef<HTMLDivElement>(null);
   const dispatchRef = useRef<HTMLDivElement>(null);
@@ -357,6 +391,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const bankRef = useRef<HTMLDivElement>(null);
   const mastersRef = useRef<HTMLDivElement>(null);
   const usersRef = useRef<HTMLDivElement>(null);
+  const documentsRef = useRef<HTMLDivElement>(null);
   const reportActive =
     pathname === "/reports" || pathname.startsWith("/reports/");
   const updateActive =
@@ -367,6 +402,7 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
   const bankActive = isBankActive(pathname);
   const mastersActive = isMastersActive(pathname);
   const usersActive = isUsersActive(pathname);
+  const documentsActive = isDocumentsActive(pathname);
   const allowed = (href: string) => canAccessPath(access.pageKeys, href);
   const showUpdateNav =
     access.pageKeys === "all" || hasAnyUpdatePageAccess(access.pageKeys);
@@ -385,8 +421,10 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
     setBankOpen(false);
     setMastersOpen(false);
     setUsersOpen(false);
+    setDocumentsOpen(false);
     setOpenSubmenuPath(null);
     setOpenMastersSubmenu(null);
+    setOpenDocumentsSubmenu(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -595,6 +633,37 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [usersOpen]);
+
+  useEffect(() => {
+    if (!documentsOpen) return;
+
+    function onPointerDown(event: MouseEvent) {
+      if (
+        documentsRef.current &&
+        !documentsRef.current.contains(event.target as Node)
+      ) {
+        setDocumentsOpen(false);
+        setOpenDocumentsSubmenu(null);
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        if (openDocumentsSubmenu) {
+          setOpenDocumentsSubmenu(null);
+          return;
+        }
+        setDocumentsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [documentsOpen, openDocumentsSubmenu]);
 
   const linksAfterBank = links;
 
@@ -887,7 +956,10 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                     );
                   }
 
-                  const active = isActivePath(pathname, item.href);
+                  const active =
+                    item.href === "/documents"
+                      ? pathname === "/documents"
+                      : isActivePath(pathname, item.href);
                   return (
                     <LockedLink
                       key={item.href}
@@ -998,6 +1070,84 @@ export function AppNav({ access }: { access: Exclude<Access, { kind: "none" }> }
                     >
                       {item.label}
                     </LockedLink>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div
+              className={`nav-dropdown${documentsOpen ? " open" : ""}${documentsActive ? " active" : ""}`}
+              ref={documentsRef}
+            >
+              <button
+                type="button"
+                className={`nav-dropdown-trigger${documentsActive ? " active" : ""}`}
+                aria-expanded={documentsOpen}
+                aria-controls={documentsMenuId}
+                aria-haspopup="menu"
+                onClick={() => setDocumentsOpen((open) => !open)}
+              >
+                Documents
+                <span className="nav-dropdown-caret" aria-hidden="true" />
+              </button>
+              <div
+                id={documentsMenuId}
+                className="nav-dropdown-menu"
+                role="menu"
+                hidden={!documentsOpen}
+              >
+                {documentsLinks.map((item) => {
+                  const submenuOpen = openDocumentsSubmenu === item.label;
+                  const groupActive = isMastersGroupActive(pathname, item);
+                  const submenuId = `${documentsMenuId}-${item.label.toLowerCase()}`;
+                  return (
+                    <div
+                      key={item.label}
+                      className={`nav-submenu${submenuOpen ? " open" : ""}${groupActive ? " active" : ""}`}
+                    >
+                      <button
+                        type="button"
+                        className={`nav-submenu-trigger${groupActive ? " active" : ""}`}
+                        aria-expanded={submenuOpen}
+                        aria-controls={submenuId}
+                        aria-haspopup="menu"
+                        onClick={() =>
+                          setOpenDocumentsSubmenu((current) =>
+                            current === item.label ? null : item.label,
+                          )
+                        }
+                        onMouseEnter={() => setOpenDocumentsSubmenu(item.label)}
+                      >
+                        {item.label}
+                        <span className="nav-submenu-caret" aria-hidden="true" />
+                      </button>
+                      <div
+                        id={submenuId}
+                        className="nav-submenu-menu nav-submenu-menu-start"
+                        role="menu"
+                        hidden={!submenuOpen}
+                        onMouseEnter={() => setOpenDocumentsSubmenu(item.label)}
+                      >
+                        {item.children.map((child) => {
+                          const active = isActivePath(pathname, child.href);
+                          return (
+                            <LockedLink
+                              key={child.href}
+                              href={child.href}
+                              allowed={allowed(child.href)}
+                              role="menuitem"
+                              className={active ? "active" : undefined}
+                              onClick={() => {
+                                setOpenDocumentsSubmenu(null);
+                                setDocumentsOpen(false);
+                              }}
+                            >
+                              {child.label}
+                            </LockedLink>
+                          );
+                        })}
+                      </div>
+                    </div>
                   );
                 })}
               </div>

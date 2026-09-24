@@ -1,5 +1,6 @@
 import { CustomerCategory, OrderType, PrismaClient } from "../src/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
+import { DEFAULT_DOCUMENT_ENTITIES } from "../src/app/(dashboard)/documents/documentEntities";
 
 const prisma = new PrismaClient();
 
@@ -16,6 +17,7 @@ async function main() {
   await prisma.cityOption.deleteMany();
   await prisma.stateOption.deleteMany();
   await prisma.sectorOption.deleteMany();
+  await prisma.documentOption.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.transporter.deleteMany();
   await prisma.bill.deleteMany();
@@ -77,6 +79,14 @@ async function main() {
       prisma.sectorOption.create({ data: { name } }),
     ),
   );
+
+  await prisma.documentOption.createMany({
+    data: DEFAULT_DOCUMENT_ENTITIES.map((item) => ({
+      name: item.label,
+      slug: item.slug,
+      kind: item.kind,
+    })),
+  });
 
   const indonesia = origins.find((o) => o.name === "Indonesia")!;
   const gcv6000 = qualities.find((q) => q.name === "6000 GCV")!;

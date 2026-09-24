@@ -209,6 +209,55 @@ model DealingCompanyOption {
   updatedAt DateTime @updatedAt
 }
 
+/// Company or individual member (Masters → Documents → Members).
+/// kind is "companies" or "individuals".
+model DocumentOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  kind      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uploads MemberDocument[]
+
+  @@index([kind])
+}
+
+/// A named document for a company or an individual (Masters → Documents → Documents).
+model DocumentEntry {
+  id        String   @id @default(cuid())
+  name      String
+  /// "companies" or "individuals"
+  kind      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uploads MemberDocument[]
+
+  @@unique([kind, name])
+  @@index([kind])
+}
+
+/// A file uploaded for a member against a document name.
+model MemberDocument {
+  id              String   @id @default(cuid())
+  memberId        String
+  documentEntryId String
+  remarks         String   @default("")
+  fileName        String
+  fileMime        String
+  fileData        Bytes
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  member        DocumentOption @relation(fields: [memberId], references: [id], onDelete: Restrict)
+  documentEntry DocumentEntry  @relation(fields: [documentEntryId], references: [id], onDelete: Restrict)
+
+  @@index([memberId])
+  @@index([documentEntryId])
+}
+
 /// Managed list of RE Leadership names (bill approvers).
 model OwnerOption {
   id        String   @id @default(cuid())

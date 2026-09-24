@@ -210,6 +210,35 @@ exports.Prisma.DealingCompanyOptionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DocumentOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  kind: 'kind',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DocumentEntryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  kind: 'kind',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.MemberDocumentScalarFieldEnum = {
+  id: 'id',
+  memberId: 'memberId',
+  documentEntryId: 'documentEntryId',
+  remarks: 'remarks',
+  fileName: 'fileName',
+  fileMime: 'fileMime',
+  fileData: 'fileData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.OwnerOptionScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -573,6 +602,9 @@ exports.Prisma.ModelName = {
   StateOption: 'StateOption',
   SectorOption: 'SectorOption',
   DealingCompanyOption: 'DealingCompanyOption',
+  DocumentOption: 'DocumentOption',
+  DocumentEntry: 'DocumentEntry',
+  MemberDocument: 'MemberDocument',
   OwnerOption: 'OwnerOption',
   QualityClass: 'QualityClass',
   Customer: 'Customer',

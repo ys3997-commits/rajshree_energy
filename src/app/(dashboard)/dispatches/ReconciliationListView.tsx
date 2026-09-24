@@ -24,7 +24,7 @@ import {
   type DispatchListData,
 } from "./dispatchListShared";
 
-const COLUMN_COUNT = 21;
+const COLUMN_COUNT = 20;
 
 export function ReconciliationListView({
   data,
@@ -150,7 +150,7 @@ export function ReconciliationListView({
         >
             <thead>
               <tr className="report-group-row">
-                <th colSpan={5}>Dispatch</th>
+                <th colSpan={4}>Dispatch</th>
                 <th colSpan={7}>Purchase</th>
                 <th colSpan={8}>Sale</th>
                 <th colSpan={1}></th>
@@ -168,11 +168,6 @@ export function ReconciliationListView({
                   no
                 </th>
                 <th className="cell-num">Weight</th>
-                <th className="col-wrap-head">
-                  GST
-                  <br />
-                  state
-                </th>
                 <th className="col-wrap-head col-tight">
                   PO
                   <br />
@@ -251,9 +246,6 @@ export function ReconciliationListView({
                     </td>
                     <td className="cell-num">
                       {formatDispatchMt(row.dispatchedQuantity)}
-                    </td>
-                    <td className={row.gstState ? undefined : "cell-center"}>
-                      {row.gstState ?? "—"}
                     </td>
                     <td className="col-tight">
                       {row.purchaseOrderId ? (

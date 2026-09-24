@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { OptionsClient } from "../OptionsClient";
 import { categoryFromSlug } from "../optionsCategories";
 import { loadOptionsData } from "../loadOptionsData";
@@ -11,6 +11,7 @@ export default async function OptionsCategoryPage({
   params: Params;
 }) {
   const { category: slug } = await params;
+  if (slug === "documents") redirect("/documents");
   const categoryId = categoryFromSlug(slug);
   if (!categoryId) notFound();
 

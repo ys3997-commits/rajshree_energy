@@ -64,6 +64,22 @@ export type SectorOption = $Result.DefaultSelection<Prisma.$SectorOptionPayload>
  */
 export type DealingCompanyOption = $Result.DefaultSelection<Prisma.$DealingCompanyOptionPayload>
 /**
+ * Model DocumentOption
+ * Company or individual member (Masters → Documents → Members).
+ * kind is "companies" or "individuals".
+ */
+export type DocumentOption = $Result.DefaultSelection<Prisma.$DocumentOptionPayload>
+/**
+ * Model DocumentEntry
+ * A named document for a company or an individual (Masters → Documents → Documents).
+ */
+export type DocumentEntry = $Result.DefaultSelection<Prisma.$DocumentEntryPayload>
+/**
+ * Model MemberDocument
+ * A file uploaded for a member against a document name.
+ */
+export type MemberDocument = $Result.DefaultSelection<Prisma.$MemberDocumentPayload>
+/**
  * Model OwnerOption
  * Managed list of RE Leadership names (bill approvers).
  */
@@ -81,6 +97,8 @@ export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
 /**
  * Model Veg
  * Industry-customer veg contact and payment rate (Masters → Veg).
+ * One row per veg-at-factory: the same veg name may be assigned to several
+ * industry customers, each with its own rate, begin date, stop date, and status.
  */
 export type Veg = $Result.DefaultSelection<Prisma.$VegPayload>
 /**
@@ -540,6 +558,36 @@ export class PrismaClient<
     * ```
     */
   get dealingCompanyOption(): Prisma.DealingCompanyOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.documentOption`: Exposes CRUD operations for the **DocumentOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocumentOptions
+    * const documentOptions = await prisma.documentOption.findMany()
+    * ```
+    */
+  get documentOption(): Prisma.DocumentOptionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.documentEntry`: Exposes CRUD operations for the **DocumentEntry** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DocumentEntries
+    * const documentEntries = await prisma.documentEntry.findMany()
+    * ```
+    */
+  get documentEntry(): Prisma.DocumentEntryDelegate<ExtArgs>;
+
+  /**
+   * `prisma.memberDocument`: Exposes CRUD operations for the **MemberDocument** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more MemberDocuments
+    * const memberDocuments = await prisma.memberDocument.findMany()
+    * ```
+    */
+  get memberDocument(): Prisma.MemberDocumentDelegate<ExtArgs>;
 
   /**
    * `prisma.ownerOption`: Exposes CRUD operations for the **OwnerOption** model.
@@ -1171,6 +1219,9 @@ export namespace Prisma {
     StateOption: 'StateOption',
     SectorOption: 'SectorOption',
     DealingCompanyOption: 'DealingCompanyOption',
+    DocumentOption: 'DocumentOption',
+    DocumentEntry: 'DocumentEntry',
+    MemberDocument: 'MemberDocument',
     OwnerOption: 'OwnerOption',
     QualityClass: 'QualityClass',
     Customer: 'Customer',
@@ -1204,7 +1255,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1905,6 +1956,216 @@ export namespace Prisma {
           count: {
             args: Prisma.DealingCompanyOptionCountArgs<ExtArgs>
             result: $Utils.Optional<DealingCompanyOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      DocumentOption: {
+        payload: Prisma.$DocumentOptionPayload<ExtArgs>
+        fields: Prisma.DocumentOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>
+          }
+          update: {
+            args: Prisma.DocumentOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DocumentOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocumentOption>
+          }
+          groupBy: {
+            args: Prisma.DocumentOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      DocumentEntry: {
+        payload: Prisma.$DocumentEntryPayload<ExtArgs>
+        fields: Prisma.DocumentEntryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DocumentEntryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DocumentEntryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>
+          }
+          findFirst: {
+            args: Prisma.DocumentEntryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DocumentEntryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>
+          }
+          findMany: {
+            args: Prisma.DocumentEntryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>[]
+          }
+          create: {
+            args: Prisma.DocumentEntryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>
+          }
+          createMany: {
+            args: Prisma.DocumentEntryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DocumentEntryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>[]
+          }
+          delete: {
+            args: Prisma.DocumentEntryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>
+          }
+          update: {
+            args: Prisma.DocumentEntryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>
+          }
+          deleteMany: {
+            args: Prisma.DocumentEntryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DocumentEntryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DocumentEntryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DocumentEntryPayload>
+          }
+          aggregate: {
+            args: Prisma.DocumentEntryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDocumentEntry>
+          }
+          groupBy: {
+            args: Prisma.DocumentEntryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DocumentEntryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DocumentEntryCountArgs<ExtArgs>
+            result: $Utils.Optional<DocumentEntryCountAggregateOutputType> | number
+          }
+        }
+      }
+      MemberDocument: {
+        payload: Prisma.$MemberDocumentPayload<ExtArgs>
+        fields: Prisma.MemberDocumentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.MemberDocumentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.MemberDocumentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>
+          }
+          findFirst: {
+            args: Prisma.MemberDocumentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.MemberDocumentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>
+          }
+          findMany: {
+            args: Prisma.MemberDocumentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>[]
+          }
+          create: {
+            args: Prisma.MemberDocumentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>
+          }
+          createMany: {
+            args: Prisma.MemberDocumentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.MemberDocumentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>[]
+          }
+          delete: {
+            args: Prisma.MemberDocumentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>
+          }
+          update: {
+            args: Prisma.MemberDocumentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>
+          }
+          deleteMany: {
+            args: Prisma.MemberDocumentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.MemberDocumentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.MemberDocumentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$MemberDocumentPayload>
+          }
+          aggregate: {
+            args: Prisma.MemberDocumentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateMemberDocument>
+          }
+          groupBy: {
+            args: Prisma.MemberDocumentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<MemberDocumentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.MemberDocumentCountArgs<ExtArgs>
+            result: $Utils.Optional<MemberDocumentCountAggregateOutputType> | number
           }
         }
       }
@@ -3566,6 +3827,68 @@ export namespace Prisma {
    */
   export type PortOptionCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type DocumentOptionCountOutputType
+   */
+
+  export type DocumentOptionCountOutputType = {
+    uploads: number
+  }
+
+  export type DocumentOptionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    uploads?: boolean | DocumentOptionCountOutputTypeCountUploadsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DocumentOptionCountOutputType without action
+   */
+  export type DocumentOptionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOptionCountOutputType
+     */
+    select?: DocumentOptionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DocumentOptionCountOutputType without action
+   */
+  export type DocumentOptionCountOutputTypeCountUploadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberDocumentWhereInput
+  }
+
+
+  /**
+   * Count Type DocumentEntryCountOutputType
+   */
+
+  export type DocumentEntryCountOutputType = {
+    uploads: number
+  }
+
+  export type DocumentEntryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    uploads?: boolean | DocumentEntryCountOutputTypeCountUploadsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DocumentEntryCountOutputType without action
+   */
+  export type DocumentEntryCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntryCountOutputType
+     */
+    select?: DocumentEntryCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DocumentEntryCountOutputType without action
+   */
+  export type DocumentEntryCountOutputTypeCountUploadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberDocumentWhereInput
   }
 
 
@@ -13466,6 +13789,2904 @@ export namespace Prisma {
 
 
   /**
+   * Model DocumentOption
+   */
+
+  export type AggregateDocumentOption = {
+    _count: DocumentOptionCountAggregateOutputType | null
+    _min: DocumentOptionMinAggregateOutputType | null
+    _max: DocumentOptionMaxAggregateOutputType | null
+  }
+
+  export type DocumentOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    slug: string | null
+    kind: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocumentOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    slug: string | null
+    kind: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocumentOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    slug: number
+    kind: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DocumentOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    kind?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocumentOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    kind?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocumentOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    kind?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DocumentOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentOption to aggregate.
+     */
+    where?: DocumentOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentOptions to fetch.
+     */
+    orderBy?: DocumentOptionOrderByWithRelationInput | DocumentOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocumentOptions
+    **/
+    _count?: true | DocumentOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentOptionMaxAggregateInputType
+  }
+
+  export type GetDocumentOptionAggregateType<T extends DocumentOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocumentOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocumentOption[P]>
+      : GetScalarType<T[P], AggregateDocumentOption[P]>
+  }
+
+
+
+
+  export type DocumentOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentOptionWhereInput
+    orderBy?: DocumentOptionOrderByWithAggregationInput | DocumentOptionOrderByWithAggregationInput[]
+    by: DocumentOptionScalarFieldEnum[] | DocumentOptionScalarFieldEnum
+    having?: DocumentOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentOptionCountAggregateInputType | true
+    _min?: DocumentOptionMinAggregateInputType
+    _max?: DocumentOptionMaxAggregateInputType
+  }
+
+  export type DocumentOptionGroupByOutputType = {
+    id: string
+    name: string
+    slug: string
+    kind: string
+    createdAt: Date
+    updatedAt: Date
+    _count: DocumentOptionCountAggregateOutputType | null
+    _min: DocumentOptionMinAggregateOutputType | null
+    _max: DocumentOptionMaxAggregateOutputType | null
+  }
+
+  type GetDocumentOptionGroupByPayload<T extends DocumentOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    kind?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    uploads?: boolean | DocumentOption$uploadsArgs<ExtArgs>
+    _count?: boolean | DocumentOptionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentOption"]>
+
+  export type DocumentOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    kind?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["documentOption"]>
+
+  export type DocumentOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    kind?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DocumentOptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    uploads?: boolean | DocumentOption$uploadsArgs<ExtArgs>
+    _count?: boolean | DocumentOptionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DocumentOptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $DocumentOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocumentOption"
+    objects: {
+      uploads: Prisma.$MemberDocumentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      slug: string
+      kind: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["documentOption"]>
+    composites: {}
+  }
+
+  type DocumentOptionGetPayload<S extends boolean | null | undefined | DocumentOptionDefaultArgs> = $Result.GetResult<Prisma.$DocumentOptionPayload, S>
+
+  type DocumentOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DocumentOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DocumentOptionCountAggregateInputType | true
+    }
+
+  export interface DocumentOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocumentOption'], meta: { name: 'DocumentOption' } }
+    /**
+     * Find zero or one DocumentOption that matches the filter.
+     * @param {DocumentOptionFindUniqueArgs} args - Arguments to find a DocumentOption
+     * @example
+     * // Get one DocumentOption
+     * const documentOption = await prisma.documentOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentOptionFindUniqueArgs>(args: SelectSubset<T, DocumentOptionFindUniqueArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DocumentOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DocumentOptionFindUniqueOrThrowArgs} args - Arguments to find a DocumentOption
+     * @example
+     * // Get one DocumentOption
+     * const documentOption = await prisma.documentOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DocumentOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionFindFirstArgs} args - Arguments to find a DocumentOption
+     * @example
+     * // Get one DocumentOption
+     * const documentOption = await prisma.documentOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentOptionFindFirstArgs>(args?: SelectSubset<T, DocumentOptionFindFirstArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DocumentOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionFindFirstOrThrowArgs} args - Arguments to find a DocumentOption
+     * @example
+     * // Get one DocumentOption
+     * const documentOption = await prisma.documentOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DocumentOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocumentOptions
+     * const documentOptions = await prisma.documentOption.findMany()
+     * 
+     * // Get first 10 DocumentOptions
+     * const documentOptions = await prisma.documentOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentOptionWithIdOnly = await prisma.documentOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentOptionFindManyArgs>(args?: SelectSubset<T, DocumentOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DocumentOption.
+     * @param {DocumentOptionCreateArgs} args - Arguments to create a DocumentOption.
+     * @example
+     * // Create one DocumentOption
+     * const DocumentOption = await prisma.documentOption.create({
+     *   data: {
+     *     // ... data to create a DocumentOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentOptionCreateArgs>(args: SelectSubset<T, DocumentOptionCreateArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DocumentOptions.
+     * @param {DocumentOptionCreateManyArgs} args - Arguments to create many DocumentOptions.
+     * @example
+     * // Create many DocumentOptions
+     * const documentOption = await prisma.documentOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentOptionCreateManyArgs>(args?: SelectSubset<T, DocumentOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocumentOptions and returns the data saved in the database.
+     * @param {DocumentOptionCreateManyAndReturnArgs} args - Arguments to create many DocumentOptions.
+     * @example
+     * // Create many DocumentOptions
+     * const documentOption = await prisma.documentOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocumentOptions and only return the `id`
+     * const documentOptionWithIdOnly = await prisma.documentOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DocumentOption.
+     * @param {DocumentOptionDeleteArgs} args - Arguments to delete one DocumentOption.
+     * @example
+     * // Delete one DocumentOption
+     * const DocumentOption = await prisma.documentOption.delete({
+     *   where: {
+     *     // ... filter to delete one DocumentOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentOptionDeleteArgs>(args: SelectSubset<T, DocumentOptionDeleteArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DocumentOption.
+     * @param {DocumentOptionUpdateArgs} args - Arguments to update one DocumentOption.
+     * @example
+     * // Update one DocumentOption
+     * const documentOption = await prisma.documentOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentOptionUpdateArgs>(args: SelectSubset<T, DocumentOptionUpdateArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DocumentOptions.
+     * @param {DocumentOptionDeleteManyArgs} args - Arguments to filter DocumentOptions to delete.
+     * @example
+     * // Delete a few DocumentOptions
+     * const { count } = await prisma.documentOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentOptionDeleteManyArgs>(args?: SelectSubset<T, DocumentOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocumentOptions
+     * const documentOption = await prisma.documentOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentOptionUpdateManyArgs>(args: SelectSubset<T, DocumentOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DocumentOption.
+     * @param {DocumentOptionUpsertArgs} args - Arguments to update or create a DocumentOption.
+     * @example
+     * // Update or create a DocumentOption
+     * const documentOption = await prisma.documentOption.upsert({
+     *   create: {
+     *     // ... data to create a DocumentOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocumentOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentOptionUpsertArgs>(args: SelectSubset<T, DocumentOptionUpsertArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DocumentOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionCountArgs} args - Arguments to filter DocumentOptions to count.
+     * @example
+     * // Count the number of DocumentOptions
+     * const count = await prisma.documentOption.count({
+     *   where: {
+     *     // ... the filter for the DocumentOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentOptionCountArgs>(
+      args?: Subset<T, DocumentOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocumentOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentOptionAggregateArgs>(args: Subset<T, DocumentOptionAggregateArgs>): Prisma.PrismaPromise<GetDocumentOptionAggregateType<T>>
+
+    /**
+     * Group by DocumentOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentOptionGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocumentOption model
+   */
+  readonly fields: DocumentOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocumentOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    uploads<T extends DocumentOption$uploadsArgs<ExtArgs> = {}>(args?: Subset<T, DocumentOption$uploadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocumentOption model
+   */ 
+  interface DocumentOptionFieldRefs {
+    readonly id: FieldRef<"DocumentOption", 'String'>
+    readonly name: FieldRef<"DocumentOption", 'String'>
+    readonly slug: FieldRef<"DocumentOption", 'String'>
+    readonly kind: FieldRef<"DocumentOption", 'String'>
+    readonly createdAt: FieldRef<"DocumentOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"DocumentOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocumentOption findUnique
+   */
+  export type DocumentOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentOption to fetch.
+     */
+    where: DocumentOptionWhereUniqueInput
+  }
+
+  /**
+   * DocumentOption findUniqueOrThrow
+   */
+  export type DocumentOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentOption to fetch.
+     */
+    where: DocumentOptionWhereUniqueInput
+  }
+
+  /**
+   * DocumentOption findFirst
+   */
+  export type DocumentOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentOption to fetch.
+     */
+    where?: DocumentOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentOptions to fetch.
+     */
+    orderBy?: DocumentOptionOrderByWithRelationInput | DocumentOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentOptions.
+     */
+    cursor?: DocumentOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentOptions.
+     */
+    distinct?: DocumentOptionScalarFieldEnum | DocumentOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentOption findFirstOrThrow
+   */
+  export type DocumentOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentOption to fetch.
+     */
+    where?: DocumentOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentOptions to fetch.
+     */
+    orderBy?: DocumentOptionOrderByWithRelationInput | DocumentOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentOptions.
+     */
+    cursor?: DocumentOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentOptions.
+     */
+    distinct?: DocumentOptionScalarFieldEnum | DocumentOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentOption findMany
+   */
+  export type DocumentOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentOptions to fetch.
+     */
+    where?: DocumentOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentOptions to fetch.
+     */
+    orderBy?: DocumentOptionOrderByWithRelationInput | DocumentOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocumentOptions.
+     */
+    cursor?: DocumentOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentOptions.
+     */
+    skip?: number
+    distinct?: DocumentOptionScalarFieldEnum | DocumentOptionScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentOption create
+   */
+  export type DocumentOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocumentOption.
+     */
+    data: XOR<DocumentOptionCreateInput, DocumentOptionUncheckedCreateInput>
+  }
+
+  /**
+   * DocumentOption createMany
+   */
+  export type DocumentOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocumentOptions.
+     */
+    data: DocumentOptionCreateManyInput | DocumentOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentOption createManyAndReturn
+   */
+  export type DocumentOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DocumentOptions.
+     */
+    data: DocumentOptionCreateManyInput | DocumentOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentOption update
+   */
+  export type DocumentOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocumentOption.
+     */
+    data: XOR<DocumentOptionUpdateInput, DocumentOptionUncheckedUpdateInput>
+    /**
+     * Choose, which DocumentOption to update.
+     */
+    where: DocumentOptionWhereUniqueInput
+  }
+
+  /**
+   * DocumentOption updateMany
+   */
+  export type DocumentOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocumentOptions.
+     */
+    data: XOR<DocumentOptionUpdateManyMutationInput, DocumentOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentOptions to update
+     */
+    where?: DocumentOptionWhereInput
+  }
+
+  /**
+   * DocumentOption upsert
+   */
+  export type DocumentOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocumentOption to update in case it exists.
+     */
+    where: DocumentOptionWhereUniqueInput
+    /**
+     * In case the DocumentOption found by the `where` argument doesn't exist, create a new DocumentOption with this data.
+     */
+    create: XOR<DocumentOptionCreateInput, DocumentOptionUncheckedCreateInput>
+    /**
+     * In case the DocumentOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentOptionUpdateInput, DocumentOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * DocumentOption delete
+   */
+  export type DocumentOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+    /**
+     * Filter which DocumentOption to delete.
+     */
+    where: DocumentOptionWhereUniqueInput
+  }
+
+  /**
+   * DocumentOption deleteMany
+   */
+  export type DocumentOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentOptions to delete
+     */
+    where?: DocumentOptionWhereInput
+  }
+
+  /**
+   * DocumentOption.uploads
+   */
+  export type DocumentOption$uploadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    where?: MemberDocumentWhereInput
+    orderBy?: MemberDocumentOrderByWithRelationInput | MemberDocumentOrderByWithRelationInput[]
+    cursor?: MemberDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberDocumentScalarFieldEnum | MemberDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentOption without action
+   */
+  export type DocumentOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentOption
+     */
+    select?: DocumentOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentOptionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DocumentEntry
+   */
+
+  export type AggregateDocumentEntry = {
+    _count: DocumentEntryCountAggregateOutputType | null
+    _min: DocumentEntryMinAggregateOutputType | null
+    _max: DocumentEntryMaxAggregateOutputType | null
+  }
+
+  export type DocumentEntryMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    kind: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocumentEntryMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    kind: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DocumentEntryCountAggregateOutputType = {
+    id: number
+    name: number
+    kind: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DocumentEntryMinAggregateInputType = {
+    id?: true
+    name?: true
+    kind?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocumentEntryMaxAggregateInputType = {
+    id?: true
+    name?: true
+    kind?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DocumentEntryCountAggregateInputType = {
+    id?: true
+    name?: true
+    kind?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DocumentEntryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentEntry to aggregate.
+     */
+    where?: DocumentEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentEntries to fetch.
+     */
+    orderBy?: DocumentEntryOrderByWithRelationInput | DocumentEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DocumentEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DocumentEntries
+    **/
+    _count?: true | DocumentEntryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DocumentEntryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DocumentEntryMaxAggregateInputType
+  }
+
+  export type GetDocumentEntryAggregateType<T extends DocumentEntryAggregateArgs> = {
+        [P in keyof T & keyof AggregateDocumentEntry]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDocumentEntry[P]>
+      : GetScalarType<T[P], AggregateDocumentEntry[P]>
+  }
+
+
+
+
+  export type DocumentEntryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentEntryWhereInput
+    orderBy?: DocumentEntryOrderByWithAggregationInput | DocumentEntryOrderByWithAggregationInput[]
+    by: DocumentEntryScalarFieldEnum[] | DocumentEntryScalarFieldEnum
+    having?: DocumentEntryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DocumentEntryCountAggregateInputType | true
+    _min?: DocumentEntryMinAggregateInputType
+    _max?: DocumentEntryMaxAggregateInputType
+  }
+
+  export type DocumentEntryGroupByOutputType = {
+    id: string
+    name: string
+    kind: string
+    createdAt: Date
+    updatedAt: Date
+    _count: DocumentEntryCountAggregateOutputType | null
+    _min: DocumentEntryMinAggregateOutputType | null
+    _max: DocumentEntryMaxAggregateOutputType | null
+  }
+
+  type GetDocumentEntryGroupByPayload<T extends DocumentEntryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DocumentEntryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DocumentEntryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DocumentEntryGroupByOutputType[P]>
+            : GetScalarType<T[P], DocumentEntryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DocumentEntrySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    kind?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    uploads?: boolean | DocumentEntry$uploadsArgs<ExtArgs>
+    _count?: boolean | DocumentEntryCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["documentEntry"]>
+
+  export type DocumentEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    kind?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["documentEntry"]>
+
+  export type DocumentEntrySelectScalar = {
+    id?: boolean
+    name?: boolean
+    kind?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DocumentEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    uploads?: boolean | DocumentEntry$uploadsArgs<ExtArgs>
+    _count?: boolean | DocumentEntryCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type DocumentEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $DocumentEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DocumentEntry"
+    objects: {
+      uploads: Prisma.$MemberDocumentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      /**
+       * "companies" or "individuals"
+       */
+      kind: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["documentEntry"]>
+    composites: {}
+  }
+
+  type DocumentEntryGetPayload<S extends boolean | null | undefined | DocumentEntryDefaultArgs> = $Result.GetResult<Prisma.$DocumentEntryPayload, S>
+
+  type DocumentEntryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DocumentEntryFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DocumentEntryCountAggregateInputType | true
+    }
+
+  export interface DocumentEntryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DocumentEntry'], meta: { name: 'DocumentEntry' } }
+    /**
+     * Find zero or one DocumentEntry that matches the filter.
+     * @param {DocumentEntryFindUniqueArgs} args - Arguments to find a DocumentEntry
+     * @example
+     * // Get one DocumentEntry
+     * const documentEntry = await prisma.documentEntry.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DocumentEntryFindUniqueArgs>(args: SelectSubset<T, DocumentEntryFindUniqueArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DocumentEntry that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DocumentEntryFindUniqueOrThrowArgs} args - Arguments to find a DocumentEntry
+     * @example
+     * // Get one DocumentEntry
+     * const documentEntry = await prisma.documentEntry.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DocumentEntryFindUniqueOrThrowArgs>(args: SelectSubset<T, DocumentEntryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DocumentEntry that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryFindFirstArgs} args - Arguments to find a DocumentEntry
+     * @example
+     * // Get one DocumentEntry
+     * const documentEntry = await prisma.documentEntry.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DocumentEntryFindFirstArgs>(args?: SelectSubset<T, DocumentEntryFindFirstArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DocumentEntry that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryFindFirstOrThrowArgs} args - Arguments to find a DocumentEntry
+     * @example
+     * // Get one DocumentEntry
+     * const documentEntry = await prisma.documentEntry.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DocumentEntryFindFirstOrThrowArgs>(args?: SelectSubset<T, DocumentEntryFindFirstOrThrowArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DocumentEntries that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DocumentEntries
+     * const documentEntries = await prisma.documentEntry.findMany()
+     * 
+     * // Get first 10 DocumentEntries
+     * const documentEntries = await prisma.documentEntry.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const documentEntryWithIdOnly = await prisma.documentEntry.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DocumentEntryFindManyArgs>(args?: SelectSubset<T, DocumentEntryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DocumentEntry.
+     * @param {DocumentEntryCreateArgs} args - Arguments to create a DocumentEntry.
+     * @example
+     * // Create one DocumentEntry
+     * const DocumentEntry = await prisma.documentEntry.create({
+     *   data: {
+     *     // ... data to create a DocumentEntry
+     *   }
+     * })
+     * 
+     */
+    create<T extends DocumentEntryCreateArgs>(args: SelectSubset<T, DocumentEntryCreateArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DocumentEntries.
+     * @param {DocumentEntryCreateManyArgs} args - Arguments to create many DocumentEntries.
+     * @example
+     * // Create many DocumentEntries
+     * const documentEntry = await prisma.documentEntry.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DocumentEntryCreateManyArgs>(args?: SelectSubset<T, DocumentEntryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DocumentEntries and returns the data saved in the database.
+     * @param {DocumentEntryCreateManyAndReturnArgs} args - Arguments to create many DocumentEntries.
+     * @example
+     * // Create many DocumentEntries
+     * const documentEntry = await prisma.documentEntry.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DocumentEntries and only return the `id`
+     * const documentEntryWithIdOnly = await prisma.documentEntry.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DocumentEntryCreateManyAndReturnArgs>(args?: SelectSubset<T, DocumentEntryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DocumentEntry.
+     * @param {DocumentEntryDeleteArgs} args - Arguments to delete one DocumentEntry.
+     * @example
+     * // Delete one DocumentEntry
+     * const DocumentEntry = await prisma.documentEntry.delete({
+     *   where: {
+     *     // ... filter to delete one DocumentEntry
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DocumentEntryDeleteArgs>(args: SelectSubset<T, DocumentEntryDeleteArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DocumentEntry.
+     * @param {DocumentEntryUpdateArgs} args - Arguments to update one DocumentEntry.
+     * @example
+     * // Update one DocumentEntry
+     * const documentEntry = await prisma.documentEntry.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DocumentEntryUpdateArgs>(args: SelectSubset<T, DocumentEntryUpdateArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DocumentEntries.
+     * @param {DocumentEntryDeleteManyArgs} args - Arguments to filter DocumentEntries to delete.
+     * @example
+     * // Delete a few DocumentEntries
+     * const { count } = await prisma.documentEntry.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DocumentEntryDeleteManyArgs>(args?: SelectSubset<T, DocumentEntryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DocumentEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DocumentEntries
+     * const documentEntry = await prisma.documentEntry.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DocumentEntryUpdateManyArgs>(args: SelectSubset<T, DocumentEntryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DocumentEntry.
+     * @param {DocumentEntryUpsertArgs} args - Arguments to update or create a DocumentEntry.
+     * @example
+     * // Update or create a DocumentEntry
+     * const documentEntry = await prisma.documentEntry.upsert({
+     *   create: {
+     *     // ... data to create a DocumentEntry
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DocumentEntry we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DocumentEntryUpsertArgs>(args: SelectSubset<T, DocumentEntryUpsertArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DocumentEntries.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryCountArgs} args - Arguments to filter DocumentEntries to count.
+     * @example
+     * // Count the number of DocumentEntries
+     * const count = await prisma.documentEntry.count({
+     *   where: {
+     *     // ... the filter for the DocumentEntries we want to count
+     *   }
+     * })
+    **/
+    count<T extends DocumentEntryCountArgs>(
+      args?: Subset<T, DocumentEntryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DocumentEntryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DocumentEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DocumentEntryAggregateArgs>(args: Subset<T, DocumentEntryAggregateArgs>): Prisma.PrismaPromise<GetDocumentEntryAggregateType<T>>
+
+    /**
+     * Group by DocumentEntry.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DocumentEntryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DocumentEntryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DocumentEntryGroupByArgs['orderBy'] }
+        : { orderBy?: DocumentEntryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DocumentEntryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDocumentEntryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DocumentEntry model
+   */
+  readonly fields: DocumentEntryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DocumentEntry.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DocumentEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    uploads<T extends DocumentEntry$uploadsArgs<ExtArgs> = {}>(args?: Subset<T, DocumentEntry$uploadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DocumentEntry model
+   */ 
+  interface DocumentEntryFieldRefs {
+    readonly id: FieldRef<"DocumentEntry", 'String'>
+    readonly name: FieldRef<"DocumentEntry", 'String'>
+    readonly kind: FieldRef<"DocumentEntry", 'String'>
+    readonly createdAt: FieldRef<"DocumentEntry", 'DateTime'>
+    readonly updatedAt: FieldRef<"DocumentEntry", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DocumentEntry findUnique
+   */
+  export type DocumentEntryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentEntry to fetch.
+     */
+    where: DocumentEntryWhereUniqueInput
+  }
+
+  /**
+   * DocumentEntry findUniqueOrThrow
+   */
+  export type DocumentEntryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentEntry to fetch.
+     */
+    where: DocumentEntryWhereUniqueInput
+  }
+
+  /**
+   * DocumentEntry findFirst
+   */
+  export type DocumentEntryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentEntry to fetch.
+     */
+    where?: DocumentEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentEntries to fetch.
+     */
+    orderBy?: DocumentEntryOrderByWithRelationInput | DocumentEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentEntries.
+     */
+    cursor?: DocumentEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentEntries.
+     */
+    distinct?: DocumentEntryScalarFieldEnum | DocumentEntryScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentEntry findFirstOrThrow
+   */
+  export type DocumentEntryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentEntry to fetch.
+     */
+    where?: DocumentEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentEntries to fetch.
+     */
+    orderBy?: DocumentEntryOrderByWithRelationInput | DocumentEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DocumentEntries.
+     */
+    cursor?: DocumentEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentEntries.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DocumentEntries.
+     */
+    distinct?: DocumentEntryScalarFieldEnum | DocumentEntryScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentEntry findMany
+   */
+  export type DocumentEntryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * Filter, which DocumentEntries to fetch.
+     */
+    where?: DocumentEntryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DocumentEntries to fetch.
+     */
+    orderBy?: DocumentEntryOrderByWithRelationInput | DocumentEntryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DocumentEntries.
+     */
+    cursor?: DocumentEntryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DocumentEntries from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DocumentEntries.
+     */
+    skip?: number
+    distinct?: DocumentEntryScalarFieldEnum | DocumentEntryScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentEntry create
+   */
+  export type DocumentEntryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DocumentEntry.
+     */
+    data: XOR<DocumentEntryCreateInput, DocumentEntryUncheckedCreateInput>
+  }
+
+  /**
+   * DocumentEntry createMany
+   */
+  export type DocumentEntryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DocumentEntries.
+     */
+    data: DocumentEntryCreateManyInput | DocumentEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentEntry createManyAndReturn
+   */
+  export type DocumentEntryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DocumentEntries.
+     */
+    data: DocumentEntryCreateManyInput | DocumentEntryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DocumentEntry update
+   */
+  export type DocumentEntryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DocumentEntry.
+     */
+    data: XOR<DocumentEntryUpdateInput, DocumentEntryUncheckedUpdateInput>
+    /**
+     * Choose, which DocumentEntry to update.
+     */
+    where: DocumentEntryWhereUniqueInput
+  }
+
+  /**
+   * DocumentEntry updateMany
+   */
+  export type DocumentEntryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DocumentEntries.
+     */
+    data: XOR<DocumentEntryUpdateManyMutationInput, DocumentEntryUncheckedUpdateManyInput>
+    /**
+     * Filter which DocumentEntries to update
+     */
+    where?: DocumentEntryWhereInput
+  }
+
+  /**
+   * DocumentEntry upsert
+   */
+  export type DocumentEntryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DocumentEntry to update in case it exists.
+     */
+    where: DocumentEntryWhereUniqueInput
+    /**
+     * In case the DocumentEntry found by the `where` argument doesn't exist, create a new DocumentEntry with this data.
+     */
+    create: XOR<DocumentEntryCreateInput, DocumentEntryUncheckedCreateInput>
+    /**
+     * In case the DocumentEntry was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DocumentEntryUpdateInput, DocumentEntryUncheckedUpdateInput>
+  }
+
+  /**
+   * DocumentEntry delete
+   */
+  export type DocumentEntryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+    /**
+     * Filter which DocumentEntry to delete.
+     */
+    where: DocumentEntryWhereUniqueInput
+  }
+
+  /**
+   * DocumentEntry deleteMany
+   */
+  export type DocumentEntryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DocumentEntries to delete
+     */
+    where?: DocumentEntryWhereInput
+  }
+
+  /**
+   * DocumentEntry.uploads
+   */
+  export type DocumentEntry$uploadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    where?: MemberDocumentWhereInput
+    orderBy?: MemberDocumentOrderByWithRelationInput | MemberDocumentOrderByWithRelationInput[]
+    cursor?: MemberDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MemberDocumentScalarFieldEnum | MemberDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * DocumentEntry without action
+   */
+  export type DocumentEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DocumentEntry
+     */
+    select?: DocumentEntrySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentEntryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model MemberDocument
+   */
+
+  export type AggregateMemberDocument = {
+    _count: MemberDocumentCountAggregateOutputType | null
+    _min: MemberDocumentMinAggregateOutputType | null
+    _max: MemberDocumentMaxAggregateOutputType | null
+  }
+
+  export type MemberDocumentMinAggregateOutputType = {
+    id: string | null
+    memberId: string | null
+    documentEntryId: string | null
+    remarks: string | null
+    fileName: string | null
+    fileMime: string | null
+    fileData: Buffer | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MemberDocumentMaxAggregateOutputType = {
+    id: string | null
+    memberId: string | null
+    documentEntryId: string | null
+    remarks: string | null
+    fileName: string | null
+    fileMime: string | null
+    fileData: Buffer | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type MemberDocumentCountAggregateOutputType = {
+    id: number
+    memberId: number
+    documentEntryId: number
+    remarks: number
+    fileName: number
+    fileMime: number
+    fileData: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type MemberDocumentMinAggregateInputType = {
+    id?: true
+    memberId?: true
+    documentEntryId?: true
+    remarks?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MemberDocumentMaxAggregateInputType = {
+    id?: true
+    memberId?: true
+    documentEntryId?: true
+    remarks?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type MemberDocumentCountAggregateInputType = {
+    id?: true
+    memberId?: true
+    documentEntryId?: true
+    remarks?: true
+    fileName?: true
+    fileMime?: true
+    fileData?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type MemberDocumentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MemberDocument to aggregate.
+     */
+    where?: MemberDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberDocuments to fetch.
+     */
+    orderBy?: MemberDocumentOrderByWithRelationInput | MemberDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: MemberDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberDocuments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned MemberDocuments
+    **/
+    _count?: true | MemberDocumentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: MemberDocumentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: MemberDocumentMaxAggregateInputType
+  }
+
+  export type GetMemberDocumentAggregateType<T extends MemberDocumentAggregateArgs> = {
+        [P in keyof T & keyof AggregateMemberDocument]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateMemberDocument[P]>
+      : GetScalarType<T[P], AggregateMemberDocument[P]>
+  }
+
+
+
+
+  export type MemberDocumentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MemberDocumentWhereInput
+    orderBy?: MemberDocumentOrderByWithAggregationInput | MemberDocumentOrderByWithAggregationInput[]
+    by: MemberDocumentScalarFieldEnum[] | MemberDocumentScalarFieldEnum
+    having?: MemberDocumentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: MemberDocumentCountAggregateInputType | true
+    _min?: MemberDocumentMinAggregateInputType
+    _max?: MemberDocumentMaxAggregateInputType
+  }
+
+  export type MemberDocumentGroupByOutputType = {
+    id: string
+    memberId: string
+    documentEntryId: string
+    remarks: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt: Date
+    updatedAt: Date
+    _count: MemberDocumentCountAggregateOutputType | null
+    _min: MemberDocumentMinAggregateOutputType | null
+    _max: MemberDocumentMaxAggregateOutputType | null
+  }
+
+  type GetMemberDocumentGroupByPayload<T extends MemberDocumentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<MemberDocumentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof MemberDocumentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], MemberDocumentGroupByOutputType[P]>
+            : GetScalarType<T[P], MemberDocumentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type MemberDocumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    memberId?: boolean
+    documentEntryId?: boolean
+    remarks?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    member?: boolean | DocumentOptionDefaultArgs<ExtArgs>
+    documentEntry?: boolean | DocumentEntryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["memberDocument"]>
+
+  export type MemberDocumentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    memberId?: boolean
+    documentEntryId?: boolean
+    remarks?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    member?: boolean | DocumentOptionDefaultArgs<ExtArgs>
+    documentEntry?: boolean | DocumentEntryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["memberDocument"]>
+
+  export type MemberDocumentSelectScalar = {
+    id?: boolean
+    memberId?: boolean
+    documentEntryId?: boolean
+    remarks?: boolean
+    fileName?: boolean
+    fileMime?: boolean
+    fileData?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type MemberDocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    member?: boolean | DocumentOptionDefaultArgs<ExtArgs>
+    documentEntry?: boolean | DocumentEntryDefaultArgs<ExtArgs>
+  }
+  export type MemberDocumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    member?: boolean | DocumentOptionDefaultArgs<ExtArgs>
+    documentEntry?: boolean | DocumentEntryDefaultArgs<ExtArgs>
+  }
+
+  export type $MemberDocumentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "MemberDocument"
+    objects: {
+      member: Prisma.$DocumentOptionPayload<ExtArgs>
+      documentEntry: Prisma.$DocumentEntryPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      memberId: string
+      documentEntryId: string
+      remarks: string
+      fileName: string
+      fileMime: string
+      fileData: Buffer
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["memberDocument"]>
+    composites: {}
+  }
+
+  type MemberDocumentGetPayload<S extends boolean | null | undefined | MemberDocumentDefaultArgs> = $Result.GetResult<Prisma.$MemberDocumentPayload, S>
+
+  type MemberDocumentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<MemberDocumentFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: MemberDocumentCountAggregateInputType | true
+    }
+
+  export interface MemberDocumentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['MemberDocument'], meta: { name: 'MemberDocument' } }
+    /**
+     * Find zero or one MemberDocument that matches the filter.
+     * @param {MemberDocumentFindUniqueArgs} args - Arguments to find a MemberDocument
+     * @example
+     * // Get one MemberDocument
+     * const memberDocument = await prisma.memberDocument.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends MemberDocumentFindUniqueArgs>(args: SelectSubset<T, MemberDocumentFindUniqueArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one MemberDocument that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {MemberDocumentFindUniqueOrThrowArgs} args - Arguments to find a MemberDocument
+     * @example
+     * // Get one MemberDocument
+     * const memberDocument = await prisma.memberDocument.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends MemberDocumentFindUniqueOrThrowArgs>(args: SelectSubset<T, MemberDocumentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first MemberDocument that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentFindFirstArgs} args - Arguments to find a MemberDocument
+     * @example
+     * // Get one MemberDocument
+     * const memberDocument = await prisma.memberDocument.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends MemberDocumentFindFirstArgs>(args?: SelectSubset<T, MemberDocumentFindFirstArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first MemberDocument that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentFindFirstOrThrowArgs} args - Arguments to find a MemberDocument
+     * @example
+     * // Get one MemberDocument
+     * const memberDocument = await prisma.memberDocument.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends MemberDocumentFindFirstOrThrowArgs>(args?: SelectSubset<T, MemberDocumentFindFirstOrThrowArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more MemberDocuments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all MemberDocuments
+     * const memberDocuments = await prisma.memberDocument.findMany()
+     * 
+     * // Get first 10 MemberDocuments
+     * const memberDocuments = await prisma.memberDocument.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const memberDocumentWithIdOnly = await prisma.memberDocument.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends MemberDocumentFindManyArgs>(args?: SelectSubset<T, MemberDocumentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a MemberDocument.
+     * @param {MemberDocumentCreateArgs} args - Arguments to create a MemberDocument.
+     * @example
+     * // Create one MemberDocument
+     * const MemberDocument = await prisma.memberDocument.create({
+     *   data: {
+     *     // ... data to create a MemberDocument
+     *   }
+     * })
+     * 
+     */
+    create<T extends MemberDocumentCreateArgs>(args: SelectSubset<T, MemberDocumentCreateArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many MemberDocuments.
+     * @param {MemberDocumentCreateManyArgs} args - Arguments to create many MemberDocuments.
+     * @example
+     * // Create many MemberDocuments
+     * const memberDocument = await prisma.memberDocument.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends MemberDocumentCreateManyArgs>(args?: SelectSubset<T, MemberDocumentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many MemberDocuments and returns the data saved in the database.
+     * @param {MemberDocumentCreateManyAndReturnArgs} args - Arguments to create many MemberDocuments.
+     * @example
+     * // Create many MemberDocuments
+     * const memberDocument = await prisma.memberDocument.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many MemberDocuments and only return the `id`
+     * const memberDocumentWithIdOnly = await prisma.memberDocument.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends MemberDocumentCreateManyAndReturnArgs>(args?: SelectSubset<T, MemberDocumentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a MemberDocument.
+     * @param {MemberDocumentDeleteArgs} args - Arguments to delete one MemberDocument.
+     * @example
+     * // Delete one MemberDocument
+     * const MemberDocument = await prisma.memberDocument.delete({
+     *   where: {
+     *     // ... filter to delete one MemberDocument
+     *   }
+     * })
+     * 
+     */
+    delete<T extends MemberDocumentDeleteArgs>(args: SelectSubset<T, MemberDocumentDeleteArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one MemberDocument.
+     * @param {MemberDocumentUpdateArgs} args - Arguments to update one MemberDocument.
+     * @example
+     * // Update one MemberDocument
+     * const memberDocument = await prisma.memberDocument.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends MemberDocumentUpdateArgs>(args: SelectSubset<T, MemberDocumentUpdateArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more MemberDocuments.
+     * @param {MemberDocumentDeleteManyArgs} args - Arguments to filter MemberDocuments to delete.
+     * @example
+     * // Delete a few MemberDocuments
+     * const { count } = await prisma.memberDocument.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends MemberDocumentDeleteManyArgs>(args?: SelectSubset<T, MemberDocumentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more MemberDocuments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many MemberDocuments
+     * const memberDocument = await prisma.memberDocument.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends MemberDocumentUpdateManyArgs>(args: SelectSubset<T, MemberDocumentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one MemberDocument.
+     * @param {MemberDocumentUpsertArgs} args - Arguments to update or create a MemberDocument.
+     * @example
+     * // Update or create a MemberDocument
+     * const memberDocument = await prisma.memberDocument.upsert({
+     *   create: {
+     *     // ... data to create a MemberDocument
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the MemberDocument we want to update
+     *   }
+     * })
+     */
+    upsert<T extends MemberDocumentUpsertArgs>(args: SelectSubset<T, MemberDocumentUpsertArgs<ExtArgs>>): Prisma__MemberDocumentClient<$Result.GetResult<Prisma.$MemberDocumentPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of MemberDocuments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentCountArgs} args - Arguments to filter MemberDocuments to count.
+     * @example
+     * // Count the number of MemberDocuments
+     * const count = await prisma.memberDocument.count({
+     *   where: {
+     *     // ... the filter for the MemberDocuments we want to count
+     *   }
+     * })
+    **/
+    count<T extends MemberDocumentCountArgs>(
+      args?: Subset<T, MemberDocumentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], MemberDocumentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a MemberDocument.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends MemberDocumentAggregateArgs>(args: Subset<T, MemberDocumentAggregateArgs>): Prisma.PrismaPromise<GetMemberDocumentAggregateType<T>>
+
+    /**
+     * Group by MemberDocument.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {MemberDocumentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends MemberDocumentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: MemberDocumentGroupByArgs['orderBy'] }
+        : { orderBy?: MemberDocumentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, MemberDocumentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetMemberDocumentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the MemberDocument model
+   */
+  readonly fields: MemberDocumentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for MemberDocument.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__MemberDocumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    member<T extends DocumentOptionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DocumentOptionDefaultArgs<ExtArgs>>): Prisma__DocumentOptionClient<$Result.GetResult<Prisma.$DocumentOptionPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    documentEntry<T extends DocumentEntryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DocumentEntryDefaultArgs<ExtArgs>>): Prisma__DocumentEntryClient<$Result.GetResult<Prisma.$DocumentEntryPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the MemberDocument model
+   */ 
+  interface MemberDocumentFieldRefs {
+    readonly id: FieldRef<"MemberDocument", 'String'>
+    readonly memberId: FieldRef<"MemberDocument", 'String'>
+    readonly documentEntryId: FieldRef<"MemberDocument", 'String'>
+    readonly remarks: FieldRef<"MemberDocument", 'String'>
+    readonly fileName: FieldRef<"MemberDocument", 'String'>
+    readonly fileMime: FieldRef<"MemberDocument", 'String'>
+    readonly fileData: FieldRef<"MemberDocument", 'Bytes'>
+    readonly createdAt: FieldRef<"MemberDocument", 'DateTime'>
+    readonly updatedAt: FieldRef<"MemberDocument", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * MemberDocument findUnique
+   */
+  export type MemberDocumentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberDocument to fetch.
+     */
+    where: MemberDocumentWhereUniqueInput
+  }
+
+  /**
+   * MemberDocument findUniqueOrThrow
+   */
+  export type MemberDocumentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberDocument to fetch.
+     */
+    where: MemberDocumentWhereUniqueInput
+  }
+
+  /**
+   * MemberDocument findFirst
+   */
+  export type MemberDocumentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberDocument to fetch.
+     */
+    where?: MemberDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberDocuments to fetch.
+     */
+    orderBy?: MemberDocumentOrderByWithRelationInput | MemberDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MemberDocuments.
+     */
+    cursor?: MemberDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberDocuments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MemberDocuments.
+     */
+    distinct?: MemberDocumentScalarFieldEnum | MemberDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * MemberDocument findFirstOrThrow
+   */
+  export type MemberDocumentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberDocument to fetch.
+     */
+    where?: MemberDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberDocuments to fetch.
+     */
+    orderBy?: MemberDocumentOrderByWithRelationInput | MemberDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for MemberDocuments.
+     */
+    cursor?: MemberDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberDocuments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of MemberDocuments.
+     */
+    distinct?: MemberDocumentScalarFieldEnum | MemberDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * MemberDocument findMany
+   */
+  export type MemberDocumentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which MemberDocuments to fetch.
+     */
+    where?: MemberDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of MemberDocuments to fetch.
+     */
+    orderBy?: MemberDocumentOrderByWithRelationInput | MemberDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing MemberDocuments.
+     */
+    cursor?: MemberDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` MemberDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` MemberDocuments.
+     */
+    skip?: number
+    distinct?: MemberDocumentScalarFieldEnum | MemberDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * MemberDocument create
+   */
+  export type MemberDocumentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a MemberDocument.
+     */
+    data: XOR<MemberDocumentCreateInput, MemberDocumentUncheckedCreateInput>
+  }
+
+  /**
+   * MemberDocument createMany
+   */
+  export type MemberDocumentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many MemberDocuments.
+     */
+    data: MemberDocumentCreateManyInput | MemberDocumentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * MemberDocument createManyAndReturn
+   */
+  export type MemberDocumentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many MemberDocuments.
+     */
+    data: MemberDocumentCreateManyInput | MemberDocumentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * MemberDocument update
+   */
+  export type MemberDocumentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a MemberDocument.
+     */
+    data: XOR<MemberDocumentUpdateInput, MemberDocumentUncheckedUpdateInput>
+    /**
+     * Choose, which MemberDocument to update.
+     */
+    where: MemberDocumentWhereUniqueInput
+  }
+
+  /**
+   * MemberDocument updateMany
+   */
+  export type MemberDocumentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update MemberDocuments.
+     */
+    data: XOR<MemberDocumentUpdateManyMutationInput, MemberDocumentUncheckedUpdateManyInput>
+    /**
+     * Filter which MemberDocuments to update
+     */
+    where?: MemberDocumentWhereInput
+  }
+
+  /**
+   * MemberDocument upsert
+   */
+  export type MemberDocumentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the MemberDocument to update in case it exists.
+     */
+    where: MemberDocumentWhereUniqueInput
+    /**
+     * In case the MemberDocument found by the `where` argument doesn't exist, create a new MemberDocument with this data.
+     */
+    create: XOR<MemberDocumentCreateInput, MemberDocumentUncheckedCreateInput>
+    /**
+     * In case the MemberDocument was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<MemberDocumentUpdateInput, MemberDocumentUncheckedUpdateInput>
+  }
+
+  /**
+   * MemberDocument delete
+   */
+  export type MemberDocumentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+    /**
+     * Filter which MemberDocument to delete.
+     */
+    where: MemberDocumentWhereUniqueInput
+  }
+
+  /**
+   * MemberDocument deleteMany
+   */
+  export type MemberDocumentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which MemberDocuments to delete
+     */
+    where?: MemberDocumentWhereInput
+  }
+
+  /**
+   * MemberDocument without action
+   */
+  export type MemberDocumentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the MemberDocument
+     */
+    select?: MemberDocumentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemberDocumentInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model OwnerOption
    */
 
@@ -15979,7 +19200,7 @@ export namespace Prisma {
        */
       collectionThrough: $Enums.CollectionThrough | null
       /**
-       * Next planned sales call date (calendar day) — separate from collection.
+       * Next planned sales call date (calendar day) ��� separate from collection.
        */
       plannedSaleCallDate: Date | null
       /**
@@ -17216,11 +20437,11 @@ export namespace Prisma {
       paymentBasis: $Enums.VegPaymentBasis
       amount: Prisma.Decimal
       /**
-       * Service start; required before a veg can be added.
+       * Service start at this factory; required before a veg can be added.
        */
       beginDate: Date
       /**
-       * When set, the veg is treated as inactive.
+       * When set, this factory assignment is treated as inactive.
        */
       stopDate: Date | null
       active: boolean
@@ -33481,6 +36702,44 @@ export namespace Prisma {
   export type DealingCompanyOptionScalarFieldEnum = (typeof DealingCompanyOptionScalarFieldEnum)[keyof typeof DealingCompanyOptionScalarFieldEnum]
 
 
+  export const DocumentOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    slug: 'slug',
+    kind: 'kind',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DocumentOptionScalarFieldEnum = (typeof DocumentOptionScalarFieldEnum)[keyof typeof DocumentOptionScalarFieldEnum]
+
+
+  export const DocumentEntryScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    kind: 'kind',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DocumentEntryScalarFieldEnum = (typeof DocumentEntryScalarFieldEnum)[keyof typeof DocumentEntryScalarFieldEnum]
+
+
+  export const MemberDocumentScalarFieldEnum: {
+    id: 'id',
+    memberId: 'memberId',
+    documentEntryId: 'documentEntryId',
+    remarks: 'remarks',
+    fileName: 'fileName',
+    fileMime: 'fileMime',
+    fileData: 'fileData',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type MemberDocumentScalarFieldEnum = (typeof MemberDocumentScalarFieldEnum)[keyof typeof MemberDocumentScalarFieldEnum]
+
+
   export const OwnerOptionScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -33877,6 +37136,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -34076,20 +37349,6 @@ export namespace Prisma {
    * Reference to a field of type 'BillStatus[]'
    */
   export type ListEnumBillStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillStatus[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes'
-   */
-  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
-    
-
-
-  /**
-   * Reference to a field of type 'Bytes[]'
-   */
-  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -34717,6 +37976,200 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"DealingCompanyOption"> | Date | string
   }
 
+  export type DocumentOptionWhereInput = {
+    AND?: DocumentOptionWhereInput | DocumentOptionWhereInput[]
+    OR?: DocumentOptionWhereInput[]
+    NOT?: DocumentOptionWhereInput | DocumentOptionWhereInput[]
+    id?: StringFilter<"DocumentOption"> | string
+    name?: StringFilter<"DocumentOption"> | string
+    slug?: StringFilter<"DocumentOption"> | string
+    kind?: StringFilter<"DocumentOption"> | string
+    createdAt?: DateTimeFilter<"DocumentOption"> | Date | string
+    updatedAt?: DateTimeFilter<"DocumentOption"> | Date | string
+    uploads?: MemberDocumentListRelationFilter
+  }
+
+  export type DocumentOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    uploads?: MemberDocumentOrderByRelationAggregateInput
+  }
+
+  export type DocumentOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    slug?: string
+    AND?: DocumentOptionWhereInput | DocumentOptionWhereInput[]
+    OR?: DocumentOptionWhereInput[]
+    NOT?: DocumentOptionWhereInput | DocumentOptionWhereInput[]
+    kind?: StringFilter<"DocumentOption"> | string
+    createdAt?: DateTimeFilter<"DocumentOption"> | Date | string
+    updatedAt?: DateTimeFilter<"DocumentOption"> | Date | string
+    uploads?: MemberDocumentListRelationFilter
+  }, "id" | "name" | "slug">
+
+  export type DocumentOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DocumentOptionCountOrderByAggregateInput
+    _max?: DocumentOptionMaxOrderByAggregateInput
+    _min?: DocumentOptionMinOrderByAggregateInput
+  }
+
+  export type DocumentOptionScalarWhereWithAggregatesInput = {
+    AND?: DocumentOptionScalarWhereWithAggregatesInput | DocumentOptionScalarWhereWithAggregatesInput[]
+    OR?: DocumentOptionScalarWhereWithAggregatesInput[]
+    NOT?: DocumentOptionScalarWhereWithAggregatesInput | DocumentOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DocumentOption"> | string
+    name?: StringWithAggregatesFilter<"DocumentOption"> | string
+    slug?: StringWithAggregatesFilter<"DocumentOption"> | string
+    kind?: StringWithAggregatesFilter<"DocumentOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DocumentOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DocumentOption"> | Date | string
+  }
+
+  export type DocumentEntryWhereInput = {
+    AND?: DocumentEntryWhereInput | DocumentEntryWhereInput[]
+    OR?: DocumentEntryWhereInput[]
+    NOT?: DocumentEntryWhereInput | DocumentEntryWhereInput[]
+    id?: StringFilter<"DocumentEntry"> | string
+    name?: StringFilter<"DocumentEntry"> | string
+    kind?: StringFilter<"DocumentEntry"> | string
+    createdAt?: DateTimeFilter<"DocumentEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"DocumentEntry"> | Date | string
+    uploads?: MemberDocumentListRelationFilter
+  }
+
+  export type DocumentEntryOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    uploads?: MemberDocumentOrderByRelationAggregateInput
+  }
+
+  export type DocumentEntryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    kind_name?: DocumentEntryKindNameCompoundUniqueInput
+    AND?: DocumentEntryWhereInput | DocumentEntryWhereInput[]
+    OR?: DocumentEntryWhereInput[]
+    NOT?: DocumentEntryWhereInput | DocumentEntryWhereInput[]
+    name?: StringFilter<"DocumentEntry"> | string
+    kind?: StringFilter<"DocumentEntry"> | string
+    createdAt?: DateTimeFilter<"DocumentEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"DocumentEntry"> | Date | string
+    uploads?: MemberDocumentListRelationFilter
+  }, "id" | "kind_name">
+
+  export type DocumentEntryOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DocumentEntryCountOrderByAggregateInput
+    _max?: DocumentEntryMaxOrderByAggregateInput
+    _min?: DocumentEntryMinOrderByAggregateInput
+  }
+
+  export type DocumentEntryScalarWhereWithAggregatesInput = {
+    AND?: DocumentEntryScalarWhereWithAggregatesInput | DocumentEntryScalarWhereWithAggregatesInput[]
+    OR?: DocumentEntryScalarWhereWithAggregatesInput[]
+    NOT?: DocumentEntryScalarWhereWithAggregatesInput | DocumentEntryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DocumentEntry"> | string
+    name?: StringWithAggregatesFilter<"DocumentEntry"> | string
+    kind?: StringWithAggregatesFilter<"DocumentEntry"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"DocumentEntry"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DocumentEntry"> | Date | string
+  }
+
+  export type MemberDocumentWhereInput = {
+    AND?: MemberDocumentWhereInput | MemberDocumentWhereInput[]
+    OR?: MemberDocumentWhereInput[]
+    NOT?: MemberDocumentWhereInput | MemberDocumentWhereInput[]
+    id?: StringFilter<"MemberDocument"> | string
+    memberId?: StringFilter<"MemberDocument"> | string
+    documentEntryId?: StringFilter<"MemberDocument"> | string
+    remarks?: StringFilter<"MemberDocument"> | string
+    fileName?: StringFilter<"MemberDocument"> | string
+    fileMime?: StringFilter<"MemberDocument"> | string
+    fileData?: BytesFilter<"MemberDocument"> | Buffer
+    createdAt?: DateTimeFilter<"MemberDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"MemberDocument"> | Date | string
+    member?: XOR<DocumentOptionRelationFilter, DocumentOptionWhereInput>
+    documentEntry?: XOR<DocumentEntryRelationFilter, DocumentEntryWhereInput>
+  }
+
+  export type MemberDocumentOrderByWithRelationInput = {
+    id?: SortOrder
+    memberId?: SortOrder
+    documentEntryId?: SortOrder
+    remarks?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    member?: DocumentOptionOrderByWithRelationInput
+    documentEntry?: DocumentEntryOrderByWithRelationInput
+  }
+
+  export type MemberDocumentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: MemberDocumentWhereInput | MemberDocumentWhereInput[]
+    OR?: MemberDocumentWhereInput[]
+    NOT?: MemberDocumentWhereInput | MemberDocumentWhereInput[]
+    memberId?: StringFilter<"MemberDocument"> | string
+    documentEntryId?: StringFilter<"MemberDocument"> | string
+    remarks?: StringFilter<"MemberDocument"> | string
+    fileName?: StringFilter<"MemberDocument"> | string
+    fileMime?: StringFilter<"MemberDocument"> | string
+    fileData?: BytesFilter<"MemberDocument"> | Buffer
+    createdAt?: DateTimeFilter<"MemberDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"MemberDocument"> | Date | string
+    member?: XOR<DocumentOptionRelationFilter, DocumentOptionWhereInput>
+    documentEntry?: XOR<DocumentEntryRelationFilter, DocumentEntryWhereInput>
+  }, "id">
+
+  export type MemberDocumentOrderByWithAggregationInput = {
+    id?: SortOrder
+    memberId?: SortOrder
+    documentEntryId?: SortOrder
+    remarks?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: MemberDocumentCountOrderByAggregateInput
+    _max?: MemberDocumentMaxOrderByAggregateInput
+    _min?: MemberDocumentMinOrderByAggregateInput
+  }
+
+  export type MemberDocumentScalarWhereWithAggregatesInput = {
+    AND?: MemberDocumentScalarWhereWithAggregatesInput | MemberDocumentScalarWhereWithAggregatesInput[]
+    OR?: MemberDocumentScalarWhereWithAggregatesInput[]
+    NOT?: MemberDocumentScalarWhereWithAggregatesInput | MemberDocumentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"MemberDocument"> | string
+    memberId?: StringWithAggregatesFilter<"MemberDocument"> | string
+    documentEntryId?: StringWithAggregatesFilter<"MemberDocument"> | string
+    remarks?: StringWithAggregatesFilter<"MemberDocument"> | string
+    fileName?: StringWithAggregatesFilter<"MemberDocument"> | string
+    fileMime?: StringWithAggregatesFilter<"MemberDocument"> | string
+    fileData?: BytesWithAggregatesFilter<"MemberDocument"> | Buffer
+    createdAt?: DateTimeWithAggregatesFilter<"MemberDocument"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"MemberDocument"> | Date | string
+  }
+
   export type OwnerOptionWhereInput = {
     AND?: OwnerOptionWhereInput | OwnerOptionWhereInput[]
     OR?: OwnerOptionWhereInput[]
@@ -35108,6 +38561,7 @@ export namespace Prisma {
 
   export type VegWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    customerId_name?: VegCustomerIdNameCompoundUniqueInput
     AND?: VegWhereInput | VegWhereInput[]
     OR?: VegWhereInput[]
     NOT?: VegWhereInput | VegWhereInput[]
@@ -35125,7 +38579,7 @@ export namespace Prisma {
     customer?: XOR<CustomerRelationFilter, CustomerWhereInput>
     payments?: VegPaymentListRelationFilter
     discounts?: VegDiscountListRelationFilter
-  }, "id">
+  }, "id" | "customerId_name">
 
   export type VegOrderByWithAggregationInput = {
     id?: SortOrder
@@ -37158,6 +40612,215 @@ export namespace Prisma {
   export type DealingCompanyOptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentOptionCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploads?: MemberDocumentCreateNestedManyWithoutMemberInput
+  }
+
+  export type DocumentOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    slug: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploads?: MemberDocumentUncheckedCreateNestedManyWithoutMemberInput
+  }
+
+  export type DocumentOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploads?: MemberDocumentUpdateManyWithoutMemberNestedInput
+  }
+
+  export type DocumentOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploads?: MemberDocumentUncheckedUpdateManyWithoutMemberNestedInput
+  }
+
+  export type DocumentOptionCreateManyInput = {
+    id?: string
+    name: string
+    slug: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentEntryCreateInput = {
+    id?: string
+    name: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploads?: MemberDocumentCreateNestedManyWithoutDocumentEntryInput
+  }
+
+  export type DocumentEntryUncheckedCreateInput = {
+    id?: string
+    name: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploads?: MemberDocumentUncheckedCreateNestedManyWithoutDocumentEntryInput
+  }
+
+  export type DocumentEntryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploads?: MemberDocumentUpdateManyWithoutDocumentEntryNestedInput
+  }
+
+  export type DocumentEntryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploads?: MemberDocumentUncheckedUpdateManyWithoutDocumentEntryNestedInput
+  }
+
+  export type DocumentEntryCreateManyInput = {
+    id?: string
+    name: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentEntryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentEntryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberDocumentCreateInput = {
+    id?: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    member: DocumentOptionCreateNestedOneWithoutUploadsInput
+    documentEntry: DocumentEntryCreateNestedOneWithoutUploadsInput
+  }
+
+  export type MemberDocumentUncheckedCreateInput = {
+    id?: string
+    memberId: string
+    documentEntryId: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberDocumentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    member?: DocumentOptionUpdateOneRequiredWithoutUploadsNestedInput
+    documentEntry?: DocumentEntryUpdateOneRequiredWithoutUploadsNestedInput
+  }
+
+  export type MemberDocumentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    documentEntryId?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberDocumentCreateManyInput = {
+    id?: string
+    memberId: string
+    documentEntryId: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberDocumentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberDocumentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    documentEntryId?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -39589,6 +43252,135 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type MemberDocumentListRelationFilter = {
+    every?: MemberDocumentWhereInput
+    some?: MemberDocumentWhereInput
+    none?: MemberDocumentWhereInput
+  }
+
+  export type MemberDocumentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DocumentOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentEntryKindNameCompoundUniqueInput = {
+    kind: string
+    name: string
+  }
+
+  export type DocumentEntryCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentEntryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DocumentEntryMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    kind?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BytesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Buffer
+  }
+
+  export type DocumentOptionRelationFilter = {
+    is?: DocumentOptionWhereInput
+    isNot?: DocumentOptionWhereInput
+  }
+
+  export type DocumentEntryRelationFilter = {
+    is?: DocumentEntryWhereInput
+    isNot?: DocumentEntryWhereInput
+  }
+
+  export type MemberDocumentCountOrderByAggregateInput = {
+    id?: SortOrder
+    memberId?: SortOrder
+    documentEntryId?: SortOrder
+    remarks?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MemberDocumentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    memberId?: SortOrder
+    documentEntryId?: SortOrder
+    remarks?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type MemberDocumentMinOrderByAggregateInput = {
+    id?: SortOrder
+    memberId?: SortOrder
+    documentEntryId?: SortOrder
+    remarks?: SortOrder
+    fileName?: SortOrder
+    fileMime?: SortOrder
+    fileData?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Buffer
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
+  }
+
   export type OwnerOptionCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -39964,6 +43756,11 @@ export namespace Prisma {
   export type CustomerRelationFilter = {
     is?: CustomerWhereInput
     isNot?: CustomerWhereInput
+  }
+
+  export type VegCustomerIdNameCompoundUniqueInput = {
+    customerId: string
+    name: string
   }
 
   export type VegCountOrderByAggregateInput = {
@@ -40800,13 +44597,6 @@ export namespace Prisma {
     _max?: NestedEnumBillStatusFilter<$PrismaModel>
   }
 
-  export type BytesFilter<$PrismaModel = never> = {
-    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
-    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesFilter<$PrismaModel> | Buffer
-  }
-
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -40859,16 +44649,6 @@ export namespace Prisma {
 
   export type BillFileSumOrderByAggregateInput = {
     sortOrder?: SortOrder
-  }
-
-  export type BytesWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
-    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Buffer
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBytesFilter<$PrismaModel>
-    _max?: NestedBytesFilter<$PrismaModel>
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -41784,6 +45564,122 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutPortInput | OrderUpdateWithWhereUniqueWithoutPortInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutPortInput | OrderUpdateManyWithWhereWithoutPortInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type MemberDocumentCreateNestedManyWithoutMemberInput = {
+    create?: XOR<MemberDocumentCreateWithoutMemberInput, MemberDocumentUncheckedCreateWithoutMemberInput> | MemberDocumentCreateWithoutMemberInput[] | MemberDocumentUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutMemberInput | MemberDocumentCreateOrConnectWithoutMemberInput[]
+    createMany?: MemberDocumentCreateManyMemberInputEnvelope
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+  }
+
+  export type MemberDocumentUncheckedCreateNestedManyWithoutMemberInput = {
+    create?: XOR<MemberDocumentCreateWithoutMemberInput, MemberDocumentUncheckedCreateWithoutMemberInput> | MemberDocumentCreateWithoutMemberInput[] | MemberDocumentUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutMemberInput | MemberDocumentCreateOrConnectWithoutMemberInput[]
+    createMany?: MemberDocumentCreateManyMemberInputEnvelope
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+  }
+
+  export type MemberDocumentUpdateManyWithoutMemberNestedInput = {
+    create?: XOR<MemberDocumentCreateWithoutMemberInput, MemberDocumentUncheckedCreateWithoutMemberInput> | MemberDocumentCreateWithoutMemberInput[] | MemberDocumentUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutMemberInput | MemberDocumentCreateOrConnectWithoutMemberInput[]
+    upsert?: MemberDocumentUpsertWithWhereUniqueWithoutMemberInput | MemberDocumentUpsertWithWhereUniqueWithoutMemberInput[]
+    createMany?: MemberDocumentCreateManyMemberInputEnvelope
+    set?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    disconnect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    delete?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    update?: MemberDocumentUpdateWithWhereUniqueWithoutMemberInput | MemberDocumentUpdateWithWhereUniqueWithoutMemberInput[]
+    updateMany?: MemberDocumentUpdateManyWithWhereWithoutMemberInput | MemberDocumentUpdateManyWithWhereWithoutMemberInput[]
+    deleteMany?: MemberDocumentScalarWhereInput | MemberDocumentScalarWhereInput[]
+  }
+
+  export type MemberDocumentUncheckedUpdateManyWithoutMemberNestedInput = {
+    create?: XOR<MemberDocumentCreateWithoutMemberInput, MemberDocumentUncheckedCreateWithoutMemberInput> | MemberDocumentCreateWithoutMemberInput[] | MemberDocumentUncheckedCreateWithoutMemberInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutMemberInput | MemberDocumentCreateOrConnectWithoutMemberInput[]
+    upsert?: MemberDocumentUpsertWithWhereUniqueWithoutMemberInput | MemberDocumentUpsertWithWhereUniqueWithoutMemberInput[]
+    createMany?: MemberDocumentCreateManyMemberInputEnvelope
+    set?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    disconnect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    delete?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    update?: MemberDocumentUpdateWithWhereUniqueWithoutMemberInput | MemberDocumentUpdateWithWhereUniqueWithoutMemberInput[]
+    updateMany?: MemberDocumentUpdateManyWithWhereWithoutMemberInput | MemberDocumentUpdateManyWithWhereWithoutMemberInput[]
+    deleteMany?: MemberDocumentScalarWhereInput | MemberDocumentScalarWhereInput[]
+  }
+
+  export type MemberDocumentCreateNestedManyWithoutDocumentEntryInput = {
+    create?: XOR<MemberDocumentCreateWithoutDocumentEntryInput, MemberDocumentUncheckedCreateWithoutDocumentEntryInput> | MemberDocumentCreateWithoutDocumentEntryInput[] | MemberDocumentUncheckedCreateWithoutDocumentEntryInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutDocumentEntryInput | MemberDocumentCreateOrConnectWithoutDocumentEntryInput[]
+    createMany?: MemberDocumentCreateManyDocumentEntryInputEnvelope
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+  }
+
+  export type MemberDocumentUncheckedCreateNestedManyWithoutDocumentEntryInput = {
+    create?: XOR<MemberDocumentCreateWithoutDocumentEntryInput, MemberDocumentUncheckedCreateWithoutDocumentEntryInput> | MemberDocumentCreateWithoutDocumentEntryInput[] | MemberDocumentUncheckedCreateWithoutDocumentEntryInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutDocumentEntryInput | MemberDocumentCreateOrConnectWithoutDocumentEntryInput[]
+    createMany?: MemberDocumentCreateManyDocumentEntryInputEnvelope
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+  }
+
+  export type MemberDocumentUpdateManyWithoutDocumentEntryNestedInput = {
+    create?: XOR<MemberDocumentCreateWithoutDocumentEntryInput, MemberDocumentUncheckedCreateWithoutDocumentEntryInput> | MemberDocumentCreateWithoutDocumentEntryInput[] | MemberDocumentUncheckedCreateWithoutDocumentEntryInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutDocumentEntryInput | MemberDocumentCreateOrConnectWithoutDocumentEntryInput[]
+    upsert?: MemberDocumentUpsertWithWhereUniqueWithoutDocumentEntryInput | MemberDocumentUpsertWithWhereUniqueWithoutDocumentEntryInput[]
+    createMany?: MemberDocumentCreateManyDocumentEntryInputEnvelope
+    set?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    disconnect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    delete?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    update?: MemberDocumentUpdateWithWhereUniqueWithoutDocumentEntryInput | MemberDocumentUpdateWithWhereUniqueWithoutDocumentEntryInput[]
+    updateMany?: MemberDocumentUpdateManyWithWhereWithoutDocumentEntryInput | MemberDocumentUpdateManyWithWhereWithoutDocumentEntryInput[]
+    deleteMany?: MemberDocumentScalarWhereInput | MemberDocumentScalarWhereInput[]
+  }
+
+  export type MemberDocumentUncheckedUpdateManyWithoutDocumentEntryNestedInput = {
+    create?: XOR<MemberDocumentCreateWithoutDocumentEntryInput, MemberDocumentUncheckedCreateWithoutDocumentEntryInput> | MemberDocumentCreateWithoutDocumentEntryInput[] | MemberDocumentUncheckedCreateWithoutDocumentEntryInput[]
+    connectOrCreate?: MemberDocumentCreateOrConnectWithoutDocumentEntryInput | MemberDocumentCreateOrConnectWithoutDocumentEntryInput[]
+    upsert?: MemberDocumentUpsertWithWhereUniqueWithoutDocumentEntryInput | MemberDocumentUpsertWithWhereUniqueWithoutDocumentEntryInput[]
+    createMany?: MemberDocumentCreateManyDocumentEntryInputEnvelope
+    set?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    disconnect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    delete?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    connect?: MemberDocumentWhereUniqueInput | MemberDocumentWhereUniqueInput[]
+    update?: MemberDocumentUpdateWithWhereUniqueWithoutDocumentEntryInput | MemberDocumentUpdateWithWhereUniqueWithoutDocumentEntryInput[]
+    updateMany?: MemberDocumentUpdateManyWithWhereWithoutDocumentEntryInput | MemberDocumentUpdateManyWithWhereWithoutDocumentEntryInput[]
+    deleteMany?: MemberDocumentScalarWhereInput | MemberDocumentScalarWhereInput[]
+  }
+
+  export type DocumentOptionCreateNestedOneWithoutUploadsInput = {
+    create?: XOR<DocumentOptionCreateWithoutUploadsInput, DocumentOptionUncheckedCreateWithoutUploadsInput>
+    connectOrCreate?: DocumentOptionCreateOrConnectWithoutUploadsInput
+    connect?: DocumentOptionWhereUniqueInput
+  }
+
+  export type DocumentEntryCreateNestedOneWithoutUploadsInput = {
+    create?: XOR<DocumentEntryCreateWithoutUploadsInput, DocumentEntryUncheckedCreateWithoutUploadsInput>
+    connectOrCreate?: DocumentEntryCreateOrConnectWithoutUploadsInput
+    connect?: DocumentEntryWhereUniqueInput
+  }
+
+  export type BytesFieldUpdateOperationsInput = {
+    set?: Buffer
+  }
+
+  export type DocumentOptionUpdateOneRequiredWithoutUploadsNestedInput = {
+    create?: XOR<DocumentOptionCreateWithoutUploadsInput, DocumentOptionUncheckedCreateWithoutUploadsInput>
+    connectOrCreate?: DocumentOptionCreateOrConnectWithoutUploadsInput
+    upsert?: DocumentOptionUpsertWithoutUploadsInput
+    connect?: DocumentOptionWhereUniqueInput
+    update?: XOR<XOR<DocumentOptionUpdateToOneWithWhereWithoutUploadsInput, DocumentOptionUpdateWithoutUploadsInput>, DocumentOptionUncheckedUpdateWithoutUploadsInput>
+  }
+
+  export type DocumentEntryUpdateOneRequiredWithoutUploadsNestedInput = {
+    create?: XOR<DocumentEntryCreateWithoutUploadsInput, DocumentEntryUncheckedCreateWithoutUploadsInput>
+    connectOrCreate?: DocumentEntryCreateOrConnectWithoutUploadsInput
+    upsert?: DocumentEntryUpsertWithoutUploadsInput
+    connect?: DocumentEntryWhereUniqueInput
+    update?: XOR<XOR<DocumentEntryUpdateToOneWithWhereWithoutUploadsInput, DocumentEntryUpdateWithoutUploadsInput>, DocumentEntryUncheckedUpdateWithoutUploadsInput>
   }
 
   export type OriginOptionCreateNestedOneWithoutQualityClassesInput = {
@@ -43032,10 +46928,6 @@ export namespace Prisma {
     connect?: BillWhereUniqueInput
   }
 
-  export type BytesFieldUpdateOperationsInput = {
-    set?: Buffer
-  }
-
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -43440,6 +47332,23 @@ export namespace Prisma {
     _max?: NestedDecimalFilter<$PrismaModel>
   }
 
+  export type NestedBytesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Buffer
+  }
+
+  export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
+    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Buffer
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
@@ -43768,23 +47677,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBillStatusFilter<$PrismaModel>
     _max?: NestedEnumBillStatusFilter<$PrismaModel>
-  }
-
-  export type NestedBytesFilter<$PrismaModel = never> = {
-    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
-    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesFilter<$PrismaModel> | Buffer
-  }
-
-  export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Buffer | BytesFieldRefInput<$PrismaModel>
-    in?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    notIn?: Buffer[] | ListBytesFieldRefInput<$PrismaModel>
-    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Buffer
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBytesFilter<$PrismaModel>
-    _max?: NestedBytesFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -44965,6 +48857,217 @@ export namespace Prisma {
   export type OrderUpdateManyWithWhereWithoutPortInput = {
     where: OrderScalarWhereInput
     data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutPortInput>
+  }
+
+  export type MemberDocumentCreateWithoutMemberInput = {
+    id?: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    documentEntry: DocumentEntryCreateNestedOneWithoutUploadsInput
+  }
+
+  export type MemberDocumentUncheckedCreateWithoutMemberInput = {
+    id?: string
+    documentEntryId: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberDocumentCreateOrConnectWithoutMemberInput = {
+    where: MemberDocumentWhereUniqueInput
+    create: XOR<MemberDocumentCreateWithoutMemberInput, MemberDocumentUncheckedCreateWithoutMemberInput>
+  }
+
+  export type MemberDocumentCreateManyMemberInputEnvelope = {
+    data: MemberDocumentCreateManyMemberInput | MemberDocumentCreateManyMemberInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MemberDocumentUpsertWithWhereUniqueWithoutMemberInput = {
+    where: MemberDocumentWhereUniqueInput
+    update: XOR<MemberDocumentUpdateWithoutMemberInput, MemberDocumentUncheckedUpdateWithoutMemberInput>
+    create: XOR<MemberDocumentCreateWithoutMemberInput, MemberDocumentUncheckedCreateWithoutMemberInput>
+  }
+
+  export type MemberDocumentUpdateWithWhereUniqueWithoutMemberInput = {
+    where: MemberDocumentWhereUniqueInput
+    data: XOR<MemberDocumentUpdateWithoutMemberInput, MemberDocumentUncheckedUpdateWithoutMemberInput>
+  }
+
+  export type MemberDocumentUpdateManyWithWhereWithoutMemberInput = {
+    where: MemberDocumentScalarWhereInput
+    data: XOR<MemberDocumentUpdateManyMutationInput, MemberDocumentUncheckedUpdateManyWithoutMemberInput>
+  }
+
+  export type MemberDocumentScalarWhereInput = {
+    AND?: MemberDocumentScalarWhereInput | MemberDocumentScalarWhereInput[]
+    OR?: MemberDocumentScalarWhereInput[]
+    NOT?: MemberDocumentScalarWhereInput | MemberDocumentScalarWhereInput[]
+    id?: StringFilter<"MemberDocument"> | string
+    memberId?: StringFilter<"MemberDocument"> | string
+    documentEntryId?: StringFilter<"MemberDocument"> | string
+    remarks?: StringFilter<"MemberDocument"> | string
+    fileName?: StringFilter<"MemberDocument"> | string
+    fileMime?: StringFilter<"MemberDocument"> | string
+    fileData?: BytesFilter<"MemberDocument"> | Buffer
+    createdAt?: DateTimeFilter<"MemberDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"MemberDocument"> | Date | string
+  }
+
+  export type MemberDocumentCreateWithoutDocumentEntryInput = {
+    id?: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    member: DocumentOptionCreateNestedOneWithoutUploadsInput
+  }
+
+  export type MemberDocumentUncheckedCreateWithoutDocumentEntryInput = {
+    id?: string
+    memberId: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberDocumentCreateOrConnectWithoutDocumentEntryInput = {
+    where: MemberDocumentWhereUniqueInput
+    create: XOR<MemberDocumentCreateWithoutDocumentEntryInput, MemberDocumentUncheckedCreateWithoutDocumentEntryInput>
+  }
+
+  export type MemberDocumentCreateManyDocumentEntryInputEnvelope = {
+    data: MemberDocumentCreateManyDocumentEntryInput | MemberDocumentCreateManyDocumentEntryInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MemberDocumentUpsertWithWhereUniqueWithoutDocumentEntryInput = {
+    where: MemberDocumentWhereUniqueInput
+    update: XOR<MemberDocumentUpdateWithoutDocumentEntryInput, MemberDocumentUncheckedUpdateWithoutDocumentEntryInput>
+    create: XOR<MemberDocumentCreateWithoutDocumentEntryInput, MemberDocumentUncheckedCreateWithoutDocumentEntryInput>
+  }
+
+  export type MemberDocumentUpdateWithWhereUniqueWithoutDocumentEntryInput = {
+    where: MemberDocumentWhereUniqueInput
+    data: XOR<MemberDocumentUpdateWithoutDocumentEntryInput, MemberDocumentUncheckedUpdateWithoutDocumentEntryInput>
+  }
+
+  export type MemberDocumentUpdateManyWithWhereWithoutDocumentEntryInput = {
+    where: MemberDocumentScalarWhereInput
+    data: XOR<MemberDocumentUpdateManyMutationInput, MemberDocumentUncheckedUpdateManyWithoutDocumentEntryInput>
+  }
+
+  export type DocumentOptionCreateWithoutUploadsInput = {
+    id?: string
+    name: string
+    slug: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentOptionUncheckedCreateWithoutUploadsInput = {
+    id?: string
+    name: string
+    slug: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentOptionCreateOrConnectWithoutUploadsInput = {
+    where: DocumentOptionWhereUniqueInput
+    create: XOR<DocumentOptionCreateWithoutUploadsInput, DocumentOptionUncheckedCreateWithoutUploadsInput>
+  }
+
+  export type DocumentEntryCreateWithoutUploadsInput = {
+    id?: string
+    name: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentEntryUncheckedCreateWithoutUploadsInput = {
+    id?: string
+    name: string
+    kind: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentEntryCreateOrConnectWithoutUploadsInput = {
+    where: DocumentEntryWhereUniqueInput
+    create: XOR<DocumentEntryCreateWithoutUploadsInput, DocumentEntryUncheckedCreateWithoutUploadsInput>
+  }
+
+  export type DocumentOptionUpsertWithoutUploadsInput = {
+    update: XOR<DocumentOptionUpdateWithoutUploadsInput, DocumentOptionUncheckedUpdateWithoutUploadsInput>
+    create: XOR<DocumentOptionCreateWithoutUploadsInput, DocumentOptionUncheckedCreateWithoutUploadsInput>
+    where?: DocumentOptionWhereInput
+  }
+
+  export type DocumentOptionUpdateToOneWithWhereWithoutUploadsInput = {
+    where?: DocumentOptionWhereInput
+    data: XOR<DocumentOptionUpdateWithoutUploadsInput, DocumentOptionUncheckedUpdateWithoutUploadsInput>
+  }
+
+  export type DocumentOptionUpdateWithoutUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentOptionUncheckedUpdateWithoutUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentEntryUpsertWithoutUploadsInput = {
+    update: XOR<DocumentEntryUpdateWithoutUploadsInput, DocumentEntryUncheckedUpdateWithoutUploadsInput>
+    create: XOR<DocumentEntryCreateWithoutUploadsInput, DocumentEntryUncheckedCreateWithoutUploadsInput>
+    where?: DocumentEntryWhereInput
+  }
+
+  export type DocumentEntryUpdateToOneWithWhereWithoutUploadsInput = {
+    where?: DocumentEntryWhereInput
+    data: XOR<DocumentEntryUpdateWithoutUploadsInput, DocumentEntryUncheckedUpdateWithoutUploadsInput>
+  }
+
+  export type DocumentEntryUpdateWithoutUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentEntryUncheckedUpdateWithoutUploadsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    kind?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OriginOptionCreateWithoutQualityClassesInput = {
@@ -50887,6 +54990,94 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MemberDocumentCreateManyMemberInput = {
+    id?: string
+    documentEntryId: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberDocumentUpdateWithoutMemberInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    documentEntry?: DocumentEntryUpdateOneRequiredWithoutUploadsNestedInput
+  }
+
+  export type MemberDocumentUncheckedUpdateWithoutMemberInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentEntryId?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberDocumentUncheckedUpdateManyWithoutMemberInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    documentEntryId?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberDocumentCreateManyDocumentEntryInput = {
+    id?: string
+    memberId: string
+    remarks?: string
+    fileName: string
+    fileMime: string
+    fileData: Buffer
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type MemberDocumentUpdateWithoutDocumentEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    member?: DocumentOptionUpdateOneRequiredWithoutUploadsNestedInput
+  }
+
+  export type MemberDocumentUncheckedUpdateWithoutDocumentEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MemberDocumentUncheckedUpdateManyWithoutDocumentEntryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    memberId?: StringFieldUpdateOperationsInput | string
+    remarks?: StringFieldUpdateOperationsInput | string
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileMime?: StringFieldUpdateOperationsInput | string
+    fileData?: BytesFieldUpdateOperationsInput | Buffer
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type VesselCreateManyQualityClassInput = {
     id?: string
     vesselName: string
@@ -52355,6 +56546,14 @@ export namespace Prisma {
      */
     export type PortOptionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PortOptionCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use DocumentOptionCountOutputTypeDefaultArgs instead
+     */
+    export type DocumentOptionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentOptionCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocumentEntryCountOutputTypeDefaultArgs instead
+     */
+    export type DocumentEntryCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentEntryCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use QualityClassCountOutputTypeDefaultArgs instead
      */
     export type QualityClassCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = QualityClassCountOutputTypeDefaultArgs<ExtArgs>
@@ -52430,6 +56629,18 @@ export namespace Prisma {
      * @deprecated Use DealingCompanyOptionDefaultArgs instead
      */
     export type DealingCompanyOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DealingCompanyOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocumentOptionDefaultArgs instead
+     */
+    export type DocumentOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DocumentEntryDefaultArgs instead
+     */
+    export type DocumentEntryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DocumentEntryDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use MemberDocumentDefaultArgs instead
+     */
+    export type MemberDocumentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = MemberDocumentDefaultArgs<ExtArgs>
     /**
      * @deprecated Use OwnerOptionDefaultArgs instead
      */

@@ -111,6 +111,13 @@ export const MASTER_SUB_PAGES = [
     masterSubPage: true,
   },
   {
+    key: "documents",
+    href: "/documents",
+    label: "Documents",
+    group: "Pages" as const,
+    masterSubPage: true,
+  },
+  {
     key: "investments",
     href: "/investments",
     label: "Investment",
@@ -512,10 +519,22 @@ export function expandLegacyOptionsPageKeys(pageKeys: string[]): string[] {
   return [...new Set([...withoutLegacy, ...MASTER_OPTIONS_SUB_PAGE_KEYS])];
 }
 
+const LEGACY_OPTIONS_DOCUMENTS_KEY = "options-documents";
+
+function expandLegacyDocumentPageKeys(pageKeys: string[]): string[] {
+  if (!pageKeys.includes(LEGACY_OPTIONS_DOCUMENTS_KEY)) return pageKeys;
+  const withoutLegacy = pageKeys.filter(
+    (key) => key !== LEGACY_OPTIONS_DOCUMENTS_KEY,
+  );
+  return [...new Set([...withoutLegacy, "documents"])];
+}
+
 export function expandStaffPageKeys(pageKeys: string[]): string[] {
-  return expandLegacyOptionsPageKeys(
-    expandLegacyBankPageKeys(
-      expandLegacyUpdatePageKeys(expandLegacyDispatchPageKeys(pageKeys)),
+  return expandLegacyDocumentPageKeys(
+    expandLegacyOptionsPageKeys(
+      expandLegacyBankPageKeys(
+        expandLegacyUpdatePageKeys(expandLegacyDispatchPageKeys(pageKeys)),
+      ),
     ),
   );
 }
@@ -691,7 +710,7 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
   if (canAccessMasterOptionsPath(pageKeys, pathname)) return true;
   const page = pageForPath(path);
   if (!page || page.ownerOnly) return false;
-  return pageKeys.includes(page.key);
+  return expandStaffPageKeys(pageKeys).includes(page.key);
 }
 
 export function firstAllowedPath(pageKeys: string[] | "all"): string {

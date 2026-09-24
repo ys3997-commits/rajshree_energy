@@ -105,6 +105,9 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["options-ports"], "/options/ports")).toBe(true);
     expect(canAccessPath(["options-origins"], "/options/team")).toBe(false);
     expect(canAccessPath("all", "/options/team")).toBe(true);
+    expect(canAccessPath(["documents"], "/documents")).toBe(true);
+    expect(canAccessPath(["customers"], "/documents")).toBe(false);
+    expect(canAccessPath(["options-documents"], "/documents")).toBe(true);
   });
 
   it("expands legacy options key to all master option sub-pages", () => {

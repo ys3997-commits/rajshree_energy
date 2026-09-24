@@ -228,7 +228,6 @@ export const dispatchExportColumnsReconciliation = [
   { key: "date", header: "Date" },
   { key: "lorryNumber", header: "Lorry\nno" },
   { key: "weight", header: "Weight", align: "right" as const },
-  { key: "gstState", header: "GST\nstate" },
   { key: "purchasePo", header: "PO\nno" },
   { key: "purchaseInvoice", header: "Purchase\ninvoice" },
   { key: "vendor", header: "Vendor" },
