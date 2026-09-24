@@ -35,6 +35,7 @@ import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
 import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
 import { PeopleManager, type PeopleRow } from "./PeopleManager";
+import type { DocumentGroup } from "@/app/(dashboard)/documents/documentEntities";
 import {
   categoryMeta,
   type CategoryId,
@@ -67,6 +68,7 @@ export function OptionsClient({
   people,
   owners,
   dealingCompanies,
+  documentGroups,
 }: {
   categoryId: CategoryId;
   origins: Opt[];
@@ -78,6 +80,7 @@ export function OptionsClient({
   people: PeopleRow[];
   owners: Opt[];
   dealingCompanies: Opt[];
+  documentGroups: DocumentGroup[];
 }) {
   const [items, setItems] = useState<ItemMap>({
     origins,
@@ -379,6 +382,7 @@ export function OptionsClient({
           <PeopleManager
             people={peopleItems}
             saleExecutives={items.saleExecutives}
+            documentGroups={documentGroups}
             query={query}
             onChange={setPeopleItems}
           />

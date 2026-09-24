@@ -4,6 +4,7 @@ import { requireOwner } from "@/lib/auth/access";
 import {
   expandStaffPageKeys,
   GRANTABLE_PAGES,
+  isDocumentMenuPageKey,
   LEGACY_BANK_PAGE_KEY,
   LEGACY_OPTIONS_PAGE_KEY,
   LEGACY_UPDATE_PAGE_KEY,
@@ -63,7 +64,7 @@ function normalizePageKeys(pageKeys: string[] | undefined): string[] {
     ) {
       continue;
     }
-    if (GRANTABLE_KEYS.has(key)) unique.add(key);
+    if (GRANTABLE_KEYS.has(key) || isDocumentMenuPageKey(key)) unique.add(key);
   }
   return [...unique];
 }

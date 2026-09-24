@@ -539,6 +539,82 @@ export function expandStaffPageKeys(pageKeys: string[]): string[] {
   );
 }
 
+const DOCUMENT_MENU_KINDS = ["companies", "individuals"] as const;
+
+const DOCUMENT_GROUP_PAGE_KEY =
+  /^documents-group-(companies|individuals)$/;
+const DOCUMENT_MEMBER_PAGE_KEY =
+  /^documents-(companies|individuals)-([a-z0-9]+(?:-[a-z0-9]+)*)$/;
+
+export function documentGroupPageKey(kind: string): string {
+  return `documents-group-${kind}`;
+}
+
+export function documentMemberPageKey(kind: string, slug: string): string {
+  return `documents-${kind}-${slug}`;
+}
+
+export function isDocumentMenuPageKey(key: string): boolean {
+  return DOCUMENT_GROUP_PAGE_KEY.test(key) || DOCUMENT_MEMBER_PAGE_KEY.test(key);
+}
+
+export function documentMenuKeysForGroups(
+  groups: { kind: string; entities: { slug: string }[] }[],
+): string[] {
+  return groups.flatMap((group) => [
+    documentGroupPageKey(group.kind),
+    ...group.entities.map((entity) =>
+      documentMemberPageKey(group.kind, entity.slug),
+    ),
+  ]);
+}
+
+export function hasDocumentKindAccess(
+  pageKeys: string[] | "all",
+  kind: string,
+): boolean {
+  if (pageKeys === "all") return true;
+  if (!DOCUMENT_MENU_KINDS.includes(kind as (typeof DOCUMENT_MENU_KINDS)[number])) {
+    return false;
+  }
+  const expanded = expandStaffPageKeys(pageKeys);
+  if (expanded.includes("documents")) return true;
+  if (expanded.includes(documentGroupPageKey(kind))) return true;
+  const prefix = `documents-${kind}-`;
+  return expanded.some((key) => key.startsWith(prefix));
+}
+
+function documentMemberFromPath(
+  pathname: string,
+): { kind: string; slug: string } | null {
+  const match = canonicalPath(pathname).match(
+    /^\/documents\/(companies|individuals)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/,
+  );
+  if (!match) return null;
+  return { kind: match[1], slug: match[2] };
+}
+
+function canAccessDocumentMemberPath(
+  pageKeys: string[],
+  pathname: string,
+): boolean {
+  const member = documentMemberFromPath(pathname);
+  if (!member) return false;
+  const expanded = expandStaffPageKeys(pageKeys);
+  if (expanded.includes("documents")) return true;
+  if (expanded.includes(documentGroupPageKey(member.kind))) return true;
+  return expanded.includes(documentMemberPageKey(member.kind, member.slug));
+}
+
+function firstDocumentMemberHref(pageKeys: string[]): string | null {
+  for (const key of pageKeys) {
+    const match = key.match(DOCUMENT_MEMBER_PAGE_KEY);
+    if (!match) continue;
+    return `/documents/${match[1]}/${match[2]}`;
+  }
+  return null;
+}
+
 export function staffHasPageKey(pageKeys: string[], pageKey: string): boolean {
   return expandStaffPageKeys(pageKeys).includes(pageKey);
 }
@@ -708,6 +784,9 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
   if (canAccessUpdatePath(pageKeys, pathname)) return true;
   if (canAccessBankPath(pageKeys, pathname)) return true;
   if (canAccessMasterOptionsPath(pageKeys, pathname)) return true;
+  if (documentMemberFromPath(path)) {
+    return canAccessDocumentMemberPath(pageKeys, path);
+  }
   const page = pageForPath(path);
   if (!page || page.ownerOnly) return false;
   return expandStaffPageKeys(pageKeys).includes(page.key);
@@ -718,7 +797,12 @@ export function firstAllowedPath(pageKeys: string[] | "all"): string {
   const expanded = expandStaffPageKeys(pageKeys);
   const granted = GRANTABLE_PAGES.filter((item) => expanded.includes(item.key));
   const preferred = granted.find((item) => item.key !== "bills");
-  return preferred?.href ?? granted[0]?.href ?? "/login";
+  return (
+    preferred?.href ??
+    granted[0]?.href ??
+    firstDocumentMemberHref(expanded) ??
+    "/login"
+  );
 }
 
 export const PAGE_GROUPS: PageGroup[] = ["Pages", "Reports"];

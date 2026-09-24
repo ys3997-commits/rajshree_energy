@@ -35,6 +35,13 @@ import {
 } from "@/lib/auth/report-exec-access";
 import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
+import {
+  documentGroupPageKey,
+  documentMemberPageKey,
+  documentMenuKeysForGroups,
+  isDocumentMenuPageKey,
+} from "@/lib/auth/pages";
+import type { DocumentGroup } from "@/app/(dashboard)/documents/documentEntities";
 
 export type PeopleRow = {
   id: string;
@@ -73,11 +80,13 @@ function toggleExecScope(
 export function PeopleManager({
   people,
   saleExecutives,
+  documentGroups,
   query,
   onChange,
 }: {
   people: PeopleRow[];
   saleExecutives: SaleExecutiveOption[];
+  documentGroups: DocumentGroup[];
   query: string;
   onChange: (people: PeopleRow[]) => void;
 }) {
@@ -115,6 +124,15 @@ export function PeopleManager({
   const [reportGroupsExpanded, setReportGroupsExpanded] = useState<
     Record<string, boolean>
   >({});
+  const [documentsExpanded, setDocumentsExpanded] = useState(false);
+  const [documentGroupsExpanded, setDocumentGroupsExpanded] = useState<
+    Record<string, boolean>
+  >({});
+
+  const documentMenuKeys = useMemo(
+    () => documentMenuKeysForGroups(documentGroups),
+    [documentGroups],
+  );
 
   const sortedExecutives = useMemo(
     () => [...saleExecutives].sort((a, b) => a.name.localeCompare(b.name)),
@@ -152,6 +170,8 @@ export function PeopleManager({
     setMasterOptionsExpanded(false);
     setReportsExpanded(false);
     setReportGroupsExpanded({});
+    setDocumentsExpanded(false);
+    setDocumentGroupsExpanded({});
     setEditorOpen(true);
   }
 
@@ -190,6 +210,22 @@ export function PeopleManager({
             entry.pages.some((page) => item.pageKeys.includes(page.key)),
           )
           .map((entry) => [entry.id, true]),
+      ),
+    );
+    setDocumentsExpanded(item.pageKeys.some((key) => isDocumentMenuPageKey(key)));
+    setDocumentGroupsExpanded(
+      Object.fromEntries(
+        documentGroups
+          .filter(
+            (group) =>
+              item.pageKeys.includes(documentGroupPageKey(group.kind)) ||
+              group.entities.some((entity) =>
+                item.pageKeys.includes(
+                  documentMemberPageKey(group.kind, entity.slug),
+                ),
+              ),
+          )
+          .map((group) => [group.kind, true]),
       ),
     );
     setCollectionSalesExecs(item.collectionSalesExecs);
@@ -368,6 +404,90 @@ export function PeopleManager({
   const masterOptionsAllOn = MASTER_OPTIONS_SUB_PAGE_KEYS.every((key) =>
     pageKeys.includes(key),
   );
+  const documentsCoveredByMaster = pageKeys.includes("documents");
+
+  function documentGroupKeys(group: DocumentGroup) {
+    return [
+      documentGroupPageKey(group.kind),
+      ...group.entities.map((entity) =>
+        documentMemberPageKey(group.kind, entity.slug),
+      ),
+    ];
+  }
+
+  function documentGroupAllOn(group: DocumentGroup) {
+    if (documentsCoveredByMaster) return true;
+    if (pageKeys.includes(documentGroupPageKey(group.kind))) return true;
+    if (group.entities.length === 0) return false;
+    return group.entities.every((entity) =>
+      pageKeys.includes(documentMemberPageKey(group.kind, entity.slug)),
+    );
+  }
+
+  function toggleDocumentsParent() {
+    const turningOn = !documentsExpanded;
+    setDocumentsExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !isDocumentMenuPageKey(key)),
+      );
+      setDocumentGroupsExpanded({});
+    }
+  }
+
+  function toggleDocumentsAll() {
+    if (documentsCoveredByMaster) return;
+    const allOn = documentGroups.every((group) => documentGroupAllOn(group));
+    setPageKeys((current) => {
+      const without = current.filter((key) => !isDocumentMenuPageKey(key));
+      return allOn ? without : [...without, ...documentMenuKeys];
+    });
+    if (!allOn) {
+      setDocumentGroupsExpanded(
+        Object.fromEntries(documentGroups.map((group) => [group.kind, true])),
+      );
+    }
+  }
+
+  function toggleDocumentGroupParent(kind: string) {
+    const turningOn = !documentGroupsExpanded[kind];
+    setDocumentGroupsExpanded((current) => ({ ...current, [kind]: turningOn }));
+    if (!turningOn) {
+      const groupKey = documentGroupPageKey(kind);
+      const memberPrefix = `documents-${kind}-`;
+      setPageKeys((current) =>
+        current.filter((key) => key !== groupKey && !key.startsWith(memberPrefix)),
+      );
+    }
+  }
+
+  function toggleDocumentGroupAll(group: DocumentGroup) {
+    if (documentsCoveredByMaster) return;
+    const keys = documentGroupKeys(group);
+    const allOn = documentGroupAllOn(group);
+    setPageKeys((current) => {
+      const without = current.filter((key) => !keys.includes(key));
+      return allOn ? without : [...without, ...keys];
+    });
+    if (!allOn) {
+      setDocumentGroupsExpanded((current) => ({ ...current, [group.kind]: true }));
+    }
+  }
+
+  function toggleDocumentMember(kind: string, slug: string) {
+    const group = documentGroups.find((item) => item.kind === kind);
+    if (!group || documentsCoveredByMaster || documentGroupAllOn(group)) return;
+    const key = documentMemberPageKey(kind, slug);
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  const documentsAllOn =
+    documentGroups.length > 0 &&
+    documentGroups.every((group) => documentGroupAllOn(group));
 
   function applyExecScopeDefault(key: string) {
     if (key === COLLECTION_ENGINE_PAGE_KEY) {
@@ -559,6 +679,7 @@ export function PeopleManager({
             ...UPDATE_SUB_PAGE_KEYS,
             ...BANK_SUB_PAGE_KEYS,
             ...MASTER_ALL_SUB_PAGE_KEYS,
+            ...documentMenuKeys,
           ]
         : group === "Reports"
           ? REPORT_SUB_PAGE_KEYS
@@ -591,6 +712,8 @@ export function PeopleManager({
           setBankExpanded(false);
           setMasterExpanded(false);
           setMasterOptionsExpanded(false);
+          setDocumentsExpanded(false);
+          setDocumentGroupsExpanded({});
         }
         if (group === "Reports") {
           setReportsExpanded(false);
@@ -641,6 +764,10 @@ export function PeopleManager({
         setBankExpanded(true);
         setMasterExpanded(true);
         setMasterOptionsExpanded(true);
+        setDocumentsExpanded(true);
+        setDocumentGroupsExpanded(
+          Object.fromEntries(documentGroups.map((group) => [group.kind, true])),
+        );
       }
       if (group === "Reports") {
         setReportsExpanded(true);
@@ -915,6 +1042,7 @@ export function PeopleManager({
                       ...UPDATE_SUB_PAGE_KEYS,
                       ...BANK_SUB_PAGE_KEYS,
                       ...MASTER_ALL_SUB_PAGE_KEYS,
+                      ...documentMenuKeys,
                     ].every((key) => pageKeys.includes(key))
                       ? "Clear"
                       : "Select all"}
@@ -1056,6 +1184,66 @@ export function PeopleManager({
                         </div>
                       )}
                     </div>
+                  </AccessPanel>
+
+                  <AccessPanel
+                    title="Documents"
+                    expanded={documentsExpanded}
+                    onToggleExpanded={toggleDocumentsParent}
+                    allOn={documentsAllOn}
+                    onToggleAll={toggleDocumentsAll}
+                    allDisabled={documentsCoveredByMaster}
+                  >
+                    {documentGroups.map((group) => {
+                      const groupAllOn = documentGroupAllOn(group);
+                      const groupExpanded = documentGroupsExpanded[group.kind] ?? false;
+                      return (
+                        <div key={group.kind} className="people-access-subpanel">
+                          <label className="people-access-subpanel-head">
+                            <input
+                              type="checkbox"
+                              checked={groupExpanded}
+                              onChange={() => toggleDocumentGroupParent(group.kind)}
+                            />
+                            {group.label}
+                          </label>
+                          {groupExpanded && (
+                            <div className="people-access-panel-body-nested">
+                              <label className="people-access-all">
+                                <input
+                                  type="checkbox"
+                                  checked={groupAllOn}
+                                  disabled={documentsCoveredByMaster}
+                                  onChange={() => toggleDocumentGroupAll(group)}
+                                />
+                                ALL
+                              </label>
+                              {group.entities.map((entity) => (
+                                <AccessCheckbox
+                                  key={entity.slug}
+                                  checked={
+                                    documentsCoveredByMaster ||
+                                    pageKeys.includes(
+                                      documentGroupPageKey(group.kind),
+                                    ) ||
+                                    pageKeys.includes(
+                                      documentMemberPageKey(group.kind, entity.slug),
+                                    )
+                                  }
+                                  disabled={
+                                    documentsCoveredByMaster || groupAllOn
+                                  }
+                                  onChange={() =>
+                                    toggleDocumentMember(group.kind, entity.slug)
+                                  }
+                                  label={entity.label}
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </AccessPanel>
                 </div>
               </div>

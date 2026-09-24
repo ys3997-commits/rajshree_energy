@@ -2,10 +2,12 @@ import { listPortOptions } from "@/lib/actions/ports";
 import {
   listCityOptions,
   listDealingCompanyOptions,
+  listDocumentGroups,
   listOwnerOptions,
   listSaleExecutiveOptions,
   listSectorOptions,
 } from "@/lib/actions/option-lists";
+import type { DocumentGroup } from "@/app/(dashboard)/documents/documentEntities";
 import {
   listOriginOptions,
   listQualityOptions,
@@ -35,6 +37,7 @@ const emptyOptionsData = () => ({
   }[],
   owners: [] as { id: string; name: string }[],
   dealingCompanies: [] as { id: string; name: string }[],
+  documentGroups: [] as DocumentGroup[],
 });
 
 export async function loadOptionsData(categoryId: CategoryId) {
@@ -60,9 +63,10 @@ export async function loadOptionsData(categoryId: CategoryId) {
       data.sectors = await listSectorOptions();
       break;
     case "people": {
-      const [people, saleExecutives] = await Promise.all([
+      const [people, saleExecutives, documentGroups] = await Promise.all([
         listStaff(),
         listSaleExecutiveOptions(),
+        listDocumentGroups(),
       ]);
       data.people = people.map((row) => ({
         id: row.id,
@@ -78,6 +82,7 @@ export async function loadOptionsData(categoryId: CategoryId) {
         customerLedgerSalesExecs: row.customerLedgerSalesExecs,
       }));
       data.saleExecutives = saleExecutives;
+      data.documentGroups = documentGroups;
       break;
     }
     case "owners":

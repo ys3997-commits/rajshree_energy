@@ -108,6 +108,33 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["documents"], "/documents")).toBe(true);
     expect(canAccessPath(["customers"], "/documents")).toBe(false);
     expect(canAccessPath(["options-documents"], "/documents")).toBe(true);
+    expect(canAccessPath(["documents"], "/documents/individuals/prakash-surana")).toBe(
+      true,
+    );
+    expect(
+      canAccessPath(
+        ["documents-individuals-prakash-surana"],
+        "/documents/individuals/prakash-surana",
+      ),
+    ).toBe(true);
+    expect(
+      canAccessPath(
+        ["documents-individuals-prakash-surana"],
+        "/documents/companies/rajshree-energy",
+      ),
+    ).toBe(false);
+    expect(
+      canAccessPath(
+        ["documents-group-companies"],
+        "/documents/companies/rajshree-energy",
+      ),
+    ).toBe(true);
+    expect(
+      canAccessPath(
+        ["documents-individuals-prakash-surana"],
+        "/documents",
+      ),
+    ).toBe(false);
   });
 
   it("expands legacy options key to all master option sub-pages", () => {
@@ -156,5 +183,8 @@ describe("firstAllowedPath", () => {
     ).toBe("/reports/collection");
     expect(firstAllowedPath(["bills", "payments"])).toBe("/payments");
     expect(firstAllowedPath(["bills"])).toBe("/bills");
+    expect(firstAllowedPath(["documents-individuals-prakash-surana"])).toBe(
+      "/documents/individuals/prakash-surana",
+    );
   });
 });

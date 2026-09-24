@@ -1,6 +1,7 @@
 "use server";
 
-import { requireOwner, requirePage } from "@/lib/auth/access";
+import { AccessDeniedError, requireOwner, requireSignedIn } from "@/lib/auth/access";
+import { canAccessPath, hasDocumentKindAccess } from "@/lib/auth/pages";
 import { isDocumentKind } from "@/app/(dashboard)/documents/documentEntities";
 import { validateBillFile } from "@/lib/domain/bills";
 import { prisma } from "@/lib/prisma";
@@ -14,8 +15,18 @@ export type MemberDocumentRow = {
   fileMime: string;
 };
 
+async function requireDocumentMember(kind: string, slug: string) {
+  const access = await requireSignedIn();
+  if (!canAccessPath(access.pageKeys, `/documents/${kind}/${slug}`)) {
+    throw new AccessDeniedError();
+  }
+}
+
 export async function listMemberDocumentChoices(kind: string) {
-  await requirePage("documents");
+  const access = await requireSignedIn();
+  if (!hasDocumentKindAccess(access.pageKeys, kind)) {
+    throw new AccessDeniedError();
+  }
   if (!isDocumentKind(kind)) return [];
   return prisma.documentEntry.findMany({
     where: { kind },
@@ -27,7 +38,15 @@ export async function listMemberDocumentChoices(kind: string) {
 export async function listMemberDocuments(
   memberId: string,
 ): Promise<MemberDocumentRow[]> {
-  await requirePage("documents");
+  const access = await requireSignedIn();
+  const member = await prisma.documentOption.findUnique({
+    where: { id: memberId },
+    select: { kind: true, slug: true },
+  });
+  if (!member) return [];
+  if (!canAccessPath(access.pageKeys, `/documents/${member.kind}/${member.slug}`)) {
+    throw new AccessDeniedError();
+  }
   const rows = await prisma.memberDocument.findMany({
     where: { memberId },
     orderBy: { createdAt: "desc" },
@@ -49,7 +68,6 @@ export async function listMemberDocuments(
 }
 
 export async function createMemberDocument(formData: FormData) {
-  await requirePage("documents");
   const memberId = String(formData.get("memberId") ?? "");
   const documentEntryId = String(formData.get("documentEntryId") ?? "");
   const remarks = String(formData.get("remarks") ?? "").trim();
@@ -62,6 +80,7 @@ export async function createMemberDocument(formData: FormData) {
   if (!member || !isDocumentKind(member.kind)) {
     throw new Error("Member not found");
   }
+  await requireDocumentMember(member.kind, member.slug);
   const entry = await prisma.documentEntry.findUnique({
     where: { id: documentEntryId },
   });
@@ -101,11 +120,20 @@ export async function deleteMemberDocument(id: string) {
 }
 
 export async function getMemberDocumentFile(id: string) {
-  await requirePage("documents");
   const row = await prisma.memberDocument.findUnique({
     where: { id },
-    select: { fileName: true, fileMime: true, fileData: true },
+    select: {
+      fileName: true,
+      fileMime: true,
+      fileData: true,
+      member: { select: { kind: true, slug: true } },
+    },
   });
   if (!row) throw new Error("Document not found");
-  return row;
+  await requireDocumentMember(row.member.kind, row.member.slug);
+  return {
+    fileName: row.fileName,
+    fileMime: row.fileMime,
+    fileData: row.fileData,
+  };
 }
