@@ -1,13 +1,23 @@
 "use client";
 
-import { FormEvent, useRef, useState, useTransition } from "react";
+import { FormEvent, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/Modal";
 import {
   createMemberDocument,
   deleteMemberDocument,
+  updateMemberDocument,
   type MemberDocumentRow,
 } from "@/lib/actions/member-documents";
+import { MAX_MEMBER_DOCUMENT_BYTES } from "@/lib/domain/bills";
+import {
+  DOCUMENT_EXPIRY_STATUS_LABEL,
+  ddMmYyyyFromExpiryIso,
+  documentExpiryStatus,
+  maskExpiryDateInput,
+  todayIsoInIst,
+} from "@/lib/domain/documentExpiry";
+import { formatDateDdMmYyyy } from "@/lib/domain/format";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 
 type Choice = { id: string; name: string };
@@ -41,12 +51,45 @@ export function MemberDocumentPanel({
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
   const [documentEntryId, setDocumentEntryId] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
   const [remarks, setRemarks] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [fileKey, setFileKey] = useState(0);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [currentFileName, setCurrentFileName] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<MemberDocumentRow | null>(null);
   const [pending, startTransition] = useTransition();
+  const sortedRows = useMemo(
+    () =>
+      [...rows].sort((a, b) =>
+        a.documentName.localeCompare(b.documentName, "en", {
+          sensitivity: "base",
+        }),
+      ),
+    [rows],
+  );
+
+  function resetForm() {
+    setEditingId(null);
+    setCurrentFileName("");
+    setDocumentEntryId("");
+    setExpiryDate("");
+    setRemarks("");
+    setFile(null);
+    setFileKey((key) => key + 1);
+  }
+
+  function startEdit(row: MemberDocumentRow) {
+    setError(null);
+    setEditingId(row.id);
+    setCurrentFileName(row.fileName);
+    setDocumentEntryId(row.documentEntryId);
+    setExpiryDate(ddMmYyyyFromExpiryIso(row.expiryDate));
+    setRemarks(row.remarks);
+    setFile(null);
+    setFileKey((key) => key + 1);
+  }
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -55,25 +98,32 @@ export function MemberDocumentPanel({
       setError("Select a document");
       return;
     }
-    if (!file) {
+    if (!editingId && !file) {
       setError("Upload a document");
       return;
     }
+    if (file && file.size > MAX_MEMBER_DOCUMENT_BYTES) {
+      setError("File must be 15 MB or smaller");
+      return;
+    }
     const body = new FormData();
-    body.set("memberId", memberId);
     body.set("documentEntryId", documentEntryId);
+    body.set("expiryDate", expiryDate);
     body.set("remarks", remarks);
-    body.set("file", file);
+    if (file) body.set("file", file);
     startTransition(async () => {
       try {
-        await createMemberDocument(body);
-        setDocumentEntryId("");
-        setRemarks("");
-        setFile(null);
-        setFileKey((key) => key + 1);
+        if (editingId) {
+          body.set("id", editingId);
+          await updateMemberDocument(body);
+        } else {
+          body.set("memberId", memberId);
+          await createMemberDocument(body);
+        }
+        resetForm();
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Upload failed");
+        setError(err instanceof Error ? err.message : "Save failed");
       }
     });
   }
@@ -100,7 +150,10 @@ export function MemberDocumentPanel({
       const shared = new File([blob], row.fileName, {
         type: row.fileMime || blob.type,
       });
-      const text = [row.documentName, row.remarks.trim()]
+      const expiryLabel = row.expiryDate
+        ? `Expiry ${formatDateDdMmYyyy(row.expiryDate)} (${DOCUMENT_EXPIRY_STATUS_LABEL[documentExpiryStatus(row.expiryDate)]})`
+        : "";
+      const text = [row.documentName, expiryLabel, row.remarks.trim()]
         .filter(Boolean)
         .join("\n");
       if (navigator.canShare?.({ files: [shared] })) {
@@ -141,7 +194,7 @@ export function MemberDocumentPanel({
       </Modal>
 
       <section className="options-card member-document-card">
-        <h2 className="options-card-title">Upload</h2>
+        <h2 className="options-card-title">{editingId ? "Edit" : "Upload"}</h2>
         <form className="member-document-form" onSubmit={onSubmit}>
           <div className="member-document-row">
             <label>
@@ -179,12 +232,25 @@ export function MemberDocumentPanel({
                   onClick={() => fileRef.current?.click()}
                   disabled={pending}
                 >
-                  {file?.name ?? "Choose file"}
+                  {file?.name ??
+                    (editingId ? currentFileName || "Keep current file" : "Choose file")}
                 </button>
               </div>
             </label>
           </div>
           <div className="member-document-row">
+            <label>
+              Expiry Date
+              <input
+                className="field-input"
+                inputMode="numeric"
+                placeholder="dd/mm/yyyy"
+                maxLength={10}
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(maskExpiryDateInput(e.target.value))}
+                disabled={pending}
+              />
+            </label>
             <label className="member-document-remarks">
               Remarks
               <input
@@ -194,11 +260,21 @@ export function MemberDocumentPanel({
                 disabled={pending}
               />
             </label>
-            <div className="member-document-submit">
-              <button type="submit" className="btn" disabled={pending}>
-                Upload
+          </div>
+          <div className="member-document-submit">
+            <button type="submit" className="btn" disabled={pending}>
+              {editingId ? "Update" : "Upload"}
+            </button>
+            {editingId ? (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={resetForm}
+                disabled={pending}
+              >
+                Cancel
               </button>
-            </div>
+            ) : null}
           </div>
         </form>
       </section>
@@ -211,17 +287,22 @@ export function MemberDocumentPanel({
               <thead>
                 <tr>
                   <th>Document name</th>
+                  <th>Expiry Date</th>
                   <th>Remarks</th>
                   <th>Preview</th>
                   <th>Download</th>
                   <th>WhatsApp</th>
+                  {canDelete ? <th>Edit</th> : null}
                   {canDelete ? <th>Delete</th> : null}
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row) => (
+                {sortedRows.map((row) => (
                   <tr key={row.id}>
                     <td>{row.documentName}</td>
+                    <td>
+                      <ExpiryCell expiryDate={row.expiryDate} />
+                    </td>
                     <td className={row.remarks ? undefined : "cell-muted"}>
                       {row.remarks || "—"}
                     </td>
@@ -258,6 +339,18 @@ export function MemberDocumentPanel({
                       <td>
                         <button
                           type="button"
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => startEdit(row)}
+                          disabled={pending}
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    ) : null}
+                    {canDelete ? (
+                      <td>
+                        <button
+                          type="button"
                           className="btn btn-danger btn-sm"
                           onClick={() => onDelete(row)}
                           disabled={pending}
@@ -270,7 +363,7 @@ export function MemberDocumentPanel({
                 ))}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={canDelete ? 6 : 5} className="options-empty">
+                    <td colSpan={canDelete ? 8 : 6} className="options-empty">
                       No documents uploaded yet.
                     </td>
                   </tr>
@@ -311,6 +404,19 @@ export function MemberDocumentPanel({
           </div>
         ) : null}
       </Modal>
+    </div>
+  );
+}
+
+function ExpiryCell({ expiryDate }: { expiryDate: string | null }) {
+  if (!expiryDate) return <span className="cell-muted">—</span>;
+  const status = documentExpiryStatus(expiryDate, todayIsoInIst());
+  return (
+    <div className="doc-expiry">
+      <span>{formatDateDdMmYyyy(expiryDate)}</span>
+      <span className={`doc-expiry-status doc-expiry-${status}`}>
+        {DOCUMENT_EXPIRY_STATUS_LABEL[status]}
+      </span>
     </div>
   );
 }

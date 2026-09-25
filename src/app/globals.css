@@ -691,7 +691,38 @@ body:has(.app-shell) {
 }
 
 .member-document-submit {
+  display: flex;
+  gap: 0.5rem;
+  align-items: end;
   justify-self: start;
+}
+
+.doc-expiry {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  white-space: nowrap;
+}
+
+.doc-expiry-status {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.doc-expiry-expired {
+  color: #dc2626;
+}
+
+.doc-expiry-within-30-days {
+  color: #ea580c;
+}
+
+.doc-expiry-within-6-months {
+  color: #ca8a04;
+}
+
+.doc-expiry-valid {
+  color: #16a34a;
 }
 
 .member-document-table button.btn-whatsapp-icon {

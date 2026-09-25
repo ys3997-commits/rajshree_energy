@@ -10,6 +10,7 @@ export const BILL_STATUS_LABEL: Record<BillStatus, string> = {
 };
 
 export const MAX_BILL_FILE_BYTES = 4 * 1024 * 1024;
+export const MAX_MEMBER_DOCUMENT_BYTES = 15 * 1024 * 1024;
 export const MAX_BILL_FILES = 1;
 export const MAX_BILL_TOTAL_BYTES = MAX_BILL_FILE_BYTES;
 export const MAX_BILL_REMARK_WORDS = 25;
@@ -137,15 +138,19 @@ export function mimeFromFileName(fileName: string): string | null {
   return MIME_FROM_EXTENSION[ext] ?? null;
 }
 
-export function validateBillFile(file: {
-  name: string;
-  type: string;
-  size: number;
-}): { fileName: string; mime: string } {
+export function validateBillFile(
+  file: {
+    name: string;
+    type: string;
+    size: number;
+  },
+  maxBytes: number = MAX_BILL_FILE_BYTES,
+): { fileName: string; mime: string } {
   const fileName = file.name.trim() || "bill";
   if (!file.size) throw new Error("Document is required");
-  if (file.size > MAX_BILL_FILE_BYTES) {
-    throw new Error("File must be 4 MB or smaller");
+  if (file.size > maxBytes) {
+    const maxMb = Math.round(maxBytes / (1024 * 1024));
+    throw new Error(`File must be ${maxMb} MB or smaller`);
   }
   const mime = file.type || mimeFromFileName(fileName);
   if (!mime || !ALLOWED_BILL_MIME.has(mime)) {

@@ -245,6 +245,8 @@ model MemberDocument {
   memberId        String
   documentEntryId String
   remarks         String   @default("")
+  /// Calendar date stored as YYYY-MM-DD. Empty when the document has no expiry.
+  expiryDate      String?
   fileName        String
   fileMime        String
   fileData        Bytes

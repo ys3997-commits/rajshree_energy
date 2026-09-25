@@ -232,6 +232,7 @@ exports.Prisma.MemberDocumentScalarFieldEnum = {
   memberId: 'memberId',
   documentEntryId: 'documentEntryId',
   remarks: 'remarks',
+  expiryDate: 'expiryDate',
   fileName: 'fileName',
   fileMime: 'fileMime',
   fileData: 'fileData',

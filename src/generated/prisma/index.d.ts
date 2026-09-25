@@ -15714,6 +15714,7 @@ export namespace Prisma {
     memberId: string | null
     documentEntryId: string | null
     remarks: string | null
+    expiryDate: string | null
     fileName: string | null
     fileMime: string | null
     fileData: Buffer | null
@@ -15726,6 +15727,7 @@ export namespace Prisma {
     memberId: string | null
     documentEntryId: string | null
     remarks: string | null
+    expiryDate: string | null
     fileName: string | null
     fileMime: string | null
     fileData: Buffer | null
@@ -15738,6 +15740,7 @@ export namespace Prisma {
     memberId: number
     documentEntryId: number
     remarks: number
+    expiryDate: number
     fileName: number
     fileMime: number
     fileData: number
@@ -15752,6 +15755,7 @@ export namespace Prisma {
     memberId?: true
     documentEntryId?: true
     remarks?: true
+    expiryDate?: true
     fileName?: true
     fileMime?: true
     fileData?: true
@@ -15764,6 +15768,7 @@ export namespace Prisma {
     memberId?: true
     documentEntryId?: true
     remarks?: true
+    expiryDate?: true
     fileName?: true
     fileMime?: true
     fileData?: true
@@ -15776,6 +15781,7 @@ export namespace Prisma {
     memberId?: true
     documentEntryId?: true
     remarks?: true
+    expiryDate?: true
     fileName?: true
     fileMime?: true
     fileData?: true
@@ -15861,6 +15867,7 @@ export namespace Prisma {
     memberId: string
     documentEntryId: string
     remarks: string
+    expiryDate: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -15890,6 +15897,7 @@ export namespace Prisma {
     memberId?: boolean
     documentEntryId?: boolean
     remarks?: boolean
+    expiryDate?: boolean
     fileName?: boolean
     fileMime?: boolean
     fileData?: boolean
@@ -15904,6 +15912,7 @@ export namespace Prisma {
     memberId?: boolean
     documentEntryId?: boolean
     remarks?: boolean
+    expiryDate?: boolean
     fileName?: boolean
     fileMime?: boolean
     fileData?: boolean
@@ -15918,6 +15927,7 @@ export namespace Prisma {
     memberId?: boolean
     documentEntryId?: boolean
     remarks?: boolean
+    expiryDate?: boolean
     fileName?: boolean
     fileMime?: boolean
     fileData?: boolean
@@ -15945,6 +15955,10 @@ export namespace Prisma {
       memberId: string
       documentEntryId: string
       remarks: string
+      /**
+       * Calendar date stored as YYYY-MM-DD. Empty when the document has no expiry.
+       */
+      expiryDate: string | null
       fileName: string
       fileMime: string
       fileData: Buffer
@@ -16349,6 +16363,7 @@ export namespace Prisma {
     readonly memberId: FieldRef<"MemberDocument", 'String'>
     readonly documentEntryId: FieldRef<"MemberDocument", 'String'>
     readonly remarks: FieldRef<"MemberDocument", 'String'>
+    readonly expiryDate: FieldRef<"MemberDocument", 'String'>
     readonly fileName: FieldRef<"MemberDocument", 'String'>
     readonly fileMime: FieldRef<"MemberDocument", 'String'>
     readonly fileData: FieldRef<"MemberDocument", 'Bytes'>
@@ -19200,7 +19215,7 @@ export namespace Prisma {
        */
       collectionThrough: $Enums.CollectionThrough | null
       /**
-       * Next planned sales call date (calendar day) ��� separate from collection.
+       * Next planned sales call date (calendar day) — separate from collection.
        */
       plannedSaleCallDate: Date | null
       /**
@@ -36730,6 +36745,7 @@ export namespace Prisma {
     memberId: 'memberId',
     documentEntryId: 'documentEntryId',
     remarks: 'remarks',
+    expiryDate: 'expiryDate',
     fileName: 'fileName',
     fileMime: 'fileMime',
     fileData: 'fileData',
@@ -38100,6 +38116,7 @@ export namespace Prisma {
     memberId?: StringFilter<"MemberDocument"> | string
     documentEntryId?: StringFilter<"MemberDocument"> | string
     remarks?: StringFilter<"MemberDocument"> | string
+    expiryDate?: StringNullableFilter<"MemberDocument"> | string | null
     fileName?: StringFilter<"MemberDocument"> | string
     fileMime?: StringFilter<"MemberDocument"> | string
     fileData?: BytesFilter<"MemberDocument"> | Buffer
@@ -38114,6 +38131,7 @@ export namespace Prisma {
     memberId?: SortOrder
     documentEntryId?: SortOrder
     remarks?: SortOrder
+    expiryDate?: SortOrderInput | SortOrder
     fileName?: SortOrder
     fileMime?: SortOrder
     fileData?: SortOrder
@@ -38131,6 +38149,7 @@ export namespace Prisma {
     memberId?: StringFilter<"MemberDocument"> | string
     documentEntryId?: StringFilter<"MemberDocument"> | string
     remarks?: StringFilter<"MemberDocument"> | string
+    expiryDate?: StringNullableFilter<"MemberDocument"> | string | null
     fileName?: StringFilter<"MemberDocument"> | string
     fileMime?: StringFilter<"MemberDocument"> | string
     fileData?: BytesFilter<"MemberDocument"> | Buffer
@@ -38145,6 +38164,7 @@ export namespace Prisma {
     memberId?: SortOrder
     documentEntryId?: SortOrder
     remarks?: SortOrder
+    expiryDate?: SortOrderInput | SortOrder
     fileName?: SortOrder
     fileMime?: SortOrder
     fileData?: SortOrder
@@ -38163,6 +38183,7 @@ export namespace Prisma {
     memberId?: StringWithAggregatesFilter<"MemberDocument"> | string
     documentEntryId?: StringWithAggregatesFilter<"MemberDocument"> | string
     remarks?: StringWithAggregatesFilter<"MemberDocument"> | string
+    expiryDate?: StringNullableWithAggregatesFilter<"MemberDocument"> | string | null
     fileName?: StringWithAggregatesFilter<"MemberDocument"> | string
     fileMime?: StringWithAggregatesFilter<"MemberDocument"> | string
     fileData?: BytesWithAggregatesFilter<"MemberDocument"> | Buffer
@@ -40746,6 +40767,7 @@ export namespace Prisma {
   export type MemberDocumentCreateInput = {
     id?: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -40760,6 +40782,7 @@ export namespace Prisma {
     memberId: string
     documentEntryId: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -40770,6 +40793,7 @@ export namespace Prisma {
   export type MemberDocumentUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -40784,6 +40808,7 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     documentEntryId?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -40796,6 +40821,7 @@ export namespace Prisma {
     memberId: string
     documentEntryId: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -40806,6 +40832,7 @@ export namespace Prisma {
   export type MemberDocumentUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -40818,6 +40845,7 @@ export namespace Prisma {
     memberId?: StringFieldUpdateOperationsInput | string
     documentEntryId?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -43340,6 +43368,7 @@ export namespace Prisma {
     memberId?: SortOrder
     documentEntryId?: SortOrder
     remarks?: SortOrder
+    expiryDate?: SortOrder
     fileName?: SortOrder
     fileMime?: SortOrder
     fileData?: SortOrder
@@ -43352,6 +43381,7 @@ export namespace Prisma {
     memberId?: SortOrder
     documentEntryId?: SortOrder
     remarks?: SortOrder
+    expiryDate?: SortOrder
     fileName?: SortOrder
     fileMime?: SortOrder
     fileData?: SortOrder
@@ -43364,6 +43394,7 @@ export namespace Prisma {
     memberId?: SortOrder
     documentEntryId?: SortOrder
     remarks?: SortOrder
+    expiryDate?: SortOrder
     fileName?: SortOrder
     fileMime?: SortOrder
     fileData?: SortOrder
@@ -48862,6 +48893,7 @@ export namespace Prisma {
   export type MemberDocumentCreateWithoutMemberInput = {
     id?: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -48874,6 +48906,7 @@ export namespace Prisma {
     id?: string
     documentEntryId: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -48915,6 +48948,7 @@ export namespace Prisma {
     memberId?: StringFilter<"MemberDocument"> | string
     documentEntryId?: StringFilter<"MemberDocument"> | string
     remarks?: StringFilter<"MemberDocument"> | string
+    expiryDate?: StringNullableFilter<"MemberDocument"> | string | null
     fileName?: StringFilter<"MemberDocument"> | string
     fileMime?: StringFilter<"MemberDocument"> | string
     fileData?: BytesFilter<"MemberDocument"> | Buffer
@@ -48925,6 +48959,7 @@ export namespace Prisma {
   export type MemberDocumentCreateWithoutDocumentEntryInput = {
     id?: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -48937,6 +48972,7 @@ export namespace Prisma {
     id?: string
     memberId: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -54994,6 +55030,7 @@ export namespace Prisma {
     id?: string
     documentEntryId: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -55004,6 +55041,7 @@ export namespace Prisma {
   export type MemberDocumentUpdateWithoutMemberInput = {
     id?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -55016,6 +55054,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     documentEntryId?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -55027,6 +55066,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     documentEntryId?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -55038,6 +55078,7 @@ export namespace Prisma {
     id?: string
     memberId: string
     remarks?: string
+    expiryDate?: string | null
     fileName: string
     fileMime: string
     fileData: Buffer
@@ -55048,6 +55089,7 @@ export namespace Prisma {
   export type MemberDocumentUpdateWithoutDocumentEntryInput = {
     id?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -55060,6 +55102,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberId?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer
@@ -55071,6 +55114,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     memberId?: StringFieldUpdateOperationsInput | string
     remarks?: StringFieldUpdateOperationsInput | string
+    expiryDate?: NullableStringFieldUpdateOperationsInput | string | null
     fileName?: StringFieldUpdateOperationsInput | string
     fileMime?: StringFieldUpdateOperationsInput | string
     fileData?: BytesFieldUpdateOperationsInput | Buffer

@@ -3,14 +3,18 @@
 import { AccessDeniedError, requireOwner, requireSignedIn } from "@/lib/auth/access";
 import { canAccessPath, hasDocumentKindAccess } from "@/lib/auth/pages";
 import { isDocumentKind } from "@/app/(dashboard)/documents/documentEntities";
-import { validateBillFile } from "@/lib/domain/bills";
+import { MAX_MEMBER_DOCUMENT_BYTES, validateBillFile } from "@/lib/domain/bills";
+import { parseMemberDocumentExpiry } from "@/lib/domain/documentExpiry";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 export type MemberDocumentRow = {
   id: string;
+  documentEntryId: string;
   documentName: string;
   remarks: string;
+  /** YYYY-MM-DD, or null when no expiry was entered. */
+  expiryDate: string | null;
   fileName: string;
   fileMime: string;
 };
@@ -49,28 +53,39 @@ export async function listMemberDocuments(
   }
   const rows = await prisma.memberDocument.findMany({
     where: { memberId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { documentEntry: { name: "asc" } },
     select: {
       id: true,
+      documentEntryId: true,
       remarks: true,
+      expiryDate: true,
       fileName: true,
       fileMime: true,
       documentEntry: { select: { name: true } },
     },
   });
-  return rows.map((row) => ({
-    id: row.id,
-    documentName: row.documentEntry.name,
-    remarks: row.remarks,
-    fileName: row.fileName,
-    fileMime: row.fileMime,
-  }));
+  return rows
+    .map((row) => ({
+      id: row.id,
+      documentEntryId: row.documentEntryId,
+      documentName: row.documentEntry.name,
+      remarks: row.remarks,
+      expiryDate: row.expiryDate,
+      fileName: row.fileName,
+      fileMime: row.fileMime,
+    }))
+    .sort((a, b) =>
+      a.documentName.localeCompare(b.documentName, "en", { sensitivity: "base" }),
+    );
 }
 
 export async function createMemberDocument(formData: FormData) {
   const memberId = String(formData.get("memberId") ?? "");
   const documentEntryId = String(formData.get("documentEntryId") ?? "");
   const remarks = String(formData.get("remarks") ?? "").trim();
+  const expiryDate = parseMemberDocumentExpiry(
+    String(formData.get("expiryDate") ?? ""),
+  );
   const uploaded = formData.get("file");
   if (!(uploaded instanceof File)) throw new Error("Upload a document");
 
@@ -88,17 +103,21 @@ export async function createMemberDocument(formData: FormData) {
     throw new Error("Select a document for this member");
   }
 
-  const meta = validateBillFile({
-    name: uploaded.name,
-    type: uploaded.type,
-    size: uploaded.size,
-  });
+  const meta = validateBillFile(
+    {
+      name: uploaded.name,
+      type: uploaded.type,
+      size: uploaded.size,
+    },
+    MAX_MEMBER_DOCUMENT_BYTES,
+  );
 
   await prisma.memberDocument.create({
     data: {
       memberId,
       documentEntryId,
       remarks,
+      expiryDate,
       fileName: meta.fileName,
       fileMime: meta.mime,
       fileData: Buffer.from(await uploaded.arrayBuffer()),
@@ -106,6 +125,57 @@ export async function createMemberDocument(formData: FormData) {
   });
 
   revalidatePath(`/documents/${member.kind}/${member.slug}`);
+}
+
+export async function updateMemberDocument(formData: FormData) {
+  await requireOwner();
+  const id = String(formData.get("id") ?? "");
+  const documentEntryId = String(formData.get("documentEntryId") ?? "");
+  const remarks = String(formData.get("remarks") ?? "").trim();
+  const expiryDate = parseMemberDocumentExpiry(
+    String(formData.get("expiryDate") ?? ""),
+  );
+  const uploaded = formData.get("file");
+
+  const existing = await prisma.memberDocument.findUnique({
+    where: { id },
+    include: { member: true },
+  });
+  if (!existing || !isDocumentKind(existing.member.kind)) {
+    throw new Error("Document not found");
+  }
+  const entry = await prisma.documentEntry.findUnique({
+    where: { id: documentEntryId },
+  });
+  if (!entry || entry.kind !== existing.member.kind) {
+    throw new Error("Select a document for this member");
+  }
+
+  const data: {
+    documentEntryId: string;
+    remarks: string;
+    expiryDate: string | null;
+    fileName?: string;
+    fileMime?: string;
+    fileData?: Buffer;
+  } = { documentEntryId, remarks, expiryDate };
+
+  if (uploaded instanceof File && uploaded.size > 0) {
+    const meta = validateBillFile(
+      {
+        name: uploaded.name,
+        type: uploaded.type,
+        size: uploaded.size,
+      },
+      MAX_MEMBER_DOCUMENT_BYTES,
+    );
+    data.fileName = meta.fileName;
+    data.fileMime = meta.mime;
+    data.fileData = Buffer.from(await uploaded.arrayBuffer());
+  }
+
+  await prisma.memberDocument.update({ where: { id }, data });
+  revalidatePath(`/documents/${existing.member.kind}/${existing.member.slug}`);
 }
 
 export async function deleteMemberDocument(id: string) {
