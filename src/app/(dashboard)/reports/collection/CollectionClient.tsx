@@ -29,8 +29,17 @@ type PlannedCallFilter =
   | "older"
   | "future"
   | "none";
-type CollectionSortKey = "name" | "due" | "overdue";
+type CollectionSortKey =
+  | "name"
+  | "saleExecutive"
+  | "dealingCompany"
+  | "due"
+  | "overdue"
+  | "lastPaymentDate"
+  | "plannedCollectionCallDate";
 type SortDir = "asc" | "desc";
+
+const AMOUNT_SORT_KEYS = new Set<CollectionSortKey>(["due", "overdue"]);
 
 const BUYER_CATEGORIES = new Set<CustomerCategory>([
   CustomerCategory.INDUSTRY,
@@ -111,9 +120,36 @@ function numericValue(value: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function compareText(
+  a: string | null | undefined,
+  b: string | null | undefined,
+): number {
+  return (a?.trim() ?? "").localeCompare(b?.trim() ?? "", undefined, {
+    sensitivity: "base",
+  });
+}
+
 function sortIndicator(active: boolean, dir: SortDir): string {
   if (!active) return "";
   return dir === "asc" ? " ↑" : " ↓";
+}
+
+function compareOptionalDate(
+  a: string | null | undefined,
+  b: string | null | undefined,
+  dir: number,
+): number {
+  const left = normalizePlannedDate(a);
+  const right = normalizePlannedDate(b);
+  if (left === right) return 0;
+  if (!left) return 1;
+  if (!right) return -1;
+  return left.localeCompare(right) * dir;
+}
+
+function formatOverdueShare(overdue: number, due: number): string {
+  if (!(due > 0)) return "—";
+  return `${Math.round((overdue / due) * 100)}%`;
 }
 
 function formatDateDdMmYyyy(value: string | null | undefined): string {
@@ -143,6 +179,7 @@ export function CollectionClient({
 
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [query, setQuery] = useState("");
   const [plannedCallFilter, setPlannedCallFilter] =
     useState<PlannedCallFilter>("");
   const [saleExecutiveFilter, setSaleExecutiveFilter] = useState("");
@@ -171,7 +208,11 @@ export function CollectionClient({
       return;
     }
     setSortKey(key);
-    setSortDir(key === "name" ? "asc" : "desc");
+    setSortDir(AMOUNT_SORT_KEYS.has(key) ? "desc" : "asc");
+  }
+
+  function togglePlannedFilter(next: PlannedCallFilter) {
+    setPlannedCallFilter((current) => (current === next ? "" : next));
   }
 
   const saleExecutiveOptions = useMemo(() => {
@@ -213,7 +254,8 @@ export function CollectionClient({
   );
 
   const hasActiveFilters = Boolean(
-    plannedCallFilter ||
+    query.trim() ||
+      plannedCallFilter ||
       saleExecutiveFilter ||
       dealingCompanyFilter ||
       approachForFundsFilter ||
@@ -223,18 +265,10 @@ export function CollectionClient({
       sectorFilter,
   );
 
-  const filteredRows = useMemo(() => {
-    const next = buyerRows.filter((row) => {
-      if (
-        !matchesPlannedCallFilter(
-          row.plannedCollectionCallDate,
-          plannedCallFilter,
-          today,
-          tomorrow,
-        )
-      ) {
-        return false;
-      }
+  const scopedRows = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return buyerRows.filter((row) => {
+      if (q && !row.name.toLowerCase().includes(q)) return false;
       if (categoryFilter && row.category !== categoryFilter) return false;
       if (
         saleExecutiveFilter &&
@@ -261,18 +295,9 @@ export function CollectionClient({
       }
       return true;
     });
-
-    if (!sortKey) return next;
-    const dir = sortDir === "asc" ? 1 : -1;
-    if (sortKey === "name") {
-      return [...next].sort((a, b) => a.name.localeCompare(b.name) * dir);
-    }
-    return [...next].sort(
-      (a, b) => (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir,
-    );
   }, [
     buyerRows,
-    plannedCallFilter,
+    query,
     saleExecutiveFilter,
     dealingCompanyFilter,
     approachForFundsFilter,
@@ -280,11 +305,71 @@ export function CollectionClient({
     stateFilter,
     categoryFilter,
     sectorFilter,
+  ]);
+
+  const callCounts = useMemo(() => {
+    let todayCount = 0;
+    let overdueCalls = 0;
+    let unplanned = 0;
+    for (const row of scopedRows) {
+      const planned = normalizePlannedDate(row.plannedCollectionCallDate);
+      if (!planned) unplanned += 1;
+      else if (planned === today) todayCount += 1;
+      else if (planned < today) overdueCalls += 1;
+    }
+    return { today: todayCount, overdue: overdueCalls, unplanned };
+  }, [scopedRows, today]);
+
+  const filteredRows = useMemo(() => {
+    const next = scopedRows.filter((row) =>
+      matchesPlannedCallFilter(
+        row.plannedCollectionCallDate,
+        plannedCallFilter,
+        today,
+        tomorrow,
+      ),
+    );
+
+    const dir = sortDir === "asc" ? 1 : -1;
+    return [...next].sort((a, b) => {
+      let primary = 0;
+      if (sortKey === "name") primary = compareText(a.name, b.name) * dir;
+      else if (sortKey === "saleExecutive") {
+        primary = compareText(a.saleExecutive, b.saleExecutive) * dir;
+      } else if (sortKey === "dealingCompany") {
+        primary = compareText(a.dealingCompany, b.dealingCompany) * dir;
+      } else if (sortKey === "lastPaymentDate") {
+        primary = compareOptionalDate(a.lastPaymentDate, b.lastPaymentDate, dir);
+      } else if (sortKey === "plannedCollectionCallDate") {
+        primary = compareOptionalDate(
+          a.plannedCollectionCallDate,
+          b.plannedCollectionCallDate,
+          dir,
+        );
+      } else {
+        primary = (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir;
+      }
+      if (primary !== 0) return primary;
+      return compareText(a.name, b.name);
+    });
+  }, [
+    scopedRows,
+    plannedCallFilter,
     sortKey,
     sortDir,
     today,
     tomorrow,
   ]);
+
+  const totals = useMemo(() => {
+    let due = 0;
+    let overdue = 0;
+    for (const row of filteredRows) {
+      due += numericValue(row.due);
+      overdue += numericValue(row.overdue);
+    }
+    return { due, overdue, count: filteredRows.length };
+  }, [filteredRows]);
 
   function onPlannedCallChange(customerId: string, value: string) {
     const nextDate = value.trim() === "" ? null : value;
@@ -337,7 +422,72 @@ export function CollectionClient({
         </div>
       </Modal>
 
+      <div className="collection-engine-summary">
+        <div className="detail-stat-row">
+          <div className="detail-stat">
+            <span className="detail-stat-label">Customers</span>
+            <span className="detail-stat-value">{totals.count}</span>
+          </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">Total due</span>
+            <span className="detail-stat-value">
+              {formatAmount(totals.due.toFixed(2))}
+            </span>
+          </div>
+          <div className="detail-stat">
+            <span className="detail-stat-label">Overdue</span>
+            <span className="detail-stat-value">
+              {formatAmount(totals.overdue.toFixed(2))}
+            </span>
+          </div>
+          <div className="detail-stat" title="Overdue as a share of total due">
+            <span className="detail-stat-label">Overdue share</span>
+            <span className="detail-stat-value">
+              {formatOverdueShare(totals.overdue, totals.due)}
+            </span>
+          </div>
+        </div>
+        <div className="detail-stat-row">
+          <button
+            type="button"
+            className="detail-stat"
+            aria-pressed={plannedCallFilter === "today"}
+            onClick={() => togglePlannedFilter("today")}
+          >
+            <span className="detail-stat-label">Calls today</span>
+            <span className="detail-stat-value">{callCounts.today}</span>
+          </button>
+          <button
+            type="button"
+            className="detail-stat"
+            aria-pressed={plannedCallFilter === "older"}
+            onClick={() => togglePlannedFilter("older")}
+          >
+            <span className="detail-stat-label">Overdue calls</span>
+            <span className="detail-stat-value">{callCounts.overdue}</span>
+          </button>
+          <button
+            type="button"
+            className="detail-stat"
+            aria-pressed={plannedCallFilter === "none"}
+            onClick={() => togglePlannedFilter("none")}
+          >
+            <span className="detail-stat-label">Not planned</span>
+            <span className="detail-stat-value">{callCounts.unplanned}</span>
+          </button>
+        </div>
+      </div>
+
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
+        <label>
+          Customer
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search name"
+          />
+        </label>
         <label>
           Planned call
           <select
@@ -459,6 +609,7 @@ export function CollectionClient({
             type="button"
             className="btn btn-secondary"
             onClick={() => {
+              setQuery("");
               setPlannedCallFilter("");
               setSaleExecutiveFilter("");
               setDealingCompanyFilter("");
@@ -492,8 +643,30 @@ export function CollectionClient({
               <th>Payment<br />In Charge</th>
               <th>Contact<br />Number</th>
               <th>Role</th>
-              <th>Sales<br />Executive</th>
-              <th>Dealing<br />Company</th>
+              <th>
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("saleExecutive")}
+                >
+                  Sales
+                  <br />
+                  Executive
+                  {sortIndicator(sortKey === "saleExecutive", sortDir)}
+                </button>
+              </th>
+              <th>
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("dealingCompany")}
+                >
+                  Dealing
+                  <br />
+                  Company
+                  {sortIndicator(sortKey === "dealingCompany", sortDir)}
+                </button>
+              </th>
               <th className="cell-num">
                 <button
                   type="button"
@@ -514,10 +687,35 @@ export function CollectionClient({
                   {sortIndicator(sortKey === "overdue", sortDir)}
                 </button>
               </th>
-              <th>Last Payment<br />Date</th>
+              <th>
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("lastPaymentDate")}
+                >
+                  Last Payment
+                  <br />
+                  Date
+                  {sortIndicator(sortKey === "lastPaymentDate", sortDir)}
+                </button>
+              </th>
               <th className="cell-num">Last Payment<br />Amount</th>
               <th className="cell-num">Credit<br />Period</th>
-              <th className="collection-date-col">Planned Call<br />Date</th>
+              <th className="collection-date-col">
+                <button
+                  type="button"
+                  className="th-sort"
+                  onClick={() => toggleSort("plannedCollectionCallDate")}
+                >
+                  Planned Call
+                  <br />
+                  Date
+                  {sortIndicator(
+                    sortKey === "plannedCollectionCallDate",
+                    sortDir,
+                  )}
+                </button>
+              </th>
               <th className="collection-whatsapp-col">Payment</th>
               <th className="collection-whatsapp-col">Owner</th>
             </tr>
@@ -662,6 +860,30 @@ export function CollectionClient({
               </tr>
             )}
           </tbody>
+          {filteredRows.length > 0 && (
+            <tfoot>
+              <tr>
+                <td className="collection-engine-customer-col">
+                  Total ({totals.count})
+                </td>
+                <td />
+                <td />
+                <td />
+                <td />
+                <td />
+                <td className="cell-num">{formatAmount(totals.due.toFixed(2))}</td>
+                <td className="cell-num">
+                  {formatAmount(totals.overdue.toFixed(2))}
+                </td>
+                <td />
+                <td />
+                <td />
+                <td />
+                <td className="collection-whatsapp-col" aria-hidden="true" />
+                <td className="collection-whatsapp-col" aria-hidden="true" />
+              </tr>
+            </tfoot>
+          )}
         </UpdateTableInteraction>
         </div>
       </div>

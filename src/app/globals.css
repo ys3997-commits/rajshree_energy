@@ -5441,6 +5441,28 @@ table.data.ageing-table td.collection-whatsapp-col {
   }
 }
 
+.collection-engine-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+button.detail-stat {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.detail-stat:hover,
+button.detail-stat[aria-pressed="true"] {
+  border-color: var(--accent);
+}
+
+button.detail-stat[aria-pressed="true"] {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
 /* Collection Engine — same table layout as Approvals */
 table.data.collection-engine-table {
   border-collapse: separate;
@@ -5606,6 +5628,37 @@ table.data.collection-engine-table tbody tr.collection-row-call-today .collectio
 
 table.data.collection-engine-table tbody tr.collection-row-due-call .collection-date-input {
   border-color: rgba(155, 44, 44, 0.35);
+}
+
+table.data.collection-engine-table tfoot td {
+  font-weight: 600;
+  background: #f8fafb;
+}
+
+table.data.collection-engine-table tfoot td.collection-engine-customer-col {
+  background-color: #f8fafb;
+}
+
+.app-main .table-h-scroll > table.data.collection-engine-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: #ffffff;
+  background-color: #ffffff;
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+
+.app-main .table-h-scroll > table.data.collection-engine-table thead th.collection-engine-customer-col {
+  top: 0;
+  left: 0;
+  z-index: 8;
+  background: #ffffff;
+  background-color: #ffffff;
+}
+
+.app-main .table-h-scroll > table.data.collection-engine-table thead th button.th-sort {
+  background: #ffffff;
+  background-color: #ffffff;
 }
 
 /* Report tables — wider customer column for two-line names */

@@ -139,7 +139,7 @@ export default async function TransporterDetailPage({
           <span className="detail-meta-value">
             {transporter.ownerContactNumber2 || "—"}
           </span>
-        </div>
+        </div>mak
         <div className="detail-meta-item">
           <span className="detail-meta-label">Email</span>
           <span className="detail-meta-value">
