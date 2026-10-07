@@ -171,6 +171,8 @@ export async function createBankAccount(input: BankAccountInput) {
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
+  revalidatePath("/reports/bank-statement");
+  revalidatePath("/reports/bank-balances");
 }
 
 export async function updateBankAccount(id: string, input: BankAccountInput) {
@@ -186,6 +188,8 @@ export async function updateBankAccount(id: string, input: BankAccountInput) {
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
+  revalidatePath("/reports/bank-statement");
+  revalidatePath("/reports/bank-balances");
 }
 
 export async function deleteBankAccount(id: string) {
@@ -203,4 +207,6 @@ export async function deleteBankAccount(id: string) {
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
+  revalidatePath("/reports/bank-statement");
+  revalidatePath("/reports/bank-balances");
 }

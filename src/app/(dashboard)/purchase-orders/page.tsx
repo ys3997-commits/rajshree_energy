@@ -212,10 +212,7 @@ export default async function PurchaseOrdersPage({
           <tbody>
             {orders.map((row) => {
               const canClose =
-                row.quantity != null &&
-                row.closingQuantity == null &&
-                row.balanceOrder != null &&
-                row.balanceOrder.gt(0);
+                formatOrderStatusForDisplay(row) === "Running";
               return (
                 <tr key={row.id}>
                   <td>
@@ -250,7 +247,9 @@ export default async function PurchaseOrdersPage({
                       <CloseQuantityButton
                         orderId={row.id}
                         kind="purchase"
-                        balanceMt={row.balanceOrder!.toString()}
+                        balanceMt={String(
+                          displayOrderBalance(row) ?? row.balanceOrder ?? "0",
+                        )}
                       />
                     ) : (
                       "—"

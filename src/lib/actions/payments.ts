@@ -217,6 +217,8 @@ async function assertBankAccountExists(id: string) {
 function revalidatePaymentPaths(party?: PaymentParty) {
   revalidatePath("/payments");
   revalidatePath("/customers");
+  revalidatePath("/reports/bank-statement");
+  revalidatePath("/reports/bank-balances");
   if (!party || party.kind === "transporter") {
     revalidatePath("/transporters");
     revalidatePath("/reports/transport/due");

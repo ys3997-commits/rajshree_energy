@@ -533,7 +533,7 @@ export async function closePurchaseOrderQuantity(id: string) {
   }
 
   const bal = balanceOrder(existing);
-  if (bal == null || !bal.gt(0)) {
+  if (bal == null || bal.eq(0)) {
     throw new Error("No remaining balance to close");
   }
 

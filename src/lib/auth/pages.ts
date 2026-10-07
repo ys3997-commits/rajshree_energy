@@ -339,6 +339,20 @@ export const REPORT_SUB_PAGES = [
     group: "Reports" as const,
     reportSubPage: true,
   },
+  {
+    key: "reports-bank-statement",
+    href: "/reports/bank-statement",
+    label: "Bank Statement",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
+    key: "reports-bank-balances",
+    href: "/reports/bank-balances",
+    label: "Bank Balances",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const REPORT_SUB_PAGE_KEYS = REPORT_SUB_PAGES.map((page) => page.key);
@@ -414,6 +428,14 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
       { key: "reports-veg-payment", label: "Veg Payment" },
       { key: "reports-veg-discount", label: "Veg Discount" },
       { key: "reports-veg-ledger", label: "Veg Ledger" },
+    ],
+  },
+  {
+    id: "bank",
+    label: "Bank",
+    pages: [
+      { key: "reports-bank-balances", label: "Bank Balances" },
+      { key: "reports-bank-statement", label: "Bank Statement" },
     ],
   },
 ];

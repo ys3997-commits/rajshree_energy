@@ -6,10 +6,21 @@ import { canAccessPath } from "@/lib/auth/pages";
 /** Sorted alphabetically by title. */
 const reports = [
   {
+    href: "/reports/bank-balances",
+    title: "Bank Balances",
+    desc: "Current balance for each bank account.",
+  },
+  {
+    href: "/reports/bank-statement",
+    title: "Bank Statement",
+    desc: "Statement for each bank account from Masters → Bank.",
+  },
+  {
     href: "/reports/ageing-report",
     title: "Ageing Report",
     desc: "Customer outstanding split by 10-day due buckets.",
   },
+
   {
     href: "/reports/collection",
     title: "Collection Engine",

@@ -30,6 +30,15 @@ describe("pageForPath", () => {
       "reports-veg-discount",
     );
     expect(pageForPath("/reports/veg/ledger")?.key).toBe("reports-veg-ledger");
+    expect(pageForPath("/reports/bank-statement")?.key).toBe(
+      "reports-bank-statement",
+    );
+    expect(pageForPath("/reports/bank-statement/abc")?.key).toBe(
+      "reports-bank-statement",
+    );
+    expect(pageForPath("/reports/bank-balances")?.key).toBe(
+      "reports-bank-balances",
+    );
   });
 
   it("maps old report URLs to current pages", () => {

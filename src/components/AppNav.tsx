@@ -19,6 +19,8 @@ import {
 
 type NavLeaf = { href: string; label: string };
 
+export type BankAccountNavItem = { id: string; accountName: string };
+
 const leadingLinks = [{ href: "/", label: "Home" }];
 
 const ordersLinks: NavLeaf[] = [
@@ -114,8 +116,8 @@ function reportGroupLeaves(group: ReportGroup): ReportLeaf[] {
   return leaves;
 }
 
-/** Sorted alphabetically by label. */
-const reportLinks: ReportItem[] = [
+/** Sorted alphabetically by label. Bank group is appended with live account links. */
+const staticReportLinks: ReportItem[] = [
   {
     label: "Collection",
     children: [
@@ -184,7 +186,30 @@ const reportLinks: ReportItem[] = [
       { href: "/reports/vessel/supplied", label: "Vessel Supplied" },
     ],
   },
-].sort((a, b) => a.label.localeCompare(b.label));
+];
+
+function buildReportLinks(bankAccounts: BankAccountNavItem[]): ReportItem[] {
+  const bankStatementChildren: ReportLeaf[] = [...bankAccounts]
+    .sort((a, b) => a.accountName.localeCompare(b.accountName))
+    .map((account) => ({
+      href: `/reports/bank-statement/${account.id}`,
+      label: account.accountName,
+    }));
+
+  return [
+    ...staticReportLinks,
+    {
+      label: "Bank",
+      children: [
+        { href: "/reports/bank-balances", label: "Bank Balances" },
+        {
+          label: "Bank Statement",
+          children: bankStatementChildren,
+        },
+      ],
+    },
+  ].sort((a, b) => a.label.localeCompare(b.label));
+}
 
 const updateLinks: ReportLeaf[] = [
   { href: "/update/purchase", label: "Purchases" },
@@ -356,12 +381,15 @@ function isDocumentsActive(pathname: string) {
 export function AppNav({
   access,
   documentGroups,
+  bankAccounts = [],
 }: {
   access: Exclude<Access, { kind: "none" }>;
   documentGroups: DocumentGroup[];
+  bankAccounts?: BankAccountNavItem[];
 }) {
   const pathname = usePathname();
   const documentsLinks = documentsNavGroups(documentGroups);
+  const reportLinks = buildReportLinks(bankAccounts);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);

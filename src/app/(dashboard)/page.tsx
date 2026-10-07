@@ -28,7 +28,6 @@ import { formatDispatchMt } from "@/lib/domain/format";
 import { getCurrentAccess } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
 import { HomeQuickActions } from "@/components/HomeQuickActions";
-import { LockedLink } from "@/components/LockedLink";
 import { HomeDispatchSplitChart } from "@/components/HomeDispatchSplitChart";
 import { HomeKpiStrip } from "@/components/HomeKpiStrip";
 import { HomeLatestActivityStrip } from "@/components/HomeLatestActivityStrip";
@@ -493,81 +492,6 @@ export default async function HomePage() {
           )}
         </section>
       </div>
-
-      <section className="home-section">
-        <div className="home-section-head">
-          <h2 className="home-section-title">Reports</h2>
-        </div>
-        <div className="home-report-grid">
-          <HomeReportCard
-            href="/reports/master-dispatch"
-            allowed={canOpen("/reports/master-dispatch")}
-            eyebrow="Dispatches"
-            title="Dispatch Register"
-            desc="Purchase, sale, freight, and basic-rate profit for every dispatch."
-          />
-          <HomeReportCard
-            href="/reports/customer-analysis"
-            allowed={canOpen("/reports/customer-analysis")}
-            eyebrow="Customers"
-            title="Customer analysis"
-            desc="Buy and sell metrics, balance, margin, and dispatch profit per customer."
-          />
-          <HomeReportCard
-            href="/reports/sales"
-            allowed={canOpen("/reports/sales")}
-            eyebrow="Sales"
-            title="Sales Engine Report"
-            desc="Purchaser contacts, order in hand, sold volume, and planned sales calls."
-          />
-          <HomeReportCard
-            href="/reports/transport"
-            allowed={canOpen("/reports/transport")}
-            eyebrow="Transport"
-            title="Transport Engine Report"
-            desc="Dispatch freight, weight diffs, and transport document checklist."
-          />
-          <HomeReportCard
-            href="/reports/vessel"
-            allowed={canOpen("/reports/vessel")}
-            eyebrow="Vessel"
-            title="Vessel Report"
-            desc="Order, dispatch, closing, and balance quantities by vessel, with linked purchase orders."
-          />
-          <HomeReportCard
-            href="/reports/product"
-            allowed={canOpen("/reports/product")}
-            eyebrow="Product"
-            title="Quality Report"
-            desc="PO and SO balances by quality class, with unsold stock and vessel breakdown."
-          />
-        </div>
-      </section>
     </div>
-  );
-}
-
-function HomeReportCard({
-  href,
-  allowed,
-  eyebrow,
-  title,
-  desc,
-}: {
-  href: string;
-  allowed: boolean;
-  eyebrow: string;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <LockedLink href={href} allowed={allowed} className="home-report-card">
-      <p className="home-eyebrow">{eyebrow}</p>
-      <h3 className="home-report-card-title">{title}</h3>
-      <p className="home-report-card-desc">{desc}</p>
-      <span className="home-report-card-cta">
-        {allowed ? "Open report" : "No access"}
-      </span>
-    </LockedLink>
   );
 }

@@ -100,6 +100,7 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
 function resetAddFormAfterSave(form: FormState): FormState {
   return {
     ...form,
+    partyId: "",
     direction: "" as Direction,
     amount: "",
   };

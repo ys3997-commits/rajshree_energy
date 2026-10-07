@@ -135,6 +135,8 @@ async function assertDistinctAccounts(paidAccountId: string, receivedAccountId: 
 function revalidateTransferPaths() {
   revalidatePath("/payments/transaction");
   revalidatePath("/payments");
+  revalidatePath("/reports/bank-statement");
+  revalidatePath("/reports/bank-balances");
 }
 
 export async function listBankTransfers(): Promise<BankTransferRow[]> {

@@ -1,4 +1,5 @@
 import { AppNav } from "@/components/AppNav";
+import { listBankAccounts } from "@/lib/actions/bankAccounts";
 import { canVisit, getCurrentAccess, landingPath } from "@/lib/auth/access";
 import { listDocumentGroups } from "@/lib/actions/option-lists";
 import { headers } from "next/headers";
@@ -18,11 +19,21 @@ export default async function DashboardLayout({
     redirect(landingPath(access));
   }
 
-  const documentGroups = await listDocumentGroups();
+  const [documentGroups, bankAccounts] = await Promise.all([
+    listDocumentGroups(),
+    listBankAccounts(),
+  ]);
 
   return (
     <div className="app-shell">
-      <AppNav access={access} documentGroups={documentGroups} />
+      <AppNav
+        access={access}
+        documentGroups={documentGroups}
+        bankAccounts={bankAccounts.map((account) => ({
+          id: account.id,
+          accountName: account.accountName,
+        }))}
+      />
       <main className="app-main">
         <div className="app-main-inner">{children}</div>
       </main>
