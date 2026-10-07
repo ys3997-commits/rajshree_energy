@@ -1,6 +1,8 @@
-# Rajshree — Coal Trading Dashboard
+# Yura Books
 
-Internal desktop dashboard. Data via **Prisma**; login via **Supabase Auth**.
+Internal trading books & operations dashboard. Data via **Prisma**; login via **Supabase Auth**.
+
+Business entities (e.g. Rajshree Energy) stay as dealing companies inside the app; the product name is **Yura Books**.
 
 ## Stack
 

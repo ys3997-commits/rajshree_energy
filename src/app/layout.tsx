@@ -19,8 +19,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Rajshree — Coal Trading",
-  description: "Internal coal trading dashboard",
+  title: {
+    default: "Yura Books",
+    template: "%s · Yura Books",
+  },
+  applicationName: "Yura Books",
+  description: "Yura Books — internal trading books & operations dashboard",
+  icons: {
+    icon: [{ url: "/yura-mark.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/yura-mark.svg" }],
+  },
 };
 
 export default function RootLayout({

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Access } from "@/lib/auth/types";
 import { canAccessPath, hasAnyBankPageAccess, hasAnyDispatchPageAccess, hasAnyUpdatePageAccess } from "@/lib/auth/pages";
+import { BrandMark } from "@/components/BrandMark";
 import { LockedLink } from "@/components/LockedLink";
 import { LogoutButton } from "@/components/LogoutButton";
 import {
@@ -712,6 +714,12 @@ export function AppNav({
           </span>
           <span className="app-nav-toggle-icon" aria-hidden="true" />
         </button>
+        <Link href="/" className="brand" aria-label="Yura Books home">
+          <BrandMark />
+          <span className="brand-wordmark">
+            Yura <span>Books</span>
+          </span>
+        </Link>
         <nav
           id="app-nav"
           className={`app-nav${mobileNavOpen ? " is-open" : ""}`}

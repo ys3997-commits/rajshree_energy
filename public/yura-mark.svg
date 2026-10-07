@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Yura Books">
+  <!-- Navy Y stem + center ledger bar -->
+  <path
+    fill="#1D2658"
+    fill-rule="evenodd"
+    d="M8 10c0-2.2 1.8-4 4-4h10c8.8 0 16 7.2 16 16v6h18v12H38v18c0 2.2-1.8 4-4 4H12c-2.2 0-4-1.8-4-4V10zm16 8c0-2.2 1.8-4 4-4h2c4.4 0 8 3.6 8 8v6H24V18z"
+  />
+  <!-- Warm B bars -->
+  <rect x="42" y="8" width="14" height="11" rx="2" fill="#E68F4A"/>
+  <rect x="42" y="45" width="14" height="11" rx="2" fill="#E68F4A"/>
+</svg>

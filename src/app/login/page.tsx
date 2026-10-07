@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { BrandMark } from "@/components/BrandMark";
 import { signInWithStaffPassword, signOutStaff } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 
@@ -53,16 +53,14 @@ export default function LoginPage() {
   return (
     <div className="login-shell">
       <form onSubmit={onSubmit} className="login-card">
-        <div className="mb-6">
-          <Image
-            src="/logo.png"
-            alt="Rajshree"
-            width={200}
-            height={56}
-            priority
-            className="brand-logo-img"
-            style={{ height: 48, maxWidth: 220 }}
-          />
+        <div className="login-brand">
+          <BrandMark size="md" />
+          <div>
+            <p className="brand">
+              Yura <span>Books</span>
+            </p>
+            <p className="login-brand-tag">Trading books &amp; operations</p>
+          </div>
         </div>
         <p className="lede">Sign in with your email and password.</p>
 
