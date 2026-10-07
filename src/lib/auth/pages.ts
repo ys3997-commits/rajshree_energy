@@ -80,7 +80,14 @@ export const BANK_SUB_PAGES = [
   {
     key: "payments-transactions",
     href: "/payments",
-    label: "Transactions",
+    label: "Transactions with others",
+    group: "Pages" as const,
+    bankSubPage: true,
+  },
+  {
+    key: "bank-transfer",
+    href: "/payments/transaction",
+    label: "Transaction Our Bank",
     group: "Pages" as const,
     bankSubPage: true,
   },
@@ -96,6 +103,13 @@ export const BANK_SUB_PAGES = [
 export const BANK_SUB_PAGE_KEYS = BANK_SUB_PAGES.map((page) => page.key);
 
 export const MASTER_SUB_PAGES = [
+  {
+    key: "bank-accounts",
+    href: "/bank-accounts",
+    label: "Bank",
+    group: "Pages" as const,
+    masterSubPage: true,
+  },
   {
     key: "vessels",
     href: "/vessels",
@@ -716,6 +730,12 @@ function canAccessUpdatePath(pageKeys: string[], pathname: string): boolean {
 
 function bankSubPageKeyForPath(pathname: string): string | null {
   const path = canonicalPath(pathname);
+  if (
+    path === "/payments/transaction" ||
+    path.startsWith("/payments/transaction/")
+  ) {
+    return "bank-transfer";
+  }
   if (path === "/payments/discount" || path.startsWith("/payments/discount/")) {
     return "payments-discount";
   }

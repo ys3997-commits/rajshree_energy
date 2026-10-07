@@ -18,6 +18,7 @@ export function paymentsHref(opts: {
   dateTo?: string;
   party?: string;
   type?: string;
+  account?: string;
 }): string {
   const section = opts.section ?? opts.tab ?? "transactions";
   const base =
@@ -27,10 +28,12 @@ export function paymentsHref(opts: {
   const dateTo = opts.dateTo?.trim() ?? "";
   const party = opts.party?.trim() ?? "";
   const type = parseFundFlowType(opts.type);
+  const account = opts.account?.trim() ?? "";
   if (dateFrom) q.set("dateFrom", dateFrom);
   if (dateTo) q.set("dateTo", dateTo);
   if (party) q.set("party", party);
   if (type) q.set("type", type);
+  if (account) q.set("account", account);
   if (opts.page && opts.page > 1) q.set("page", String(opts.page));
   const s = q.toString();
   return s ? `${base}?${s}` : base;

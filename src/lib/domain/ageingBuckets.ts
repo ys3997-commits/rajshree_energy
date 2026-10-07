@@ -16,6 +16,20 @@ export const AGEING_BUCKETS = [
 
 export type AgeingBucketKey = (typeof AGEING_BUCKETS)[number]["key"];
 
+/**
+ * True when every day in the bucket is outside the customer's credit period.
+ * A supply stays current through its age in days, matching overdue math:
+ * age greater than credit days is overdue. Null credit days means nothing is
+ * overdue. A bucket that straddles the credit day stays uncoloured.
+ */
+export function bucketIsPastCredit(
+  bucket: { minDays: number },
+  creditDays: number | null,
+): boolean {
+  if (creditDays == null) return false;
+  return bucket.minDays > creditDays;
+}
+
 export type AgeingReportRow = {
   id: string;
   name: string;

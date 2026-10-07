@@ -213,11 +213,9 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
     );
   }
 
-  rows.sort((a, b) => {
-    const byDue = toDecimal(b.totalDue).comparedTo(toDecimal(a.totalDue));
-    if (byDue !== 0) return byDue;
-    return a.name.localeCompare(b.name);
-  });
+  rows.sort((a, b) =>
+    a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+  );
 
   return rows;
 }

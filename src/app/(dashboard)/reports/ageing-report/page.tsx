@@ -16,6 +16,7 @@ export default async function AgeingReportPage() {
   return (
     <AgeingReportClient
       rows={filteredRows}
+      allowedSaleExecutives={execScope}
       canMessageOwner={access.kind === "owner"}
     />
   );

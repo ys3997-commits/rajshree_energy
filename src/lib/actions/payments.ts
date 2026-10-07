@@ -24,6 +24,7 @@ export type PaymentInput = {
   customerId?: string | null;
   transporterId?: string | null;
   investmentCompanyId?: string | null;
+  bankAccountId?: string | null;
   direction: "RECEIVED" | "SENT" | string;
   amount: string | number;
 };
@@ -34,6 +35,9 @@ export type PaymentRow = {
   customerId: string | null;
   transporterId: string | null;
   investmentCompanyId: string | null;
+  bankAccountId: string | null;
+  accountName: string | null;
+  bankName: string | null;
   customerName: string;
   direction: "RECEIVED" | "SENT";
   amount: string;
@@ -111,6 +115,7 @@ function toPaymentRow(row: {
   customer: { name: string } | null;
   transporter: { name: string } | null;
   investmentCompany: { name: string } | null;
+  bankAccount: { id: string; accountName: string; bankName: string } | null;
 }, access: Exclude<Access, { kind: "none" }>): PaymentRow {
   const canModify = canModifyPayment(access, row);
   return {
@@ -119,6 +124,9 @@ function toPaymentRow(row: {
     customerId: row.customerId,
     transporterId: row.transporterId,
     investmentCompanyId: row.investmentCompanyId,
+    bankAccountId: row.bankAccount?.id ?? null,
+    accountName: row.bankAccount?.accountName ?? null,
+    bankName: row.bankAccount?.bankName ?? null,
     customerName:
       row.customer?.name ??
       row.transporter?.name ??
@@ -137,9 +145,12 @@ function validatePaymentInput(input: PaymentInput) {
   if (!amount.isFinite() || amount.lte(0)) {
     throw new Error("Amount must be greater than zero");
   }
+  const bankAccountId = input.bankAccountId?.trim() ?? "";
+  if (!bankAccountId) throw new Error("Select an account");
   return {
     date: parseDate(input.date),
     party,
+    bankAccountId,
     direction: parseDirection(String(input.direction)),
     amount,
   };
@@ -149,6 +160,7 @@ const paymentInclude = {
   customer: { select: { id: true, name: true } },
   transporter: { select: { id: true, name: true } },
   investmentCompany: { select: { id: true, name: true } },
+  bankAccount: { select: { id: true, accountName: true, bankName: true } },
 } as const;
 
 const paymentOrderBy = [
@@ -156,30 +168,17 @@ const paymentOrderBy = [
   { createdAt: "desc" as const },
 ];
 
-function partyCreateData(party: PaymentParty) {
-  if (party.kind === "customer") {
-    return { customer: { connect: { id: party.id } } };
-  }
-  if (party.kind === "transporter") {
-    return { transporter: { connect: { id: party.id } } };
-  }
-  return { investmentCompany: { connect: { id: party.id } } };
-}
+/** Remote pooler round-trips routinely exceed Prisma's 5s interactive default. */
+const paymentTransactionOptions = {
+  maxWait: 10_000,
+  timeout: 20_000,
+} as const;
 
-function partyUpdateData(party: PaymentParty) {
+function partyForeignKeys(party: PaymentParty) {
   return {
-    customer:
-      party.kind === "customer"
-        ? { connect: { id: party.id } }
-        : { disconnect: true },
-    transporter:
-      party.kind === "transporter"
-        ? { connect: { id: party.id } }
-        : { disconnect: true },
-    investmentCompany:
-      party.kind === "investment"
-        ? { connect: { id: party.id } }
-        : { disconnect: true },
+    customerId: party.kind === "customer" ? party.id : null,
+    transporterId: party.kind === "transporter" ? party.id : null,
+    investmentCompanyId: party.kind === "investment" ? party.id : null,
   };
 }
 
@@ -207,6 +206,14 @@ async function assertPartyExists(party: PaymentParty) {
   if (!company) throw new Error("Investment company not found");
 }
 
+async function assertBankAccountExists(id: string) {
+  const account = await prisma.bankAccount.findUnique({
+    where: { id },
+    select: { id: true },
+  });
+  if (!account) throw new Error("Bank account not found");
+}
+
 function revalidatePaymentPaths(party?: PaymentParty) {
   revalidatePath("/payments");
   revalidatePath("/customers");
@@ -226,6 +233,7 @@ function paymentWhere(options?: {
   dateTo?: string;
   party?: string;
   type?: string;
+  account?: string;
 }): Prisma.PaymentWhereInput {
   const and: Prisma.PaymentWhereInput[] = [];
   const date = utcDayRange(options?.dateFrom, options?.dateTo);
@@ -246,6 +254,9 @@ function paymentWhere(options?: {
   } else if (flowType === "paid") {
     and.push({ direction: PaymentDirection.SENT });
   }
+
+  const accountId = options?.account?.trim() ?? "";
+  if (accountId) and.push({ bankAccountId: accountId });
 
   return and.length ? { AND: and } : {};
 }
@@ -285,6 +296,7 @@ export async function listPayments(options?: {
   dateTo?: string;
   party?: string;
   type?: string;
+  account?: string;
 }): Promise<PaymentListResult> {
   const access = await requirePage("payments-transactions");
   const where = paymentWhere(options);
@@ -340,23 +352,37 @@ export async function listPayments(options?: {
   };
 }
 
+async function loadPaymentRow(
+  id: string,
+  access: Exclude<Access, { kind: "none" }>,
+): Promise<PaymentRow> {
+  const row = await prisma.payment.findUnique({
+    where: { id },
+    include: paymentInclude,
+  });
+  if (!row) throw new Error("Payment not found");
+  return toPaymentRow(row, access);
+}
+
 export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
   const access = await requirePage("payments-transactions");
   const data = validatePaymentInput(input);
-  await assertPartyExists(data.party);
+  await Promise.all([
+    assertPartyExists(data.party),
+    assertBankAccountExists(data.bankAccountId),
+  ]);
 
-  const row = await prisma.$transaction(async (tx) => {
-    const created = await tx.payment.create({
+  const created = await prisma.$transaction(async (tx) => {
+    const row = await tx.payment.create({
       data: {
         date: data.date,
         direction: data.direction,
         amount: data.amount,
-        ...(access.kind === "staff"
-          ? { createdByStaff: { connect: { id: access.id } } }
-          : {}),
-        ...partyCreateData(data.party),
+        bankAccountId: data.bankAccountId,
+        ...(access.kind === "staff" ? { createdByStaffId: access.id } : {}),
+        ...partyForeignKeys(data.party),
       },
-      include: paymentInclude,
+      select: { id: true },
     });
 
     if (data.party.kind === "customer") {
@@ -367,11 +393,11 @@ export async function createPayment(input: PaymentInput): Promise<PaymentRow> {
       );
     }
 
-    return created;
-  });
+    return row;
+  }, paymentTransactionOptions);
 
   revalidatePaymentPaths(data.party);
-  return toPaymentRow(row, access);
+  return loadPaymentRow(created.id, access);
 }
 
 export async function updatePayment(
@@ -401,9 +427,12 @@ export async function updatePayment(
     );
   }
 
-  await assertPartyExists(data.party);
+  await Promise.all([
+    assertPartyExists(data.party),
+    assertBankAccountExists(data.bankAccountId),
+  ]);
 
-  const row = await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     if (existing.customerId) {
       await adjustCustomerDue(
         tx,
@@ -412,15 +441,16 @@ export async function updatePayment(
       );
     }
 
-    const updated = await tx.payment.update({
+    await tx.payment.update({
       where: { id },
       data: {
         date: data.date,
         direction: data.direction,
         amount: data.amount,
-        ...partyUpdateData(data.party),
+        bankAccountId: data.bankAccountId,
+        ...partyForeignKeys(data.party),
       },
-      include: paymentInclude,
+      select: { id: true },
     });
 
     if (data.party.kind === "customer") {
@@ -430,12 +460,10 @@ export async function updatePayment(
         paymentDueDelta(data.direction, data.amount),
       );
     }
-
-    return updated;
-  });
+  }, paymentTransactionOptions);
 
   revalidatePaymentPaths(data.party);
-  return toPaymentRow(row, access);
+  return loadPaymentRow(id, access);
 }
 
 export async function deletePayment(id: string) {
@@ -469,7 +497,7 @@ export async function deletePayment(id: string) {
       );
     }
     await tx.payment.delete({ where: { id } });
-  });
+  }, paymentTransactionOptions);
 
   revalidatePaymentPaths(
     existing.transporterId

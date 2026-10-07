@@ -1304,6 +1304,34 @@ button.th-sort:hover {
   margin: 0 0 1.25rem;
 }
 
+.extra-information {
+  margin: 0 0 1.25rem;
+}
+
+.extra-information-title {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.extra-information-bank {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}
+
+.extra-information .detail-stat {
+  text-align: left;
+}
+
+.payment-account-cell {
+  min-width: 11rem;
+}
+
 .payment-entry-row .field-input {
   width: 100%;
   min-width: 0;
@@ -5399,6 +5427,16 @@ table.data.ageing-table thead tr.ageing-days-row th.ageing-total-col {
 .ageing-table tbody tr:hover td.ageing-customer-col,
 .ageing-table tbody tr:hover td.ageing-total-col {
   background: #f7faf9;
+}
+
+.ageing-table tbody td.ageing-past-credit {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.ageing-table tbody tr:hover td.ageing-past-credit {
+  background: #f8e4e4;
+  color: var(--danger);
 }
 
 .ageing-table tfoot td {

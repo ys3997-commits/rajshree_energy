@@ -1,3 +1,4 @@
+import { listBankAccountBalances } from "@/lib/actions/bankAccounts";
 import { listPayments } from "@/lib/actions/payments";
 import { redirect } from "next/navigation";
 import { PaymentsClient } from "./PaymentsClient";
@@ -11,6 +12,7 @@ type SearchParams = Promise<{
   dateTo?: string;
   party?: string;
   type?: string;
+  account?: string;
 }>;
 
 export default async function PaymentsPage({
@@ -42,15 +44,18 @@ export default async function PaymentsPage({
   const dateTo = sp.dateTo?.trim() || "";
   const party = sp.party?.trim() || "";
   const type = parseFundFlowType(sp.type);
+  const account = sp.account?.trim() || "";
   const listFilter = {
     dateFrom: dateFrom || undefined,
     dateTo: dateTo || undefined,
     party: party || undefined,
     type: type || undefined,
+    account: account || undefined,
   };
 
-  const [parties, payments, exportPayments] = await Promise.all([
+  const [parties, accounts, payments, exportPayments] = await Promise.all([
     loadFundFlowParties(),
+    listBankAccountBalances(),
     listPayments({ page, ...listFilter }),
     listPayments({ all: true, ...listFilter }),
   ]);
@@ -60,10 +65,12 @@ export default async function PaymentsPage({
       initial={payments}
       exportRows={exportPayments.rows}
       parties={parties}
+      accounts={accounts}
       dateFrom={dateFrom}
       dateTo={dateTo}
       party={party}
       type={type}
+      account={account}
     />
   );
 }

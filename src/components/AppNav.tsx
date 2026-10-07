@@ -27,7 +27,8 @@ const ordersLinks: NavLeaf[] = [
 ];
 
 const bankLinks: NavLeaf[] = [
-  { href: "/payments", label: "Transactions" },
+  { href: "/payments", label: "Transactions with others" },
+  { href: "/payments/transaction", label: "Transaction Our Bank" },
   { href: "/payments/discount", label: "Discount" },
 ];
 
@@ -55,6 +56,7 @@ const links = [
 ];
 
 const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [
+  { href: "/bank-accounts", label: "Bank" },
   { href: "/customers", label: "Customers" },
   { href: "/documents", label: "Documents" },
   {

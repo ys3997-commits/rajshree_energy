@@ -113,6 +113,7 @@ model Staff {
   createdDispatches    Dispatch[]     @relation("DispatchCreatedBy")
   createdVegPayments   VegPayment[]   @relation("VegPaymentCreatedBy")
   createdVegDiscounts  VegDiscount[]  @relation("VegDiscountCreatedBy")
+  createdBankTransfers BankTransfer[] @relation("BankTransferCreatedBy")
 }
 
 model Transporter {
@@ -513,6 +514,7 @@ model Payment {
   customerId           String?
   transporterId        String?
   investmentCompanyId  String?
+  bankAccountId        String?
   createdByStaffId     String?
   direction            PaymentDirection
   amount               Decimal          @db.Decimal(18, 2)
@@ -522,11 +524,13 @@ model Payment {
   customer           Customer?           @relation(fields: [customerId], references: [id])
   transporter        Transporter?        @relation(fields: [transporterId], references: [id])
   investmentCompany  InvestmentCompany?  @relation(fields: [investmentCompanyId], references: [id])
+  bankAccount        BankAccount?        @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
   createdByStaff     Staff?              @relation("PaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
   @@index([investmentCompanyId])
+  @@index([bankAccountId])
   @@index([createdByStaffId])
   @@index([date])
 }
@@ -708,4 +712,42 @@ model InvestmentPeriodValue {
   @@unique([companyId, periodId])
   @@index([companyId])
   @@index([periodId])
+}
+
+/// Bank account master (Masters → Bank).
+model BankAccount {
+  id             String   @id @default(cuid())
+  accountName    String
+  bankName       String
+  openingBalance Decimal  @default(0) @db.Decimal(18, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  payments            Payment[]
+  transfersPaid       BankTransfer[] @relation("TransferPaid")
+  transfersReceived   BankTransfer[] @relation("TransferReceived")
+
+  @@unique([accountName, bankName])
+  @@index([bankName])
+}
+
+/// Money moved from one bank account to another (Bank → Transaction).
+model BankTransfer {
+  id                String   @id @default(cuid())
+  date              DateTime
+  paidAccountId     String
+  receivedAccountId String
+  amount            Decimal  @db.Decimal(18, 2)
+  createdByStaffId  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  paidAccount     BankAccount @relation("TransferPaid", fields: [paidAccountId], references: [id], onDelete: Restrict)
+  receivedAccount BankAccount @relation("TransferReceived", fields: [receivedAccountId], references: [id], onDelete: Restrict)
+  createdByStaff  Staff?      @relation("BankTransferCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([paidAccountId])
+  @@index([receivedAccountId])
+  @@index([createdByStaffId])
 }

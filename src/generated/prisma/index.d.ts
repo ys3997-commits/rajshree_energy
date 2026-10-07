@@ -171,6 +171,16 @@ export type InvestmentPeriod = $Result.DefaultSelection<Prisma.$InvestmentPeriod
  * Profit / loss (and optional interest) for one company in one period column.
  */
 export type InvestmentPeriodValue = $Result.DefaultSelection<Prisma.$InvestmentPeriodValuePayload>
+/**
+ * Model BankAccount
+ * Bank account master (Masters → Bank).
+ */
+export type BankAccount = $Result.DefaultSelection<Prisma.$BankAccountPayload>
+/**
+ * Model BankTransfer
+ * Money moved from one bank account to another (Bank → Transaction).
+ */
+export type BankTransfer = $Result.DefaultSelection<Prisma.$BankTransferPayload>
 
 /**
  * Enums
@@ -768,6 +778,26 @@ export class PrismaClient<
     * ```
     */
   get investmentPeriodValue(): Prisma.InvestmentPeriodValueDelegate<ExtArgs>;
+
+  /**
+   * `prisma.bankAccount`: Exposes CRUD operations for the **BankAccount** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BankAccounts
+    * const bankAccounts = await prisma.bankAccount.findMany()
+    * ```
+    */
+  get bankAccount(): Prisma.BankAccountDelegate<ExtArgs>;
+
+  /**
+   * `prisma.bankTransfer`: Exposes CRUD operations for the **BankTransfer** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BankTransfers
+    * const bankTransfers = await prisma.bankTransfer.findMany()
+    * ```
+    */
+  get bankTransfer(): Prisma.BankTransferDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1239,7 +1269,9 @@ export namespace Prisma {
     InvestmentCompany: 'InvestmentCompany',
     InvestmentOpenDue: 'InvestmentOpenDue',
     InvestmentPeriod: 'InvestmentPeriod',
-    InvestmentPeriodValue: 'InvestmentPeriodValue'
+    InvestmentPeriodValue: 'InvestmentPeriodValue',
+    BankAccount: 'BankAccount',
+    BankTransfer: 'BankTransfer'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1255,7 +1287,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccount" | "bankTransfer"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -3429,6 +3461,146 @@ export namespace Prisma {
           }
         }
       }
+      BankAccount: {
+        payload: Prisma.$BankAccountPayload<ExtArgs>
+        fields: Prisma.BankAccountFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BankAccountFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BankAccountFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>
+          }
+          findFirst: {
+            args: Prisma.BankAccountFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BankAccountFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>
+          }
+          findMany: {
+            args: Prisma.BankAccountFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>[]
+          }
+          create: {
+            args: Prisma.BankAccountCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>
+          }
+          createMany: {
+            args: Prisma.BankAccountCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BankAccountCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>[]
+          }
+          delete: {
+            args: Prisma.BankAccountDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>
+          }
+          update: {
+            args: Prisma.BankAccountUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>
+          }
+          deleteMany: {
+            args: Prisma.BankAccountDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BankAccountUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BankAccountUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankAccountPayload>
+          }
+          aggregate: {
+            args: Prisma.BankAccountAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBankAccount>
+          }
+          groupBy: {
+            args: Prisma.BankAccountGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BankAccountGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BankAccountCountArgs<ExtArgs>
+            result: $Utils.Optional<BankAccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      BankTransfer: {
+        payload: Prisma.$BankTransferPayload<ExtArgs>
+        fields: Prisma.BankTransferFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BankTransferFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BankTransferFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>
+          }
+          findFirst: {
+            args: Prisma.BankTransferFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BankTransferFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>
+          }
+          findMany: {
+            args: Prisma.BankTransferFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>[]
+          }
+          create: {
+            args: Prisma.BankTransferCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>
+          }
+          createMany: {
+            args: Prisma.BankTransferCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BankTransferCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>[]
+          }
+          delete: {
+            args: Prisma.BankTransferDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>
+          }
+          update: {
+            args: Prisma.BankTransferUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>
+          }
+          deleteMany: {
+            args: Prisma.BankTransferDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BankTransferUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.BankTransferUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BankTransferPayload>
+          }
+          aggregate: {
+            args: Prisma.BankTransferAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBankTransfer>
+          }
+          groupBy: {
+            args: Prisma.BankTransferGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BankTransferGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BankTransferCountArgs<ExtArgs>
+            result: $Utils.Optional<BankTransferCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3598,6 +3770,7 @@ export namespace Prisma {
     createdDispatches: number
     createdVegPayments: number
     createdVegDiscounts: number
+    createdBankTransfers: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3609,6 +3782,7 @@ export namespace Prisma {
     createdDispatches?: boolean | StaffCountOutputTypeCountCreatedDispatchesArgs
     createdVegPayments?: boolean | StaffCountOutputTypeCountCreatedVegPaymentsArgs
     createdVegDiscounts?: boolean | StaffCountOutputTypeCountCreatedVegDiscountsArgs
+    createdBankTransfers?: boolean | StaffCountOutputTypeCountCreatedBankTransfersArgs
   }
 
   // Custom InputTypes
@@ -3676,6 +3850,13 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountCreatedVegDiscountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: VegDiscountWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedBankTransfersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BankTransferWhereInput
   }
 
 
@@ -4280,6 +4461,55 @@ export namespace Prisma {
 
 
   /**
+   * Count Type BankAccountCountOutputType
+   */
+
+  export type BankAccountCountOutputType = {
+    payments: number
+    transfersPaid: number
+    transfersReceived: number
+  }
+
+  export type BankAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payments?: boolean | BankAccountCountOutputTypeCountPaymentsArgs
+    transfersPaid?: boolean | BankAccountCountOutputTypeCountTransfersPaidArgs
+    transfersReceived?: boolean | BankAccountCountOutputTypeCountTransfersReceivedArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BankAccountCountOutputType without action
+   */
+  export type BankAccountCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccountCountOutputType
+     */
+    select?: BankAccountCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BankAccountCountOutputType without action
+   */
+  export type BankAccountCountOutputTypeCountPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentWhereInput
+  }
+
+  /**
+   * BankAccountCountOutputType without action
+   */
+  export type BankAccountCountOutputTypeCountTransfersPaidArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BankTransferWhereInput
+  }
+
+  /**
+   * BankAccountCountOutputType without action
+   */
+  export type BankAccountCountOutputTypeCountTransfersReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BankTransferWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -4491,6 +4721,7 @@ export namespace Prisma {
     createdDispatches?: boolean | Staff$createdDispatchesArgs<ExtArgs>
     createdVegPayments?: boolean | Staff$createdVegPaymentsArgs<ExtArgs>
     createdVegDiscounts?: boolean | Staff$createdVegDiscountsArgs<ExtArgs>
+    createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -4535,6 +4766,7 @@ export namespace Prisma {
     createdDispatches?: boolean | Staff$createdDispatchesArgs<ExtArgs>
     createdVegPayments?: boolean | Staff$createdVegPaymentsArgs<ExtArgs>
     createdVegDiscounts?: boolean | Staff$createdVegDiscountsArgs<ExtArgs>
+    createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StaffIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4550,6 +4782,7 @@ export namespace Prisma {
       createdDispatches: Prisma.$DispatchPayload<ExtArgs>[]
       createdVegPayments: Prisma.$VegPaymentPayload<ExtArgs>[]
       createdVegDiscounts: Prisma.$VegDiscountPayload<ExtArgs>[]
+      createdBankTransfers: Prisma.$BankTransferPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4961,6 +5194,7 @@ export namespace Prisma {
     createdDispatches<T extends Staff$createdDispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdDispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
     createdVegPayments<T extends Staff$createdVegPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdVegPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegPaymentPayload<ExtArgs>, T, "findMany"> | Null>
     createdVegDiscounts<T extends Staff$createdVegDiscountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdVegDiscountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findMany"> | Null>
+    createdBankTransfers<T extends Staff$createdBankTransfersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBankTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5474,6 +5708,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: VegDiscountScalarFieldEnum | VegDiscountScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdBankTransfers
+   */
+  export type Staff$createdBankTransfersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    where?: BankTransferWhereInput
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    cursor?: BankTransferWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BankTransferScalarFieldEnum | BankTransferScalarFieldEnum[]
   }
 
   /**
@@ -26143,6 +26397,7 @@ export namespace Prisma {
     customerId: string | null
     transporterId: string | null
     investmentCompanyId: string | null
+    bankAccountId: string | null
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
@@ -26156,6 +26411,7 @@ export namespace Prisma {
     customerId: string | null
     transporterId: string | null
     investmentCompanyId: string | null
+    bankAccountId: string | null
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
@@ -26169,6 +26425,7 @@ export namespace Prisma {
     customerId: number
     transporterId: number
     investmentCompanyId: number
+    bankAccountId: number
     createdByStaffId: number
     direction: number
     amount: number
@@ -26192,6 +26449,7 @@ export namespace Prisma {
     customerId?: true
     transporterId?: true
     investmentCompanyId?: true
+    bankAccountId?: true
     createdByStaffId?: true
     direction?: true
     amount?: true
@@ -26205,6 +26463,7 @@ export namespace Prisma {
     customerId?: true
     transporterId?: true
     investmentCompanyId?: true
+    bankAccountId?: true
     createdByStaffId?: true
     direction?: true
     amount?: true
@@ -26218,6 +26477,7 @@ export namespace Prisma {
     customerId?: true
     transporterId?: true
     investmentCompanyId?: true
+    bankAccountId?: true
     createdByStaffId?: true
     direction?: true
     amount?: true
@@ -26318,6 +26578,7 @@ export namespace Prisma {
     customerId: string | null
     transporterId: string | null
     investmentCompanyId: string | null
+    bankAccountId: string | null
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal
@@ -26350,6 +26611,7 @@ export namespace Prisma {
     customerId?: boolean
     transporterId?: boolean
     investmentCompanyId?: boolean
+    bankAccountId?: boolean
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
@@ -26358,6 +26620,7 @@ export namespace Prisma {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
+    bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -26367,6 +26630,7 @@ export namespace Prisma {
     customerId?: boolean
     transporterId?: boolean
     investmentCompanyId?: boolean
+    bankAccountId?: boolean
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
@@ -26375,6 +26639,7 @@ export namespace Prisma {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
+    bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
@@ -26384,6 +26649,7 @@ export namespace Prisma {
     customerId?: boolean
     transporterId?: boolean
     investmentCompanyId?: boolean
+    bankAccountId?: boolean
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
@@ -26395,12 +26661,14 @@ export namespace Prisma {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
+    bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Payment$customerArgs<ExtArgs>
     transporter?: boolean | Payment$transporterArgs<ExtArgs>
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
+    bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
   }
 
@@ -26410,6 +26678,7 @@ export namespace Prisma {
       customer: Prisma.$CustomerPayload<ExtArgs> | null
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
       investmentCompany: Prisma.$InvestmentCompanyPayload<ExtArgs> | null
+      bankAccount: Prisma.$BankAccountPayload<ExtArgs> | null
       createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -26418,6 +26687,7 @@ export namespace Prisma {
       customerId: string | null
       transporterId: string | null
       investmentCompanyId: string | null
+      bankAccountId: string | null
       createdByStaffId: string | null
       direction: $Enums.PaymentDirection
       amount: Prisma.Decimal
@@ -26790,6 +27060,7 @@ export namespace Prisma {
     customer<T extends Payment$customerArgs<ExtArgs> = {}>(args?: Subset<T, Payment$customerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     transporter<T extends Payment$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Payment$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     investmentCompany<T extends Payment$investmentCompanyArgs<ExtArgs> = {}>(args?: Subset<T, Payment$investmentCompanyArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    bankAccount<T extends Payment$bankAccountArgs<ExtArgs> = {}>(args?: Subset<T, Payment$bankAccountArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     createdByStaff<T extends Payment$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Payment$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -26825,6 +27096,7 @@ export namespace Prisma {
     readonly customerId: FieldRef<"Payment", 'String'>
     readonly transporterId: FieldRef<"Payment", 'String'>
     readonly investmentCompanyId: FieldRef<"Payment", 'String'>
+    readonly bankAccountId: FieldRef<"Payment", 'String'>
     readonly createdByStaffId: FieldRef<"Payment", 'String'>
     readonly direction: FieldRef<"Payment", 'PaymentDirection'>
     readonly amount: FieldRef<"Payment", 'Decimal'>
@@ -27190,6 +27462,21 @@ export namespace Prisma {
      */
     include?: InvestmentCompanyInclude<ExtArgs> | null
     where?: InvestmentCompanyWhereInput
+  }
+
+  /**
+   * Payment.bankAccount
+   */
+  export type Payment$bankAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    where?: BankAccountWhereInput
   }
 
   /**
@@ -36586,6 +36873,2078 @@ export namespace Prisma {
 
 
   /**
+   * Model BankAccount
+   */
+
+  export type AggregateBankAccount = {
+    _count: BankAccountCountAggregateOutputType | null
+    _avg: BankAccountAvgAggregateOutputType | null
+    _sum: BankAccountSumAggregateOutputType | null
+    _min: BankAccountMinAggregateOutputType | null
+    _max: BankAccountMaxAggregateOutputType | null
+  }
+
+  export type BankAccountAvgAggregateOutputType = {
+    openingBalance: Decimal | null
+  }
+
+  export type BankAccountSumAggregateOutputType = {
+    openingBalance: Decimal | null
+  }
+
+  export type BankAccountMinAggregateOutputType = {
+    id: string | null
+    accountName: string | null
+    bankName: string | null
+    openingBalance: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BankAccountMaxAggregateOutputType = {
+    id: string | null
+    accountName: string | null
+    bankName: string | null
+    openingBalance: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BankAccountCountAggregateOutputType = {
+    id: number
+    accountName: number
+    bankName: number
+    openingBalance: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BankAccountAvgAggregateInputType = {
+    openingBalance?: true
+  }
+
+  export type BankAccountSumAggregateInputType = {
+    openingBalance?: true
+  }
+
+  export type BankAccountMinAggregateInputType = {
+    id?: true
+    accountName?: true
+    bankName?: true
+    openingBalance?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BankAccountMaxAggregateInputType = {
+    id?: true
+    accountName?: true
+    bankName?: true
+    openingBalance?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BankAccountCountAggregateInputType = {
+    id?: true
+    accountName?: true
+    bankName?: true
+    openingBalance?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BankAccountAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BankAccount to aggregate.
+     */
+    where?: BankAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankAccounts to fetch.
+     */
+    orderBy?: BankAccountOrderByWithRelationInput | BankAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BankAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BankAccounts
+    **/
+    _count?: true | BankAccountCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BankAccountAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BankAccountSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BankAccountMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BankAccountMaxAggregateInputType
+  }
+
+  export type GetBankAccountAggregateType<T extends BankAccountAggregateArgs> = {
+        [P in keyof T & keyof AggregateBankAccount]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBankAccount[P]>
+      : GetScalarType<T[P], AggregateBankAccount[P]>
+  }
+
+
+
+
+  export type BankAccountGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BankAccountWhereInput
+    orderBy?: BankAccountOrderByWithAggregationInput | BankAccountOrderByWithAggregationInput[]
+    by: BankAccountScalarFieldEnum[] | BankAccountScalarFieldEnum
+    having?: BankAccountScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BankAccountCountAggregateInputType | true
+    _avg?: BankAccountAvgAggregateInputType
+    _sum?: BankAccountSumAggregateInputType
+    _min?: BankAccountMinAggregateInputType
+    _max?: BankAccountMaxAggregateInputType
+  }
+
+  export type BankAccountGroupByOutputType = {
+    id: string
+    accountName: string
+    bankName: string
+    openingBalance: Decimal
+    createdAt: Date
+    updatedAt: Date
+    _count: BankAccountCountAggregateOutputType | null
+    _avg: BankAccountAvgAggregateOutputType | null
+    _sum: BankAccountSumAggregateOutputType | null
+    _min: BankAccountMinAggregateOutputType | null
+    _max: BankAccountMaxAggregateOutputType | null
+  }
+
+  type GetBankAccountGroupByPayload<T extends BankAccountGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BankAccountGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BankAccountGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BankAccountGroupByOutputType[P]>
+            : GetScalarType<T[P], BankAccountGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BankAccountSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountName?: boolean
+    bankName?: boolean
+    openingBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    payments?: boolean | BankAccount$paymentsArgs<ExtArgs>
+    transfersPaid?: boolean | BankAccount$transfersPaidArgs<ExtArgs>
+    transfersReceived?: boolean | BankAccount$transfersReceivedArgs<ExtArgs>
+    _count?: boolean | BankAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["bankAccount"]>
+
+  export type BankAccountSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    accountName?: boolean
+    bankName?: boolean
+    openingBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["bankAccount"]>
+
+  export type BankAccountSelectScalar = {
+    id?: boolean
+    accountName?: boolean
+    bankName?: boolean
+    openingBalance?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BankAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    payments?: boolean | BankAccount$paymentsArgs<ExtArgs>
+    transfersPaid?: boolean | BankAccount$transfersPaidArgs<ExtArgs>
+    transfersReceived?: boolean | BankAccount$transfersReceivedArgs<ExtArgs>
+    _count?: boolean | BankAccountCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type BankAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $BankAccountPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BankAccount"
+    objects: {
+      payments: Prisma.$PaymentPayload<ExtArgs>[]
+      transfersPaid: Prisma.$BankTransferPayload<ExtArgs>[]
+      transfersReceived: Prisma.$BankTransferPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      accountName: string
+      bankName: string
+      openingBalance: Prisma.Decimal
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["bankAccount"]>
+    composites: {}
+  }
+
+  type BankAccountGetPayload<S extends boolean | null | undefined | BankAccountDefaultArgs> = $Result.GetResult<Prisma.$BankAccountPayload, S>
+
+  type BankAccountCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BankAccountFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BankAccountCountAggregateInputType | true
+    }
+
+  export interface BankAccountDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BankAccount'], meta: { name: 'BankAccount' } }
+    /**
+     * Find zero or one BankAccount that matches the filter.
+     * @param {BankAccountFindUniqueArgs} args - Arguments to find a BankAccount
+     * @example
+     * // Get one BankAccount
+     * const bankAccount = await prisma.bankAccount.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BankAccountFindUniqueArgs>(args: SelectSubset<T, BankAccountFindUniqueArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BankAccount that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BankAccountFindUniqueOrThrowArgs} args - Arguments to find a BankAccount
+     * @example
+     * // Get one BankAccount
+     * const bankAccount = await prisma.bankAccount.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BankAccountFindUniqueOrThrowArgs>(args: SelectSubset<T, BankAccountFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BankAccount that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountFindFirstArgs} args - Arguments to find a BankAccount
+     * @example
+     * // Get one BankAccount
+     * const bankAccount = await prisma.bankAccount.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BankAccountFindFirstArgs>(args?: SelectSubset<T, BankAccountFindFirstArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BankAccount that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountFindFirstOrThrowArgs} args - Arguments to find a BankAccount
+     * @example
+     * // Get one BankAccount
+     * const bankAccount = await prisma.bankAccount.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BankAccountFindFirstOrThrowArgs>(args?: SelectSubset<T, BankAccountFindFirstOrThrowArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BankAccounts that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BankAccounts
+     * const bankAccounts = await prisma.bankAccount.findMany()
+     * 
+     * // Get first 10 BankAccounts
+     * const bankAccounts = await prisma.bankAccount.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bankAccountWithIdOnly = await prisma.bankAccount.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BankAccountFindManyArgs>(args?: SelectSubset<T, BankAccountFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BankAccount.
+     * @param {BankAccountCreateArgs} args - Arguments to create a BankAccount.
+     * @example
+     * // Create one BankAccount
+     * const BankAccount = await prisma.bankAccount.create({
+     *   data: {
+     *     // ... data to create a BankAccount
+     *   }
+     * })
+     * 
+     */
+    create<T extends BankAccountCreateArgs>(args: SelectSubset<T, BankAccountCreateArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BankAccounts.
+     * @param {BankAccountCreateManyArgs} args - Arguments to create many BankAccounts.
+     * @example
+     * // Create many BankAccounts
+     * const bankAccount = await prisma.bankAccount.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BankAccountCreateManyArgs>(args?: SelectSubset<T, BankAccountCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BankAccounts and returns the data saved in the database.
+     * @param {BankAccountCreateManyAndReturnArgs} args - Arguments to create many BankAccounts.
+     * @example
+     * // Create many BankAccounts
+     * const bankAccount = await prisma.bankAccount.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BankAccounts and only return the `id`
+     * const bankAccountWithIdOnly = await prisma.bankAccount.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BankAccountCreateManyAndReturnArgs>(args?: SelectSubset<T, BankAccountCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BankAccount.
+     * @param {BankAccountDeleteArgs} args - Arguments to delete one BankAccount.
+     * @example
+     * // Delete one BankAccount
+     * const BankAccount = await prisma.bankAccount.delete({
+     *   where: {
+     *     // ... filter to delete one BankAccount
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BankAccountDeleteArgs>(args: SelectSubset<T, BankAccountDeleteArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BankAccount.
+     * @param {BankAccountUpdateArgs} args - Arguments to update one BankAccount.
+     * @example
+     * // Update one BankAccount
+     * const bankAccount = await prisma.bankAccount.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BankAccountUpdateArgs>(args: SelectSubset<T, BankAccountUpdateArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BankAccounts.
+     * @param {BankAccountDeleteManyArgs} args - Arguments to filter BankAccounts to delete.
+     * @example
+     * // Delete a few BankAccounts
+     * const { count } = await prisma.bankAccount.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BankAccountDeleteManyArgs>(args?: SelectSubset<T, BankAccountDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BankAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BankAccounts
+     * const bankAccount = await prisma.bankAccount.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BankAccountUpdateManyArgs>(args: SelectSubset<T, BankAccountUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BankAccount.
+     * @param {BankAccountUpsertArgs} args - Arguments to update or create a BankAccount.
+     * @example
+     * // Update or create a BankAccount
+     * const bankAccount = await prisma.bankAccount.upsert({
+     *   create: {
+     *     // ... data to create a BankAccount
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BankAccount we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BankAccountUpsertArgs>(args: SelectSubset<T, BankAccountUpsertArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BankAccounts.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountCountArgs} args - Arguments to filter BankAccounts to count.
+     * @example
+     * // Count the number of BankAccounts
+     * const count = await prisma.bankAccount.count({
+     *   where: {
+     *     // ... the filter for the BankAccounts we want to count
+     *   }
+     * })
+    **/
+    count<T extends BankAccountCountArgs>(
+      args?: Subset<T, BankAccountCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BankAccountCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BankAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BankAccountAggregateArgs>(args: Subset<T, BankAccountAggregateArgs>): Prisma.PrismaPromise<GetBankAccountAggregateType<T>>
+
+    /**
+     * Group by BankAccount.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankAccountGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BankAccountGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BankAccountGroupByArgs['orderBy'] }
+        : { orderBy?: BankAccountGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BankAccountGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBankAccountGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BankAccount model
+   */
+  readonly fields: BankAccountFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BankAccount.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BankAccountClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    payments<T extends BankAccount$paymentsArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
+    transfersPaid<T extends BankAccount$transfersPaidArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$transfersPaidArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
+    transfersReceived<T extends BankAccount$transfersReceivedArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$transfersReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BankAccount model
+   */ 
+  interface BankAccountFieldRefs {
+    readonly id: FieldRef<"BankAccount", 'String'>
+    readonly accountName: FieldRef<"BankAccount", 'String'>
+    readonly bankName: FieldRef<"BankAccount", 'String'>
+    readonly openingBalance: FieldRef<"BankAccount", 'Decimal'>
+    readonly createdAt: FieldRef<"BankAccount", 'DateTime'>
+    readonly updatedAt: FieldRef<"BankAccount", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BankAccount findUnique
+   */
+  export type BankAccountFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which BankAccount to fetch.
+     */
+    where: BankAccountWhereUniqueInput
+  }
+
+  /**
+   * BankAccount findUniqueOrThrow
+   */
+  export type BankAccountFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which BankAccount to fetch.
+     */
+    where: BankAccountWhereUniqueInput
+  }
+
+  /**
+   * BankAccount findFirst
+   */
+  export type BankAccountFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which BankAccount to fetch.
+     */
+    where?: BankAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankAccounts to fetch.
+     */
+    orderBy?: BankAccountOrderByWithRelationInput | BankAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BankAccounts.
+     */
+    cursor?: BankAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BankAccounts.
+     */
+    distinct?: BankAccountScalarFieldEnum | BankAccountScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount findFirstOrThrow
+   */
+  export type BankAccountFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which BankAccount to fetch.
+     */
+    where?: BankAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankAccounts to fetch.
+     */
+    orderBy?: BankAccountOrderByWithRelationInput | BankAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BankAccounts.
+     */
+    cursor?: BankAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankAccounts.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BankAccounts.
+     */
+    distinct?: BankAccountScalarFieldEnum | BankAccountScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount findMany
+   */
+  export type BankAccountFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * Filter, which BankAccounts to fetch.
+     */
+    where?: BankAccountWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankAccounts to fetch.
+     */
+    orderBy?: BankAccountOrderByWithRelationInput | BankAccountOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BankAccounts.
+     */
+    cursor?: BankAccountWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankAccounts from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankAccounts.
+     */
+    skip?: number
+    distinct?: BankAccountScalarFieldEnum | BankAccountScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount create
+   */
+  export type BankAccountCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BankAccount.
+     */
+    data: XOR<BankAccountCreateInput, BankAccountUncheckedCreateInput>
+  }
+
+  /**
+   * BankAccount createMany
+   */
+  export type BankAccountCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BankAccounts.
+     */
+    data: BankAccountCreateManyInput | BankAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BankAccount createManyAndReturn
+   */
+  export type BankAccountCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BankAccounts.
+     */
+    data: BankAccountCreateManyInput | BankAccountCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BankAccount update
+   */
+  export type BankAccountUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BankAccount.
+     */
+    data: XOR<BankAccountUpdateInput, BankAccountUncheckedUpdateInput>
+    /**
+     * Choose, which BankAccount to update.
+     */
+    where: BankAccountWhereUniqueInput
+  }
+
+  /**
+   * BankAccount updateMany
+   */
+  export type BankAccountUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BankAccounts.
+     */
+    data: XOR<BankAccountUpdateManyMutationInput, BankAccountUncheckedUpdateManyInput>
+    /**
+     * Filter which BankAccounts to update
+     */
+    where?: BankAccountWhereInput
+  }
+
+  /**
+   * BankAccount upsert
+   */
+  export type BankAccountUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BankAccount to update in case it exists.
+     */
+    where: BankAccountWhereUniqueInput
+    /**
+     * In case the BankAccount found by the `where` argument doesn't exist, create a new BankAccount with this data.
+     */
+    create: XOR<BankAccountCreateInput, BankAccountUncheckedCreateInput>
+    /**
+     * In case the BankAccount was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BankAccountUpdateInput, BankAccountUncheckedUpdateInput>
+  }
+
+  /**
+   * BankAccount delete
+   */
+  export type BankAccountDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    /**
+     * Filter which BankAccount to delete.
+     */
+    where: BankAccountWhereUniqueInput
+  }
+
+  /**
+   * BankAccount deleteMany
+   */
+  export type BankAccountDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BankAccounts to delete
+     */
+    where?: BankAccountWhereInput
+  }
+
+  /**
+   * BankAccount.payments
+   */
+  export type BankAccount$paymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
+    cursor?: PaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount.transfersPaid
+   */
+  export type BankAccount$transfersPaidArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    where?: BankTransferWhereInput
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    cursor?: BankTransferWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BankTransferScalarFieldEnum | BankTransferScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount.transfersReceived
+   */
+  export type BankAccount$transfersReceivedArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    where?: BankTransferWhereInput
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    cursor?: BankTransferWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BankTransferScalarFieldEnum | BankTransferScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount without action
+   */
+  export type BankAccountDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model BankTransfer
+   */
+
+  export type AggregateBankTransfer = {
+    _count: BankTransferCountAggregateOutputType | null
+    _avg: BankTransferAvgAggregateOutputType | null
+    _sum: BankTransferSumAggregateOutputType | null
+    _min: BankTransferMinAggregateOutputType | null
+    _max: BankTransferMaxAggregateOutputType | null
+  }
+
+  export type BankTransferAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type BankTransferSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type BankTransferMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    paidAccountId: string | null
+    receivedAccountId: string | null
+    amount: Decimal | null
+    createdByStaffId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BankTransferMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    paidAccountId: string | null
+    receivedAccountId: string | null
+    amount: Decimal | null
+    createdByStaffId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BankTransferCountAggregateOutputType = {
+    id: number
+    date: number
+    paidAccountId: number
+    receivedAccountId: number
+    amount: number
+    createdByStaffId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BankTransferAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type BankTransferSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type BankTransferMinAggregateInputType = {
+    id?: true
+    date?: true
+    paidAccountId?: true
+    receivedAccountId?: true
+    amount?: true
+    createdByStaffId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BankTransferMaxAggregateInputType = {
+    id?: true
+    date?: true
+    paidAccountId?: true
+    receivedAccountId?: true
+    amount?: true
+    createdByStaffId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BankTransferCountAggregateInputType = {
+    id?: true
+    date?: true
+    paidAccountId?: true
+    receivedAccountId?: true
+    amount?: true
+    createdByStaffId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BankTransferAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BankTransfer to aggregate.
+     */
+    where?: BankTransferWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankTransfers to fetch.
+     */
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BankTransferWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankTransfers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankTransfers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BankTransfers
+    **/
+    _count?: true | BankTransferCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BankTransferAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BankTransferSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BankTransferMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BankTransferMaxAggregateInputType
+  }
+
+  export type GetBankTransferAggregateType<T extends BankTransferAggregateArgs> = {
+        [P in keyof T & keyof AggregateBankTransfer]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBankTransfer[P]>
+      : GetScalarType<T[P], AggregateBankTransfer[P]>
+  }
+
+
+
+
+  export type BankTransferGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BankTransferWhereInput
+    orderBy?: BankTransferOrderByWithAggregationInput | BankTransferOrderByWithAggregationInput[]
+    by: BankTransferScalarFieldEnum[] | BankTransferScalarFieldEnum
+    having?: BankTransferScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BankTransferCountAggregateInputType | true
+    _avg?: BankTransferAvgAggregateInputType
+    _sum?: BankTransferSumAggregateInputType
+    _min?: BankTransferMinAggregateInputType
+    _max?: BankTransferMaxAggregateInputType
+  }
+
+  export type BankTransferGroupByOutputType = {
+    id: string
+    date: Date
+    paidAccountId: string
+    receivedAccountId: string
+    amount: Decimal
+    createdByStaffId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BankTransferCountAggregateOutputType | null
+    _avg: BankTransferAvgAggregateOutputType | null
+    _sum: BankTransferSumAggregateOutputType | null
+    _min: BankTransferMinAggregateOutputType | null
+    _max: BankTransferMaxAggregateOutputType | null
+  }
+
+  type GetBankTransferGroupByPayload<T extends BankTransferGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BankTransferGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BankTransferGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BankTransferGroupByOutputType[P]>
+            : GetScalarType<T[P], BankTransferGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BankTransferSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    paidAccountId?: boolean
+    receivedAccountId?: boolean
+    amount?: boolean
+    createdByStaffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    receivedAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | BankTransfer$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["bankTransfer"]>
+
+  export type BankTransferSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    paidAccountId?: boolean
+    receivedAccountId?: boolean
+    amount?: boolean
+    createdByStaffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    receivedAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | BankTransfer$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["bankTransfer"]>
+
+  export type BankTransferSelectScalar = {
+    id?: boolean
+    date?: boolean
+    paidAccountId?: boolean
+    receivedAccountId?: boolean
+    amount?: boolean
+    createdByStaffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BankTransferInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    receivedAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | BankTransfer$createdByStaffArgs<ExtArgs>
+  }
+  export type BankTransferIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    receivedAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | BankTransfer$createdByStaffArgs<ExtArgs>
+  }
+
+  export type $BankTransferPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BankTransfer"
+    objects: {
+      paidAccount: Prisma.$BankAccountPayload<ExtArgs>
+      receivedAccount: Prisma.$BankAccountPayload<ExtArgs>
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      paidAccountId: string
+      receivedAccountId: string
+      amount: Prisma.Decimal
+      createdByStaffId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["bankTransfer"]>
+    composites: {}
+  }
+
+  type BankTransferGetPayload<S extends boolean | null | undefined | BankTransferDefaultArgs> = $Result.GetResult<Prisma.$BankTransferPayload, S>
+
+  type BankTransferCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<BankTransferFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: BankTransferCountAggregateInputType | true
+    }
+
+  export interface BankTransferDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BankTransfer'], meta: { name: 'BankTransfer' } }
+    /**
+     * Find zero or one BankTransfer that matches the filter.
+     * @param {BankTransferFindUniqueArgs} args - Arguments to find a BankTransfer
+     * @example
+     * // Get one BankTransfer
+     * const bankTransfer = await prisma.bankTransfer.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BankTransferFindUniqueArgs>(args: SelectSubset<T, BankTransferFindUniqueArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one BankTransfer that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {BankTransferFindUniqueOrThrowArgs} args - Arguments to find a BankTransfer
+     * @example
+     * // Get one BankTransfer
+     * const bankTransfer = await prisma.bankTransfer.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BankTransferFindUniqueOrThrowArgs>(args: SelectSubset<T, BankTransferFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first BankTransfer that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferFindFirstArgs} args - Arguments to find a BankTransfer
+     * @example
+     * // Get one BankTransfer
+     * const bankTransfer = await prisma.bankTransfer.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BankTransferFindFirstArgs>(args?: SelectSubset<T, BankTransferFindFirstArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first BankTransfer that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferFindFirstOrThrowArgs} args - Arguments to find a BankTransfer
+     * @example
+     * // Get one BankTransfer
+     * const bankTransfer = await prisma.bankTransfer.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BankTransferFindFirstOrThrowArgs>(args?: SelectSubset<T, BankTransferFindFirstOrThrowArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more BankTransfers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BankTransfers
+     * const bankTransfers = await prisma.bankTransfer.findMany()
+     * 
+     * // Get first 10 BankTransfers
+     * const bankTransfers = await prisma.bankTransfer.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const bankTransferWithIdOnly = await prisma.bankTransfer.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BankTransferFindManyArgs>(args?: SelectSubset<T, BankTransferFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a BankTransfer.
+     * @param {BankTransferCreateArgs} args - Arguments to create a BankTransfer.
+     * @example
+     * // Create one BankTransfer
+     * const BankTransfer = await prisma.bankTransfer.create({
+     *   data: {
+     *     // ... data to create a BankTransfer
+     *   }
+     * })
+     * 
+     */
+    create<T extends BankTransferCreateArgs>(args: SelectSubset<T, BankTransferCreateArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many BankTransfers.
+     * @param {BankTransferCreateManyArgs} args - Arguments to create many BankTransfers.
+     * @example
+     * // Create many BankTransfers
+     * const bankTransfer = await prisma.bankTransfer.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BankTransferCreateManyArgs>(args?: SelectSubset<T, BankTransferCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BankTransfers and returns the data saved in the database.
+     * @param {BankTransferCreateManyAndReturnArgs} args - Arguments to create many BankTransfers.
+     * @example
+     * // Create many BankTransfers
+     * const bankTransfer = await prisma.bankTransfer.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BankTransfers and only return the `id`
+     * const bankTransferWithIdOnly = await prisma.bankTransfer.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BankTransferCreateManyAndReturnArgs>(args?: SelectSubset<T, BankTransferCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a BankTransfer.
+     * @param {BankTransferDeleteArgs} args - Arguments to delete one BankTransfer.
+     * @example
+     * // Delete one BankTransfer
+     * const BankTransfer = await prisma.bankTransfer.delete({
+     *   where: {
+     *     // ... filter to delete one BankTransfer
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BankTransferDeleteArgs>(args: SelectSubset<T, BankTransferDeleteArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one BankTransfer.
+     * @param {BankTransferUpdateArgs} args - Arguments to update one BankTransfer.
+     * @example
+     * // Update one BankTransfer
+     * const bankTransfer = await prisma.bankTransfer.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BankTransferUpdateArgs>(args: SelectSubset<T, BankTransferUpdateArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more BankTransfers.
+     * @param {BankTransferDeleteManyArgs} args - Arguments to filter BankTransfers to delete.
+     * @example
+     * // Delete a few BankTransfers
+     * const { count } = await prisma.bankTransfer.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BankTransferDeleteManyArgs>(args?: SelectSubset<T, BankTransferDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BankTransfers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BankTransfers
+     * const bankTransfer = await prisma.bankTransfer.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BankTransferUpdateManyArgs>(args: SelectSubset<T, BankTransferUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one BankTransfer.
+     * @param {BankTransferUpsertArgs} args - Arguments to update or create a BankTransfer.
+     * @example
+     * // Update or create a BankTransfer
+     * const bankTransfer = await prisma.bankTransfer.upsert({
+     *   create: {
+     *     // ... data to create a BankTransfer
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BankTransfer we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BankTransferUpsertArgs>(args: SelectSubset<T, BankTransferUpsertArgs<ExtArgs>>): Prisma__BankTransferClient<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of BankTransfers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferCountArgs} args - Arguments to filter BankTransfers to count.
+     * @example
+     * // Count the number of BankTransfers
+     * const count = await prisma.bankTransfer.count({
+     *   where: {
+     *     // ... the filter for the BankTransfers we want to count
+     *   }
+     * })
+    **/
+    count<T extends BankTransferCountArgs>(
+      args?: Subset<T, BankTransferCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BankTransferCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BankTransfer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BankTransferAggregateArgs>(args: Subset<T, BankTransferAggregateArgs>): Prisma.PrismaPromise<GetBankTransferAggregateType<T>>
+
+    /**
+     * Group by BankTransfer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BankTransferGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BankTransferGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BankTransferGroupByArgs['orderBy'] }
+        : { orderBy?: BankTransferGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BankTransferGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBankTransferGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BankTransfer model
+   */
+  readonly fields: BankTransferFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BankTransfer.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BankTransferClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    paidAccount<T extends BankAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BankAccountDefaultArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    receivedAccount<T extends BankAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BankAccountDefaultArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    createdByStaff<T extends BankTransfer$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, BankTransfer$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BankTransfer model
+   */ 
+  interface BankTransferFieldRefs {
+    readonly id: FieldRef<"BankTransfer", 'String'>
+    readonly date: FieldRef<"BankTransfer", 'DateTime'>
+    readonly paidAccountId: FieldRef<"BankTransfer", 'String'>
+    readonly receivedAccountId: FieldRef<"BankTransfer", 'String'>
+    readonly amount: FieldRef<"BankTransfer", 'Decimal'>
+    readonly createdByStaffId: FieldRef<"BankTransfer", 'String'>
+    readonly createdAt: FieldRef<"BankTransfer", 'DateTime'>
+    readonly updatedAt: FieldRef<"BankTransfer", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BankTransfer findUnique
+   */
+  export type BankTransferFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * Filter, which BankTransfer to fetch.
+     */
+    where: BankTransferWhereUniqueInput
+  }
+
+  /**
+   * BankTransfer findUniqueOrThrow
+   */
+  export type BankTransferFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * Filter, which BankTransfer to fetch.
+     */
+    where: BankTransferWhereUniqueInput
+  }
+
+  /**
+   * BankTransfer findFirst
+   */
+  export type BankTransferFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * Filter, which BankTransfer to fetch.
+     */
+    where?: BankTransferWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankTransfers to fetch.
+     */
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BankTransfers.
+     */
+    cursor?: BankTransferWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankTransfers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankTransfers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BankTransfers.
+     */
+    distinct?: BankTransferScalarFieldEnum | BankTransferScalarFieldEnum[]
+  }
+
+  /**
+   * BankTransfer findFirstOrThrow
+   */
+  export type BankTransferFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * Filter, which BankTransfer to fetch.
+     */
+    where?: BankTransferWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankTransfers to fetch.
+     */
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BankTransfers.
+     */
+    cursor?: BankTransferWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankTransfers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankTransfers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BankTransfers.
+     */
+    distinct?: BankTransferScalarFieldEnum | BankTransferScalarFieldEnum[]
+  }
+
+  /**
+   * BankTransfer findMany
+   */
+  export type BankTransferFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * Filter, which BankTransfers to fetch.
+     */
+    where?: BankTransferWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BankTransfers to fetch.
+     */
+    orderBy?: BankTransferOrderByWithRelationInput | BankTransferOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BankTransfers.
+     */
+    cursor?: BankTransferWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BankTransfers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BankTransfers.
+     */
+    skip?: number
+    distinct?: BankTransferScalarFieldEnum | BankTransferScalarFieldEnum[]
+  }
+
+  /**
+   * BankTransfer create
+   */
+  export type BankTransferCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BankTransfer.
+     */
+    data: XOR<BankTransferCreateInput, BankTransferUncheckedCreateInput>
+  }
+
+  /**
+   * BankTransfer createMany
+   */
+  export type BankTransferCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BankTransfers.
+     */
+    data: BankTransferCreateManyInput | BankTransferCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BankTransfer createManyAndReturn
+   */
+  export type BankTransferCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many BankTransfers.
+     */
+    data: BankTransferCreateManyInput | BankTransferCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BankTransfer update
+   */
+  export type BankTransferUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BankTransfer.
+     */
+    data: XOR<BankTransferUpdateInput, BankTransferUncheckedUpdateInput>
+    /**
+     * Choose, which BankTransfer to update.
+     */
+    where: BankTransferWhereUniqueInput
+  }
+
+  /**
+   * BankTransfer updateMany
+   */
+  export type BankTransferUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BankTransfers.
+     */
+    data: XOR<BankTransferUpdateManyMutationInput, BankTransferUncheckedUpdateManyInput>
+    /**
+     * Filter which BankTransfers to update
+     */
+    where?: BankTransferWhereInput
+  }
+
+  /**
+   * BankTransfer upsert
+   */
+  export type BankTransferUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BankTransfer to update in case it exists.
+     */
+    where: BankTransferWhereUniqueInput
+    /**
+     * In case the BankTransfer found by the `where` argument doesn't exist, create a new BankTransfer with this data.
+     */
+    create: XOR<BankTransferCreateInput, BankTransferUncheckedCreateInput>
+    /**
+     * In case the BankTransfer was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BankTransferUpdateInput, BankTransferUncheckedUpdateInput>
+  }
+
+  /**
+   * BankTransfer delete
+   */
+  export type BankTransferDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+    /**
+     * Filter which BankTransfer to delete.
+     */
+    where: BankTransferWhereUniqueInput
+  }
+
+  /**
+   * BankTransfer deleteMany
+   */
+  export type BankTransferDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BankTransfers to delete
+     */
+    where?: BankTransferWhereInput
+  }
+
+  /**
+   * BankTransfer.createdByStaff
+   */
+  export type BankTransfer$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * BankTransfer without action
+   */
+  export type BankTransferDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankTransfer
+     */
+    select?: BankTransferSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankTransferInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -36940,6 +39299,7 @@ export namespace Prisma {
     customerId: 'customerId',
     transporterId: 'transporterId',
     investmentCompanyId: 'investmentCompanyId',
+    bankAccountId: 'bankAccountId',
     createdByStaffId: 'createdByStaffId',
     direction: 'direction',
     amount: 'amount',
@@ -37078,6 +39438,32 @@ export namespace Prisma {
   };
 
   export type InvestmentPeriodValueScalarFieldEnum = (typeof InvestmentPeriodValueScalarFieldEnum)[keyof typeof InvestmentPeriodValueScalarFieldEnum]
+
+
+  export const BankAccountScalarFieldEnum: {
+    id: 'id',
+    accountName: 'accountName',
+    bankName: 'bankName',
+    openingBalance: 'openingBalance',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BankAccountScalarFieldEnum = (typeof BankAccountScalarFieldEnum)[keyof typeof BankAccountScalarFieldEnum]
+
+
+  export const BankTransferScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    paidAccountId: 'paidAccountId',
+    receivedAccountId: 'receivedAccountId',
+    amount: 'amount',
+    createdByStaffId: 'createdByStaffId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BankTransferScalarFieldEnum = (typeof BankTransferScalarFieldEnum)[keyof typeof BankTransferScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -37410,6 +39796,7 @@ export namespace Prisma {
     createdDispatches?: DispatchListRelationFilter
     createdVegPayments?: VegPaymentListRelationFilter
     createdVegDiscounts?: VegDiscountListRelationFilter
+    createdBankTransfers?: BankTransferListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -37434,6 +39821,7 @@ export namespace Prisma {
     createdDispatches?: DispatchOrderByRelationAggregateInput
     createdVegPayments?: VegPaymentOrderByRelationAggregateInput
     createdVegDiscounts?: VegDiscountOrderByRelationAggregateInput
+    createdBankTransfers?: BankTransferOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -37461,6 +39849,7 @@ export namespace Prisma {
     createdDispatches?: DispatchListRelationFilter
     createdVegPayments?: VegPaymentListRelationFilter
     createdVegDiscounts?: VegDiscountListRelationFilter
+    createdBankTransfers?: BankTransferListRelationFilter
   }, "id">
 
   export type StaffOrderByWithAggregationInput = {
@@ -39180,6 +41569,7 @@ export namespace Prisma {
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
     investmentCompanyId?: StringNullableFilter<"Payment"> | string | null
+    bankAccountId?: StringNullableFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -39188,6 +41578,7 @@ export namespace Prisma {
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
+    bankAccount?: XOR<BankAccountNullableRelationFilter, BankAccountWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }
 
@@ -39197,6 +41588,7 @@ export namespace Prisma {
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
     investmentCompanyId?: SortOrderInput | SortOrder
+    bankAccountId?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -39205,6 +41597,7 @@ export namespace Prisma {
     customer?: CustomerOrderByWithRelationInput
     transporter?: TransporterOrderByWithRelationInput
     investmentCompany?: InvestmentCompanyOrderByWithRelationInput
+    bankAccount?: BankAccountOrderByWithRelationInput
     createdByStaff?: StaffOrderByWithRelationInput
   }
 
@@ -39217,6 +41610,7 @@ export namespace Prisma {
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
     investmentCompanyId?: StringNullableFilter<"Payment"> | string | null
+    bankAccountId?: StringNullableFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -39225,6 +41619,7 @@ export namespace Prisma {
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
+    bankAccount?: XOR<BankAccountNullableRelationFilter, BankAccountWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
   }, "id">
 
@@ -39234,6 +41629,7 @@ export namespace Prisma {
     customerId?: SortOrderInput | SortOrder
     transporterId?: SortOrderInput | SortOrder
     investmentCompanyId?: SortOrderInput | SortOrder
+    bankAccountId?: SortOrderInput | SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -39255,6 +41651,7 @@ export namespace Prisma {
     customerId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     transporterId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     investmentCompanyId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    bankAccountId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionWithAggregatesFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalWithAggregatesFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -39961,6 +42358,153 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"InvestmentPeriodValue"> | Date | string
   }
 
+  export type BankAccountWhereInput = {
+    AND?: BankAccountWhereInput | BankAccountWhereInput[]
+    OR?: BankAccountWhereInput[]
+    NOT?: BankAccountWhereInput | BankAccountWhereInput[]
+    id?: StringFilter<"BankAccount"> | string
+    accountName?: StringFilter<"BankAccount"> | string
+    bankName?: StringFilter<"BankAccount"> | string
+    openingBalance?: DecimalFilter<"BankAccount"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"BankAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"BankAccount"> | Date | string
+    payments?: PaymentListRelationFilter
+    transfersPaid?: BankTransferListRelationFilter
+    transfersReceived?: BankTransferListRelationFilter
+  }
+
+  export type BankAccountOrderByWithRelationInput = {
+    id?: SortOrder
+    accountName?: SortOrder
+    bankName?: SortOrder
+    openingBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    payments?: PaymentOrderByRelationAggregateInput
+    transfersPaid?: BankTransferOrderByRelationAggregateInput
+    transfersReceived?: BankTransferOrderByRelationAggregateInput
+  }
+
+  export type BankAccountWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    accountName_bankName?: BankAccountAccountNameBankNameCompoundUniqueInput
+    AND?: BankAccountWhereInput | BankAccountWhereInput[]
+    OR?: BankAccountWhereInput[]
+    NOT?: BankAccountWhereInput | BankAccountWhereInput[]
+    accountName?: StringFilter<"BankAccount"> | string
+    bankName?: StringFilter<"BankAccount"> | string
+    openingBalance?: DecimalFilter<"BankAccount"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"BankAccount"> | Date | string
+    updatedAt?: DateTimeFilter<"BankAccount"> | Date | string
+    payments?: PaymentListRelationFilter
+    transfersPaid?: BankTransferListRelationFilter
+    transfersReceived?: BankTransferListRelationFilter
+  }, "id" | "accountName_bankName">
+
+  export type BankAccountOrderByWithAggregationInput = {
+    id?: SortOrder
+    accountName?: SortOrder
+    bankName?: SortOrder
+    openingBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BankAccountCountOrderByAggregateInput
+    _avg?: BankAccountAvgOrderByAggregateInput
+    _max?: BankAccountMaxOrderByAggregateInput
+    _min?: BankAccountMinOrderByAggregateInput
+    _sum?: BankAccountSumOrderByAggregateInput
+  }
+
+  export type BankAccountScalarWhereWithAggregatesInput = {
+    AND?: BankAccountScalarWhereWithAggregatesInput | BankAccountScalarWhereWithAggregatesInput[]
+    OR?: BankAccountScalarWhereWithAggregatesInput[]
+    NOT?: BankAccountScalarWhereWithAggregatesInput | BankAccountScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BankAccount"> | string
+    accountName?: StringWithAggregatesFilter<"BankAccount"> | string
+    bankName?: StringWithAggregatesFilter<"BankAccount"> | string
+    openingBalance?: DecimalWithAggregatesFilter<"BankAccount"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeWithAggregatesFilter<"BankAccount"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BankAccount"> | Date | string
+  }
+
+  export type BankTransferWhereInput = {
+    AND?: BankTransferWhereInput | BankTransferWhereInput[]
+    OR?: BankTransferWhereInput[]
+    NOT?: BankTransferWhereInput | BankTransferWhereInput[]
+    id?: StringFilter<"BankTransfer"> | string
+    date?: DateTimeFilter<"BankTransfer"> | Date | string
+    paidAccountId?: StringFilter<"BankTransfer"> | string
+    receivedAccountId?: StringFilter<"BankTransfer"> | string
+    amount?: DecimalFilter<"BankTransfer"> | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: StringNullableFilter<"BankTransfer"> | string | null
+    createdAt?: DateTimeFilter<"BankTransfer"> | Date | string
+    updatedAt?: DateTimeFilter<"BankTransfer"> | Date | string
+    paidAccount?: XOR<BankAccountRelationFilter, BankAccountWhereInput>
+    receivedAccount?: XOR<BankAccountRelationFilter, BankAccountWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type BankTransferOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    receivedAccountId?: SortOrder
+    amount?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    paidAccount?: BankAccountOrderByWithRelationInput
+    receivedAccount?: BankAccountOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
+  }
+
+  export type BankTransferWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BankTransferWhereInput | BankTransferWhereInput[]
+    OR?: BankTransferWhereInput[]
+    NOT?: BankTransferWhereInput | BankTransferWhereInput[]
+    date?: DateTimeFilter<"BankTransfer"> | Date | string
+    paidAccountId?: StringFilter<"BankTransfer"> | string
+    receivedAccountId?: StringFilter<"BankTransfer"> | string
+    amount?: DecimalFilter<"BankTransfer"> | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: StringNullableFilter<"BankTransfer"> | string | null
+    createdAt?: DateTimeFilter<"BankTransfer"> | Date | string
+    updatedAt?: DateTimeFilter<"BankTransfer"> | Date | string
+    paidAccount?: XOR<BankAccountRelationFilter, BankAccountWhereInput>
+    receivedAccount?: XOR<BankAccountRelationFilter, BankAccountWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type BankTransferOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    receivedAccountId?: SortOrder
+    amount?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BankTransferCountOrderByAggregateInput
+    _avg?: BankTransferAvgOrderByAggregateInput
+    _max?: BankTransferMaxOrderByAggregateInput
+    _min?: BankTransferMinOrderByAggregateInput
+    _sum?: BankTransferSumOrderByAggregateInput
+  }
+
+  export type BankTransferScalarWhereWithAggregatesInput = {
+    AND?: BankTransferScalarWhereWithAggregatesInput | BankTransferScalarWhereWithAggregatesInput[]
+    OR?: BankTransferScalarWhereWithAggregatesInput[]
+    NOT?: BankTransferScalarWhereWithAggregatesInput | BankTransferScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BankTransfer"> | string
+    date?: DateTimeWithAggregatesFilter<"BankTransfer"> | Date | string
+    paidAccountId?: StringWithAggregatesFilter<"BankTransfer"> | string
+    receivedAccountId?: StringWithAggregatesFilter<"BankTransfer"> | string
+    amount?: DecimalWithAggregatesFilter<"BankTransfer"> | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: StringNullableWithAggregatesFilter<"BankTransfer"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BankTransfer"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BankTransfer"> | Date | string
+  }
+
   export type StaffCreateInput = {
     id?: string
     name: string
@@ -39983,6 +42527,7 @@ export namespace Prisma {
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -40007,6 +42552,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUpdateInput = {
@@ -40031,6 +42577,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -40055,6 +42602,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -41982,6 +44530,7 @@ export namespace Prisma {
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
+    bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -41991,6 +44540,7 @@ export namespace Prisma {
     customerId?: string | null
     transporterId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -42008,6 +44558,7 @@ export namespace Prisma {
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
+    bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -42017,6 +44568,7 @@ export namespace Prisma {
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -42030,6 +44582,7 @@ export namespace Prisma {
     customerId?: string | null
     transporterId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -42052,6 +44605,7 @@ export namespace Prisma {
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -42791,6 +45345,155 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BankAccountCreateInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
+  }
+
+  export type BankAccountUncheckedCreateInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
+  }
+
+  export type BankAccountUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
+  }
+
+  export type BankAccountUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
+  }
+
+  export type BankAccountCreateManyInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankAccountUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankAccountUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferCreateInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paidAccount: BankAccountCreateNestedOneWithoutTransfersPaidInput
+    receivedAccount: BankAccountCreateNestedOneWithoutTransfersReceivedInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedBankTransfersInput
+  }
+
+  export type BankTransferUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    receivedAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccount?: BankAccountUpdateOneRequiredWithoutTransfersPaidNestedInput
+    receivedAccount?: BankAccountUpdateOneRequiredWithoutTransfersReceivedNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedBankTransfersNestedInput
+  }
+
+  export type BankTransferUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    receivedAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferCreateManyInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    receivedAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    receivedAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -42888,6 +45591,12 @@ export namespace Prisma {
     none?: VegDiscountWhereInput
   }
 
+  export type BankTransferListRelationFilter = {
+    every?: BankTransferWhereInput
+    some?: BankTransferWhereInput
+    none?: BankTransferWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -42922,6 +45631,10 @@ export namespace Prisma {
   }
 
   export type VegDiscountOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BankTransferOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -44306,12 +47019,18 @@ export namespace Prisma {
     isNot?: InvestmentCompanyWhereInput | null
   }
 
+  export type BankAccountNullableRelationFilter = {
+    is?: BankAccountWhereInput | null
+    isNot?: BankAccountWhereInput | null
+  }
+
   export type PaymentCountOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
     customerId?: SortOrder
     transporterId?: SortOrder
     investmentCompanyId?: SortOrder
+    bankAccountId?: SortOrder
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -44329,6 +47048,7 @@ export namespace Prisma {
     customerId?: SortOrder
     transporterId?: SortOrder
     investmentCompanyId?: SortOrder
+    bankAccountId?: SortOrder
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -44342,6 +47062,7 @@ export namespace Prisma {
     customerId?: SortOrder
     transporterId?: SortOrder
     investmentCompanyId?: SortOrder
+    bankAccountId?: SortOrder
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
@@ -44884,6 +47605,92 @@ export namespace Prisma {
     interest?: SortOrder
   }
 
+  export type BankAccountAccountNameBankNameCompoundUniqueInput = {
+    accountName: string
+    bankName: string
+  }
+
+  export type BankAccountCountOrderByAggregateInput = {
+    id?: SortOrder
+    accountName?: SortOrder
+    bankName?: SortOrder
+    openingBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BankAccountAvgOrderByAggregateInput = {
+    openingBalance?: SortOrder
+  }
+
+  export type BankAccountMaxOrderByAggregateInput = {
+    id?: SortOrder
+    accountName?: SortOrder
+    bankName?: SortOrder
+    openingBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BankAccountMinOrderByAggregateInput = {
+    id?: SortOrder
+    accountName?: SortOrder
+    bankName?: SortOrder
+    openingBalance?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BankAccountSumOrderByAggregateInput = {
+    openingBalance?: SortOrder
+  }
+
+  export type BankAccountRelationFilter = {
+    is?: BankAccountWhereInput
+    isNot?: BankAccountWhereInput
+  }
+
+  export type BankTransferCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    receivedAccountId?: SortOrder
+    amount?: SortOrder
+    createdByStaffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BankTransferAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type BankTransferMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    receivedAccountId?: SortOrder
+    amount?: SortOrder
+    createdByStaffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BankTransferMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    receivedAccountId?: SortOrder
+    amount?: SortOrder
+    createdByStaffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BankTransferSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type StaffCreatepageKeysInput = {
     set: string[]
   }
@@ -44968,6 +47775,13 @@ export namespace Prisma {
     connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
   }
 
+  export type BankTransferCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<BankTransferCreateWithoutCreatedByStaffInput, BankTransferUncheckedCreateWithoutCreatedByStaffInput> | BankTransferCreateWithoutCreatedByStaffInput[] | BankTransferUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutCreatedByStaffInput | BankTransferCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: BankTransferCreateManyCreatedByStaffInputEnvelope
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+  }
+
   export type CustomerUncheckedCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -45022,6 +47836,13 @@ export namespace Prisma {
     connectOrCreate?: VegDiscountCreateOrConnectWithoutCreatedByStaffInput | VegDiscountCreateOrConnectWithoutCreatedByStaffInput[]
     createMany?: VegDiscountCreateManyCreatedByStaffInputEnvelope
     connect?: VegDiscountWhereUniqueInput | VegDiscountWhereUniqueInput[]
+  }
+
+  export type BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<BankTransferCreateWithoutCreatedByStaffInput, BankTransferUncheckedCreateWithoutCreatedByStaffInput> | BankTransferCreateWithoutCreatedByStaffInput[] | BankTransferUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutCreatedByStaffInput | BankTransferCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: BankTransferCreateManyCreatedByStaffInputEnvelope
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -45183,6 +48004,20 @@ export namespace Prisma {
     deleteMany?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
   }
 
+  export type BankTransferUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<BankTransferCreateWithoutCreatedByStaffInput, BankTransferUncheckedCreateWithoutCreatedByStaffInput> | BankTransferCreateWithoutCreatedByStaffInput[] | BankTransferUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutCreatedByStaffInput | BankTransferCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: BankTransferUpsertWithWhereUniqueWithoutCreatedByStaffInput | BankTransferUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: BankTransferCreateManyCreatedByStaffInputEnvelope
+    set?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    disconnect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    delete?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    update?: BankTransferUpdateWithWhereUniqueWithoutCreatedByStaffInput | BankTransferUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: BankTransferUpdateManyWithWhereWithoutCreatedByStaffInput | BankTransferUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+  }
+
   export type CustomerUncheckedUpdateManyWithoutDealByNestedInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -45293,6 +48128,20 @@ export namespace Prisma {
     update?: VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput | VegDiscountUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
     updateMany?: VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput | VegDiscountUpdateManyWithWhereWithoutCreatedByStaffInput[]
     deleteMany?: VegDiscountScalarWhereInput | VegDiscountScalarWhereInput[]
+  }
+
+  export type BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<BankTransferCreateWithoutCreatedByStaffInput, BankTransferUncheckedCreateWithoutCreatedByStaffInput> | BankTransferCreateWithoutCreatedByStaffInput[] | BankTransferUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutCreatedByStaffInput | BankTransferCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: BankTransferUpsertWithWhereUniqueWithoutCreatedByStaffInput | BankTransferUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: BankTransferCreateManyCreatedByStaffInputEnvelope
+    set?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    disconnect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    delete?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    update?: BankTransferUpdateWithWhereUniqueWithoutCreatedByStaffInput | BankTransferUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: BankTransferUpdateManyWithWhereWithoutCreatedByStaffInput | BankTransferUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
   }
 
   export type DispatchCreateNestedManyWithoutTransporterInput = {
@@ -46711,6 +49560,12 @@ export namespace Prisma {
     connect?: InvestmentCompanyWhereUniqueInput
   }
 
+  export type BankAccountCreateNestedOneWithoutPaymentsInput = {
+    create?: XOR<BankAccountCreateWithoutPaymentsInput, BankAccountUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutPaymentsInput
+    connect?: BankAccountWhereUniqueInput
+  }
+
   export type StaffCreateNestedOneWithoutCreatedPaymentsInput = {
     create?: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
     connectOrCreate?: StaffCreateOrConnectWithoutCreatedPaymentsInput
@@ -46749,6 +49604,16 @@ export namespace Prisma {
     delete?: InvestmentCompanyWhereInput | boolean
     connect?: InvestmentCompanyWhereUniqueInput
     update?: XOR<XOR<InvestmentCompanyUpdateToOneWithWhereWithoutPaymentsInput, InvestmentCompanyUpdateWithoutPaymentsInput>, InvestmentCompanyUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type BankAccountUpdateOneWithoutPaymentsNestedInput = {
+    create?: XOR<BankAccountCreateWithoutPaymentsInput, BankAccountUncheckedCreateWithoutPaymentsInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutPaymentsInput
+    upsert?: BankAccountUpsertWithoutPaymentsInput
+    disconnect?: BankAccountWhereInput | boolean
+    delete?: BankAccountWhereInput | boolean
+    connect?: BankAccountWhereUniqueInput
+    update?: XOR<XOR<BankAccountUpdateToOneWithWhereWithoutPaymentsInput, BankAccountUpdateWithoutPaymentsInput>, BankAccountUncheckedUpdateWithoutPaymentsInput>
   }
 
   export type StaffUpdateOneWithoutCreatedPaymentsNestedInput = {
@@ -47225,6 +50090,176 @@ export namespace Prisma {
     upsert?: InvestmentPeriodUpsertWithoutValuesInput
     connect?: InvestmentPeriodWhereUniqueInput
     update?: XOR<XOR<InvestmentPeriodUpdateToOneWithWhereWithoutValuesInput, InvestmentPeriodUpdateWithoutValuesInput>, InvestmentPeriodUncheckedUpdateWithoutValuesInput>
+  }
+
+  export type PaymentCreateNestedManyWithoutBankAccountInput = {
+    create?: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput> | PaymentCreateWithoutBankAccountInput[] | PaymentUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutBankAccountInput | PaymentCreateOrConnectWithoutBankAccountInput[]
+    createMany?: PaymentCreateManyBankAccountInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type BankTransferCreateNestedManyWithoutPaidAccountInput = {
+    create?: XOR<BankTransferCreateWithoutPaidAccountInput, BankTransferUncheckedCreateWithoutPaidAccountInput> | BankTransferCreateWithoutPaidAccountInput[] | BankTransferUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutPaidAccountInput | BankTransferCreateOrConnectWithoutPaidAccountInput[]
+    createMany?: BankTransferCreateManyPaidAccountInputEnvelope
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+  }
+
+  export type BankTransferCreateNestedManyWithoutReceivedAccountInput = {
+    create?: XOR<BankTransferCreateWithoutReceivedAccountInput, BankTransferUncheckedCreateWithoutReceivedAccountInput> | BankTransferCreateWithoutReceivedAccountInput[] | BankTransferUncheckedCreateWithoutReceivedAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutReceivedAccountInput | BankTransferCreateOrConnectWithoutReceivedAccountInput[]
+    createMany?: BankTransferCreateManyReceivedAccountInputEnvelope
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+  }
+
+  export type PaymentUncheckedCreateNestedManyWithoutBankAccountInput = {
+    create?: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput> | PaymentCreateWithoutBankAccountInput[] | PaymentUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutBankAccountInput | PaymentCreateOrConnectWithoutBankAccountInput[]
+    createMany?: PaymentCreateManyBankAccountInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
+  export type BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput = {
+    create?: XOR<BankTransferCreateWithoutPaidAccountInput, BankTransferUncheckedCreateWithoutPaidAccountInput> | BankTransferCreateWithoutPaidAccountInput[] | BankTransferUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutPaidAccountInput | BankTransferCreateOrConnectWithoutPaidAccountInput[]
+    createMany?: BankTransferCreateManyPaidAccountInputEnvelope
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+  }
+
+  export type BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput = {
+    create?: XOR<BankTransferCreateWithoutReceivedAccountInput, BankTransferUncheckedCreateWithoutReceivedAccountInput> | BankTransferCreateWithoutReceivedAccountInput[] | BankTransferUncheckedCreateWithoutReceivedAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutReceivedAccountInput | BankTransferCreateOrConnectWithoutReceivedAccountInput[]
+    createMany?: BankTransferCreateManyReceivedAccountInputEnvelope
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+  }
+
+  export type PaymentUpdateManyWithoutBankAccountNestedInput = {
+    create?: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput> | PaymentCreateWithoutBankAccountInput[] | PaymentUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutBankAccountInput | PaymentCreateOrConnectWithoutBankAccountInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutBankAccountInput | PaymentUpsertWithWhereUniqueWithoutBankAccountInput[]
+    createMany?: PaymentCreateManyBankAccountInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutBankAccountInput | PaymentUpdateWithWhereUniqueWithoutBankAccountInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutBankAccountInput | PaymentUpdateManyWithWhereWithoutBankAccountInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type BankTransferUpdateManyWithoutPaidAccountNestedInput = {
+    create?: XOR<BankTransferCreateWithoutPaidAccountInput, BankTransferUncheckedCreateWithoutPaidAccountInput> | BankTransferCreateWithoutPaidAccountInput[] | BankTransferUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutPaidAccountInput | BankTransferCreateOrConnectWithoutPaidAccountInput[]
+    upsert?: BankTransferUpsertWithWhereUniqueWithoutPaidAccountInput | BankTransferUpsertWithWhereUniqueWithoutPaidAccountInput[]
+    createMany?: BankTransferCreateManyPaidAccountInputEnvelope
+    set?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    disconnect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    delete?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    update?: BankTransferUpdateWithWhereUniqueWithoutPaidAccountInput | BankTransferUpdateWithWhereUniqueWithoutPaidAccountInput[]
+    updateMany?: BankTransferUpdateManyWithWhereWithoutPaidAccountInput | BankTransferUpdateManyWithWhereWithoutPaidAccountInput[]
+    deleteMany?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+  }
+
+  export type BankTransferUpdateManyWithoutReceivedAccountNestedInput = {
+    create?: XOR<BankTransferCreateWithoutReceivedAccountInput, BankTransferUncheckedCreateWithoutReceivedAccountInput> | BankTransferCreateWithoutReceivedAccountInput[] | BankTransferUncheckedCreateWithoutReceivedAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutReceivedAccountInput | BankTransferCreateOrConnectWithoutReceivedAccountInput[]
+    upsert?: BankTransferUpsertWithWhereUniqueWithoutReceivedAccountInput | BankTransferUpsertWithWhereUniqueWithoutReceivedAccountInput[]
+    createMany?: BankTransferCreateManyReceivedAccountInputEnvelope
+    set?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    disconnect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    delete?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    update?: BankTransferUpdateWithWhereUniqueWithoutReceivedAccountInput | BankTransferUpdateWithWhereUniqueWithoutReceivedAccountInput[]
+    updateMany?: BankTransferUpdateManyWithWhereWithoutReceivedAccountInput | BankTransferUpdateManyWithWhereWithoutReceivedAccountInput[]
+    deleteMany?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutBankAccountNestedInput = {
+    create?: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput> | PaymentCreateWithoutBankAccountInput[] | PaymentUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutBankAccountInput | PaymentCreateOrConnectWithoutBankAccountInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutBankAccountInput | PaymentUpsertWithWhereUniqueWithoutBankAccountInput[]
+    createMany?: PaymentCreateManyBankAccountInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutBankAccountInput | PaymentUpdateWithWhereUniqueWithoutBankAccountInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutBankAccountInput | PaymentUpdateManyWithWhereWithoutBankAccountInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
+  export type BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput = {
+    create?: XOR<BankTransferCreateWithoutPaidAccountInput, BankTransferUncheckedCreateWithoutPaidAccountInput> | BankTransferCreateWithoutPaidAccountInput[] | BankTransferUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutPaidAccountInput | BankTransferCreateOrConnectWithoutPaidAccountInput[]
+    upsert?: BankTransferUpsertWithWhereUniqueWithoutPaidAccountInput | BankTransferUpsertWithWhereUniqueWithoutPaidAccountInput[]
+    createMany?: BankTransferCreateManyPaidAccountInputEnvelope
+    set?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    disconnect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    delete?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    update?: BankTransferUpdateWithWhereUniqueWithoutPaidAccountInput | BankTransferUpdateWithWhereUniqueWithoutPaidAccountInput[]
+    updateMany?: BankTransferUpdateManyWithWhereWithoutPaidAccountInput | BankTransferUpdateManyWithWhereWithoutPaidAccountInput[]
+    deleteMany?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+  }
+
+  export type BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput = {
+    create?: XOR<BankTransferCreateWithoutReceivedAccountInput, BankTransferUncheckedCreateWithoutReceivedAccountInput> | BankTransferCreateWithoutReceivedAccountInput[] | BankTransferUncheckedCreateWithoutReceivedAccountInput[]
+    connectOrCreate?: BankTransferCreateOrConnectWithoutReceivedAccountInput | BankTransferCreateOrConnectWithoutReceivedAccountInput[]
+    upsert?: BankTransferUpsertWithWhereUniqueWithoutReceivedAccountInput | BankTransferUpsertWithWhereUniqueWithoutReceivedAccountInput[]
+    createMany?: BankTransferCreateManyReceivedAccountInputEnvelope
+    set?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    disconnect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    delete?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    connect?: BankTransferWhereUniqueInput | BankTransferWhereUniqueInput[]
+    update?: BankTransferUpdateWithWhereUniqueWithoutReceivedAccountInput | BankTransferUpdateWithWhereUniqueWithoutReceivedAccountInput[]
+    updateMany?: BankTransferUpdateManyWithWhereWithoutReceivedAccountInput | BankTransferUpdateManyWithWhereWithoutReceivedAccountInput[]
+    deleteMany?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+  }
+
+  export type BankAccountCreateNestedOneWithoutTransfersPaidInput = {
+    create?: XOR<BankAccountCreateWithoutTransfersPaidInput, BankAccountUncheckedCreateWithoutTransfersPaidInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutTransfersPaidInput
+    connect?: BankAccountWhereUniqueInput
+  }
+
+  export type BankAccountCreateNestedOneWithoutTransfersReceivedInput = {
+    create?: XOR<BankAccountCreateWithoutTransfersReceivedInput, BankAccountUncheckedCreateWithoutTransfersReceivedInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutTransfersReceivedInput
+    connect?: BankAccountWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedBankTransfersInput = {
+    create?: XOR<StaffCreateWithoutCreatedBankTransfersInput, StaffUncheckedCreateWithoutCreatedBankTransfersInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedBankTransfersInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type BankAccountUpdateOneRequiredWithoutTransfersPaidNestedInput = {
+    create?: XOR<BankAccountCreateWithoutTransfersPaidInput, BankAccountUncheckedCreateWithoutTransfersPaidInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutTransfersPaidInput
+    upsert?: BankAccountUpsertWithoutTransfersPaidInput
+    connect?: BankAccountWhereUniqueInput
+    update?: XOR<XOR<BankAccountUpdateToOneWithWhereWithoutTransfersPaidInput, BankAccountUpdateWithoutTransfersPaidInput>, BankAccountUncheckedUpdateWithoutTransfersPaidInput>
+  }
+
+  export type BankAccountUpdateOneRequiredWithoutTransfersReceivedNestedInput = {
+    create?: XOR<BankAccountCreateWithoutTransfersReceivedInput, BankAccountUncheckedCreateWithoutTransfersReceivedInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutTransfersReceivedInput
+    upsert?: BankAccountUpsertWithoutTransfersReceivedInput
+    connect?: BankAccountWhereUniqueInput
+    update?: XOR<XOR<BankAccountUpdateToOneWithWhereWithoutTransfersReceivedInput, BankAccountUpdateWithoutTransfersReceivedInput>, BankAccountUncheckedUpdateWithoutTransfersReceivedInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedBankTransfersNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedBankTransfersInput, StaffUncheckedCreateWithoutCreatedBankTransfersInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedBankTransfersInput
+    upsert?: StaffUpsertWithoutCreatedBankTransfersInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedBankTransfersInput, StaffUpdateWithoutCreatedBankTransfersInput>, StaffUncheckedUpdateWithoutCreatedBankTransfersInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -47943,6 +50978,7 @@ export namespace Prisma {
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
+    bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutCreatedByStaffInput = {
@@ -47951,6 +50987,7 @@ export namespace Prisma {
     customerId?: string | null
     transporterId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -48141,6 +51178,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BankTransferCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paidAccount: BankAccountCreateNestedOneWithoutTransfersPaidInput
+    receivedAccount: BankAccountCreateNestedOneWithoutTransfersReceivedInput
+  }
+
+  export type BankTransferUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    receivedAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferCreateOrConnectWithoutCreatedByStaffInput = {
+    where: BankTransferWhereUniqueInput
+    create: XOR<BankTransferCreateWithoutCreatedByStaffInput, BankTransferUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type BankTransferCreateManyCreatedByStaffInputEnvelope = {
+    data: BankTransferCreateManyCreatedByStaffInput | BankTransferCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CustomerUpsertWithWhereUniqueWithoutDealByInput = {
     where: CustomerWhereUniqueInput
     update: XOR<CustomerUpdateWithoutDealByInput, CustomerUncheckedUpdateWithoutDealByInput>
@@ -48301,6 +51368,7 @@ export namespace Prisma {
     customerId?: StringNullableFilter<"Payment"> | string | null
     transporterId?: StringNullableFilter<"Payment"> | string | null
     investmentCompanyId?: StringNullableFilter<"Payment"> | string | null
+    bankAccountId?: StringNullableFilter<"Payment"> | string | null
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
@@ -48455,6 +51523,36 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"VegDiscount"> | Date | string
   }
 
+  export type BankTransferUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: BankTransferWhereUniqueInput
+    update: XOR<BankTransferUpdateWithoutCreatedByStaffInput, BankTransferUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<BankTransferCreateWithoutCreatedByStaffInput, BankTransferUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type BankTransferUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: BankTransferWhereUniqueInput
+    data: XOR<BankTransferUpdateWithoutCreatedByStaffInput, BankTransferUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type BankTransferUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: BankTransferScalarWhereInput
+    data: XOR<BankTransferUpdateManyMutationInput, BankTransferUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type BankTransferScalarWhereInput = {
+    AND?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+    OR?: BankTransferScalarWhereInput[]
+    NOT?: BankTransferScalarWhereInput | BankTransferScalarWhereInput[]
+    id?: StringFilter<"BankTransfer"> | string
+    date?: DateTimeFilter<"BankTransfer"> | Date | string
+    paidAccountId?: StringFilter<"BankTransfer"> | string
+    receivedAccountId?: StringFilter<"BankTransfer"> | string
+    amount?: DecimalFilter<"BankTransfer"> | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: StringNullableFilter<"BankTransfer"> | string | null
+    createdAt?: DateTimeFilter<"BankTransfer"> | Date | string
+    updatedAt?: DateTimeFilter<"BankTransfer"> | Date | string
+  }
+
   export type DispatchCreateWithoutTransporterInput = {
     id?: string
     dispatchNumber?: string | null
@@ -48540,6 +51638,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
+    bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -48548,6 +51647,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -49416,6 +52516,7 @@ export namespace Prisma {
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutDealByCustomersInput = {
@@ -49439,6 +52540,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutDealByCustomersInput = {
@@ -49631,6 +52733,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
+    bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -49639,6 +52742,7 @@ export namespace Prisma {
     date: Date | string
     transporterId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -49768,6 +52872,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDealByCustomersInput = {
@@ -49791,6 +52896,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -50571,6 +53677,7 @@ export namespace Prisma {
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutOrdersInput = {
@@ -50594,6 +53701,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutOrdersInput = {
@@ -50858,6 +53966,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutOrdersInput = {
@@ -50881,6 +53990,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type PortOptionUpsertWithoutOrdersInput = {
@@ -51633,6 +54743,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedDispatchesInput = {
@@ -51656,6 +54767,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedDispatchesInput = {
@@ -51972,6 +55084,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedDispatchesInput = {
@@ -51995,6 +55108,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type CustomerCreateWithoutPaymentsInput = {
@@ -52156,6 +55270,33 @@ export namespace Prisma {
     create: XOR<InvestmentCompanyCreateWithoutPaymentsInput, InvestmentCompanyUncheckedCreateWithoutPaymentsInput>
   }
 
+  export type BankAccountCreateWithoutPaymentsInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
+  }
+
+  export type BankAccountUncheckedCreateWithoutPaymentsInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
+  }
+
+  export type BankAccountCreateOrConnectWithoutPaymentsInput = {
+    where: BankAccountWhereUniqueInput
+    create: XOR<BankAccountCreateWithoutPaymentsInput, BankAccountUncheckedCreateWithoutPaymentsInput>
+  }
+
   export type StaffCreateWithoutCreatedPaymentsInput = {
     id?: string
     name: string
@@ -52177,6 +55318,7 @@ export namespace Prisma {
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedPaymentsInput = {
@@ -52200,6 +55342,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedPaymentsInput = {
@@ -52384,6 +55527,39 @@ export namespace Prisma {
     periodValues?: InvestmentPeriodValueUncheckedUpdateManyWithoutCompanyNestedInput
   }
 
+  export type BankAccountUpsertWithoutPaymentsInput = {
+    update: XOR<BankAccountUpdateWithoutPaymentsInput, BankAccountUncheckedUpdateWithoutPaymentsInput>
+    create: XOR<BankAccountCreateWithoutPaymentsInput, BankAccountUncheckedCreateWithoutPaymentsInput>
+    where?: BankAccountWhereInput
+  }
+
+  export type BankAccountUpdateToOneWithWhereWithoutPaymentsInput = {
+    where?: BankAccountWhereInput
+    data: XOR<BankAccountUpdateWithoutPaymentsInput, BankAccountUncheckedUpdateWithoutPaymentsInput>
+  }
+
+  export type BankAccountUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
+  }
+
+  export type BankAccountUncheckedUpdateWithoutPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
+  }
+
   export type StaffUpsertWithoutCreatedPaymentsInput = {
     update: XOR<StaffUpdateWithoutCreatedPaymentsInput, StaffUncheckedUpdateWithoutCreatedPaymentsInput>
     create: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
@@ -52416,6 +55592,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedPaymentsInput = {
@@ -52439,6 +55616,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type CustomerCreateWithoutDiscountsInput = {
@@ -52621,6 +55799,7 @@ export namespace Prisma {
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedDiscountsInput = {
@@ -52644,6 +55823,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedDiscountsInput = {
@@ -52860,6 +56040,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedDiscountsInput = {
@@ -52883,6 +56064,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type VegCreateWithoutPaymentsInput = {
@@ -52943,6 +56125,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedVegPaymentsInput = {
@@ -52966,6 +56149,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedVegPaymentsInput = {
@@ -53048,6 +56232,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedVegPaymentsInput = {
@@ -53071,6 +56256,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type VegCreateWithoutDiscountsInput = {
@@ -53131,6 +56317,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedVegDiscountsInput = {
@@ -53154,6 +56341,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedVegDiscountsInput = {
@@ -53236,6 +56424,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedVegDiscountsInput = {
@@ -53259,6 +56448,7 @@ export namespace Prisma {
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateWithoutBillsInput = {
@@ -53282,6 +56472,7 @@ export namespace Prisma {
     createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutBillsInput = {
@@ -53305,6 +56496,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutBillsInput = {
@@ -53372,6 +56564,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutBillsInput = {
@@ -53395,6 +56588,7 @@ export namespace Prisma {
     createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type BillFileUpsertWithWhereUniqueWithoutBillInput = {
@@ -53547,6 +56741,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
   }
 
@@ -53555,6 +56750,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -53956,6 +57152,382 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentCreateWithoutBankAccountInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutBankAccountInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    investmentCompanyId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateOrConnectWithoutBankAccountInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput>
+  }
+
+  export type PaymentCreateManyBankAccountInputEnvelope = {
+    data: PaymentCreateManyBankAccountInput | PaymentCreateManyBankAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BankTransferCreateWithoutPaidAccountInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    receivedAccount: BankAccountCreateNestedOneWithoutTransfersReceivedInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedBankTransfersInput
+  }
+
+  export type BankTransferUncheckedCreateWithoutPaidAccountInput = {
+    id?: string
+    date: Date | string
+    receivedAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferCreateOrConnectWithoutPaidAccountInput = {
+    where: BankTransferWhereUniqueInput
+    create: XOR<BankTransferCreateWithoutPaidAccountInput, BankTransferUncheckedCreateWithoutPaidAccountInput>
+  }
+
+  export type BankTransferCreateManyPaidAccountInputEnvelope = {
+    data: BankTransferCreateManyPaidAccountInput | BankTransferCreateManyPaidAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BankTransferCreateWithoutReceivedAccountInput = {
+    id?: string
+    date: Date | string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paidAccount: BankAccountCreateNestedOneWithoutTransfersPaidInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedBankTransfersInput
+  }
+
+  export type BankTransferUncheckedCreateWithoutReceivedAccountInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferCreateOrConnectWithoutReceivedAccountInput = {
+    where: BankTransferWhereUniqueInput
+    create: XOR<BankTransferCreateWithoutReceivedAccountInput, BankTransferUncheckedCreateWithoutReceivedAccountInput>
+  }
+
+  export type BankTransferCreateManyReceivedAccountInputEnvelope = {
+    data: BankTransferCreateManyReceivedAccountInput | BankTransferCreateManyReceivedAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PaymentUpsertWithWhereUniqueWithoutBankAccountInput = {
+    where: PaymentWhereUniqueInput
+    update: XOR<PaymentUpdateWithoutBankAccountInput, PaymentUncheckedUpdateWithoutBankAccountInput>
+    create: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput>
+  }
+
+  export type PaymentUpdateWithWhereUniqueWithoutBankAccountInput = {
+    where: PaymentWhereUniqueInput
+    data: XOR<PaymentUpdateWithoutBankAccountInput, PaymentUncheckedUpdateWithoutBankAccountInput>
+  }
+
+  export type PaymentUpdateManyWithWhereWithoutBankAccountInput = {
+    where: PaymentScalarWhereInput
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutBankAccountInput>
+  }
+
+  export type BankTransferUpsertWithWhereUniqueWithoutPaidAccountInput = {
+    where: BankTransferWhereUniqueInput
+    update: XOR<BankTransferUpdateWithoutPaidAccountInput, BankTransferUncheckedUpdateWithoutPaidAccountInput>
+    create: XOR<BankTransferCreateWithoutPaidAccountInput, BankTransferUncheckedCreateWithoutPaidAccountInput>
+  }
+
+  export type BankTransferUpdateWithWhereUniqueWithoutPaidAccountInput = {
+    where: BankTransferWhereUniqueInput
+    data: XOR<BankTransferUpdateWithoutPaidAccountInput, BankTransferUncheckedUpdateWithoutPaidAccountInput>
+  }
+
+  export type BankTransferUpdateManyWithWhereWithoutPaidAccountInput = {
+    where: BankTransferScalarWhereInput
+    data: XOR<BankTransferUpdateManyMutationInput, BankTransferUncheckedUpdateManyWithoutPaidAccountInput>
+  }
+
+  export type BankTransferUpsertWithWhereUniqueWithoutReceivedAccountInput = {
+    where: BankTransferWhereUniqueInput
+    update: XOR<BankTransferUpdateWithoutReceivedAccountInput, BankTransferUncheckedUpdateWithoutReceivedAccountInput>
+    create: XOR<BankTransferCreateWithoutReceivedAccountInput, BankTransferUncheckedCreateWithoutReceivedAccountInput>
+  }
+
+  export type BankTransferUpdateWithWhereUniqueWithoutReceivedAccountInput = {
+    where: BankTransferWhereUniqueInput
+    data: XOR<BankTransferUpdateWithoutReceivedAccountInput, BankTransferUncheckedUpdateWithoutReceivedAccountInput>
+  }
+
+  export type BankTransferUpdateManyWithWhereWithoutReceivedAccountInput = {
+    where: BankTransferScalarWhereInput
+    data: XOR<BankTransferUpdateManyMutationInput, BankTransferUncheckedUpdateManyWithoutReceivedAccountInput>
+  }
+
+  export type BankAccountCreateWithoutTransfersPaidInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutBankAccountInput
+    transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
+  }
+
+  export type BankAccountUncheckedCreateWithoutTransfersPaidInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
+    transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
+  }
+
+  export type BankAccountCreateOrConnectWithoutTransfersPaidInput = {
+    where: BankAccountWhereUniqueInput
+    create: XOR<BankAccountCreateWithoutTransfersPaidInput, BankAccountUncheckedCreateWithoutTransfersPaidInput>
+  }
+
+  export type BankAccountCreateWithoutTransfersReceivedInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
+  }
+
+  export type BankAccountUncheckedCreateWithoutTransfersReceivedInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
+  }
+
+  export type BankAccountCreateOrConnectWithoutTransfersReceivedInput = {
+    where: BankAccountWhereUniqueInput
+    create: XOR<BankAccountCreateWithoutTransfersReceivedInput, BankAccountUncheckedCreateWithoutTransfersReceivedInput>
+  }
+
+  export type StaffCreateWithoutCreatedBankTransfersInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedBankTransfersInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedBankTransfersInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedBankTransfersInput, StaffUncheckedCreateWithoutCreatedBankTransfersInput>
+  }
+
+  export type BankAccountUpsertWithoutTransfersPaidInput = {
+    update: XOR<BankAccountUpdateWithoutTransfersPaidInput, BankAccountUncheckedUpdateWithoutTransfersPaidInput>
+    create: XOR<BankAccountCreateWithoutTransfersPaidInput, BankAccountUncheckedCreateWithoutTransfersPaidInput>
+    where?: BankAccountWhereInput
+  }
+
+  export type BankAccountUpdateToOneWithWhereWithoutTransfersPaidInput = {
+    where?: BankAccountWhereInput
+    data: XOR<BankAccountUpdateWithoutTransfersPaidInput, BankAccountUncheckedUpdateWithoutTransfersPaidInput>
+  }
+
+  export type BankAccountUpdateWithoutTransfersPaidInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutBankAccountNestedInput
+    transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
+  }
+
+  export type BankAccountUncheckedUpdateWithoutTransfersPaidInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
+    transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
+  }
+
+  export type BankAccountUpsertWithoutTransfersReceivedInput = {
+    update: XOR<BankAccountUpdateWithoutTransfersReceivedInput, BankAccountUncheckedUpdateWithoutTransfersReceivedInput>
+    create: XOR<BankAccountCreateWithoutTransfersReceivedInput, BankAccountUncheckedCreateWithoutTransfersReceivedInput>
+    where?: BankAccountWhereInput
+  }
+
+  export type BankAccountUpdateToOneWithWhereWithoutTransfersReceivedInput = {
+    where?: BankAccountWhereInput
+    data: XOR<BankAccountUpdateWithoutTransfersReceivedInput, BankAccountUncheckedUpdateWithoutTransfersReceivedInput>
+  }
+
+  export type BankAccountUpdateWithoutTransfersReceivedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
+  }
+
+  export type BankAccountUncheckedUpdateWithoutTransfersReceivedInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
+  }
+
+  export type StaffUpsertWithoutCreatedBankTransfersInput = {
+    update: XOR<StaffUpdateWithoutCreatedBankTransfersInput, StaffUncheckedUpdateWithoutCreatedBankTransfersInput>
+    create: XOR<StaffCreateWithoutCreatedBankTransfersInput, StaffUncheckedCreateWithoutCreatedBankTransfersInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedBankTransfersInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedBankTransfersInput, StaffUncheckedUpdateWithoutCreatedBankTransfersInput>
+  }
+
+  export type StaffUpdateWithoutCreatedBankTransfersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedBankTransfersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
   export type CustomerCreateManyDealByInput = {
     id?: string
     name: string
@@ -54037,6 +57609,7 @@ export namespace Prisma {
     customerId?: string | null
     transporterId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
@@ -54106,6 +57679,16 @@ export namespace Prisma {
     status: $Enums.DiscountStatus
     amount: Decimal | DecimalJsLike | number | string
     remarks?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    receivedAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -54361,6 +57944,7 @@ export namespace Prisma {
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
+    bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutCreatedByStaffInput = {
@@ -54369,6 +57953,7 @@ export namespace Prisma {
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54381,6 +57966,7 @@ export namespace Prisma {
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54588,6 +58174,36 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BankTransferUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccount?: BankAccountUpdateOneRequiredWithoutTransfersPaidNestedInput
+    receivedAccount?: BankAccountUpdateOneRequiredWithoutTransfersReceivedNestedInput
+  }
+
+  export type BankTransferUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    receivedAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    receivedAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DispatchCreateManyTransporterInput = {
     id?: string
     dispatchNumber?: string | null
@@ -54626,6 +58242,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -54755,6 +58372,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
+    bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -54763,6 +58381,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -54775,6 +58394,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -55394,6 +59014,7 @@ export namespace Prisma {
     date: Date | string
     transporterId?: string | null
     investmentCompanyId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -55655,6 +59276,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
+    bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -55663,6 +59285,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -55675,6 +59298,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -56366,6 +59990,7 @@ export namespace Prisma {
     date: Date | string
     customerId?: string | null
     transporterId?: string | null
+    bankAccountId?: string | null
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
@@ -56432,6 +60057,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
   }
 
@@ -56440,6 +60066,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -56452,6 +60079,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     customerId?: NullableStringFieldUpdateOperationsInput | string | null
     transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -56564,6 +60192,138 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type PaymentCreateManyBankAccountInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    investmentCompanyId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferCreateManyPaidAccountInput = {
+    id?: string
+    date: Date | string
+    receivedAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BankTransferCreateManyReceivedAccountInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentUpdateWithoutBankAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutBankAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutBankAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferUpdateWithoutPaidAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedAccount?: BankAccountUpdateOneRequiredWithoutTransfersReceivedNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedBankTransfersNestedInput
+  }
+
+  export type BankTransferUncheckedUpdateWithoutPaidAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferUncheckedUpdateManyWithoutPaidAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    receivedAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferUpdateWithoutReceivedAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccount?: BankAccountUpdateOneRequiredWithoutTransfersPaidNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedBankTransfersNestedInput
+  }
+
+  export type BankTransferUncheckedUpdateWithoutReceivedAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BankTransferUncheckedUpdateManyWithoutReceivedAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
 
 
   /**
@@ -56633,6 +60393,10 @@ export namespace Prisma {
      * @deprecated Use InvestmentPeriodCountOutputTypeDefaultArgs instead
      */
     export type InvestmentPeriodCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentPeriodCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BankAccountCountOutputTypeDefaultArgs instead
+     */
+    export type BankAccountCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BankAccountCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use StaffDefaultArgs instead
      */
@@ -56757,6 +60521,14 @@ export namespace Prisma {
      * @deprecated Use InvestmentPeriodValueDefaultArgs instead
      */
     export type InvestmentPeriodValueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = InvestmentPeriodValueDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BankAccountDefaultArgs instead
+     */
+    export type BankAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BankAccountDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use BankTransferDefaultArgs instead
+     */
+    export type BankTransferArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BankTransferDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

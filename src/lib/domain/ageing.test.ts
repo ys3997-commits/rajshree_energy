@@ -7,6 +7,7 @@ import {
   unpaidDueByDate,
   utcDayDiff,
 } from "./ageing";
+import { AGEING_BUCKETS, bucketIsPastCredit } from "./ageingBuckets";
 
 const asOf = new Date("2026-08-17T12:00:00.000Z");
 
@@ -29,6 +30,17 @@ describe("ageing buckets", () => {
     expect(ageingBucketKey(120)).toBe("d111_120");
     expect(ageingBucketKey(121)).toBe("d121_plus");
     expect(ageingBucketKey(400)).toBe("d121_plus");
+  });
+
+  it("marks a bucket past credit only when the whole window is overdue", () => {
+    const bucket = (key: string) =>
+      AGEING_BUCKETS.find((item) => item.key === key)!;
+    expect(bucketIsPastCredit(bucket("d21_30"), 30)).toBe(false);
+    expect(bucketIsPastCredit(bucket("d31_40"), 30)).toBe(true);
+    expect(bucketIsPastCredit(bucket("d11_20"), 15)).toBe(false);
+    expect(bucketIsPastCredit(bucket("d21_30"), 15)).toBe(true);
+    expect(bucketIsPastCredit(bucket("d1_10"), 0)).toBe(true);
+    expect(bucketIsPastCredit(bucket("d121_plus"), null)).toBe(false);
   });
 });
 

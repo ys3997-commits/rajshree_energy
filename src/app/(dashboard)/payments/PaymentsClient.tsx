@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
+import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
 import {
   createPayment,
   deletePayment,
@@ -34,6 +35,7 @@ type Opt = {
 type Direction = "RECEIVED" | "SENT" | "";
 type FormState = {
   date: string;
+  bankAccountId: string;
   partyId: string;
   direction: Direction;
   amount: string;
@@ -50,6 +52,7 @@ function todayLocal(): string {
 function emptyForm(partyId = ""): FormState {
   return {
     date: todayLocal(),
+    bankAccountId: "",
     partyId,
     direction: "" as Direction,
     amount: "",
@@ -59,6 +62,7 @@ function emptyForm(partyId = ""): FormState {
 function formFromRow(row: PaymentRow): FormState {
   return {
     date: row.date,
+    bankAccountId: row.bankAccountId ?? "",
     partyId: row.transporterId
       ? partyKey("transporter", row.transporterId)
       : row.investmentCompanyId
@@ -101,6 +105,14 @@ function resetAddFormAfterSave(form: FormState): FormState {
   };
 }
 
+function accountLabel(
+  accountName: string | null | undefined,
+  bankName: string | null | undefined,
+): string {
+  if (!accountName) return "—";
+  return bankName ? `${accountName} (${bankName})` : accountName;
+}
+
 function partyLabel(row: PaymentRow): string {
   if (row.transporterId) return `${row.customerName} — Transporter`;
   if (row.investmentCompanyId) return `${row.customerName} — Investment`;
@@ -112,30 +124,35 @@ function hasListFilters(
   dateTo: string,
   party: string,
   type: string,
+  account: string,
 ): boolean {
-  return Boolean(dateFrom || dateTo || party || type);
+  return Boolean(dateFrom || dateTo || party || type || account);
 }
 
 export function PaymentsClient({
   initial,
   exportRows,
   parties,
+  accounts,
   dateFrom,
   dateTo,
   party,
   type,
+  account,
 }: {
   initial: PaymentListResult;
   exportRows: PaymentRow[];
   parties: Opt[];
+  accounts: BankAccountBalanceRow[];
   dateFrom: string;
   dateTo: string;
   party: string;
   type: string;
+  account: string;
 }) {
   const router = useRouter();
   const { rows, total, page, pageSize, totalPages, totals } = initial;
-  const listFilters = { dateFrom, dateTo, party, type };
+  const listFilters = { dateFrom, dateTo, party, type, account };
 
   const [addForm, setAddForm] = useState(() => emptyForm());
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
@@ -170,6 +187,7 @@ export function PaymentsClient({
 
   const downloadColumns = [
     { key: "date", header: "Date" },
+    { key: "account", header: "Account" },
     { key: "customer", header: "Customer" },
     { key: "type", header: "Type" },
     { key: "amount", header: "Amount", align: "right" as const },
@@ -178,6 +196,7 @@ export function PaymentsClient({
     () =>
       exportRows.map((row) => ({
         date: formatDateDdMmYyyy(row.date),
+        account: accountLabel(row.accountName, row.bankName),
         customer: partyLabel(row),
         type: directionLabel(row.direction),
         amount: formatRs(row.amount),
@@ -196,6 +215,7 @@ export function PaymentsClient({
     const party = parsePartyKey(form.partyId);
     return {
       date: form.date,
+      bankAccountId: form.bankAccountId,
       customerId: party.kind === "customer" ? party.id : null,
       transporterId: party.kind === "transporter" ? party.id : null,
       investmentCompanyId: party.kind === "investment" ? party.id : null,
@@ -205,6 +225,7 @@ export function PaymentsClient({
   }
 
   function validate(form: FormState): string | null {
+    if (!form.bankAccountId) return "Select an account";
     if (!form.partyId) {
       return "Customer, transporter, or investment company is required";
     }
@@ -306,9 +327,9 @@ export function PaymentsClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Transactions</h1>
+        <h1 className="page-title">Transactions with others</h1>
         <TableDownloadButtons
-          title="Transactions"
+          title="Transactions with others"
           filenameBase="fund-flow-transactions"
           columns={downloadColumns}
           rows={downloadRows}
@@ -332,17 +353,63 @@ export function PaymentsClient({
           dateTo={dateTo}
           party={party}
           type={type}
+          account={account}
+          accounts={accounts}
           parties={parties}
         />
       </div>
 
       {error && <div className="error-box">{error}</div>}
 
+      <section className="extra-information" aria-label="Extra information">
+        <h2 className="extra-information-title">Extra information</h2>
+        {accounts.length === 0 ? (
+          <p>No bank accounts yet. Add one under Bank.</p>
+        ) : (
+          <div className="detail-stat-row">
+            {accounts.map((account) => {
+              const selectedId = editingId
+                ? editForm.bankAccountId
+                : addForm.bankAccountId;
+              const negative = Number(account.balance) < 0;
+              return (
+                <button
+                  key={account.id}
+                  type="button"
+                  className="detail-stat"
+                  aria-pressed={selectedId === account.id}
+                  onClick={() => {
+                    if (editingId) {
+                      setEditForm({ ...editForm, bankAccountId: account.id });
+                    } else {
+                      setAddForm({ ...addForm, bankAccountId: account.id });
+                    }
+                  }}
+                >
+                  <span className="detail-stat-label">{account.accountName}</span>
+                  <span className="extra-information-bank">{account.bankName}</span>
+                  <span
+                    className={
+                      negative
+                        ? "detail-stat-value fund-type-out"
+                        : "detail-stat-value"
+                    }
+                  >
+                    {formatRs(account.balance)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       <div className="table-wrap payments-table-wrap">
         <div className="table-h-scroll"><table className="data payments-table">
           <thead>
             <tr>
               <th>Date</th>
+              <th>Account</th>
               <th>Customer</th>
               <th>Type</th>
               <th className="cell-num">Amount</th>
@@ -363,6 +430,25 @@ export function PaymentsClient({
                     setAddForm({ ...addForm, date: e.target.value })
                   }
                 />
+              </td>
+              <td className="payment-account-cell">
+                <select
+                  form="payment-add-form"
+                  required
+                  className="field-input"
+                  aria-label="Account"
+                  value={addForm.bankAccountId}
+                  onChange={(e) =>
+                    setAddForm({ ...addForm, bankAccountId: e.target.value })
+                  }
+                >
+                  <option value="">Select account</option>
+                  {accounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {accountLabel(account.accountName, account.bankName)}
+                    </option>
+                  ))}
+                </select>
               </td>
               <td>
                 <SearchableSelect
@@ -453,6 +539,28 @@ export function PaymentsClient({
                           }
                         />
                       </td>
+                      <td className="payment-account-cell">
+                        <select
+                          form="payment-edit-form"
+                          required
+                          className="field-input"
+                          aria-label="Account"
+                          value={editForm.bankAccountId}
+                          onChange={(e) =>
+                            setEditForm({
+                              ...editForm,
+                              bankAccountId: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select account</option>
+                          {accounts.map((account) => (
+                            <option key={account.id} value={account.id}>
+                              {accountLabel(account.accountName, account.bankName)}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
                       <td>
                         <SearchableSelect
                           form="payment-edit-form"
@@ -523,6 +631,7 @@ export function PaymentsClient({
                   ) : (
                     <>
                       <td>{formatDateDdMmYyyy(row.date)}</td>
+                      <td>{accountLabel(row.accountName, row.bankName)}</td>
                       <td>
                         <PartyNameLink
                           customerId={row.customerId}
@@ -565,8 +674,8 @@ export function PaymentsClient({
 
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5}>
-                  {hasListFilters(dateFrom, dateTo, party, type)
+                <td colSpan={6}>
+                  {hasListFilters(dateFrom, dateTo, party, type, account)
                     ? "No payments match these filters."
                     : "No payments yet."}
                 </td>

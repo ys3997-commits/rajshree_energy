@@ -7,6 +7,7 @@ import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import { CustomerCategory } from "@/generated/prisma";
 import {
   AGEING_BUCKETS,
+  bucketIsPastCredit,
   type AgeingBucketKey,
   type AgeingReportRow,
 } from "@/lib/domain/ageingBuckets";
@@ -15,11 +16,15 @@ import {
   ageingWhatsAppLinks,
   type AgeingWhatsAppInput,
 } from "@/lib/domain/ageingWhatsApp";
+import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
 import { capitalizeName, formatAmount } from "@/lib/domain/format";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 
 type CategoryFilter = "" | "industry" | "trader";
+type DueFilter = "" | "overdue";
 type SortKey = "name" | "totalDue" | AgeingBucketKey;
+
+const UNASSIGNED_SALE_EXECUTIVE = "__unassigned__";
 type SortDir = "asc" | "desc";
 
 const NUMERIC_SORT_KEYS: ReadonlySet<SortKey> = new Set([
@@ -42,6 +47,17 @@ function formatBucket(value: string): string {
   return numericValue(value) === 0 ? "—" : formatAmount(value);
 }
 
+function saleExecutiveLabel(value: string | null | undefined): string {
+  const name = value?.trim();
+  if (!name) return "Unassigned";
+  return capitalizeName(name) ?? name;
+}
+
+function pastCreditTitle(creditDays: number): string {
+  if (creditDays <= 0) return "No credit period. This amount is overdue.";
+  return `Past the ${creditDays}-day credit period.`;
+}
+
 function emptyTotals(): Record<AgeingBucketKey, number> {
   return Object.fromEntries(AGEING_BUCKETS.map((b) => [b.key, 0])) as Record<
     AgeingBucketKey,
@@ -51,13 +67,17 @@ function emptyTotals(): Record<AgeingBucketKey, number> {
 
 export function AgeingReportClient({
   rows,
+  allowedSaleExecutives,
   canMessageOwner,
 }: {
   rows: AgeingReportRow[];
+  allowedSaleExecutives: ExecScopeFilter;
   canMessageOwner: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("");
+  const [saleExecutiveFilter, setSaleExecutiveFilter] = useState("");
+  const [dueFilter, setDueFilter] = useState<DueFilter>("");
   const [sectorFilter, setSectorFilter] = useState("");
   const [stateFilter, setStateFilter] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("name");
@@ -82,6 +102,32 @@ export function AgeingReportClient({
     }
     return true;
   }
+
+  const saleExecutiveOptions = useMemo(() => {
+    const names = new Set<string>();
+    let unassigned = false;
+    for (const row of rows) {
+      const name = row.saleExecutive?.trim();
+      if (name) names.add(name);
+      else unassigned = true;
+    }
+    const fromRows = [...names].sort((a, b) => a.localeCompare(b));
+    const named =
+      allowedSaleExecutives === "all"
+        ? fromRows
+        : fromRows.filter((name) =>
+            allowedSaleExecutives.some(
+              (allowed) =>
+                allowed.trim().toLowerCase() === name.toLowerCase(),
+            ),
+          );
+    return unassigned
+      ? [...named, UNASSIGNED_SALE_EXECUTIVE]
+      : named;
+  }, [allowedSaleExecutives, rows]);
+
+  const showSaleExecutiveFilter =
+    allowedSaleExecutives === "all" || allowedSaleExecutives.length > 1;
 
   const sectorOptions = useMemo(() => {
     const names = new Set<string>();
@@ -108,6 +154,17 @@ export function AgeingReportClient({
     const q = query.trim().toLowerCase();
     const matched = rows.filter((row) => {
       if (!matchesCategory(row)) return false;
+      if (saleExecutiveFilter === UNASSIGNED_SALE_EXECUTIVE) {
+        if (row.saleExecutive?.trim()) return false;
+      } else if (
+        saleExecutiveFilter &&
+        (row.saleExecutive?.trim() ?? "") !== saleExecutiveFilter
+      ) {
+        return false;
+      }
+      if (dueFilter === "overdue" && numericValue(row.overdue) <= 0) {
+        return false;
+      }
       if (sectorFilter && (row.sector?.trim() ?? "") !== sectorFilter) {
         return false;
       }
@@ -120,11 +177,24 @@ export function AgeingReportClient({
     const dir = sortDir === "asc" ? 1 : -1;
     return [...matched].sort((a, b) => {
       if (sortKey === "name") {
-        return a.name.localeCompare(b.name) * dir;
+        return (
+          a.name.localeCompare(b.name, undefined, { sensitivity: "base" }) *
+          dir
+        );
       }
       return (numericValue(a[sortKey]) - numericValue(b[sortKey])) * dir;
     });
-  }, [categoryFilter, query, rows, sectorFilter, sortDir, sortKey, stateFilter]);
+  }, [
+    categoryFilter,
+    dueFilter,
+    query,
+    rows,
+    saleExecutiveFilter,
+    sectorFilter,
+    sortDir,
+    sortKey,
+    stateFilter,
+  ]);
 
   const totals = useMemo(() => {
     const buckets = emptyTotals();
@@ -140,6 +210,7 @@ export function AgeingReportClient({
 
   const exportColumns = [
     { key: "customer", header: "Customer" },
+    { key: "saleExecutive", header: "Sales executive" },
     { key: "totalDue", header: "Total due", align: "right" as const },
     ...AGEING_BUCKETS.map((bucket) => ({
       key: bucket.key,
@@ -152,6 +223,7 @@ export function AgeingReportClient({
     () =>
       filtered.map((row) => ({
         customer: row.name,
+        saleExecutive: saleExecutiveLabel(row.saleExecutive),
         totalDue: formatAmount(row.totalDue),
         ...Object.fromEntries(
           AGEING_BUCKETS.map((bucket) => [
@@ -226,6 +298,34 @@ export function AgeingReportClient({
             <option value="">All</option>
             <option value="industry">Industry</option>
             <option value="trader">Trader</option>
+          </select>
+        </label>
+        {showSaleExecutiveFilter && (
+          <label>
+            Sales executive
+            <select
+              value={saleExecutiveFilter}
+              onChange={(e) => setSaleExecutiveFilter(e.target.value)}
+            >
+              <option value="">All</option>
+              {saleExecutiveOptions.map((name) => (
+                <option key={name} value={name}>
+                  {name === UNASSIGNED_SALE_EXECUTIVE
+                    ? "Unassigned"
+                    : (capitalizeName(name) ?? name)}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        <label>
+          Due
+          <select
+            value={dueFilter}
+            onChange={(e) => setDueFilter(e.target.value as DueFilter)}
+          >
+            <option value="">All</option>
+            <option value="overdue">Overdue only</option>
           </select>
         </label>
         <label>
@@ -379,11 +479,28 @@ export function AgeingReportClient({
                     <td className="cell-num ageing-total-col">
                       {formatAmount(row.totalDue)}
                     </td>
-                    {AGEING_BUCKETS.map((bucket) => (
-                      <td key={bucket.key} className="cell-num">
-                        {formatBucket(row[bucket.key])}
-                      </td>
-                    ))}
+                    {AGEING_BUCKETS.map((bucket) => {
+                      const pastCredit =
+                        numericValue(row[bucket.key]) !== 0 &&
+                        bucketIsPastCredit(bucket, row.creditDays);
+                      return (
+                        <td
+                          key={bucket.key}
+                          className={
+                            pastCredit
+                              ? "cell-num ageing-past-credit"
+                              : "cell-num"
+                          }
+                          title={
+                            pastCredit && row.creditDays != null
+                              ? pastCreditTitle(row.creditDays)
+                              : undefined
+                          }
+                        >
+                          {formatBucket(row[bucket.key])}
+                        </td>
+                      );
+                    })}
                     <td className="collection-whatsapp-col">
                       <AgeingWhatsAppButton
                         links={paymentWaLinks}

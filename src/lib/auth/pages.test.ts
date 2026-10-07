@@ -95,8 +95,14 @@ describe("canAccessPath", () => {
     );
     expect(canAccessPath(["payments-discount"], "/payments/discount")).toBe(true);
     expect(canAccessPath(["payments-discount"], "/payments")).toBe(false);
+    expect(canAccessPath(["payments-transactions"], "/payments/transaction")).toBe(
+      false,
+    );
+    expect(canAccessPath(["bank-transfer"], "/payments/transaction")).toBe(true);
+    expect(canAccessPath(["bank-transfer"], "/payments")).toBe(false);
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/transaction")).toBe(true);
   });
 
   it("scopes master options sub-pages separately", () => {
@@ -145,7 +151,9 @@ describe("canAccessPath", () => {
 
   it("allows master entity pages when the key is granted", () => {
     expect(canAccessPath(["customers"], "/customers")).toBe(true);
+    expect(canAccessPath(["bank-accounts"], "/bank-accounts")).toBe(true);
     expect(canAccessPath(["vessels"], "/vessels")).toBe(true);
+    expect(canAccessPath(["customers"], "/bank-accounts")).toBe(false);
     expect(canAccessPath(["veg"], "/veg")).toBe(true);
     expect(canAccessPath(["options-ports"], "/customers")).toBe(false);
     expect(canAccessPath(["customers"], "/veg")).toBe(false);

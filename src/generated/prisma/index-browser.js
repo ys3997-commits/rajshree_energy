@@ -400,6 +400,7 @@ exports.Prisma.PaymentScalarFieldEnum = {
   customerId: 'customerId',
   transporterId: 'transporterId',
   investmentCompanyId: 'investmentCompanyId',
+  bankAccountId: 'bankAccountId',
   createdByStaffId: 'createdByStaffId',
   direction: 'direction',
   amount: 'amount',
@@ -506,6 +507,26 @@ exports.Prisma.InvestmentPeriodValueScalarFieldEnum = {
   periodId: 'periodId',
   amount: 'amount',
   interest: 'interest',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BankAccountScalarFieldEnum = {
+  id: 'id',
+  accountName: 'accountName',
+  bankName: 'bankName',
+  openingBalance: 'openingBalance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BankTransferScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  paidAccountId: 'paidAccountId',
+  receivedAccountId: 'receivedAccountId',
+  amount: 'amount',
+  createdByStaffId: 'createdByStaffId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -623,7 +644,9 @@ exports.Prisma.ModelName = {
   InvestmentCompany: 'InvestmentCompany',
   InvestmentOpenDue: 'InvestmentOpenDue',
   InvestmentPeriod: 'InvestmentPeriod',
-  InvestmentPeriodValue: 'InvestmentPeriodValue'
+  InvestmentPeriodValue: 'InvestmentPeriodValue',
+  BankAccount: 'BankAccount',
+  BankTransfer: 'BankTransfer'
 };
 
 /**

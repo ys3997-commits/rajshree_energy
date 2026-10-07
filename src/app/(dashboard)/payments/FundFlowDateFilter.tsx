@@ -20,6 +20,12 @@ type PartyOpt = {
   category?: CustomerCategory;
 };
 
+type AccountOpt = {
+  id: string;
+  accountName: string;
+  bankName: string;
+};
+
 export function FundFlowDateFilter({
   section,
   dateFrom,
@@ -27,6 +33,8 @@ export function FundFlowDateFilter({
   party,
   type,
   parties,
+  account = "",
+  accounts = [],
 }: {
   section: PaymentsSection;
   dateFrom: string;
@@ -34,9 +42,13 @@ export function FundFlowDateFilter({
   party: string;
   type: string;
   parties: PartyOpt[];
+  account?: string;
+  accounts?: AccountOpt[];
 }) {
   const [partyId, setPartyId] = useState(party);
-  const hasFilters = Boolean(dateFrom || dateTo || party || type);
+  const hasFilters = Boolean(
+    dateFrom || dateTo || party || type || (section === "transactions" && account),
+  );
 
   const partyOptions = useMemo(
     () => [
@@ -77,6 +89,19 @@ export function FundFlowDateFilter({
           min={dateFrom || undefined}
         />
       </label>
+      {section === "transactions" ? (
+        <label className="fund-flow-party-filter">
+          Account
+          <select name="account" defaultValue={account} className="field-input">
+            <option value="">All accounts</option>
+            {accounts.map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.accountName} ({row.bankName})
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
       <label className="fund-flow-party-filter">
         Customer
         <SearchableSelect
