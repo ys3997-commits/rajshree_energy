@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandMark } from "@/components/BrandMark";
+import { markBrowserSession } from "@/lib/auth/browserSession";
 import { signInWithStaffPassword, signOutStaff } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 
@@ -27,6 +28,7 @@ export default function LoginPage() {
 
       if (!signInError) {
         await signOutStaff();
+        markBrowserSession();
         setLoading(false);
         router.push("/");
         router.refresh();
@@ -39,6 +41,7 @@ export default function LoginPage() {
 
     if (staff.ok) {
       await supabase.auth.signOut();
+      markBrowserSession();
       router.push(staff.href);
       router.refresh();
       return;

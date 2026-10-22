@@ -1,3 +1,4 @@
+import { asSessionCookie } from "@/lib/auth/browserSession";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
@@ -16,7 +17,7 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
+              cookieStore.set(name, value, asSessionCookie(options)),
             );
           } catch {
             // Called from a Server Component — middleware will refresh sessions.

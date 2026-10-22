@@ -1,3 +1,4 @@
+import { EndSessionOnNewVisit } from "@/components/EndSessionOnNewVisit";
 import type { Metadata } from "next";
 import { Geist_Mono, Newsreader, Outfit } from "next/font/google";
 import "./globals.css";
@@ -41,7 +42,10 @@ export default function RootLayout({
       lang="en"
       className={`${outfit.variable} ${newsreader.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="h-full min-h-full">{children}</body>
+      <body className="h-full min-h-full">
+        <EndSessionOnNewVisit />
+        {children}
+      </body>
     </html>
   );
 }
