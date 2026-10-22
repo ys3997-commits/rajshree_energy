@@ -7,7 +7,7 @@ import {
   lineProfit,
   toDecimal,
 } from "@/lib/domain/computations";
-import { ensureDispatchNumbers, listDispatchReconciliationFlags } from "@/lib/actions/dispatch";
+import { ensureDispatchNumbers } from "@/lib/actions/dispatch";
 import { getCurrentAccess } from "@/lib/auth/access";
 import {
   canEditPurchaseChecklist,
@@ -202,14 +202,11 @@ export async function listDispatches(filters: DispatchFilters = {}) {
         })
       : rows;
 
-  const flags = await listDispatchReconciliationFlags(
-    filteredRows.map((row) => row.id),
-  );
   const statusFilteredRows =
     filters.reconciliationStatus === "RECONCILED"
-      ? filteredRows.filter((row) => flags.get(row.id)?.reconciled)
+      ? filteredRows.filter((row) => row.reconciled)
       : filters.reconciliationStatus === "PENDING"
-        ? filteredRows.filter((row) => !flags.get(row.id)?.reconciled)
+        ? filteredRows.filter((row) => !row.reconciled)
         : filteredRows;
 
   return statusFilteredRows.map((row) => {
@@ -223,9 +220,9 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       row.vessel.qualityClass ??
       row.order?.qualityClass ??
       null;
-    const reconciliation = flags.get(row.id) ?? {
-      reconciled: false,
-      reconciliationCompletedAt: null,
+    const reconciliation = {
+      reconciled: row.reconciled,
+      reconciliationCompletedAt: row.reconciliationCompletedAt,
     };
 
     return {

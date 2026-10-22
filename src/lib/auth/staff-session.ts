@@ -94,4 +94,7 @@ export function staffSessionCookieOptions() {
   };
 }
 
+/** Set by middleware so pages do not call Supabase Auth again. */
+export const AUTH_USER_HEADER = "x-re-auth-user";
+
 export { COOKIE_NAME as STAFF_SESSION_COOKIE, MAX_AGE_SECONDS };

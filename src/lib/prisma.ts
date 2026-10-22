@@ -30,6 +30,9 @@ function datasourceUrl(): string | undefined {
   if (!url) return url;
   let next = url;
   const join = () => (next.includes("?") ? "&" : "?");
+  if (!/[?&]connection_limit=/.test(next)) {
+    next += `${join()}connection_limit=5`;
+  }
   if (!/[?&]pool_timeout=/.test(next)) {
     next += `${join()}pool_timeout=20`;
   }
@@ -80,7 +83,7 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 /** Bump when the generated client or pool settings change so HMR drops stale sockets. */
-const PRISMA_GEN = 50;
+const PRISMA_GEN = 51;
 
 function getPrisma(): AppPrisma {
   if (globalForPrisma.prismaGen === PRISMA_GEN && globalForPrisma.prisma) {

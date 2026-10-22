@@ -61,50 +61,58 @@ function sumQtyField(
 }
 
 export default async function HomePage() {
-  const access = await getCurrentAccess();
-  const canOpen = (href: string) =>
-    canAccessPath(access.kind === "none" ? [] : access.pageKeys, href);
-
-  const overdueCharts = await getHomeOverdueCharts();
-  const dispatchCharts = await getHomeDispatchCharts();
-  const qualityStockLists = await getHomeQualityStockLists();
+  // Heavy ledger and chart reads first. The pool only allows a handful of
+  // connections, so dropdown data waits until those finish.
+  const [
+    access,
+    overdueCharts,
+    dispatchCharts,
+    qualityStockLists,
+    debtorDueByCoal,
+    todayKpis,
+  ] = await Promise.all([
+    getCurrentAccess(),
+    getHomeOverdueCharts(),
+    getHomeDispatchCharts(),
+    getHomeQualityStockLists(),
+    getHomeDebtorDueByCoal(),
+    getHomeTodayKpis(),
+  ]);
 
   const [
-    todayKpis,
     latestActivity,
     fundCharts,
     topCustomersByCoal,
     pendingBillsByOwner,
-    debtorDueByCoal,
+    customers,
+    ports,
+    vessels,
+    qualityClasses,
+    suggestedPo,
+    suggestedPurchasePo,
+    balanceOrders,
+    balancePurchases,
+    transporters,
+    suggestedDispatchNumber,
   ] = await Promise.all([
-    getHomeTodayKpis(),
     getHomeLatestActivity(),
     getHomeFundCharts(),
     getTopCustomersByCoalOrigin(7),
     getHomePendingBillsByOwner(),
-    getHomeDebtorDueByCoal(),
-  ]);
-
-  const [customers, ports, vessels, qualityClasses] = await Promise.all([
     listCustomers({ activeOnly: true }),
     listPortOptions(),
     listVessels({ activeOnly: true }),
     listQualityClasses(),
-  ]);
-
-  const [suggestedPo, suggestedPurchasePo] = await Promise.all([
     suggestNextPoNumber(),
     suggestNextPurchasePoNumber(),
-  ]);
-
-  const [balanceOrders, balancePurchases] = await Promise.all([
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
-  ]);
-  const [transporters, suggestedDispatchNumber] = await Promise.all([
     listTransporters(),
     suggestNextDispatchNumber(),
   ]);
+
+  const canOpen = (href: string) =>
+    canAccessPath(access.kind === "none" ? [] : access.pageKeys, href);
 
   const monthlyDispatches = dispatchCharts.months;
   const currentMonthDispatch = monthlyDispatches.filter((b) => b.isCurrent);

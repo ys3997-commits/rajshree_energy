@@ -353,6 +353,10 @@ model Customer {
   payments  Payment[]
   discounts Discount[]
   vegs      Veg[]
+
+  @@index([category])
+  @@index([active])
+  @@index([due])
 }
 
 /// Industry-customer veg contact and payment rate (Masters → Veg).
@@ -432,6 +436,11 @@ model Order {
   port         PortOption?   @relation(fields: [portId], references: [id])
   qualityClass QualityClass? @relation(fields: [qualityClassId], references: [id])
   dispatches   Dispatch[]
+
+  @@index([customerId])
+  @@index([qualityClassId])
+  @@index([orderStatus])
+  @@index([portId])
 }
 
 /// Purchase order (vendor / costing side). Linked to a vessel.
@@ -461,6 +470,11 @@ model PurchaseOrder {
   vessel       Vessel        @relation(fields: [vesselId], references: [id])
   qualityClass QualityClass? @relation(fields: [qualityClassId], references: [id])
   dispatches   Dispatch[]
+
+  @@index([importerId])
+  @@index([vesselId])
+  @@index([qualityClassId])
+  @@index([orderStatus])
 }
 
 model Dispatch {
@@ -517,6 +531,10 @@ model Dispatch {
   @@index([vesselId])
   @@index([purchasePoNumber])
   @@index([createdByStaffId])
+  @@index([dispatchDate, createdAt])
+  @@index([poNumber])
+  @@index([transporterId])
+  @@index([importerId])
 }
 
 /// Money received from or sent to a customer, transporter, or investment company.
@@ -545,6 +563,7 @@ model Payment {
   @@index([bankAccountId])
   @@index([createdByStaffId])
   @@index([date])
+  @@index([direction, date])
 }
 
 /// Discount received from or paid to a customer, transporter, or investment company.

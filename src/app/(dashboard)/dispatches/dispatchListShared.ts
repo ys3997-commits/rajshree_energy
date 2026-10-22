@@ -535,6 +535,10 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     balanceOrders,
     balancePurchases,
     ports,
+    transporters,
+    suggestedPo,
+    suggestedPurchasePo,
+    suggestedDispatchNumber,
   ] = await Promise.all([
     listDispatches(filters),
     listCustomers({ activeOnly: true }),
@@ -542,15 +546,11 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     listOrdersWithBalance(),
     listPurchaseOrdersWithBalance(),
     listPortOptions(),
+    listTransporters(),
+    suggestNextPoNumber(),
+    suggestNextPurchasePoNumber(),
+    suggestNextDispatchNumber(),
   ]);
-
-  const [transporters, suggestedPo, suggestedPurchasePo, suggestedDispatchNumber] =
-    await Promise.all([
-      listTransporters(),
-      suggestNextPoNumber(),
-      suggestNextPurchasePoNumber(),
-      suggestNextDispatchNumber(),
-    ]);
 
   const customerOpts = customers.map((c) => ({
     id: c.id,

@@ -1,10 +1,12 @@
-import { cookies } from "next/headers";
+import { cache } from "react";
+import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { canAccessPath, firstAllowedPath, staffHasPageKey } from "@/lib/auth/pages";
 import { normalizeStoredExecScope } from "@/lib/auth/report-exec-access";
 import type { Access } from "@/lib/auth/types";
 import {
+  AUTH_USER_HEADER,
   STAFF_SESSION_COOKIE,
   createStaffSessionToken,
   readStaffIdFromToken,
@@ -14,19 +16,39 @@ import { AccessDeniedError } from "@/lib/auth/errors";
 
 export { AccessDeniedError };
 
-export async function getCurrentAccess(): Promise<Access> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (user) {
-    return { kind: "owner", name: "Owner", pageKeys: "all" };
+const OWNER_ACCESS: Access = {
+  kind: "owner",
+  name: "Owner",
+  pageKeys: "all",
+};
+
+async function authUserHint(): Promise<"0" | "1" | null> {
+  try {
+    const value = (await headers()).get(AUTH_USER_HEADER);
+    if (value === "0" || value === "1") return value;
+  } catch {
+    // headers() is only available during a request.
   }
+  return null;
+}
+
+export const getCurrentAccess = cache(async function getCurrentAccess(): Promise<Access> {
+  const hint = await authUserHint();
+  if (hint === "1") return OWNER_ACCESS;
 
   const jar = await cookies();
   const staffId = await readStaffIdFromToken(
     jar.get(STAFF_SESSION_COOKIE)?.value,
   );
+
+  if (hint !== "0") {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) return OWNER_ACCESS;
+  }
+
   if (!staffId) return { kind: "none" };
 
   const staff = await prisma.staff.findUnique({
@@ -79,7 +101,7 @@ export async function getCurrentAccess(): Promise<Access> {
       pageKeys.includes("reports-ledger"),
     ),
   };
-}
+});
 
 export async function requireSignedIn(): Promise<Exclude<Access, { kind: "none" }>> {
   const access = await getCurrentAccess();

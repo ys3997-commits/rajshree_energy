@@ -9,6 +9,7 @@ import {
   ReceiptStatus,
 } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
+import { cache } from "react";
 import { revalidatePath } from "next/cache";
 import { prisma, type PrismaTx } from "@/lib/prisma";
 import {
@@ -311,38 +312,6 @@ function revalidateDispatchPaths() {
   revalidatePath("/reports/transport/ledger");
 }
 
-export type DispatchReconciliationFlags = {
-  reconciled: boolean;
-  reconciliationCompletedAt: Date | null;
-};
-
-export async function listDispatchReconciliationFlags(
-  ids: string[],
-): Promise<Map<string, DispatchReconciliationFlags>> {
-  const flags = new Map<string, DispatchReconciliationFlags>();
-  if (ids.length === 0) return flags;
-  const placeholders = ids.map((_, index) => `$${index + 1}`).join(", ");
-  const rows = await prisma.$queryRawUnsafe<
-    Array<{
-      id: string;
-      reconciled: boolean;
-      reconciliationCompletedAt: Date | null;
-    }>
-  >(
-    `SELECT id, reconciled, "reconciliationCompletedAt"
-     FROM "Dispatch"
-     WHERE id IN (${placeholders})`,
-    ...ids,
-  );
-  for (const row of rows) {
-    flags.set(row.id, {
-      reconciled: Boolean(row.reconciled),
-      reconciliationCompletedAt: row.reconciliationCompletedAt,
-    });
-  }
-  return flags;
-}
-
 async function updateDispatchReconciliation(
   access: Exclude<Access, { kind: "none" }>,
   id: string,
@@ -391,7 +360,7 @@ async function updateDispatchReconciliation(
  * Number existing rows from the earliest dispatch (date, then created).
  * New dispatches continue from the highest serial.
  */
-export async function ensureDispatchNumbers(): Promise<void> {
+export const ensureDispatchNumbers = cache(async function ensureDispatchNumbers(): Promise<void> {
   const missing = await prisma.dispatch.count({
     where: { dispatchNumber: null },
   });
@@ -428,7 +397,7 @@ export async function ensureDispatchNumbers(): Promise<void> {
     FROM numbered AS n, max_existing AS m
     WHERE d.id = n.id
   `;
-}
+});
 
 async function allocateDispatchNumber(
   tx: PrismaTx,

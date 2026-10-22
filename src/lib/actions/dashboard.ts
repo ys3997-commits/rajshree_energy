@@ -23,6 +23,7 @@ import {
   type AgeingMovement,
   type DueOrigin,
 } from "@/lib/domain/ageing";
+import { cache } from "react";
 import { listQualityReport } from "@/lib/actions/reports";
 
 function startOfLocalDay(d: Date): Date {
@@ -369,30 +370,32 @@ export async function getHomeDispatchCharts(): Promise<{
   const currentMonthKey = monthKey(today);
   const todayKey = homeBusinessDayKey();
 
-  const rows = await prisma.dispatch.findMany({
-    where: {
-      dispatchDate: {
-        gte: monthStart,
-        lt: monthEnd,
+  const [rows, discounts] = await Promise.all([
+    prisma.dispatch.findMany({
+      where: {
+        dispatchDate: {
+          gte: monthStart,
+          lt: monthEnd,
+        },
       },
-    },
-    select: dispatchSplitSelect,
-  });
-  const discounts = await prisma.discount.findMany({
-    where: {
-      date: {
-        gte: monthStart,
-        lt: monthEnd,
+      select: dispatchSplitSelect,
+    }),
+    prisma.discount.findMany({
+      where: {
+        date: {
+          gte: monthStart,
+          lt: monthEnd,
+        },
+        coalOrigin: { not: null },
       },
-      coalOrigin: { not: null },
-    },
-    select: {
-      date: true,
-      amount: true,
-      status: true,
-      coalOrigin: true,
-    },
-  });
+      select: {
+        date: true,
+        amount: true,
+        status: true,
+        coalOrigin: true,
+      },
+    }),
+  ]);
 
   const monthQty = new Map<string, SplitTotals>();
   const monthProfit = new Map<string, SplitTotals>();
@@ -526,6 +529,70 @@ export async function getHomeFundCharts(): Promise<{
 }
 
 /**
+ * One read of customers, dispatches, payments, and discounts for the home
+ * overdue chart and debtor-due split. Both callers share this within a request.
+ */
+const loadHomeLedger = cache(async () => {
+  const [customers, dispatches, payments, discounts] = await Promise.all([
+    prisma.customer.findMany({
+      where: {
+        category: {
+          in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
+        },
+      },
+      select: { id: true, openingDue: true, creditDays: true, due: true },
+    }),
+    prisma.dispatch.findMany({
+      select: {
+        id: true,
+        dispatchDate: true,
+        dispatchedQuantity: true,
+        createdAt: true,
+        order: {
+          select: {
+            customerId: true,
+            finalRate: true,
+            qualityClass: { select: { domestic: true } },
+          },
+        },
+        purchaseOrder: {
+          select: {
+            importerId: true,
+            finalRate: true,
+            qualityClass: { select: { domestic: true } },
+          },
+        },
+        vessel: {
+          select: { qualityClass: { select: { domestic: true } } },
+        },
+      },
+    }),
+    prisma.payment.findMany({
+      select: {
+        id: true,
+        customerId: true,
+        date: true,
+        amount: true,
+        direction: true,
+        createdAt: true,
+      },
+    }),
+    prisma.discount.findMany({
+      select: {
+        id: true,
+        customerId: true,
+        date: true,
+        amount: true,
+        status: true,
+        coalOrigin: true,
+        createdAt: true,
+      },
+    }),
+  ]);
+  return { customers, dispatches, payments, discounts };
+});
+
+/**
  * Home overdue chart: total overdue for Industry + Trader customers (excludes Vendor)
  * for each of the last 15 days. Due is reconstructed from opening + dated events;
  * credit window uses end of that day as asOf.
@@ -537,38 +604,7 @@ export async function getHomeOverdueCharts(): Promise<{
   const todayKey = homeBusinessDayKey();
   const dayStartKey = addCalendarDays(todayKey, -14);
 
-  const customers = await prisma.customer.findMany({
-    where: {
-      category: {
-        in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
-      },
-    },
-    select: { id: true, openingDue: true, creditDays: true },
-  });
-  const dispatches = await prisma.dispatch.findMany({
-    select: {
-      dispatchDate: true,
-      dispatchedQuantity: true,
-      order: { select: { customerId: true, finalRate: true } },
-      purchaseOrder: { select: { importerId: true, finalRate: true } },
-    },
-  });
-  const payments = await prisma.payment.findMany({
-    select: {
-      customerId: true,
-      date: true,
-      amount: true,
-      direction: true,
-    },
-  });
-  const discounts = await prisma.discount.findMany({
-    select: {
-      customerId: true,
-      date: true,
-      amount: true,
-      status: true,
-    },
-  });
+  const { customers, dispatches, payments, discounts } = await loadHomeLedger();
 
   type DueEvent = { day: string; delta: Decimal };
   type SupplyLine = { day: string; amount: Decimal; supplyDate: Date };
@@ -732,75 +768,12 @@ export async function getHomeDebtorDueByCoal(): Promise<HomeDebtorDueByCoal> {
     importedPercent: "0",
   };
 
-  const customers = await prisma.customer.findMany({
-    where: {
-      category: {
-        in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
-      },
-      due: { gt: 0 },
-    },
-    select: { id: true, openingDue: true },
-  });
+  const ledger = await loadHomeLedger();
+  const customers = ledger.customers.filter((customer) => customer.due.gt(0));
 
   if (customers.length === 0) return empty;
 
-  const ids = customers.map((customer) => customer.id);
-  const [dispatches, payments, discounts] = await Promise.all([
-    prisma.dispatch.findMany({
-      where: {
-        OR: [
-          { order: { customerId: { in: ids } } },
-          { purchaseOrder: { importerId: { in: ids } } },
-        ],
-      },
-      select: {
-        id: true,
-        dispatchDate: true,
-        dispatchedQuantity: true,
-        createdAt: true,
-        order: {
-          select: {
-            customerId: true,
-            finalRate: true,
-            qualityClass: { select: { domestic: true } },
-          },
-        },
-        purchaseOrder: {
-          select: {
-            importerId: true,
-            finalRate: true,
-            qualityClass: { select: { domestic: true } },
-          },
-        },
-        vessel: {
-          select: { qualityClass: { select: { domestic: true } } },
-        },
-      },
-    }),
-    prisma.payment.findMany({
-      where: { customerId: { in: ids } },
-      select: {
-        id: true,
-        customerId: true,
-        date: true,
-        amount: true,
-        direction: true,
-        createdAt: true,
-      },
-    }),
-    prisma.discount.findMany({
-      where: { customerId: { in: ids } },
-      select: {
-        id: true,
-        customerId: true,
-        date: true,
-        amount: true,
-        status: true,
-        coalOrigin: true,
-        createdAt: true,
-      },
-    }),
-  ]);
+  const { dispatches, payments, discounts } = ledger;
 
   const movementsByCustomer = new Map<string, AgeingMovement[]>();
 
