@@ -19,6 +19,7 @@ import {
   reportKeysForAccessGroup,
   type ReportAccessGroup,
   TEAM_ACCESS_PAGES,
+  GRANTABLE_PAGES,
   UPDATE_SUB_PAGES,
   UPDATE_SUB_PAGE_KEYS,
   DISPATCH_SUB_PAGES,
@@ -100,7 +101,7 @@ export function PeopleManager({
   const [editing, setEditing] = useState<PeopleRow | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState<"Admin" | "Team">("Team");
   const [password, setPassword] = useState("");
   const [disableLogin, setDisableLogin] = useState(false);
   const [pageKeys, setPageKeys] = useState<string[]>([]);
@@ -139,6 +140,10 @@ export function PeopleManager({
     () => documentMenuKeysForGroups(documentGroups),
     [documentGroups],
   );
+  const fullPageKeys = useMemo(
+    () => [...GRANTABLE_PAGES.map((page) => page.key), ...documentMenuKeys],
+    [documentMenuKeys],
+  );
 
   const sortedExecutives = useMemo(
     () => [...saleExecutives].sort((a, b) => a.name.localeCompare(b.name)),
@@ -156,11 +161,18 @@ export function PeopleManager({
     );
   }, [people, query]);
 
+  const admins = filtered.filter(
+    (item) => item.role?.trim().toLowerCase() === "admin",
+  );
+  const team = filtered.filter(
+    (item) => item.role?.trim().toLowerCase() !== "admin",
+  );
+
   function openCreate() {
     setEditing(null);
     setFirstName("");
     setLastName("");
-    setRole("");
+    setRole("Team");
     setPassword("");
     setDisableLogin(false);
     setPageKeys([]);
@@ -187,7 +199,7 @@ export function PeopleManager({
     const person = splitPersonName(item.name);
     setFirstName(person.firstName);
     setLastName(person.lastName);
-    setRole(item.role ?? "");
+    setRole(item.role?.trim().toLowerCase() === "admin" ? "Admin" : "Team");
     setPassword("");
     setDisableLogin(false);
     setPageKeys(expandStaffPageKeys(item.pageKeys));
@@ -895,7 +907,15 @@ export function PeopleManager({
     e.preventDefault();
     const nextName = capitalizeName(joinPersonName(firstName, lastName));
     if (!nextName || !splitPersonName(nextName).lastName) return;
-    const nextRole = capitalizeName(role);
+    const nextRole = role;
+    const nextPages = nextRole === "Admin" ? fullPageKeys : pageKeys;
+    const everyExec = [REPORT_EXEC_ALL];
+    const nextCollection = nextRole === "Admin" ? everyExec : collectionSalesExecs;
+    const nextSalesEngine = nextRole === "Admin" ? everyExec : salesEngineSalesExecs;
+    const nextSaleOrder = nextRole === "Admin" ? everyExec : saleOrderSalesExecs;
+    const nextPurchaseOrder = nextRole === "Admin" ? everyExec : purchaseOrderSalesExecs;
+    const nextAgeing = nextRole === "Admin" ? everyExec : ageingReportSalesExecs;
+    const nextLedger = nextRole === "Admin" ? everyExec : customerLedgerSalesExecs;
     setError(null);
 
     startTransition(async () => {
@@ -903,15 +923,15 @@ export function PeopleManager({
         if (editing) {
           const row = await updateStaff(editing.id, {
             name: nextName,
-            role: nextRole || null,
+            role: nextRole,
             password: password.trim() || null,
-            pageKeys,
-            collectionSalesExecs,
-            salesEngineSalesExecs,
-            saleOrderSalesExecs,
-            purchaseOrderSalesExecs,
-            ageingReportSalesExecs,
-            customerLedgerSalesExecs,
+            pageKeys: nextPages,
+            collectionSalesExecs: nextCollection,
+            salesEngineSalesExecs: nextSalesEngine,
+            saleOrderSalesExecs: nextSaleOrder,
+            purchaseOrderSalesExecs: nextPurchaseOrder,
+            ageingReportSalesExecs: nextAgeing,
+            customerLedgerSalesExecs: nextLedger,
             disableLogin,
           });
           onChange(
@@ -922,15 +942,15 @@ export function PeopleManager({
         } else {
           const row = await createStaff({
             name: nextName,
-            role: nextRole || null,
+            role: nextRole,
             password: password.trim() || null,
-            pageKeys,
-            collectionSalesExecs,
-            salesEngineSalesExecs,
-            saleOrderSalesExecs,
-            purchaseOrderSalesExecs,
-            ageingReportSalesExecs,
-            customerLedgerSalesExecs,
+            pageKeys: nextPages,
+            collectionSalesExecs: nextCollection,
+            salesEngineSalesExecs: nextSalesEngine,
+            saleOrderSalesExecs: nextSaleOrder,
+            purchaseOrderSalesExecs: nextPurchaseOrder,
+            ageingReportSalesExecs: nextAgeing,
+            customerLedgerSalesExecs: nextLedger,
           });
           onChange(
             [...people, toRow(row)].sort((a, b) => a.name.localeCompare(b.name)),
@@ -974,57 +994,8 @@ export function PeopleManager({
         </button>
       </div>
 
-      <div className="table-wrap">
-        <div className="table-h-scroll"><table className="data">
-          <thead>
-            <tr>
-              <th>First name</th>
-              <th>Last name</th>
-              <th>Role</th>
-              <th>Username</th>
-              <th>Pages</th>
-              <th className="options-actions-col" />
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((item) => (
-              <tr key={item.id}>
-                <td>{splitPersonName(item.name).firstName}</td>
-                <td>{splitPersonName(item.name).lastName || "—"}</td>
-                <td>{item.role ?? "—"}</td>
-                <td>{item.hasLogin ? usernameFromName(item.name) : "—"}</td>
-                <td>{item.hasLogin ? item.pageKeys.length : "—"}</td>
-                <td className="space-x-2 whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => openEdit(item)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={() => onDelete(item)}
-                    disabled={pending}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} className="options-empty">
-                  {query.trim()
-                    ? "No matches for your search."
-                    : "No people yet. Add one above."}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table></div>
-      </div>
+      <PeopleSection title="Admin" people={admins} empty="No admins yet." query={query} pending={pending} onEdit={openEdit} onDelete={onDelete} />
+      <PeopleSection title="Team" people={team} empty="No team members yet." query={query} pending={pending} onEdit={openEdit} onDelete={onDelete} />
 
       <Modal
         open={editorOpen}
@@ -1069,16 +1040,21 @@ export function PeopleManager({
             </p>
           )}
           <label className="login-field">
-            <span>Role (optional)</span>
-            <input
+            <span>Role</span>
+            <select
               className="field-input"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
-              onBlur={() => {
-                if (role.trim()) setRole(capitalizeName(role) ?? role);
-              }}
-            />
+              onChange={(e) => setRole(e.target.value === "Admin" ? "Admin" : "Team")}
+            >
+              <option value="Admin">Admin</option>
+              <option value="Team">Team</option>
+            </select>
           </label>
+          {role === "Admin" && (
+            <p className="login-username-hint">
+              Admin can open every page and change anything.
+            </p>
+          )}
           <label className="login-field">
             <span>
               {editing?.hasLogin
@@ -1108,7 +1084,7 @@ export function PeopleManager({
             </label>
           )}
 
-          {showPages && !disableLogin && (
+          {showPages && !disableLogin && role === "Team" && (
             <fieldset className="people-pages">
               <legend>Page access</legend>
 
@@ -1553,6 +1529,84 @@ function AccessPanel({
         </div>
       )}
     </div>
+  );
+}
+
+function PeopleSection({
+  title,
+  people,
+  empty,
+  query,
+  pending,
+  onEdit,
+  onDelete,
+}: {
+  title: string;
+  people: PeopleRow[];
+  empty: string;
+  query: string;
+  pending: boolean;
+  onEdit: (item: PeopleRow) => void;
+  onDelete: (item: PeopleRow) => void;
+}) {
+  return (
+    <section className="people-section">
+      <h2 className="people-section-title">{title}</h2>
+      <div className="table-wrap">
+        <div className="table-h-scroll">
+          <table className="data">
+            <thead>
+              <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Role</th>
+                <th>Username</th>
+                <th>Pages</th>
+                <th className="options-actions-col" />
+              </tr>
+            </thead>
+            <tbody>
+              {people.map((item) => {
+                const admin = item.role?.trim().toLowerCase() === "admin";
+                return (
+                  <tr key={item.id}>
+                    <td>{splitPersonName(item.name).firstName}</td>
+                    <td>{splitPersonName(item.name).lastName || "—"}</td>
+                    <td>{admin ? "Admin" : "Team"}</td>
+                    <td>{item.hasLogin ? usernameFromName(item.name) : "—"}</td>
+                    <td>{item.hasLogin ? (admin ? "All" : item.pageKeys.length) : "—"}</td>
+                    <td className="space-x-2 whitespace-nowrap">
+                      <button
+                        type="button"
+                        className="btn btn-secondary"
+                        onClick={() => onEdit(item)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => onDelete(item)}
+                        disabled={pending}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {people.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="options-empty">
+                    {query.trim() ? "No matches for your search." : empty}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   );
 }
 

@@ -41,9 +41,6 @@ export function ReconciliationListView({
       <div className="page-header">
         <div>
           <h1 className="page-title">Reconciliation</h1>
-          <p className="page-subtitle">
-            Confirm purchase and sale details, then mark each dispatch reconciled.
-          </p>
         </div>
       </div>
 

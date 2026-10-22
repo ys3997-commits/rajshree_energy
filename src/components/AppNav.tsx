@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { hasFullPower } from "@/lib/auth/fullPower";
 import type { Access } from "@/lib/auth/types";
 import { canAccessPath, hasAnyBankPageAccess, hasAnyDispatchPageAccess, hasAnyUpdatePageAccess } from "@/lib/auth/pages";
 import { BrandMark } from "@/components/BrandMark";
@@ -11,7 +12,6 @@ import { LogoutButton } from "@/components/LogoutButton";
 import {
   OPTION_CATEGORIES,
   optionsHref,
-  USER_MENU_CATEGORIES,
   USER_MENU_CATEGORY_IDS,
 } from "@/app/(dashboard)/options/optionsCategories";
 import {
@@ -43,11 +43,6 @@ const userMenuCategoryIdSet = new Set<string>(USER_MENU_CATEGORY_IDS);
 const optionsLinks: NavLeaf[] = OPTION_CATEGORIES.filter(
   (category) => !userMenuCategoryIdSet.has(category.id),
 ).map((category) => ({
-  href: optionsHref(category.id),
-  label: category.label,
-}));
-
-const usersLinks: NavLeaf[] = USER_MENU_CATEGORIES.map((category) => ({
   href: optionsHref(category.id),
   label: category.label,
 }));
@@ -388,7 +383,12 @@ function isOptionsActive(pathname: string) {
 }
 
 function isUsersActive(pathname: string) {
-  return usersLinks.some((item) => isActivePath(pathname, item.href));
+  return (
+    pathname === "/options/team" ||
+    pathname.startsWith("/options/team/") ||
+    pathname === "/options/owners" ||
+    pathname.startsWith("/options/owners/")
+  );
 }
 
 function isDocumentsActive(pathname: string) {
@@ -413,7 +413,6 @@ export function AppNav({
   const [dispatchOpen, setDispatchOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
   const [mastersOpen, setMastersOpen] = useState(false);
-  const [usersOpen, setUsersOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
   const [openSubmenuPath, setOpenSubmenuPath] = useState<string | null>(null);
   const [openMastersSubmenu, setOpenMastersSubmenu] = useState<string | null>(
@@ -427,14 +426,12 @@ export function AppNav({
   const dispatchMenuId = useId();
   const ordersMenuId = useId();
   const mastersMenuId = useId();
-  const usersMenuId = useId();
   const documentsMenuId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
   const updateRef = useRef<HTMLDivElement>(null);
   const dispatchRef = useRef<HTMLDivElement>(null);
   const ordersRef = useRef<HTMLDivElement>(null);
   const mastersRef = useRef<HTMLDivElement>(null);
-  const usersRef = useRef<HTMLDivElement>(null);
   const documentsRef = useRef<HTMLDivElement>(null);
   const reportActive =
     pathname === "/reports" || pathname.startsWith("/reports/");
@@ -447,14 +444,22 @@ export function AppNav({
   const mastersActive = isMastersActive(pathname);
   const usersActive = isUsersActive(pathname);
   const documentsActive = isDocumentsActive(pathname);
-  const allowed = (href: string) => canAccessPath(access.pageKeys, href);
+  const allowed = (href: string) =>
+    canAccessPath(hasFullPower(access) ? "all" : access.pageKeys, href);
+  const fullPower = hasFullPower(access);
   const showUpdateNav =
-    access.pageKeys === "all" || hasAnyUpdatePageAccess(access.pageKeys);
+    fullPower ||
+    access.pageKeys === "all" ||
+    hasAnyUpdatePageAccess(access.pageKeys);
   const showDispatchNav =
-    access.pageKeys === "all" || hasAnyDispatchPageAccess(access.pageKeys);
+    fullPower ||
+    access.pageKeys === "all" ||
+    hasAnyDispatchPageAccess(access.pageKeys);
   const showBankNav =
-    access.pageKeys === "all" || hasAnyBankPageAccess(access.pageKeys);
-  const showUsersNav = access.kind === "owner";
+    fullPower ||
+    access.pageKeys === "all" ||
+    hasAnyBankPageAccess(access.pageKeys);
+  const showTeamNav = fullPower;
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -463,7 +468,6 @@ export function AppNav({
     setDispatchOpen(false);
     setOrdersOpen(false);
     setMastersOpen(false);
-    setUsersOpen(false);
     setDocumentsOpen(false);
     setOpenSubmenuPath(null);
     setOpenMastersSubmenu(null);
@@ -627,32 +631,6 @@ export function AppNav({
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [reportOpen, openSubmenuPath]);
-
-  useEffect(() => {
-    if (!usersOpen) return;
-
-    function onPointerDown(event: MouseEvent) {
-      if (
-        usersRef.current &&
-        !usersRef.current.contains(event.target as Node)
-      ) {
-        setUsersOpen(false);
-      }
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setUsersOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [usersOpen]);
 
   useEffect(() => {
     if (!documentsOpen) return;
@@ -1151,45 +1129,14 @@ export function AppNav({
               </div>
             </div>
 
-            {showUsersNav && (
-            <div
-              className={`nav-dropdown${usersOpen ? " open" : ""}${usersActive ? " active" : ""}`}
-              ref={usersRef}
-            >
-              <button
-                type="button"
-                className={`nav-dropdown-trigger${usersActive ? " active" : ""}`}
-                aria-expanded={usersOpen}
-                aria-controls={usersMenuId}
-                aria-haspopup="menu"
-                onClick={() => setUsersOpen((open) => !open)}
+            {showTeamNav && (
+              <LockedLink
+                href="/options/team"
+                allowed
+                className={usersActive ? "active" : undefined}
               >
-                Users
-                <span className="nav-dropdown-caret" aria-hidden="true" />
-              </button>
-              <div
-                id={usersMenuId}
-                className="nav-dropdown-menu"
-                role="menu"
-                hidden={!usersOpen}
-              >
-                {usersLinks.map((item) => {
-                  const active = isActivePath(pathname, item.href);
-                  return (
-                    <LockedLink
-                      key={item.href}
-                      href={item.href}
-                      allowed={allowed(item.href)}
-                      role="menuitem"
-                      className={active ? "active" : undefined}
-                      onClick={() => setUsersOpen(false)}
-                    >
-                      {item.label}
-                    </LockedLink>
-                  );
-                })}
-              </div>
-            </div>
+                Team Members
+              </LockedLink>
             )}
           </nav>
         <div className="app-header-user">

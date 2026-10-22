@@ -72,9 +72,6 @@ export function DispatchListView({
         <div className="page-header">
           <div>
             <h1 className="page-title">Complete Dispatch</h1>
-            <p className="page-subtitle">
-              All truck movements, receipts, and quantity diffs.
-            </p>
           </div>
           <CreateDispatchButton
             orders={balanceOrders}

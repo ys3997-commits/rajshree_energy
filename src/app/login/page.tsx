@@ -64,13 +64,8 @@ export default function LoginPage() {
             <p className="brand">
               Yura <span>Books</span>
             </p>
-            <p className="login-brand-tag">Trading books &amp; operations</p>
           </div>
         </div>
-        <p className="lede">
-          Sign in with your username and password. Username is first name and
-          last name, for example prakash.surana.
-        </p>
 
         {error && <div className="error-box">{error}</div>}
 

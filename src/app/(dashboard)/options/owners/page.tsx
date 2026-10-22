@@ -1,5 +1,5 @@
-import { OptionsCategoryScreen } from "../OptionsCategoryScreen";
+import { redirect } from "next/navigation";
 
 export default function OwnersPage() {
-  return <OptionsCategoryScreen categoryId="owners" />;
+  redirect("/options/team");
 }

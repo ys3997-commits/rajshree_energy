@@ -8,6 +8,7 @@ import { parseFundFlowType } from "@/app/(dashboard)/payments/paymentsHref";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
+import { hasFullPower } from "@/lib/auth/fullPower";
 
 const PAGE_SIZE = 35;
 
@@ -96,7 +97,8 @@ function canModify(
   access: Exclude<Access, { kind: "none" }>,
   row: { createdAt: Date; createdByStaffId: string | null },
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
+  if (access.kind !== "staff") return false;
   return canStaffModify(access, row);
 }
 

@@ -3174,6 +3174,11 @@ table.data.transport-engine-table tbody tr:hover td {
   font-weight: 500;
 }
 
+.people-section-title {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1.05rem;
+}
+
 .people-check-row {
   display: flex;
   align-items: center;

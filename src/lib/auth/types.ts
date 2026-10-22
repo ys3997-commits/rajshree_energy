@@ -4,6 +4,7 @@ export type Access =
       kind: "staff";
       id: string;
       name: string;
+      role: "Admin" | "Team";
       pageKeys: string[];
       collectionSalesExecs: string[];
       salesEngineSalesExecs: string[];

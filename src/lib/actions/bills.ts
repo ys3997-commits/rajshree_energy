@@ -10,6 +10,7 @@ import {
   requireOwner,
   requireSignedIn,
 } from "@/lib/auth/access";
+import { hasFullPower } from "@/lib/auth/fullPower";
 import { toDecimal } from "@/lib/domain/computations";
 import {
   BILL_REAPPROVE_WITHIN_CALENDAR_DAYS,
@@ -156,7 +157,7 @@ function toBillRow(
 
 async function requireBillsAccess() {
   const access = await requireSignedIn();
-  if (access.kind === "owner") return access;
+  if (hasFullPower(access)) return access;
   if (!access.pageKeys.includes("bills")) {
     throw new AccessDeniedError();
   }
@@ -257,7 +258,7 @@ export async function listBills(options?: {
   const dateTo = parseIsoDay(options?.dateTo);
   const approver = parseBillTextFilter(options?.approver);
   const sentBy =
-    access.kind === "owner" ? parseBillTextFilter(options?.sentBy) : null;
+    hasFullPower(access) ? parseBillTextFilter(options?.sentBy) : null;
   const filterWhere = {
     ...(approver ? { approverName: approver } : {}),
     ...(sentBy ? { staffId: sentBy } : {}),
@@ -271,7 +272,7 @@ export async function listBills(options?: {
     prisma.bill.count({ where: { ...filterWhere, status: "APPROVED" } }),
     prisma.bill.count({ where: { ...filterWhere, status: "REJECTED" } }),
     prisma.bill.count({ where: listWhere }),
-    access.kind === "owner"
+    hasFullPower(access)
       ? prisma.staff.findMany({
           where: { bills: { some: {} } },
           select: { id: true, name: true },
@@ -301,7 +302,7 @@ export async function listBills(options?: {
     counts: { all, pending, approved, rejected },
     senders,
     canUpload: canUploadBill(access),
-    isOwner: access.kind === "owner",
+    isOwner: hasFullPower(access),
   };
 }
 

@@ -194,13 +194,6 @@ export function VendorAnalysisList({
           rows={exportRows}
         />
       </div>
-      <p className="filter-hint">
-        Dates filter total quantities, total margin, and margin PMT. Total
-        margin is dispatch profit plus discount received minus discount paid.
-        Total due is as of the end date when set, otherwise the current
-        outstanding.
-      </p>
-
       {filtered.length === 0 ? (
         <p className="home-empty">No vendors found.</p>
       ) : (

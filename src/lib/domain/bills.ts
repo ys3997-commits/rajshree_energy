@@ -1,3 +1,4 @@
+import { hasFullPower } from "@/lib/auth/fullPower";
 import { calendarDaysElapsedInIst } from "@/lib/auth/sameDayEntryModify";
 
 export const BILL_STATUSES = ["PENDING", "APPROVED", "REJECTED"] as const;
@@ -202,7 +203,7 @@ export function canApproveBill(
   status: string,
   options: CanApproveBillOptions = {},
 ): boolean {
-  if (access.kind !== "owner") return false;
+  if (!hasFullPower(access)) return false;
   if (status === "PENDING") return true;
   if (status !== "REJECTED") return false;
 
@@ -222,7 +223,7 @@ export function canRejectBill(
   access: { kind: string },
   status: string,
 ): boolean {
-  return access.kind === "owner" && status === "PENDING";
+  return hasFullPower(access) && status === "PENDING";
 }
 
 export function validateAccountVoucherNo(value: string): string {

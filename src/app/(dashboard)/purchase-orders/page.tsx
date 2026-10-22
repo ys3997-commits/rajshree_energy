@@ -100,9 +100,6 @@ export default async function PurchaseOrdersPage({
       <div className="page-header">
         <div>
           <h1 className="page-title">Purchase orders</h1>
-          <p className="page-subtitle">
-            Costing POs by vendor and vessel — used when dispatching.
-          </p>
         </div>
         <CreatePurchaseOrderButton
           importers={importers}

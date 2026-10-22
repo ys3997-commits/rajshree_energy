@@ -1,6 +1,7 @@
 "use server";
 
 import { requireOwner } from "@/lib/auth/access";
+import { isAdminRole } from "@/lib/auth/fullPower";
 import {
   expandStaffPageKeys,
   GRANTABLE_PAGES,
@@ -18,6 +19,7 @@ import {
   normalizeExecScopeForSave,
   normalizeStoredExecScope,
   PURCHASE_ORDERS_PAGE_KEY,
+  REPORT_EXEC_ALL,
   SALE_ORDERS_PAGE_KEY,
   SALES_ENGINE_PAGE_KEY,
   validateExecScopeForSave,
@@ -217,6 +219,42 @@ async function assertPasswordAvailable(password: string, exceptStaffId?: string)
   }
 }
 
+function staffRole(role: string | null | undefined): "Admin" | "Team" {
+  return isAdminRole(role) ? "Admin" : "Team";
+}
+
+function pagesForRole(role: "Admin" | "Team", requested: string[] | undefined): string[] {
+  if (role !== "Admin") return normalizePageKeys(requested);
+  return normalizePageKeys([
+    ...GRANTABLE_PAGES.map((page) => page.key),
+    ...(requested ?? []),
+  ]);
+}
+
+function scopesForRole(
+  role: "Admin" | "Team",
+  pageKeys: string[],
+  input: {
+    collectionSalesExecs?: string[];
+    salesEngineSalesExecs?: string[];
+    saleOrderSalesExecs?: string[];
+    purchaseOrderSalesExecs?: string[];
+    ageingReportSalesExecs?: string[];
+    customerLedgerSalesExecs?: string[];
+  },
+) {
+  const every = [REPORT_EXEC_ALL];
+  return normalizeStaffExecScopes({
+    pageKeys,
+    collectionSalesExecs: role === "Admin" ? every : input.collectionSalesExecs,
+    salesEngineSalesExecs: role === "Admin" ? every : input.salesEngineSalesExecs,
+    saleOrderSalesExecs: role === "Admin" ? every : input.saleOrderSalesExecs,
+    purchaseOrderSalesExecs: role === "Admin" ? every : input.purchaseOrderSalesExecs,
+    ageingReportSalesExecs: role === "Admin" ? every : input.ageingReportSalesExecs,
+    customerLedgerSalesExecs: role === "Admin" ? every : input.customerLedgerSalesExecs,
+  });
+}
+
 export async function listStaff() {
   await requireOwner();
   const rows = await prisma.staff.findMany({ orderBy: { name: "asc" } });
@@ -239,16 +277,9 @@ export async function createStaff(input: {
   const name = capitalizeName(input.name);
   if (!name) throw new Error("Name is required");
   const password = input.password?.trim() || "";
-  const pageKeys = normalizePageKeys(input.pageKeys);
-  const execScopes = normalizeStaffExecScopes({
-    pageKeys,
-    collectionSalesExecs: input.collectionSalesExecs,
-    salesEngineSalesExecs: input.salesEngineSalesExecs,
-    saleOrderSalesExecs: input.saleOrderSalesExecs,
-    purchaseOrderSalesExecs: input.purchaseOrderSalesExecs,
-    ageingReportSalesExecs: input.ageingReportSalesExecs,
-    customerLedgerSalesExecs: input.customerLedgerSalesExecs,
-  });
+  const role = staffRole(input.role);
+  const pageKeys = pagesForRole(role, input.pageKeys);
+  const execScopes = scopesForRole(role, pageKeys, input);
 
   let passwordHash: string | null = null;
   if (password) {
@@ -264,7 +295,7 @@ export async function createStaff(input: {
   const row = await prisma.staff.create({
     data: {
       name,
-      role: capitalizeName(input.role),
+      role,
       passwordHash,
       pageKeys: passwordHash ? pageKeys : [],
       collectionSalesExecs: passwordHash ? execScopes.collectionSalesExecs : [],
@@ -302,16 +333,9 @@ export async function updateStaff(
   const existing = await prisma.staff.findUnique({ where: { id } });
   if (!existing) throw new Error("Person not found");
 
-  const pageKeys = normalizePageKeys(input.pageKeys);
-  const execScopes = normalizeStaffExecScopes({
-    pageKeys,
-    collectionSalesExecs: input.collectionSalesExecs,
-    salesEngineSalesExecs: input.salesEngineSalesExecs,
-    saleOrderSalesExecs: input.saleOrderSalesExecs,
-    purchaseOrderSalesExecs: input.purchaseOrderSalesExecs,
-    ageingReportSalesExecs: input.ageingReportSalesExecs,
-    customerLedgerSalesExecs: input.customerLedgerSalesExecs,
-  });
+  const role = staffRole(input.role);
+  const pageKeys = pagesForRole(role, input.pageKeys);
+  const execScopes = scopesForRole(role, pageKeys, input);
   let passwordHash = existing.passwordHash;
   let nextPages = existing.pageKeys;
   let nextCollectionExecs = existing.collectionSalesExecs;
@@ -364,7 +388,7 @@ export async function updateStaff(
     where: { id },
     data: {
       name,
-      role: capitalizeName(input.role),
+      role,
       passwordHash,
       pageKeys: nextPages,
       collectionSalesExecs: nextCollectionExecs,

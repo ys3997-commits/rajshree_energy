@@ -145,7 +145,6 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
           filenameBase={`tally-entry-${filters.dispatchDate}`}
           columns={COLUMNS}
           rows={exportRows.length === 0 ? exportRows : [...exportRows, totalRow]}
-          spreadsheet="excel"
         />
       </form>
 

@@ -1,4 +1,5 @@
 import { AccessDeniedError } from "@/lib/auth/errors";
+import { hasFullPower } from "@/lib/auth/fullPower";
 import type { Access } from "@/lib/auth/types";
 
 const IST_DAY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
@@ -35,7 +36,8 @@ export function canModifySameDayEntry(
   row: SameDayEntryRow,
   options: SameDayEntryOptions = {},
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
+  if (access.kind !== "staff") return false;
   if (!row.createdByStaffId) return false;
   if (row.createdByStaffId !== access.id) return false;
   const extraCalendarDays = options.extraCalendarDays ?? 0;
@@ -52,7 +54,7 @@ export function sameDayEntryPermissions(
   return {
     canEdit,
     // Staff may edit within the window; only owner may delete.
-    canDelete: access.kind === "owner",
+    canDelete: hasFullPower(access),
   };
 }
 

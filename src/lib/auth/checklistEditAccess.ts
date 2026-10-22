@@ -1,3 +1,4 @@
+import { hasFullPower } from "@/lib/auth/fullPower";
 import { AccessDeniedError } from "@/lib/auth/errors";
 import type { Access } from "@/lib/auth/types";
 import { isBillAccountVoucherComplete } from "@/lib/domain/bills";
@@ -17,7 +18,7 @@ export function canEditBillAccountVoucher(
     accountVoucherNo: string;
   },
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
   return !isBillAccountVoucherComplete(row);
 }
 
@@ -41,7 +42,7 @@ export function canEditPurchaseChecklist(
     purchaseChecklistCompletedAt: Date | null;
   },
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
   return canStaffEditChecklist({
     isComplete: isPurchaseChecklistComplete(row),
     completedAt: row.purchaseChecklistCompletedAt,
@@ -55,7 +56,7 @@ export function canEditReconciliationChecklist(
     reconciliationCompletedAt: Date | null;
   },
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
   return canStaffEditChecklist({
     isComplete: isReconciliationComplete(row),
     completedAt: row.reconciliationCompletedAt,
@@ -71,7 +72,7 @@ export function canEditSaleChecklist(
     saleChecklistCompletedAt: Date | null;
   },
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
   return canStaffEditChecklist({
     isComplete: isSaleChecklistComplete(row),
     completedAt: row.saleChecklistCompletedAt,
@@ -88,7 +89,7 @@ export function canEditTransportChecklist(
     transportChecklistCompletedAt: Date | null;
   },
 ): boolean {
-  if (access.kind === "owner") return true;
+  if (hasFullPower(access)) return true;
   return canStaffEditChecklist({
     isComplete: isTransportChecklistComplete(row),
     completedAt: row.transportChecklistCompletedAt,

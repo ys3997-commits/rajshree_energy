@@ -11,6 +11,7 @@ const staff: Extract<Access, { kind: "staff" }> = {
   kind: "staff",
   id: "staff-1",
   name: "Desk",
+  role: "Team",
   pageKeys: [],
   collectionSalesExecs: [],
   salesEngineSalesExecs: [],

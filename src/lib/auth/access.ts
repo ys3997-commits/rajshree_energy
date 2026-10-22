@@ -2,7 +2,8 @@ import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
-import { canAccessPath, firstAllowedPath, staffHasPageKey } from "@/lib/auth/pages";
+import { canAccessPath, firstAllowedPath, GRANTABLE_PAGES, staffHasPageKey } from "@/lib/auth/pages";
+import { hasFullPower, isAdminRole } from "@/lib/auth/fullPower";
 import { normalizeStoredExecScope } from "@/lib/auth/report-exec-access";
 import type { Access } from "@/lib/auth/types";
 import {
@@ -58,6 +59,7 @@ export const getCurrentAccess = cache(async function getCurrentAccess(): Promise
     select: {
       id: true,
       name: true,
+      role: true,
       passwordHash: true,
       pageKeys: true,
       collectionSalesExecs: true,
@@ -68,40 +70,28 @@ export const getCurrentAccess = cache(async function getCurrentAccess(): Promise
       customerLedgerSalesExecs: true,
     },
   });
-  if (!staff?.passwordHash || staff.pageKeys.length === 0) {
+  const admin = isAdminRole(staff?.role);
+  if (!staff?.passwordHash || (!admin && staff.pageKeys.length === 0)) {
     return { kind: "none" };
   }
 
-  const pageKeys = staff.pageKeys;
+  const pageKeys = admin
+    ? GRANTABLE_PAGES.map((page) => page.key)
+    : staff.pageKeys;
+  const scope = (stored: string[], key: string) =>
+    admin ? ["*"] : normalizeStoredExecScope(stored, pageKeys.includes(key));
   return {
     kind: "staff",
     id: staff.id,
     name: staff.name,
+    role: admin ? "Admin" : "Team",
     pageKeys,
-    collectionSalesExecs: normalizeStoredExecScope(
-      staff.collectionSalesExecs,
-      pageKeys.includes("reports-collection"),
-    ),
-    salesEngineSalesExecs: normalizeStoredExecScope(
-      staff.salesEngineSalesExecs,
-      pageKeys.includes("reports-sales-engine"),
-    ),
-    saleOrderSalesExecs: normalizeStoredExecScope(
-      staff.saleOrderSalesExecs,
-      pageKeys.includes("orders"),
-    ),
-    purchaseOrderSalesExecs: normalizeStoredExecScope(
-      staff.purchaseOrderSalesExecs,
-      pageKeys.includes("purchase-orders"),
-    ),
-    ageingReportSalesExecs: normalizeStoredExecScope(
-      staff.ageingReportSalesExecs,
-      pageKeys.includes("reports-ageing"),
-    ),
-    customerLedgerSalesExecs: normalizeStoredExecScope(
-      staff.customerLedgerSalesExecs,
-      pageKeys.includes("reports-ledger"),
-    ),
+    collectionSalesExecs: scope(staff.collectionSalesExecs, "reports-collection"),
+    salesEngineSalesExecs: scope(staff.salesEngineSalesExecs, "reports-sales-engine"),
+    saleOrderSalesExecs: scope(staff.saleOrderSalesExecs, "orders"),
+    purchaseOrderSalesExecs: scope(staff.purchaseOrderSalesExecs, "purchase-orders"),
+    ageingReportSalesExecs: scope(staff.ageingReportSalesExecs, "reports-ageing"),
+    customerLedgerSalesExecs: scope(staff.customerLedgerSalesExecs, "reports-ledger"),
   };
 });
 
@@ -111,10 +101,10 @@ export async function requireSignedIn(): Promise<Exclude<Access, { kind: "none" 
   return access;
 }
 
-export async function requireOwner(): Promise<Extract<Access, { kind: "owner" }>> {
+export async function requireOwner(): Promise<Exclude<Access, { kind: "none" }>> {
   const access = await getCurrentAccess();
-  if (access.kind !== "owner") {
-    throw new AccessDeniedError("Only the owner can do this");
+  if (!hasFullPower(access) || access.kind === "none") {
+    throw new AccessDeniedError("Only an admin can do this");
   }
   return access;
 }
@@ -123,7 +113,7 @@ export async function requirePage(
   pageKey: string,
 ): Promise<Exclude<Access, { kind: "none" }>> {
   const access = await requireSignedIn();
-  if (access.pageKeys === "all") return access;
+  if (hasFullPower(access) || access.pageKeys === "all") return access;
   if (pageKey === "options" || !staffHasPageKey(access.pageKeys, pageKey)) {
     throw new AccessDeniedError();
   }
@@ -137,6 +127,7 @@ export function landingPath(access: Access): string {
 
 export function canVisit(access: Access, pathname: string): boolean {
   if (access.kind === "none") return false;
+  if (hasFullPower(access)) return true;
   return canAccessPath(access.pageKeys, pathname);
 }
 
