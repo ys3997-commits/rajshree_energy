@@ -30,6 +30,7 @@ export type DispatchFilters = {
   saleUpdateStatus?: "PENDING" | "RECEIVED" | "";
   receivedQtyStatus?: "PENDING" | "RECEIVED" | "";
   reconciliationStatus?: "PENDING" | "RECONCILED" | "";
+  dispatchNumber?: string;
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
@@ -105,6 +106,12 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       receivingQuantity: null,
       NOT: { dispatchTerms: DispatchTerms.EX_PORT },
     });
+  }
+  if (filters.dispatchNumber) {
+    where.dispatchNumber = {
+      contains: filters.dispatchNumber,
+      mode: "insensitive",
+    };
   }
   if (filters.poNumber) {
     where.poNumber = { contains: filters.poNumber, mode: "insensitive" };

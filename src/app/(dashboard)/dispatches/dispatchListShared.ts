@@ -36,6 +36,7 @@ export type DispatchSearchParams = {
   saleUpdateStatus?: string;
   receivedQtyStatus?: string;
   reconciliationStatus?: string;
+  dispatchNumber?: string;
   poNumber?: string;
   purchasePoNumber?: string;
   vesselId?: string;
@@ -515,6 +516,7 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
     saleUpdateStatus,
     receivedQtyStatus,
     reconciliationStatus,
+    dispatchNumber: sp.dispatchNumber || "",
     poNumber: sp.poNumber || "",
     purchasePoNumber: sp.purchasePoNumber || "",
     vesselId: sp.vesselId || "",

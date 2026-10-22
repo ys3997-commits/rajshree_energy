@@ -96,6 +96,14 @@ export function DispatchListView({
           </select>
         </label>
         <label>
+          Dispatch No
+          <input
+            name="dispatchNumber"
+            defaultValue={filters.dispatchNumber}
+            placeholder="Search dispatch no"
+          />
+        </label>
+        <label>
           Sale PO
           <input
             name="poNumber"
