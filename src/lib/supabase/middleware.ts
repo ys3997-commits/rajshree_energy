@@ -6,20 +6,13 @@ import {
   readStaffIdFromToken,
 } from "@/lib/auth/staff-session";
 
-function nextWithPath(request: NextRequest, authUser: "0" | "1") {
+function nextWithPath(request: NextRequest, authUser?: "0" | "1") {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
-  requestHeaders.set(AUTH_USER_HEADER, authUser);
+  if (authUser) requestHeaders.set(AUTH_USER_HEADER, authUser);
   return NextResponse.next({
     request: { headers: requestHeaders },
   });
-}
-
-function copyCookies(from: NextResponse, to: NextResponse) {
-  for (const cookie of from.cookies.getAll()) {
-    to.cookies.set(cookie);
-  }
-  return to;
 }
 
 export async function updateSession(request: NextRequest) {
@@ -29,11 +22,12 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Staff login is a local signed cookie. Skip the Supabase round trip.
+  // Do not rewrite cookies here — that was turning them into session cookies.
   if (staffId && !isLogin) {
     return nextWithPath(request, "0");
   }
 
-  let supabaseResponse = nextWithPath(request, "0");
+  let supabaseResponse = nextWithPath(request);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,7 +41,7 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          supabaseResponse = nextWithPath(request, "0");
+          supabaseResponse = nextWithPath(request);
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );
@@ -61,15 +55,11 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const signedIn = Boolean(user || staffId);
-  const response = copyCookies(
-    supabaseResponse,
-    nextWithPath(request, user ? "1" : "0"),
-  );
 
   if (!signedIn && !isLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    return copyCookies(supabaseResponse, NextResponse.redirect(url));
+    return NextResponse.redirect(url);
   }
 
   // Only the owner session skips the login page. A staff cookie may be stale
@@ -77,8 +67,9 @@ export async function updateSession(request: NextRequest) {
   if (user && isLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
-    return copyCookies(supabaseResponse, NextResponse.redirect(url));
+    return NextResponse.redirect(url);
   }
 
-  return response;
+  // Return this same response. Rebuilding it drops the cookie expiry Supabase set.
+  return supabaseResponse;
 }

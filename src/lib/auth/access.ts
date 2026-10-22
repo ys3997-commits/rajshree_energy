@@ -41,7 +41,9 @@ export const getCurrentAccess = cache(async function getCurrentAccess(): Promise
     jar.get(STAFF_SESSION_COOKIE)?.value,
   );
 
-  if (hint !== "0") {
+  // Header "0" means middleware already saw a staff cookie and no owner
+  // session to refresh. Any other request still checks Supabase first.
+  if (hint !== "0" || !staffId) {
     const supabase = await createClient();
     const {
       data: { user },
