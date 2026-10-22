@@ -213,7 +213,7 @@ export const MASTER_SUB_PAGES = [
 export const MASTER_SUB_PAGE_KEYS = MASTER_SUB_PAGES.map((page) => page.key);
 
 export const MASTER_ENTITY_SUB_PAGES = MASTER_SUB_PAGES.filter(
-  (page) => !page.masterBankSubPage,
+  (page) => !("masterBankSubPage" in page && page.masterBankSubPage),
 );
 
 export const MASTER_OPTIONS_SUB_PAGES = MASTER_OPTION_CATEGORIES.map(
