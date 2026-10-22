@@ -8,7 +8,7 @@ import {
   dispatchedAmount,
   sumSalesSuppliedInCreditWindow,
 } from "@/lib/domain/customerDue";
-import { capitalizeName } from "@/lib/domain/format";
+import { amountRoundsToZero, capitalizeName } from "@/lib/domain/format";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -208,11 +208,11 @@ export type CustomerDueRow = {
   lastPaymentAmount: string | null;
 };
 
-/** Customers with non-zero due, highest due first (for collection). */
+/** Customers whose total due shows as a non-zero rupee amount, highest due first. */
 export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
   const customers = await prisma.customer.findMany({
     where: {
-      OR: [{ due: { gt: 0 } }, { due: { lt: 0 } }],
+      OR: [{ due: { gte: "0.5" } }, { due: { lt: "-0.5" } }],
     },
     select: {
       id: true,
@@ -292,7 +292,8 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
     paymentsByCustomer.set(payment.customerId, list);
   }
 
-  return customers.map((customer) => {
+  return customers.flatMap((customer) => {
+    if (amountRoundsToZero(customer.due)) return [];
     const customerPayments = paymentsByCustomer.get(customer.id) ?? [];
     const recentSales =
       customer.creditDays == null

@@ -17,7 +17,11 @@ import {
   type AgeingWhatsAppInput,
 } from "@/lib/domain/ageingWhatsApp";
 import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
-import { capitalizeName, formatAmount } from "@/lib/domain/format";
+import {
+  amountRoundsToZero,
+  capitalizeName,
+  formatAmount,
+} from "@/lib/domain/format";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 
 type CategoryFilter = "" | "industry" | "trader";
@@ -153,6 +157,7 @@ export function AgeingReportClient({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const matched = rows.filter((row) => {
+      if (amountRoundsToZero(row.totalDue)) return false;
       if (!matchesCategory(row)) return false;
       if (saleExecutiveFilter === UNASSIGNED_SALE_EXECUTIVE) {
         if (row.saleExecutive?.trim()) return false;

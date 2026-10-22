@@ -7,6 +7,7 @@ import { CustomerCategory } from "@/generated/prisma";
 import { updatePlannedCollectionCall } from "@/lib/actions/collection";
 import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
+  amountRoundsToZero,
   capitalizeName,
   formatCreditPeriod,
   formatCustomerCategory,
@@ -198,7 +199,11 @@ export function CollectionClient({
   const tomorrow = addLocalDays(today, 1);
 
   const buyerRows = useMemo(
-    () => rows.filter((row) => BUYER_CATEGORIES.has(row.category)),
+    () =>
+      rows.filter(
+        (row) =>
+          BUYER_CATEGORIES.has(row.category) && !amountRoundsToZero(row.due),
+      ),
     [rows],
   );
 

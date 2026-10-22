@@ -12,6 +12,7 @@ import {
   type AgeingReportRow,
 } from "@/lib/domain/ageingBuckets";
 import { toDecimal } from "@/lib/domain/computations";
+import { amountRoundsToZero } from "@/lib/domain/format";
 import {
   computeOverdue,
   discountDueDelta,
@@ -176,7 +177,12 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
       unpaidDueByDate(movementsByCustomer.get(customer.id) ?? [], asOf),
       asOf,
     );
-    if (aged.totalDue.lte(0)) continue;
+    if (
+      aged.totalDue.lte(0) ||
+      amountRoundsToZero(aged.totalDue.toDecimalPlaces(2))
+    ) {
+      continue;
+    }
     const recentSales =
       customer.creditDays == null
         ? toDecimal(0)

@@ -137,6 +137,18 @@ export function formatAmount(
   return formatIndianNumber(Math.round(n));
 }
 
+/** True when {@link formatAmount} would show this balance as 0. */
+export function amountRoundsToZero(
+  value: { toString(): string } | number | string | null | undefined,
+): boolean {
+  if (value == null || value === "") return true;
+  const s = typeof value === "string" ? value : value.toString();
+  if (s === "—") return true;
+  const n = Number(s);
+  if (!Number.isFinite(n)) return false;
+  return Math.round(n) === 0;
+}
+
 /**
  * Format a rate/amount for display with Rs prefix (integer, Indian grouping).
  */

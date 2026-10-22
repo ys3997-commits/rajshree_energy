@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { CustomerCategory } from "@/generated/prisma";
 import type { CustomerDueRow } from "@/lib/actions/customers";
 import {
+  amountRoundsToZero,
   capitalizeName,
   formatCreditPeriod,
   formatAmount,
@@ -46,7 +47,11 @@ export function VendorCollectionClient({
 
   const vendorRows = useMemo(
     () =>
-      initialRows.filter((row) => row.category === CustomerCategory.SUPPLIER),
+      initialRows.filter(
+        (row) =>
+          row.category === CustomerCategory.SUPPLIER &&
+          !amountRoundsToZero(row.due),
+      ),
     [initialRows],
   );
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  amountRoundsToZero,
   formatAmount,
   formatDateDdMmYyyy,
   formatDispatchMt,
@@ -53,6 +54,16 @@ describe("formatAmount / formatRs", () => {
   it("formatRs adds prefix", () => {
     expect(formatRs(100000)).toBe("Rs 1,00,000");
     expect(formatRs(99.4)).toBe("Rs 99");
+  });
+
+  it("treats a balance that displays as 0 as zero", () => {
+    expect(amountRoundsToZero(0)).toBe(true);
+    expect(amountRoundsToZero("0.00")).toBe(true);
+    expect(amountRoundsToZero("0.49")).toBe(true);
+    expect(amountRoundsToZero("-0.50")).toBe(true);
+    expect(amountRoundsToZero("0.50")).toBe(false);
+    expect(amountRoundsToZero("-0.51")).toBe(false);
+    expect(amountRoundsToZero("1250")).toBe(false);
   });
 });
 
