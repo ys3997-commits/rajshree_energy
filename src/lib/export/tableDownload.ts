@@ -69,10 +69,9 @@ export function exportWrappedHeader(header: string): string {
   return wrapped.join("\n");
 }
 
-/** Keep original wrap points after title-casing, e.g. "Trucks\\nDispatch". */
-export function exportPdfHeader(header: string): string | string[] {
-  const wrapped = exportWrappedHeader(header);
-  return wrapped.includes("\n") ? wrapped.split("\n") : wrapped;
+/** One-line title-case heading, so "Lorry\\nNo" prints as "Lorry No". */
+export function exportPdfHeader(header: string): string {
+  return toTitleCaseHeader(header);
 }
 
 function escapeCsvCell(value: string): string {

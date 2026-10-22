@@ -23,17 +23,12 @@ describe("toTitleCaseHeader", () => {
 });
 
 describe("exportPdfHeader", () => {
-  it("restores wrap points after title-casing", () => {
-    expect(exportPdfHeader("Trucks\ndispatch")).toEqual([
-      "Trucks",
-      "Dispatch",
-    ]);
-    expect(exportPdfHeader("Number of\nlorries")).toEqual([
-      "Number Of",
-      "Lorries",
-    ]);
+  it("joins wrapped words with a space", () => {
+    expect(exportPdfHeader("Trucks\ndispatch")).toBe("Trucks Dispatch");
+    expect(exportPdfHeader("Number of\nlorries")).toBe("Number Of Lorries");
     expect(exportPdfHeader("Order Qty")).toBe("Order Qty");
-    expect(exportPdfHeader("Freight\nPMT")).toEqual(["Freight", "PMT"]);
+    expect(exportPdfHeader("Lorry\nNo")).toBe("Lorry No");
+    expect(exportPdfHeader("Freight\nPMT")).toBe("Freight PMT");
   });
 });
 
