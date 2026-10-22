@@ -31,8 +31,10 @@ const ordersLinks: NavLeaf[] = [
 ];
 
 const bankLinks: NavLeaf[] = [
-  { href: "/payments", label: "Transactions with others" },
-  { href: "/payments/transaction", label: "Transaction Our Bank" },
+  { href: "/payments", label: "Transaction with others" },
+  { href: "/payments/transaction", label: "Transaction with our current a/c" },
+  { href: "/payments/txn-saving", label: "Transaction with our saving a/c" },
+  { href: "/payments/book-expenses", label: "Expenses" },
   { href: "/payments/discount", label: "Discount" },
 ];
 
@@ -59,8 +61,16 @@ const links = [
   { href: "/bills", label: "Approvals" },
 ];
 
+const mastersBankLinks: NavLeaf[] = [
+  { href: "/bank-accounts", label: "Create Bank Account" },
+  { href: "/bank-accounts/types", label: "Type of Bank Account" },
+];
+
 const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [
-  { href: "/bank-accounts", label: "Bank" },
+  {
+    label: "Bank",
+    children: mastersBankLinks,
+  },
   { href: "/customers", label: "Customers" },
   { href: "/documents", label: "Documents" },
   {
@@ -217,6 +227,7 @@ const updateLinks: ReportLeaf[] = [
   { href: "/update/purchase", label: "Purchases" },
   { href: "/update/sale", label: "Sales" },
   { href: "/update/transport", label: "Transport" },
+  { href: "/update/tally", label: "Tally Entry" },
 ];
 
 function isActivePath(pathname: string, href: string, exact = false) {
@@ -329,7 +340,20 @@ function renderReportSubmenuNodes(
 }
 
 function isMastersGroupActive(pathname: string, group: MastersGroup) {
-  return group.children.some((child) => isOptionsLinkActive(pathname, child.href));
+  return group.children.some((child) =>
+    isMastersChildActive(pathname, group, child.href),
+  );
+}
+
+function isMastersChildActive(
+  pathname: string,
+  group: MastersGroup,
+  href: string,
+) {
+  const needsExact = group.children.some(
+    (other) => other.href !== href && other.href.startsWith(`${href}/`),
+  );
+  return isActivePath(pathname, href, needsExact);
 }
 
 function isMastersActive(pathname: string) {
@@ -353,11 +377,6 @@ function isBankActive(pathname: string) {
   );
 }
 
-function isBankLinkActive(pathname: string, href: string) {
-  if (href === "/payments") return pathname === "/payments";
-  return isActivePath(pathname, href);
-}
-
 function isDispatchLinkActive(pathname: string, href: string) {
   if (href === "/dispatches") return pathname === "/dispatches";
   return isActivePath(pathname, href);
@@ -366,10 +385,6 @@ function isDispatchLinkActive(pathname: string, href: string) {
 function isOptionsActive(pathname: string) {
   if (isUsersActive(pathname)) return false;
   return pathname === "/options" || pathname.startsWith("/options/");
-}
-
-function isOptionsLinkActive(pathname: string, href: string) {
-  return pathname === href;
 }
 
 function isUsersActive(pathname: string) {
@@ -397,7 +412,6 @@ export function AppNav({
   const [updateOpen, setUpdateOpen] = useState(false);
   const [dispatchOpen, setDispatchOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
-  const [bankOpen, setBankOpen] = useState(false);
   const [mastersOpen, setMastersOpen] = useState(false);
   const [usersOpen, setUsersOpen] = useState(false);
   const [documentsOpen, setDocumentsOpen] = useState(false);
@@ -412,7 +426,6 @@ export function AppNav({
   const updateMenuId = useId();
   const dispatchMenuId = useId();
   const ordersMenuId = useId();
-  const bankMenuId = useId();
   const mastersMenuId = useId();
   const usersMenuId = useId();
   const documentsMenuId = useId();
@@ -420,7 +433,6 @@ export function AppNav({
   const updateRef = useRef<HTMLDivElement>(null);
   const dispatchRef = useRef<HTMLDivElement>(null);
   const ordersRef = useRef<HTMLDivElement>(null);
-  const bankRef = useRef<HTMLDivElement>(null);
   const mastersRef = useRef<HTMLDivElement>(null);
   const usersRef = useRef<HTMLDivElement>(null);
   const documentsRef = useRef<HTMLDivElement>(null);
@@ -450,7 +462,6 @@ export function AppNav({
     setUpdateOpen(false);
     setDispatchOpen(false);
     setOrdersOpen(false);
-    setBankOpen(false);
     setMastersOpen(false);
     setUsersOpen(false);
     setDocumentsOpen(false);
@@ -551,29 +562,6 @@ export function AppNav({
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [ordersOpen]);
-
-  useEffect(() => {
-    if (!bankOpen) return;
-
-    function onPointerDown(event: MouseEvent) {
-      if (bankRef.current && !bankRef.current.contains(event.target as Node)) {
-        setBankOpen(false);
-      }
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setBankOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, [bankOpen]);
 
   useEffect(() => {
     if (!mastersOpen) return;
@@ -697,6 +685,8 @@ export function AppNav({
     };
   }, [documentsOpen, openDocumentsSubmenu]);
 
+  const bankHref =
+    bankLinks.find((item) => allowed(item.href))?.href ?? "/payments";
   const linksAfterBank = links;
 
   return (
@@ -860,44 +850,13 @@ export function AppNav({
             )}
 
             {showBankNav && (
-            <div
-              className={`nav-dropdown${bankOpen ? " open" : ""}${bankActive ? " active" : ""}`}
-              ref={bankRef}
-            >
-              <button
-                type="button"
-                className={`nav-dropdown-trigger${bankActive ? " active" : ""}`}
-                aria-expanded={bankOpen}
-                aria-controls={bankMenuId}
-                aria-haspopup="menu"
-                onClick={() => setBankOpen((open) => !open)}
+              <LockedLink
+                href={bankHref}
+                allowed={allowed(bankHref)}
+                className={bankActive ? "active" : undefined}
               >
                 Bank
-                <span className="nav-dropdown-caret" aria-hidden="true" />
-              </button>
-              <div
-                id={bankMenuId}
-                className="nav-dropdown-menu"
-                role="menu"
-                hidden={!bankOpen}
-              >
-                {bankLinks.map((item) => {
-                  const active = isBankLinkActive(pathname, item.href);
-                  return (
-                    <LockedLink
-                      key={item.href}
-                      href={item.href}
-                      allowed={allowed(item.href)}
-                      role="menuitem"
-                      className={active ? "active" : undefined}
-                      onClick={() => setBankOpen(false)}
-                    >
-                      {item.label}
-                    </LockedLink>
-                  );
-                })}
-              </div>
-            </div>
+              </LockedLink>
             )}
 
             {linksAfterBank.map((link) => {
@@ -969,8 +928,9 @@ export function AppNav({
                           onMouseEnter={() => setOpenMastersSubmenu(item.label)}
                         >
                           {item.children.map((child) => {
-                            const active = isOptionsLinkActive(
+                            const active = isMastersChildActive(
                               pathname,
+                              item,
                               child.href,
                             );
                             return (

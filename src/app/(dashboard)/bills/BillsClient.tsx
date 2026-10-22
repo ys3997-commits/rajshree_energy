@@ -251,7 +251,7 @@ export function BillsClient({
 
       {canUpload && (
         <form onSubmit={onSubmit} className="mb-6 form-grid">
-          <label htmlFor="bill-approval-no">Approval no</label>
+          <label htmlFor="bill-approval-no">Approval No</label>
           <input
             id="bill-approval-no"
             className="field-input"
@@ -268,7 +268,7 @@ export function BillsClient({
             onChange={(e) => setForm({ ...form, date: e.target.value })}
           />
           <label htmlFor="bill-issued-by">
-            Invoice issued by <span className="req" aria-hidden="true">*</span>
+            Invoice Issued By <span className="req" aria-hidden="true">*</span>
           </label>
           <input
             id="bill-issued-by"
@@ -284,7 +284,7 @@ export function BillsClient({
             }}
           />
           <label htmlFor="bill-amount">
-            Invoice amount <span className="req" aria-hidden="true">*</span>
+            Invoice Amount <span className="req" aria-hidden="true">*</span>
           </label>
           <div className="field-with-unit field-with-prefix">
             <span className="field-unit">Rs</span>
@@ -349,7 +349,7 @@ export function BillsClient({
               {file?.name ?? "Choose File"}
             </button>
           </div>
-          <label htmlFor="bill-remark">Doer remark</label>
+          <label htmlFor="bill-remark">Doer Remark</label>
           <textarea
             id="bill-remark"
             required
@@ -368,7 +368,7 @@ export function BillsClient({
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label htmlFor="bill-filter-from">
-          Date from
+          Date From
           <input
             id="bill-filter-from"
             type="date"
@@ -378,7 +378,7 @@ export function BillsClient({
           />
         </label>
         <label htmlFor="bill-filter-to">
-          Date to
+          Date To
           <input
             id="bill-filter-to"
             type="date"
@@ -388,7 +388,7 @@ export function BillsClient({
           />
         </label>
         <label htmlFor="bill-filter-approver">
-          Approver name
+          Approver Name
           <OptionSelect
             id="bill-filter-approver"
             emptyLabel="All"
@@ -399,7 +399,7 @@ export function BillsClient({
         </label>
         {isOwner ? (
           <label htmlFor="bill-filter-sent-by">
-            Sent by
+            Sent By
             <select
               id="bill-filter-sent-by"
               value={sentBy}

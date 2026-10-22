@@ -108,7 +108,7 @@ export function VesselsClient({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="mb-6 form-grid">
-        <label>Vessel name</label>
+        <label>Vessel Name</label>
         <input
           required
           value={form.vesselName}
@@ -122,7 +122,7 @@ export function VesselsClient({
             }
           }}
         />
-        <label>Quality class</label>
+        <label>Quality Class</label>
         <QualityClassSelect
           required
           emptyLabel="Select"

@@ -130,7 +130,7 @@ export function VendorCollectionClient({
     <>
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Sales executive
+          Sales Executive
           <select
             value={saleExecutiveFilter}
             onChange={(e) => setSaleExecutiveFilter(e.target.value)}
@@ -144,7 +144,7 @@ export function VendorCollectionClient({
           </select>
         </label>
         <label>
-          Approach for funds
+          Approach For Funds
           <select
             value={approachForFundsFilter}
             onChange={(e) => setApproachForFundsFilter(e.target.value)}

@@ -76,7 +76,7 @@ export function ReconciliationListView({
           />
         </label>
         <label>
-          Start date
+          Start Date
           <input
             type="date"
             lang="en-GB"
@@ -87,7 +87,7 @@ export function ReconciliationListView({
           />
         </label>
         <label>
-          End date
+          End Date
           <input
             type="date"
             lang="en-GB"

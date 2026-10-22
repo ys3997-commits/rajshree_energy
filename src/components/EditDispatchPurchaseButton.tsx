@@ -140,9 +140,7 @@ export function EditDispatchPurchaseButton({
               Update purchase
             </h3>
           ) : null}
-          <label htmlFor={`purchase-invoice-${dispatchId}`}>
-            Purchase invoice number
-          </label>
+          <label htmlFor={`purchase-invoice-${dispatchId}`}>Purchase Invoice Number</label>
           <input
             id={`purchase-invoice-${dispatchId}`}
             value={purchaseInvoice}
@@ -151,7 +149,7 @@ export function EditDispatchPurchaseButton({
             autoFocus={!rowSummary}
           />
 
-          <label htmlFor={`tally-${dispatchId}`}>Purchase invoice in Tally</label>
+          <label htmlFor={`tally-${dispatchId}`}>Purchase Invoice In Tally</label>
           <input
             id={`tally-${dispatchId}`}
             type="checkbox"

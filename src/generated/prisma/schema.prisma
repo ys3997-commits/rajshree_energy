@@ -105,15 +105,17 @@ model Staff {
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
-  dealByCustomers      Customer[]     @relation("DealBy")
-  orders               Order[]
-  bills                Bill[]
-  createdPayments      Payment[]      @relation("PaymentCreatedBy")
-  createdDiscounts     Discount[]     @relation("DiscountCreatedBy")
-  createdDispatches    Dispatch[]     @relation("DispatchCreatedBy")
-  createdVegPayments   VegPayment[]   @relation("VegPaymentCreatedBy")
-  createdVegDiscounts  VegDiscount[]  @relation("VegDiscountCreatedBy")
-  createdBankTransfers BankTransfer[] @relation("BankTransferCreatedBy")
+  dealByCustomers          Customer[]         @relation("DealBy")
+  orders                   Order[]
+  bills                    Bill[]
+  createdPayments          Payment[]          @relation("PaymentCreatedBy")
+  createdDiscounts         Discount[]         @relation("DiscountCreatedBy")
+  createdDispatches        Dispatch[]         @relation("DispatchCreatedBy")
+  createdVegPayments       VegPayment[]       @relation("VegPaymentCreatedBy")
+  createdVegDiscounts      VegDiscount[]      @relation("VegDiscountCreatedBy")
+  createdBankTransfers     BankTransfer[]     @relation("BankTransferCreatedBy")
+  createdBookExpenses      BookExpense[]      @relation("BookExpenseCreatedBy")
+  createdSavingAccountTxns SavingAccountTxn[] @relation("SavingAccountTxnCreatedBy")
 }
 
 model Transporter {
@@ -208,6 +210,16 @@ model DealingCompanyOption {
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+/// Managed list of indirect expense types (Masters → Options).
+model IndirectExpenseOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookExpenses BookExpense[]
 }
 
 /// Company or individual member (Masters → Documents → Members).
@@ -714,21 +726,36 @@ model InvestmentPeriodValue {
   @@index([periodId])
 }
 
-/// Bank account master (Masters → Bank).
+/// Managed list of bank account types (Masters → Bank → Type of Bank Account).
+model BankAccountTypeOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bankAccounts BankAccount[]
+}
+
+/// Bank account master (Masters → Bank → Create Bank Account).
 model BankAccount {
   id             String   @id @default(cuid())
   accountName    String
+  accountTypeId  String?
   bankName       String
   openingBalance Decimal  @default(0) @db.Decimal(18, 2)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  accountType       BankAccountTypeOption? @relation(fields: [accountTypeId], references: [id], onDelete: Restrict)
   payments          Payment[]
-  transfersPaid     BankTransfer[] @relation("TransferPaid")
-  transfersReceived BankTransfer[] @relation("TransferReceived")
+  transfersPaid     BankTransfer[]         @relation("TransferPaid")
+  transfersReceived BankTransfer[]         @relation("TransferReceived")
+  bookExpenses      BookExpense[]
+  savingAccountTxns SavingAccountTxn[]
 
   @@unique([accountName, bankName])
   @@index([bankName])
+  @@index([accountTypeId])
 }
 
 /// Money moved from one bank account to another (Bank → Transaction).
@@ -750,4 +777,46 @@ model BankTransfer {
   @@index([paidAccountId])
   @@index([receivedAccountId])
   @@index([createdByStaffId])
+}
+
+/// Bank expense booked against an indirect expense type (Bank → Book Expenses).
+model BookExpense {
+  id                String   @id @default(cuid())
+  date              DateTime
+  paidAccountId     String
+  indirectExpenseId String
+  amount            Decimal  @db.Decimal(18, 2)
+  particular        String
+  createdByStaffId  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  paidAccount     BankAccount           @relation(fields: [paidAccountId], references: [id], onDelete: Restrict)
+  indirectExpense IndirectExpenseOption @relation(fields: [indirectExpenseId], references: [id], onDelete: Restrict)
+  createdByStaff  Staff?                @relation("BookExpenseCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([paidAccountId])
+  @@index([indirectExpenseId])
+  @@index([createdByStaffId])
+}
+
+/// Fund flow against a saving bank account (Bank → Txn in Saving A/c).
+model SavingAccountTxn {
+  id                String           @id @default(cuid())
+  date              DateTime
+  bankAccountId     String?
+  createdByStaffId  String?
+  direction         PaymentDirection
+  savingAccountName String
+  amount            Decimal          @db.Decimal(18, 2)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  bankAccount    BankAccount? @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
+  createdByStaff Staff?       @relation("SavingAccountTxnCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([bankAccountId])
+  @@index([createdByStaffId])
+  @@index([date])
 }

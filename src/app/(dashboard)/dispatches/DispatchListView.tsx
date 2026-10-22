@@ -91,7 +91,7 @@ export function DispatchListView({
 
       <form className="filters" method="get" action={filterPath}>
         <label>
-          Receipt status
+          Receipt Status
           <select name="receiptStatus" defaultValue={filters.receiptStatus}>
             <option value="">All</option>
             <option value="PENDING">PENDING</option>
@@ -115,7 +115,7 @@ export function DispatchListView({
           />
         </label>
         <label>
-          Dispatch date
+          Dispatch Date
           <input
             type="date"
             name="dispatchDate"

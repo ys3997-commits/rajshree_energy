@@ -74,6 +74,9 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["update-purchase"], "/update/purchase")).toBe(true);
     expect(canAccessPath(["update-purchase"], "/update/sale")).toBe(false);
     expect(canAccessPath(["update"], "/update/purchase")).toBe(true);
+    expect(canAccessPath(["update"], "/update/tally")).toBe(true);
+    expect(canAccessPath(["update-tally"], "/update/tally")).toBe(true);
+    expect(canAccessPath(["update-purchase"], "/update/tally")).toBe(false);
     expect(canAccessPath(["update-sale"], "/update/transport")).toBe(false);
     expect(
       canAccessPath(["reports-transport-engine"], "/update/transport"),
@@ -109,9 +112,20 @@ describe("canAccessPath", () => {
     );
     expect(canAccessPath(["bank-transfer"], "/payments/transaction")).toBe(true);
     expect(canAccessPath(["bank-transfer"], "/payments")).toBe(false);
+    expect(canAccessPath(["book-expenses"], "/payments/book-expenses")).toBe(true);
+    expect(canAccessPath(["book-expenses"], "/payments")).toBe(false);
+    expect(canAccessPath(["txn-saving-account"], "/payments/txn-saving")).toBe(
+      true,
+    );
+    expect(canAccessPath(["txn-saving-account"], "/payments")).toBe(false);
+    expect(
+      canAccessPath(["payments-transactions"], "/payments/book-expenses"),
+    ).toBe(false);
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/transaction")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/book-expenses")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/txn-saving")).toBe(true);
   });
 
   it("scopes master options sub-pages separately", () => {
@@ -161,6 +175,11 @@ describe("canAccessPath", () => {
   it("allows master entity pages when the key is granted", () => {
     expect(canAccessPath(["customers"], "/customers")).toBe(true);
     expect(canAccessPath(["bank-accounts"], "/bank-accounts")).toBe(true);
+    expect(canAccessPath(["bank-accounts"], "/bank-accounts/types")).toBe(false);
+    expect(canAccessPath(["bank-account-types"], "/bank-accounts/types")).toBe(
+      true,
+    );
+    expect(canAccessPath(["bank-account-types"], "/bank-accounts")).toBe(false);
     expect(canAccessPath(["vessels"], "/vessels")).toBe(true);
     expect(canAccessPath(["customers"], "/bank-accounts")).toBe(false);
     expect(canAccessPath(["veg"], "/veg")).toBe(true);

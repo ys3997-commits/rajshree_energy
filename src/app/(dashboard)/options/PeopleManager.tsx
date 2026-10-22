@@ -6,8 +6,10 @@ import {
   BANK_SUB_PAGES,
   BANK_SUB_PAGE_KEYS,
   expandStaffPageKeys,
-  MASTER_SUB_PAGES,
+  MASTER_ENTITY_SUB_PAGES,
   MASTER_ALL_SUB_PAGE_KEYS,
+  MASTER_BANK_GROUP,
+  MASTER_BANK_SUB_PAGE_KEYS,
   MASTER_OPTIONS_GROUP,
   MASTER_OPTIONS_SUB_PAGE_KEYS,
   orderedPagesTeamAccess,
@@ -34,7 +36,9 @@ import {
   type ExecScopedReportPage,
 } from "@/lib/auth/report-exec-access";
 import { Modal } from "@/components/Modal";
+import { usernameFromName } from "@/lib/auth/username";
 import { capitalizeName } from "@/lib/domain/format";
+import { joinPersonName, splitPersonName } from "@/lib/domain/personName";
 import {
   documentGroupPageKey,
   documentMemberPageKey,
@@ -94,7 +98,8 @@ export function PeopleManager({
   const [error, setError] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editing, setEditing] = useState<PeopleRow | null>(null);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [disableLogin, setDisableLogin] = useState(false);
@@ -119,6 +124,7 @@ export function PeopleManager({
   const [dispatchExpanded, setDispatchExpanded] = useState(false);
   const [bankExpanded, setBankExpanded] = useState(false);
   const [masterExpanded, setMasterExpanded] = useState(false);
+  const [masterBankExpanded, setMasterBankExpanded] = useState(false);
   const [masterOptionsExpanded, setMasterOptionsExpanded] = useState(false);
   const [reportsExpanded, setReportsExpanded] = useState(false);
   const [reportGroupsExpanded, setReportGroupsExpanded] = useState<
@@ -152,7 +158,8 @@ export function PeopleManager({
 
   function openCreate() {
     setEditing(null);
-    setName("");
+    setFirstName("");
+    setLastName("");
     setRole("");
     setPassword("");
     setDisableLogin(false);
@@ -177,7 +184,9 @@ export function PeopleManager({
 
   function openEdit(item: PeopleRow) {
     setEditing(item);
-    setName(item.name);
+    const person = splitPersonName(item.name);
+    setFirstName(person.firstName);
+    setLastName(person.lastName);
     setRole(item.role ?? "");
     setPassword("");
     setDisableLogin(false);
@@ -196,6 +205,9 @@ export function PeopleManager({
     );
     setMasterExpanded(
       MASTER_ALL_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
+    );
+    setMasterBankExpanded(
+      MASTER_BANK_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
     );
     setMasterOptionsExpanded(
       MASTER_OPTIONS_SUB_PAGE_KEYS.some((key) => item.pageKeys.includes(key)),
@@ -341,6 +353,7 @@ export function PeopleManager({
       setPageKeys((current) =>
         current.filter((key) => !MASTER_ALL_SUB_PAGE_KEYS.includes(key)),
       );
+      setMasterBankExpanded(false);
       setMasterOptionsExpanded(false);
     }
   }
@@ -352,6 +365,7 @@ export function PeopleManager({
       return allOn ? without : [...without, ...MASTER_ALL_SUB_PAGE_KEYS];
     });
     if (!allOn) {
+      setMasterBankExpanded(true);
       setMasterOptionsExpanded(true);
     }
   }
@@ -359,6 +373,46 @@ export function PeopleManager({
   function toggleMasterSubPage(key: string) {
     const allOn = MASTER_ALL_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
     if (allOn) return;
+    setPageKeys((current) =>
+      current.includes(key)
+        ? current.filter((item) => item !== key)
+        : [...current, key],
+    );
+  }
+
+  function toggleMasterBankParent() {
+    const turningOn = !masterBankExpanded;
+    setMasterBankExpanded(turningOn);
+    if (!turningOn) {
+      setPageKeys((current) =>
+        current.filter((key) => !MASTER_BANK_SUB_PAGE_KEYS.includes(key)),
+      );
+    }
+  }
+
+  function toggleMasterBankAll() {
+    const keys = MASTER_BANK_SUB_PAGE_KEYS;
+    const allOn = keys.every((key) => pageKeys.includes(key));
+    const masterAllOnNow = MASTER_ALL_SUB_PAGE_KEYS.every((key) =>
+      pageKeys.includes(key),
+    );
+    setPageKeys((current) => {
+      const without = current.filter((key) => !keys.includes(key));
+      return allOn ? without : [...without, ...keys];
+    });
+    if (!allOn && !masterAllOnNow) {
+      setMasterBankExpanded(true);
+    }
+  }
+
+  function toggleMasterBankSubPage(key: string) {
+    const groupAllOn = MASTER_BANK_SUB_PAGE_KEYS.every((k) =>
+      pageKeys.includes(k),
+    );
+    const masterAllOnNow = MASTER_ALL_SUB_PAGE_KEYS.every((k) =>
+      pageKeys.includes(k),
+    );
+    if (groupAllOn || masterAllOnNow) return;
     setPageKeys((current) =>
       current.includes(key)
         ? current.filter((item) => item !== key)
@@ -379,20 +433,22 @@ export function PeopleManager({
   function toggleMasterOptionsAll() {
     const keys = MASTER_OPTIONS_SUB_PAGE_KEYS;
     const allOn = keys.every((key) => pageKeys.includes(key));
-    const masterAllOn = MASTER_ALL_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+    const masterAllOnNow = MASTER_ALL_SUB_PAGE_KEYS.every((key) =>
+      pageKeys.includes(key),
+    );
     setPageKeys((current) => {
       const without = current.filter((key) => !keys.includes(key));
       return allOn ? without : [...without, ...keys];
     });
-    if (!allOn && !masterAllOn) {
+    if (!allOn && !masterAllOnNow) {
       setMasterOptionsExpanded(true);
     }
   }
 
   function toggleMasterOptionsSubPage(key: string) {
     const groupAllOn = MASTER_OPTIONS_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
-    const masterAllOn = MASTER_ALL_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
-    if (groupAllOn || masterAllOn) return;
+    const masterAllOnNow = MASTER_ALL_SUB_PAGE_KEYS.every((k) => pageKeys.includes(k));
+    if (groupAllOn || masterAllOnNow) return;
     setPageKeys((current) =>
       current.includes(key)
         ? current.filter((item) => item !== key)
@@ -401,6 +457,9 @@ export function PeopleManager({
   }
 
   const masterAllOn = MASTER_ALL_SUB_PAGE_KEYS.every((key) => pageKeys.includes(key));
+  const masterBankAllOn = MASTER_BANK_SUB_PAGE_KEYS.every((key) =>
+    pageKeys.includes(key),
+  );
   const masterOptionsAllOn = MASTER_OPTIONS_SUB_PAGE_KEYS.every((key) =>
     pageKeys.includes(key),
   );
@@ -834,8 +893,8 @@ export function PeopleManager({
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    const nextName = capitalizeName(name);
-    if (!nextName) return;
+    const nextName = capitalizeName(joinPersonName(firstName, lastName));
+    if (!nextName || !splitPersonName(nextName).lastName) return;
     const nextRole = capitalizeName(role);
     setError(null);
 
@@ -919,9 +978,10 @@ export function PeopleManager({
         <div className="table-h-scroll"><table className="data">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>First name</th>
+              <th>Last name</th>
               <th>Role</th>
-              <th>Login</th>
+              <th>Username</th>
               <th>Pages</th>
               <th className="options-actions-col" />
             </tr>
@@ -929,9 +989,10 @@ export function PeopleManager({
           <tbody>
             {filtered.map((item) => (
               <tr key={item.id}>
-                <td>{item.name}</td>
+                <td>{splitPersonName(item.name).firstName}</td>
+                <td>{splitPersonName(item.name).lastName || "—"}</td>
                 <td>{item.role ?? "—"}</td>
-                <td>{item.hasLogin ? "Yes" : "No"}</td>
+                <td>{item.hasLogin ? usernameFromName(item.name) : "—"}</td>
                 <td>{item.hasLogin ? item.pageKeys.length : "—"}</td>
                 <td className="space-x-2 whitespace-nowrap">
                   <button
@@ -954,7 +1015,7 @@ export function PeopleManager({
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="options-empty">
+                <td colSpan={6} className="options-empty">
                   {query.trim()
                     ? "No matches for your search."
                     : "No people yet. Add one above."}
@@ -972,18 +1033,41 @@ export function PeopleManager({
         wide
       >
         <form onSubmit={onSubmit} className="people-form">
-          <label className="login-field">
-            <span>Name</span>
-            <input
-              required
-              className="field-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => {
-                if (name.trim()) setName(capitalizeName(name) ?? name);
-              }}
-            />
-          </label>
+          <div className="people-name-row">
+            <label className="login-field">
+              <span>First name</span>
+              <input
+                required
+                className="field-input"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                onBlur={() => {
+                  if (firstName.trim()) {
+                    setFirstName(capitalizeName(firstName) ?? firstName);
+                  }
+                }}
+              />
+            </label>
+            <label className="login-field">
+              <span>Last name</span>
+              <input
+                required
+                className="field-input"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                onBlur={() => {
+                  if (lastName.trim()) {
+                    setLastName(capitalizeName(lastName) ?? lastName);
+                  }
+                }}
+              />
+            </label>
+          </div>
+          {usernameFromName(joinPersonName(firstName, lastName)).includes(".") && (
+            <p className="login-username-hint">
+              Username: {usernameFromName(joinPersonName(firstName, lastName))}
+            </p>
+          )}
           <label className="login-field">
             <span>Role (optional)</span>
             <input
@@ -1143,7 +1227,39 @@ export function PeopleManager({
                     allOn={masterAllOn}
                     onToggleAll={toggleMasterAll}
                   >
-                    {MASTER_SUB_PAGES.map((subPage) => (
+                    <div className="people-access-subpanel">
+                      <label className="people-access-subpanel-head">
+                        <input
+                          type="checkbox"
+                          checked={masterBankExpanded}
+                          onChange={toggleMasterBankParent}
+                        />
+                        {MASTER_BANK_GROUP.label}
+                      </label>
+                      {masterBankExpanded && (
+                        <div className="people-access-panel-body-nested">
+                          <label className="people-access-all">
+                            <input
+                              type="checkbox"
+                              checked={masterBankAllOn}
+                              disabled={masterAllOn}
+                              onChange={toggleMasterBankAll}
+                            />
+                            ALL
+                          </label>
+                          {MASTER_BANK_GROUP.pages.map((page) => (
+                            <AccessCheckbox
+                              key={page.key}
+                              checked={pageKeys.includes(page.key)}
+                              disabled={masterAllOn || masterBankAllOn}
+                              onChange={() => toggleMasterBankSubPage(page.key)}
+                              label={page.label}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    {MASTER_ENTITY_SUB_PAGES.map((subPage) => (
                       <AccessCheckbox
                         key={subPage.key}
                         checked={pageKeys.includes(subPage.key)}

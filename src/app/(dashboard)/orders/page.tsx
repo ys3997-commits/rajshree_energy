@@ -158,7 +158,7 @@ export default async function OrdersPage({
           </select>
         </label>
         <label>
-          Quality class
+          Quality Class
           <select
             name="qualityClassId"
             defaultValue={sp.qualityClassId ?? ""}
@@ -183,7 +183,7 @@ export default async function OrdersPage({
           </select>
         </label>
         <label>
-          Sales executive
+          Sales Executive
           <select
             name="saleExecutive"
             defaultValue={sp.saleExecutive ?? ""}

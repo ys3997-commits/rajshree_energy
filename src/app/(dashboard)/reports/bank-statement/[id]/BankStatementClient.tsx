@@ -186,7 +186,7 @@ export function BankStatementClient({
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Start date
+          Start Date
           <input
             type="date"
             value={dateFrom}
@@ -196,7 +196,7 @@ export function BankStatementClient({
           />
         </label>
         <label>
-          End date
+          End Date
           <input
             type="date"
             value={dateTo}

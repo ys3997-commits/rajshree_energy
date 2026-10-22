@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,20 +19,22 @@ export default function LoginPage() {
     setError(null);
 
     const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (username.includes("@")) {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: username.trim(),
+        password,
+      });
 
-    if (!signInError) {
-      await signOutStaff();
-      setLoading(false);
-      router.push("/");
-      router.refresh();
-      return;
+      if (!signInError) {
+        await signOutStaff();
+        setLoading(false);
+        router.push("/");
+        router.refresh();
+        return;
+      }
     }
 
-    const staff = await signInWithStaffPassword(password);
+    const staff = await signInWithStaffPassword(username, password);
     setLoading(false);
 
     if (staff.ok) {
@@ -47,7 +49,7 @@ export default function LoginPage() {
       return;
     }
 
-    setError("Invalid email or password");
+    setError("Invalid username or password");
   }
 
   return (
@@ -62,19 +64,26 @@ export default function LoginPage() {
             <p className="login-brand-tag">Trading books &amp; operations</p>
           </div>
         </div>
-        <p className="lede">Sign in with your email and password.</p>
+        <p className="lede">
+          Sign in with your username and password. Username is first name and
+          last name, for example prakash.surana.
+        </p>
 
         {error && <div className="error-box">{error}</div>}
 
         <div className="login-field">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="username">Username</label>
           <input
-            id="email"
-            type="email"
+            id="username"
+            type="text"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            placeholder="prakash.surana"
           />
         </div>
 

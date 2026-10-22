@@ -222,7 +222,7 @@ export function NewDispatchForm({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-        <label>Dispatch no</label>
+        <label>Dispatch No</label>
         <input
           required
           value={dispatchNumber}
@@ -230,7 +230,7 @@ export function NewDispatchForm({
           placeholder="DN 0001"
         />
 
-        <label>Dispatch date</label>
+        <label>Dispatch Date</label>
         <input
           required
           type="date"
@@ -238,7 +238,7 @@ export function NewDispatchForm({
           onChange={(e) => setDispatchDate(e.target.value)}
         />
 
-        <label>Lorry number</label>
+        <label>Lorry Number</label>
         <input
           value={lorryNumber}
           onChange={(e) => setLorryNumber(e.target.value.toUpperCase())}
@@ -253,7 +253,7 @@ export function NewDispatchForm({
           }}
         />
 
-        <label>Dispatched quantity</label>
+        <label>Dispatched Quantity</label>
         <div className="field-with-unit">
           <input
             required
@@ -300,7 +300,7 @@ export function NewDispatchForm({
 
         {purchaseMode === "existing" ? (
           <>
-            <label>Purchase order</label>
+            <label>Purchase Order</label>
             <select
               required
               value={purchasePoNumber}
@@ -317,7 +317,7 @@ export function NewDispatchForm({
             </select>
             {selectedPurchase && (
               <>
-                <label>Purchase balance</label>
+                <label>Purchase Balance</label>
                 <div className="text-sm">
                   {selectedPurchase.balanceOrder != null
                     ? formatMt(selectedPurchase.balanceOrder)
@@ -331,7 +331,7 @@ export function NewDispatchForm({
                 <div className="text-sm">
                   {formatQualityClass(selectedPurchase.qualityClass)}
                 </div>
-                <label>Rate breakdown</label>
+                <label>Rate Breakdown</label>
                 <div className="text-sm font-medium">
                   {selectedPurchaseRateBreakdown != null
                     ? formatRateBreakdownLine(selectedPurchaseRateBreakdown)
@@ -342,7 +342,7 @@ export function NewDispatchForm({
           </>
         ) : (
           <>
-            <label>Purchase order number</label>
+            <label>Purchase Order Number</label>
             <input
               required
               value={openPurchasePoNumber}
@@ -375,7 +375,7 @@ export function NewDispatchForm({
                 </option>
               ))}
             </select>
-            <label>Basic rate</label>
+            <label>Basic Rate</label>
             <div className="field-with-unit field-with-prefix">
               <span className="field-unit">Rs</span>
               <input
@@ -388,7 +388,7 @@ export function NewDispatchForm({
             </div>
             {purchaseRateBreakdown != null && (
               <>
-                <label>Rate breakdown</label>
+                <label>Rate Breakdown</label>
                 <div className="text-sm font-medium">
                   {formatRateBreakdownLine(purchaseRateBreakdown)}
                 </div>
@@ -438,7 +438,7 @@ export function NewDispatchForm({
 
         {mode === "existing" ? (
           <>
-            <label>Sale order number</label>
+            <label>Sale Order Number</label>
             <select
               required
               value={poNumber}
@@ -454,13 +454,13 @@ export function NewDispatchForm({
             </select>
             {selectedOrder && (
               <>
-                <label>Sale balance</label>
+                <label>Sale Balance</label>
                 <div className="text-sm">
                   {selectedOrder.balanceOrder != null
                     ? formatMt(selectedOrder.balanceOrder)
                     : "—"}
                 </div>
-                <label>Rate breakdown</label>
+                <label>Rate Breakdown</label>
                 <div className="text-sm font-medium">
                   {selectedSaleRateBreakdown != null
                     ? formatRateBreakdownLine(selectedSaleRateBreakdown)
@@ -471,7 +471,7 @@ export function NewDispatchForm({
           </>
         ) : (
           <>
-            <label>Sale order number</label>
+            <label>Sale Order Number</label>
             <input
               required
               value={openPoNumber}
@@ -491,7 +491,7 @@ export function NewDispatchForm({
                 </option>
               ))}
             </select>
-            <label>Basic rate</label>
+            <label>Basic Rate</label>
             <div className="field-with-unit field-with-prefix">
               <span className="field-unit">Rs</span>
               <input
@@ -504,7 +504,7 @@ export function NewDispatchForm({
             </div>
             {saleRateBreakdown != null && (
               <>
-                <label>Rate breakdown</label>
+                <label>Rate Breakdown</label>
                 <div className="text-sm font-medium">
                   {formatRateBreakdownLine(saleRateBreakdown)}
                 </div>
@@ -519,7 +519,7 @@ export function NewDispatchForm({
           </>
         )}
 
-        <label>Delivery terms</label>
+        <label>Delivery Terms</label>
         <div
           className="segment-control"
           role="radiogroup"
@@ -597,13 +597,13 @@ export function NewDispatchForm({
           </>
         )}
 
-        <label>Sale invoice</label>
+        <label>Sale Invoice</label>
         <input
           value={saleInvoiceNumber}
           onChange={(e) => setSaleInvoiceNumber(e.target.value.toUpperCase())}
         />
 
-        <label>Purchase invoice</label>
+        <label>Purchase Invoice</label>
         <input
           value={purchaseInvoiceNumber}
           onChange={(e) =>

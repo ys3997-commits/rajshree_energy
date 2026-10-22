@@ -13,7 +13,7 @@ const reports = [
   {
     href: "/reports/bank-statement",
     title: "Bank Statement",
-    desc: "Statement for each bank account from Masters → Bank.",
+    desc: "Statement for each bank account from Masters → Bank → Create Bank Account.",
   },
   {
     href: "/reports/ageing-report",

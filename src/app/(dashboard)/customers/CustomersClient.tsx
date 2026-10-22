@@ -442,7 +442,7 @@ export function CustomersClient({
       </Modal>
 
       <form onSubmit={onAdd} className="mb-6 form-grid form-grid-wide">
-        <label>Company name</label>
+        <label>Company Name</label>
         <input
           required
           value={addForm.name}
@@ -510,7 +510,7 @@ export function CustomersClient({
           />
         </div>
 
-        <label>Payment in-charge</label>
+        <label>Payment In-Charge</label>
         <div className="role-fields role-fields-3">
           <input
             placeholder="Name"
@@ -559,9 +559,7 @@ export function CustomersClient({
 
         <label
           className={addFactoryEditable ? undefined : "field-label-muted"}
-        >
-          Factory contact
-        </label>
+        >Factory Contact</label>
         <div
           className={`role-fields role-fields-3${
             addFactoryEditable ? "" : " role-fields-disabled"
@@ -618,7 +616,7 @@ export function CustomersClient({
           placeholder={addForm.city ? "—" : "Select city first"}
         />
 
-        <label>Credit period</label>
+        <label>Credit Period</label>
         <div className="field-with-unit">
           <input
             type="number"
@@ -631,14 +629,14 @@ export function CustomersClient({
           <span className="field-unit">days</span>
         </div>
 
-        <label>Sales executive</label>
+        <label>Sales Executive</label>
         <OptionSelect
           value={addForm.saleExecutive}
           onChange={(saleExecutive) => patchAdd({ saleExecutive })}
           options={saleExecutives}
         />
 
-        <label>Approach for funds</label>
+        <label>Approach For Funds</label>
         <OptionSelect
           value={addForm.approachForFunds}
           onChange={(approachForFunds) => patchAdd({ approachForFunds })}
@@ -652,7 +650,7 @@ export function CustomersClient({
           options={sectors}
         />
 
-        <label>Opening due</label>
+        <label>Opening Due</label>
         <div className="field-with-unit">
           <input
             type="number"
@@ -664,7 +662,7 @@ export function CustomersClient({
           <span className="field-unit">Rs</span>
         </div>
 
-        <label>Dealing company</label>
+        <label>Dealing Company</label>
         <OptionSelect
           value={addForm.dealingCompany}
           onChange={(dealingCompany) => patchAdd({ dealingCompany })}
@@ -1133,9 +1131,7 @@ export function CustomersClient({
                                 ? undefined
                                 : "field-label-muted"
                             }
-                          >
-                            Factory contact
-                          </label>
+                          >Factory Contact</label>
                           <div
                             className={`role-fields role-fields-3${
                               editFactoryEditable

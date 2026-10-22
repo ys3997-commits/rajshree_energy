@@ -636,7 +636,7 @@ export function VegClient({
         </div>
         <div className="veg-person-row">
           <label>
-            Veg name
+            Veg Name
             <input
               required
               className="field-input"
@@ -651,7 +651,7 @@ export function VegClient({
             />
           </label>
           <label>
-            Mobile no
+            Mobile No
             <input
               className="field-input"
               placeholder="Mobile no"
@@ -760,7 +760,7 @@ export function VegClient({
                 </div>
 
                 <label>
-                  Begin date
+                  Begin Date
                   <input
                     required
                     className="field-input"
@@ -774,7 +774,7 @@ export function VegClient({
                 </label>
 
                 <label>
-                  Stop date
+                  Stop Date
                   <input
                     className="field-input"
                     type="date"
@@ -839,7 +839,7 @@ export function VegClient({
           </select>
         </label>
         <label className="customers-filter-field">
-          Veg name
+          Veg Name
           <select
             className="field-input"
             aria-label="Filter veg name"

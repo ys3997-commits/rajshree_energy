@@ -1379,6 +1379,11 @@ button.th-sort:hover {
   text-align: left;
 }
 
+table.data.bank-balances-table tbody td {
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+
 .payment-account-cell {
   min-width: 11rem;
 }
@@ -1601,6 +1606,7 @@ table.data td.col-actions {
 .table-wrap.update-purchase-table-wrap,
 .table-wrap.update-sale-table-wrap,
 .table-wrap.update-transport-table-wrap,
+.table-wrap.update-tally-table-wrap,
 .table-wrap.dispatch-register-table-wrap,
 .table-wrap.dispatch-analysis-table-wrap,
 .table-wrap.transport-engine-table-wrap {
@@ -3151,11 +3157,36 @@ table.data.transport-engine-table tbody tr:hover td {
   gap: 0.9rem;
 }
 
+.people-name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.people-form .login-field {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+}
+
+.people-form .login-field span {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .people-check-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
+}
+
+.login-username-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
 }
 
 .people-pages {
@@ -6064,7 +6095,8 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
 /* Full-bleed update tables — sticky header sits flush under the menu bar */
 .update-page .table-wrap.update-purchase-table-wrap,
 .update-page .table-wrap.update-sale-table-wrap,
-.update-page .table-wrap.update-transport-table-wrap {
+.update-page .table-wrap.update-transport-table-wrap,
+.update-page .table-wrap.update-tally-table-wrap {
   margin-inline: -2rem;
   width: calc(100% + 4rem);
   border-radius: 0;
@@ -6072,7 +6104,8 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
   border-right: none;
 }
 
-.update-page .table-wrap.update-sale-table-wrap {
+.update-page .table-wrap.update-sale-table-wrap,
+.update-page .table-wrap.update-tally-table-wrap {
   max-width: none;
   width: max-content;
   min-width: calc(100% + 4rem);
@@ -6082,12 +6115,14 @@ table.data.sales-engine-table td.sales-engine-customer-col .btn-link {
 @media (max-width: 768px) {
   .update-page .table-wrap.update-purchase-table-wrap,
   .update-page .table-wrap.update-sale-table-wrap,
-  .update-page .table-wrap.update-transport-table-wrap {
+  .update-page .table-wrap.update-transport-table-wrap,
+  .update-page .table-wrap.update-tally-table-wrap {
     margin-inline: -1rem;
     width: calc(100% + 2rem);
   }
 
-  .update-page .table-wrap.update-sale-table-wrap {
+  .update-page .table-wrap.update-sale-table-wrap,
+  .update-page .table-wrap.update-tally-table-wrap {
     width: max-content;
     min-width: calc(100% + 2rem);
   }
@@ -6501,6 +6536,39 @@ table.data.update-purchase-table td.update-purchase-actions-col {
 
 table.data.update-purchase-table .dispatch-edit-actions {
   gap: 0;
+}
+
+table.data.update-tally-table {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+table.data.update-tally-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f8fafb;
+  white-space: pre-line;
+  line-height: 1.2;
+  vertical-align: bottom;
+}
+
+table.data.update-tally-table tbody td {
+  white-space: nowrap;
+  background: #ffffff;
+}
+
+table.data.update-tally-table tfoot td {
+  background: #f8fafb;
+  border-top: 1px solid var(--line);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+table.data.update-tally-table tfoot td strong {
+  font-weight: 700;
 }
 
 table.data.update-sale-table {

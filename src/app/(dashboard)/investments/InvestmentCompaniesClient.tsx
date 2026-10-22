@@ -143,7 +143,7 @@ export function InvestmentCompaniesClient({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onAdd} className="mb-6 form-grid">
-        <label>Investment company</label>
+        <label>Investment Company</label>
         <input
           required
           value={addForm.name}
@@ -154,7 +154,7 @@ export function InvestmentCompaniesClient({
             }
           }}
         />
-        <label>Opening due</label>
+        <label>Opening Due</label>
         <div className="field-with-unit">
           <input
             type="number"

@@ -169,9 +169,7 @@ export function EditDispatchSaleButton({
               Update sale
             </h3>
           ) : null}
-          <label htmlFor={`sale-invoice-${dispatchId}`}>
-            Sale invoice number
-          </label>
+          <label htmlFor={`sale-invoice-${dispatchId}`}>Sale Invoice Number</label>
           <input
             id={`sale-invoice-${dispatchId}`}
             value={saleInvoice}
@@ -180,9 +178,7 @@ export function EditDispatchSaleButton({
             autoFocus={!rowSummary}
           />
 
-          <label htmlFor={`factory-qty-${dispatchId}`}>
-            Factory receiving quantity
-          </label>
+          <label htmlFor={`factory-qty-${dispatchId}`}>Factory Receiving Quantity</label>
           <div className="field-with-unit">
             <input
               id={`factory-qty-${dispatchId}`}
@@ -206,7 +202,7 @@ export function EditDispatchSaleButton({
             </p>
           )}
 
-          <label htmlFor={`diff-qty-${dispatchId}`}>Diff quantity</label>
+          <label htmlFor={`diff-qty-${dispatchId}`}>Diff Quantity</label>
           <div className="field-with-unit">
             <input
               id={`diff-qty-${dispatchId}`}

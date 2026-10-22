@@ -149,7 +149,7 @@ export default async function PurchaseOrdersPage({
           </select>
         </label>
         <label>
-          Quality class
+          Quality Class
           <select
             name="qualityClassId"
             defaultValue={sp.qualityClassId ?? ""}

@@ -2,7 +2,11 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { bankAccountBalance } from "@/lib/domain/bankBalance";
 import { toDecimal, type DecimalLike } from "@/lib/domain/computations";
 
-export type BankStatementMovementKind = "payment" | "transfer";
+export type BankStatementMovementKind =
+  | "payment"
+  | "transfer"
+  | "expense"
+  | "saving";
 
 export type BankStatementMovement = {
   id: string;
@@ -125,4 +129,13 @@ export function transferParticular(
 ): string {
   const name = otherAccountName.trim() || "—";
   return side === "paid" ? `Transfer to ${name}` : `Transfer from ${name}`;
+}
+
+export function bookExpenseParticular(
+  expenseName: string,
+  particular: string,
+): string {
+  const expense = expenseName.trim() || "—";
+  const note = particular.trim();
+  return note ? `${expense} — ${note}` : expense;
 }

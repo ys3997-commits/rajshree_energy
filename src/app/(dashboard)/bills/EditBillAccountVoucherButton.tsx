@@ -95,14 +95,14 @@ export function EditBillAccountVoucherButton({
             <SummaryField label="Approval no" value={rowSummary.approvalNo} />
             <SummaryField label="Date" value={rowSummary.date} />
             <SummaryField
-              label="Invoice issued by"
+              label="Invoice Issued By"
               value={rowSummary.invoiceIssuedBy}
             />
             <SummaryField
-              label="Invoice amount"
+              label="Invoice Amount"
               value={rowSummary.invoiceAmount}
             />
-            <SummaryField label="Approver name" value={rowSummary.approverName} />
+            <SummaryField label="Approver Name" value={rowSummary.approverName} />
             <SummaryField label="Sent by" value={rowSummary.sentBy} />
             <SummaryField label="Status" value={rowSummary.status} />
             <SummaryField label="Owner remark" value={rowSummary.ownerRemark} />

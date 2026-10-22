@@ -215,7 +215,7 @@ export function MemberDocumentPanel({
               </select>
             </label>
             <label>
-              Upload document
+              Upload Document
               <div className="bill-file-field">
                 <input
                   key={fileKey}

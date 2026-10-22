@@ -1,46 +1,83 @@
 "use client";
 
-import { FormEvent, useState, useTransition } from "react";
+import { FormEvent, useMemo, useState, useTransition } from "react";
 import {
   createBankAccount,
   deleteBankAccount,
   updateBankAccount,
   type BankAccountListRow,
 } from "@/lib/actions/bankAccounts";
-import { capitalizeName, formatRs } from "@/lib/domain/format";
+import type { BankAccountTypeRow } from "@/lib/actions/bankAccountTypes";
+import {
+  capitalizeName,
+  formatIndianAmountTyping,
+  formatIndianNumber,
+  parseAmountInput,
+} from "@/lib/domain/format";
 
 type FormState = {
   accountName: string;
+  accountTypeId: string;
   bankName: string;
   openingBalance: string;
 };
 
 const emptyForm: FormState = {
   accountName: "",
+  accountTypeId: "",
   bankName: "",
   openingBalance: "",
 };
 
+function normalizeOpeningBalanceTyping(value: string): string {
+  const trimmed = parseAmountInput(value);
+  if (!trimmed || trimmed === "-") return trimmed;
+  const negative = trimmed.startsWith("-");
+  const digits = (negative ? trimmed.slice(1) : trimmed).replace(/[^\d.]/g, "");
+  if (!digits) return negative ? "-" : "";
+  const formatted = formatIndianAmountTyping(digits);
+  return negative ? `-${formatted}` : formatted;
+}
+
 function parseOpeningBalanceInput(value: string): string {
-  const trimmed = value.trim();
-  if (!trimmed) return "0";
+  const trimmed = parseAmountInput(value);
+  if (!trimmed || trimmed === "-") return "0.00";
   const n = Number(trimmed);
   if (!Number.isFinite(n)) {
     throw new Error("Opening balance must be a valid amount");
   }
-  return trimmed;
+  return n.toFixed(2);
+}
+
+function formatOpeningBalanceTyping(value: string): string {
+  if (!value || value === "-") return value;
+  if (value.startsWith("-")) {
+    return `-${formatIndianAmountTyping(value.slice(1))}`;
+  }
+  return formatIndianAmountTyping(value);
+}
+
+function formatOpeningBalanceDisplay(value: string): string {
+  return `Rs ${formatIndianNumber(value, 2)}`;
 }
 
 export function BankAccountsClient({
   initial,
+  accountTypes,
 }: {
   initial: BankAccountListRow[];
+  accountTypes: BankAccountTypeRow[];
 }) {
   const [rows, setRows] = useState(initial);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editing, setEditing] = useState<BankAccountListRow | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const openingBalanceDisplay = useMemo(
+    () => formatOpeningBalanceTyping(form.openingBalance),
+    [form.openingBalance],
+  );
 
   function reload() {
     startTransition(() => window.location.reload());
@@ -50,6 +87,7 @@ export function BankAccountsClient({
     setEditing(row);
     setForm({
       accountName: row.accountName,
+      accountTypeId: row.accountTypeId ?? "",
       bankName: row.bankName,
       openingBalance: row.openingBalance,
     });
@@ -67,6 +105,7 @@ export function BankAccountsClient({
     try {
       const payload = {
         accountName: form.accountName,
+        accountTypeId: form.accountTypeId,
         bankName: form.bankName,
         openingBalance: parseOpeningBalanceInput(form.openingBalance),
       };
@@ -93,11 +132,11 @@ export function BankAccountsClient({
 
   return (
     <div>
-      <h1 className="page-title">Bank</h1>
+      <h1 className="page-title">Create Bank Account</h1>
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="mb-6 form-grid">
-        <label htmlFor="bank-account-name">Account name</label>
+        <label htmlFor="bank-account-name">Account Name</label>
         <input
           id="bank-account-name"
           required
@@ -113,6 +152,23 @@ export function BankAccountsClient({
             }
           }}
         />
+
+        <label htmlFor="type-of-account">Type of Account</label>
+        <select
+          id="type-of-account"
+          required
+          value={form.accountTypeId}
+          onChange={(e) =>
+            setForm({ ...form, accountTypeId: e.target.value })
+          }
+        >
+          <option value="">Select</option>
+          {accountTypes.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.name}
+            </option>
+          ))}
+        </select>
 
         <label htmlFor="bank-name">Bank</label>
         <input
@@ -130,16 +186,21 @@ export function BankAccountsClient({
           }}
         />
 
-        <label htmlFor="opening-balance">Opening balance</label>
+        <label htmlFor="opening-balance">Opening Balance</label>
         <div className="field-with-unit">
           <input
             id="opening-balance"
-            type="number"
-            step="0.01"
-            placeholder="0"
-            value={form.openingBalance}
+            type="text"
+            inputMode="decimal"
+            placeholder="0.00"
+            value={openingBalanceDisplay}
             onChange={(e) =>
-              setForm({ ...form, openingBalance: e.target.value })
+              setForm({
+                ...form,
+                openingBalance: parseAmountInput(
+                  normalizeOpeningBalanceTyping(e.target.value),
+                ),
+              })
             }
           />
           <span className="field-unit">Rs</span>
@@ -148,7 +209,7 @@ export function BankAccountsClient({
         <div />
         <div className="flex gap-2">
           <button type="submit" className="btn" disabled={pending}>
-            {editing ? "Update" : "Add bank account"}
+            {editing ? "Update" : "Add Bank Account"}
           </button>
           {editing && (
             <button
@@ -167,23 +228,27 @@ export function BankAccountsClient({
           <table className="data">
             <thead>
               <tr>
-                <th>Account name</th>
+                <th>Account Name</th>
+                <th>Type of Account</th>
                 <th>Bank</th>
-                <th className="num">Opening balance</th>
+                <th className="num">Opening Balance</th>
                 <th />
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>No bank accounts yet.</td>
+                  <td colSpan={5}>No bank accounts yet.</td>
                 </tr>
               ) : (
                 rows.map((row) => (
                   <tr key={row.id}>
                     <td>{row.accountName}</td>
+                    <td>{row.accountTypeName ?? "—"}</td>
                     <td>{row.bankName}</td>
-                    <td className="num">{formatRs(row.openingBalance)}</td>
+                    <td className="num">
+                      {formatOpeningBalanceDisplay(row.openingBalance)}
+                    </td>
                     <td className="space-x-2 whitespace-nowrap">
                       <button
                         type="button"
@@ -194,7 +259,7 @@ export function BankAccountsClient({
                       </button>
                       <button
                         type="button"
-                        className="btn btn-secondary"
+                        className="btn btn-danger"
                         onClick={() => onDelete(row.id)}
                       >
                         Delete

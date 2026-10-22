@@ -215,7 +215,7 @@ export default async function MasterDispatchReportPage({
           </select>
         </label>
         <label>
-          From date
+          From Date
           <input
             type="date"
             name="dateFrom"
@@ -223,7 +223,7 @@ export default async function MasterDispatchReportPage({
           />
         </label>
         <label>
-          To date
+          To Date
           <input type="date" name="dateTo" defaultValue={filters.dateTo} />
         </label>
         <button type="submit" className="btn btn-secondary">

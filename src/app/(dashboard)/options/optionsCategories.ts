@@ -7,7 +7,8 @@ export type CategoryId =
   | "sectors"
   | "people"
   | "owners"
-  | "dealingCompanies";
+  | "dealingCompanies"
+  | "indirectExpenses";
 
 export const OPTION_CATEGORIES: {
   id: CategoryId;
@@ -69,10 +70,10 @@ export const OPTION_CATEGORIES: {
   {
     id: "owners",
     slug: "owners",
-    label: "RE Leadership",
+    label: "Admin",
     description: "People who can approve bills.",
     placeholder: "New name",
-    listPhrase: "RE Leadership",
+    listPhrase: "Admin",
   },
   {
     id: "dealingCompanies",
@@ -80,6 +81,13 @@ export const OPTION_CATEGORIES: {
     label: "Dealing company",
     description: "Companies you deal with, suggested across the app.",
     placeholder: "New dealing company",
+  },
+  {
+    id: "indirectExpenses",
+    slug: "indirect-expenses",
+    label: "Indirect Expenses",
+    description: "Indirect expense types used across the app.",
+    placeholder: "New indirect expense",
   },
 ];
 
@@ -91,7 +99,7 @@ export const USER_MENU_CATEGORIES = OPTION_CATEGORIES.filter((category) =>
   userMenuCategoryIdSet.has(category.id),
 );
 
-/** Option lists under Masters → Options (excludes Team/RE Leadership in Users menu). */
+/** Option lists under Masters → Options (excludes Team/Admin in Users menu). */
 export const MASTER_OPTION_CATEGORIES = OPTION_CATEGORIES.filter(
   (category) => !userMenuCategoryIdSet.has(category.id),
 );
@@ -109,7 +117,9 @@ export function optionsHref(categoryId: CategoryId): string {
 }
 
 export function categoryFromSlug(slug: string): CategoryId | null {
-  return categoryBySlug.get(slug) ?? null;
+  const key = slug.trim().toLowerCase();
+  if (key === "people") return "people";
+  return categoryBySlug.get(key) ?? null;
 }
 
 export function categoryMeta(categoryId: CategoryId) {

@@ -161,7 +161,7 @@ export function VendorAnalysisList({
       <div className="filters">
         <form className="sale-analysis-date-form" method="get">
           <label>
-            Start date
+            Start Date
             <input
               type="date"
               name="dateFrom"
@@ -170,7 +170,7 @@ export function VendorAnalysisList({
             />
           </label>
           <label>
-            End date
+            End Date
             <input
               type="date"
               name="dateTo"

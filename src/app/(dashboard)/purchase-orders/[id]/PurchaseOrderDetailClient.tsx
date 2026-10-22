@@ -212,14 +212,14 @@ export function PurchaseOrderDetailClient({
           : "Edit purchase order fields"}
       </h2>
       <form onSubmit={onSave} className="mb-8 form-grid">
-        <label>Purchase order number</label>
+        <label>Purchase Order Number</label>
         <input
           required
           value={poNumber}
           onChange={(e) => setPoNumber(e.target.value)}
           placeholder="PO 0001"
         />
-        <label>Order date</label>
+        <label>Order Date</label>
         <input
           type="date"
           value={orderDate}
@@ -237,7 +237,7 @@ export function PurchaseOrderDetailClient({
           />
           <span className="field-unit">MT</span>
         </div>
-        <label>Basic rate</label>
+        <label>Basic Rate</label>
         <div className="field-with-unit field-with-prefix">
           <span className="field-unit">Rs</span>
           <input
@@ -252,11 +252,11 @@ export function PurchaseOrderDetailClient({
           <RateBreakdownFields breakdown={rateBreakdown} />
         ) : (
           <>
-            <label>Final rate</label>
+            <label>Final Rate</label>
             <div className="text-sm text-neutral-600">—</div>
           </>
         )}
-        <label>Quality class</label>
+        <label>Quality Class</label>
         <QualityClassSelect
           value={qualityClassId}
           onChange={setQualityClassId}

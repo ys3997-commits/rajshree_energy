@@ -35,6 +35,7 @@ export function FundFlowDateFilter({
   parties,
   account = "",
   accounts = [],
+  hideParty = false,
 }: {
   section: PaymentsSection;
   dateFrom: string;
@@ -44,10 +45,17 @@ export function FundFlowDateFilter({
   parties: PartyOpt[];
   account?: string;
   accounts?: AccountOpt[];
+  hideParty?: boolean;
 }) {
   const [partyId, setPartyId] = useState(party);
+  const showAccountFilter =
+    section === "transactions" || section === "txn-saving";
   const hasFilters = Boolean(
-    dateFrom || dateTo || party || type || (section === "transactions" && account),
+    dateFrom ||
+      dateTo ||
+      (!hideParty && party) ||
+      type ||
+      (showAccountFilter && account),
   );
 
   const partyOptions = useMemo(
@@ -89,7 +97,7 @@ export function FundFlowDateFilter({
           min={dateFrom || undefined}
         />
       </label>
-      {section === "transactions" ? (
+      {showAccountFilter ? (
         <label className="fund-flow-party-filter">
           Account
           <select name="account" defaultValue={account} className="field-input">
@@ -102,17 +110,19 @@ export function FundFlowDateFilter({
           </select>
         </label>
       ) : null}
-      <label className="fund-flow-party-filter">
-        Customer
-        <SearchableSelect
-          className="field-input"
-          ariaLabel="Customer, transporter, or investment company"
-          placeholder="Search customer, transporter, or investment"
-          value={partyId}
-          onChange={setPartyId}
-          options={partyOptions}
-        />
-      </label>
+      {!hideParty ? (
+        <label className="fund-flow-party-filter">
+          Customer
+          <SearchableSelect
+            className="field-input"
+            ariaLabel="Customer, transporter, or investment company"
+            placeholder="Search customer, transporter, or investment"
+            value={partyId}
+            onChange={setPartyId}
+            options={partyOptions}
+          />
+        </label>
+      ) : null}
       <label>
         Type
         <select name="type" defaultValue={type} className="field-input">

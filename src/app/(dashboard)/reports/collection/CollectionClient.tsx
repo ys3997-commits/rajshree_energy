@@ -489,7 +489,7 @@ export function CollectionClient({
           />
         </label>
         <label>
-          Planned call
+          Planned Call
           <select
             value={plannedCallFilter}
             onChange={(e) =>
@@ -506,7 +506,7 @@ export function CollectionClient({
         </label>
         {showSaleExecutiveFilter && (
           <label>
-            Sales executive
+            Sales Executive
             <select
               value={saleExecutiveFilter}
               onChange={(e) => setSaleExecutiveFilter(e.target.value)}
@@ -521,7 +521,7 @@ export function CollectionClient({
           </label>
         )}
         <label>
-          Dealing company
+          Dealing Company
           <select
             value={dealingCompanyFilter}
             onChange={(e) => setDealingCompanyFilter(e.target.value)}
@@ -535,7 +535,7 @@ export function CollectionClient({
           </select>
         </label>
         <label>
-          Approach for funds
+          Approach For Funds
           <select
             value={approachForFundsFilter}
             onChange={(e) => setApproachForFundsFilter(e.target.value)}

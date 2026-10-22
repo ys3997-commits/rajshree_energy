@@ -41,6 +41,7 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/dashboard", destination: "/", permanent: false },
       { source: "/orders/new", destination: "/orders", permanent: false },
       {
         source: "/reports/profit-analysis/monthly-wise",

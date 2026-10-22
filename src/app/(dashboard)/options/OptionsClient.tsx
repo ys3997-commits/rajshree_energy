@@ -4,16 +4,19 @@ import { FormEvent, useMemo, useState, useTransition } from "react";
 import {
   createCityOption,
   createDealingCompanyOption,
+  createIndirectExpenseOption,
   createOwnerOption,
   createSaleExecutiveOption,
   createSectorOption,
   deleteCityOption,
   deleteDealingCompanyOption,
+  deleteIndirectExpenseOption,
   deleteOwnerOption,
   deleteSaleExecutiveOption,
   deleteSectorOption,
   updateCityOption,
   updateDealingCompanyOption,
+  updateIndirectExpenseOption,
   updateOwnerOption,
   updateSaleExecutiveOption,
   updateSectorOption,
@@ -33,6 +36,7 @@ import {
 } from "@/lib/actions/ports";
 import { Modal } from "@/components/Modal";
 import { capitalizeName } from "@/lib/domain/format";
+import { joinPersonName, splitPersonName } from "@/lib/domain/personName";
 import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
 import { PeopleManager, type PeopleRow } from "./PeopleManager";
 import type { DocumentGroup } from "@/app/(dashboard)/documents/documentEntities";
@@ -55,6 +59,7 @@ type ItemMap = {
   sectors: Opt[];
   owners: Opt[];
   dealingCompanies: Opt[];
+  indirectExpenses: Opt[];
 };
 
 export function OptionsClient({
@@ -68,6 +73,7 @@ export function OptionsClient({
   people,
   owners,
   dealingCompanies,
+  indirectExpenses,
   documentGroups,
 }: {
   categoryId: CategoryId;
@@ -80,6 +86,7 @@ export function OptionsClient({
   people: PeopleRow[];
   owners: Opt[];
   dealingCompanies: Opt[];
+  indirectExpenses: Opt[];
   documentGroups: DocumentGroup[];
 }) {
   const [items, setItems] = useState<ItemMap>({
@@ -91,19 +98,24 @@ export function OptionsClient({
     sectors,
     owners,
     dealingCompanies,
+    indirectExpenses,
   });
   const [peopleItems, setPeopleItems] = useState(people);
   const activeId = categoryId;
   const [query, setQuery] = useState("");
   const [draft, setDraft] = useState("");
+  const [lastDraft, setLastDraft] = useState("");
   const [stateDraft, setStateDraft] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState("");
+  const [editLastDraft, setEditLastDraft] = useState("");
   const [editStateDraft, setEditStateDraft] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const hasStateColumn = activeId === "ports" || activeId === "cities";
+  const isLeadership = activeId === "owners";
+  const columnCount = (isLeadership ? 2 : 1) + (hasStateColumn ? 1 : 0) + 1;
 
   const active = categoryMeta(activeId);
   const listPhrase = active.listPhrase ?? active.label.toLowerCase();
@@ -126,6 +138,7 @@ export function OptionsClient({
   function cancelEdit() {
     setEditingId(null);
     setEditDraft("");
+    setEditLastDraft("");
     setEditStateDraft("");
   }
 
@@ -134,7 +147,14 @@ export function OptionsClient({
     // appear in the same place and would close edit mode immediately.
     window.setTimeout(() => {
       setEditingId(item.id);
-      setEditDraft(item.name);
+      if (activeId === "owners") {
+        const person = splitPersonName(item.name);
+        setEditDraft(person.firstName);
+        setEditLastDraft(person.lastName);
+      } else {
+        setEditDraft(item.name);
+        setEditLastDraft("");
+      }
       if (activeId === "ports" || activeId === "cities") {
         setEditStateDraft((item as PortOpt | CityOpt).state);
       } else {
@@ -171,6 +191,8 @@ export function OptionsClient({
         return createOwnerOption(name);
       case "dealingCompanies":
         return createDealingCompanyOption(name);
+      case "indirectExpenses":
+        return createIndirectExpenseOption(name);
       case "people":
         throw new Error("Use Add person");
     }
@@ -196,6 +218,8 @@ export function OptionsClient({
         return updateOwnerOption(id, name);
       case "dealingCompanies":
         return updateDealingCompanyOption(id, name);
+      case "indirectExpenses":
+        return updateIndirectExpenseOption(id, name);
       case "people":
         throw new Error("Use Edit on the person row");
     }
@@ -219,6 +243,8 @@ export function OptionsClient({
         return deleteOwnerOption(id);
       case "dealingCompanies":
         return deleteDealingCompanyOption(id);
+      case "indirectExpenses":
+        return deleteIndirectExpenseOption(id);
       case "people":
         throw new Error("Use Delete on the person row");
     }
@@ -227,8 +253,13 @@ export function OptionsClient({
   async function onAdd(e: FormEvent) {
     e.preventDefault();
     setError(null);
-    const name = capitalizeName(draft);
-    if (!name) return;
+    const name = isLeadership
+      ? capitalizeName(joinPersonName(draft, lastDraft))
+      : capitalizeName(draft);
+    if (!name || (isLeadership && !splitPersonName(name).lastName)) {
+      if (isLeadership) setError("First name and last name are required");
+      return;
+    }
     const state = capitalizeName(stateDraft);
     if (activeId === "ports" && !state) {
       setError("Port state is required");
@@ -266,6 +297,7 @@ export function OptionsClient({
           );
         }
         setDraft("");
+        setLastDraft("");
         setStateDraft("");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Save failed");
@@ -276,8 +308,13 @@ export function OptionsClient({
   function saveEdit() {
     if (!editingId) return;
     setError(null);
-    const name = capitalizeName(editDraft);
-    if (!name) return;
+    const name = isLeadership
+      ? capitalizeName(joinPersonName(editDraft, editLastDraft))
+      : capitalizeName(editDraft);
+    if (!name || (isLeadership && !splitPersonName(name).lastName)) {
+      if (isLeadership) setError("First name and last name are required");
+      return;
+    }
     const state = capitalizeName(editStateDraft);
     if (activeId === "ports" && !state) {
       setError("Port state is required");
@@ -392,7 +429,8 @@ export function OptionsClient({
           <input
             required
             className="field-input"
-            placeholder={active.placeholder}
+            placeholder={isLeadership ? "First name" : active.placeholder}
+            aria-label={isLeadership ? "First name" : undefined}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onBlur={() => {
@@ -400,6 +438,22 @@ export function OptionsClient({
             }}
             disabled={pending || editingId != null}
           />
+          {isLeadership && (
+            <input
+              required
+              className="field-input"
+              placeholder="Last name"
+              aria-label="Last name"
+              value={lastDraft}
+              onChange={(e) => setLastDraft(e.target.value)}
+              onBlur={() => {
+                if (lastDraft.trim()) {
+                  setLastDraft(capitalizeName(lastDraft) ?? lastDraft);
+                }
+              }}
+              disabled={pending || editingId != null}
+            />
+          )}
           {activeId === "ports" && (
             <select
               required
@@ -445,7 +499,14 @@ export function OptionsClient({
           <div className="table-h-scroll"><table className="data">
             <thead>
               <tr>
-                <th>Name</th>
+                {isLeadership ? (
+                  <>
+                    <th>First name</th>
+                    <th>Last name</th>
+                  </>
+                ) : (
+                  <th>Name</th>
+                )}
                 {activeId === "ports" && <th>GST state</th>}
                 {activeId === "cities" && <th>State</th>}
                 <th className="options-actions-col" />
@@ -466,7 +527,7 @@ export function OptionsClient({
                           <input
                             required
                             className="field-input"
-                            aria-label="Name"
+                            aria-label={isLeadership ? "First name" : "Name"}
                             value={editDraft}
                             onChange={(e) => setEditDraft(e.target.value)}
                             onBlur={() => {
@@ -476,6 +537,24 @@ export function OptionsClient({
                             }}
                           />
                         </td>
+                        {isLeadership && (
+                          <td>
+                            <input
+                              required
+                              className="field-input"
+                              aria-label="Last name"
+                              value={editLastDraft}
+                              onChange={(e) => setEditLastDraft(e.target.value)}
+                              onBlur={() => {
+                                if (editLastDraft.trim()) {
+                                  setEditLastDraft(
+                                    capitalizeName(editLastDraft) ?? editLastDraft,
+                                  );
+                                }
+                              }}
+                            />
+                          </td>
+                        )}
                         {hasStateColumn && (
                           <td>
                             <select
@@ -521,7 +600,14 @@ export function OptionsClient({
                       </>
                     ) : (
                       <>
-                        <td>{item.name}</td>
+                        {isLeadership ? (
+                          <>
+                            <td>{splitPersonName(item.name).firstName}</td>
+                            <td>{splitPersonName(item.name).lastName || "—"}</td>
+                          </>
+                        ) : (
+                          <td>{item.name}</td>
+                        )}
                         {hasStateColumn && (
                           <td>{stateRow.state || "—"}</td>
                         )}
@@ -551,7 +637,7 @@ export function OptionsClient({
               {filteredOptions.length === 0 && (
                 <tr>
                   <td
-                    colSpan={hasStateColumn ? 3 : 2}
+                    colSpan={columnCount}
                     className="options-empty"
                   >
                     {query.trim()

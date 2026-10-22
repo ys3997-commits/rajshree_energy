@@ -74,7 +74,7 @@ export function NewPurchaseOrderForm({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-        <label>Purchase order number</label>
+        <label>Purchase Order Number</label>
         <input
           name="poNumber"
           required
@@ -83,7 +83,7 @@ export function NewPurchaseOrderForm({
           placeholder="PO 0001"
         />
 
-        <label>Order date</label>
+        <label>Order Date</label>
         <input
           name="orderDate"
           type="date"
@@ -149,7 +149,7 @@ export function NewPurchaseOrderForm({
           <span className="field-unit">MT</span>
         </div>
 
-        <label>Basic rate</label>
+        <label>Basic Rate</label>
         <div className="field-with-unit field-with-prefix">
           <span className="field-unit">Rs</span>
           <input

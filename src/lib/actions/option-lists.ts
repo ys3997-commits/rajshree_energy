@@ -179,6 +179,32 @@ export async function deleteDealingCompanyOption(id: string) {
   revalidateOptionPaths();
 }
 
+export async function listIndirectExpenseOptions() {
+  return prisma.indirectExpenseOption.findMany({ orderBy: { name: "asc" } });
+}
+
+export async function createIndirectExpenseOption(name: string) {
+  const row = await prisma.indirectExpenseOption.create({
+    data: { name: trimName(name, "Name") },
+  });
+  revalidateOptionPaths();
+  return { id: row.id };
+}
+
+export async function updateIndirectExpenseOption(id: string, name: string) {
+  const row = await prisma.indirectExpenseOption.update({
+    where: { id },
+    data: { name: trimName(name, "Name") },
+  });
+  revalidateOptionPaths();
+  return { id: row.id };
+}
+
+export async function deleteIndirectExpenseOption(id: string) {
+  await prisma.indirectExpenseOption.delete({ where: { id } });
+  revalidateOptionPaths();
+}
+
 function asDocumentUniqueError(error: unknown): never {
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&

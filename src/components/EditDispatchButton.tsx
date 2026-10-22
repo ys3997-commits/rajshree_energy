@@ -351,7 +351,7 @@ export function EditDispatchButton({
       >
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-          <label htmlFor={`edit-date-${dispatchId}`}>Dispatch date</label>
+          <label htmlFor={`edit-date-${dispatchId}`}>Dispatch Date</label>
           <input
             id={`edit-date-${dispatchId}`}
             required
@@ -361,7 +361,7 @@ export function EditDispatchButton({
             autoFocus
           />
 
-          <label htmlFor={`edit-lorry-${dispatchId}`}>Lorry number</label>
+          <label htmlFor={`edit-lorry-${dispatchId}`}>Lorry Number</label>
           <input
             id={`edit-lorry-${dispatchId}`}
             value={lorry}
@@ -377,7 +377,7 @@ export function EditDispatchButton({
             }}
           />
 
-          <label htmlFor={`edit-qty-${dispatchId}`}>Dispatched quantity</label>
+          <label htmlFor={`edit-qty-${dispatchId}`}>Dispatched Quantity</label>
           <div className="field-with-unit">
             <input
               id={`edit-qty-${dispatchId}`}
@@ -431,9 +431,7 @@ export function EditDispatchButton({
 
           {purchaseMode === "existing" ? (
             <>
-              <label htmlFor={`edit-purchase-po-${dispatchId}`}>
-                Purchase order
-              </label>
+              <label htmlFor={`edit-purchase-po-${dispatchId}`}>Purchase Order</label>
               <select
                 id={`edit-purchase-po-${dispatchId}`}
                 required
@@ -453,7 +451,7 @@ export function EditDispatchButton({
               </select>
               {selectedPurchase && (
                 <>
-                  <label>Purchase balance</label>
+                  <label>Purchase Balance</label>
                   <div className="text-sm">
                     {selectedPurchase.balanceOrder != null
                       ? formatMt(selectedPurchase.balanceOrder)
@@ -467,7 +465,7 @@ export function EditDispatchButton({
                   <div className="text-sm">
                     {formatQualityClass(selectedPurchase.qualityClass)}
                   </div>
-                  <label>Rate breakdown</label>
+                  <label>Rate Breakdown</label>
                   <div className="text-sm font-medium">
                     {selectedPurchaseRateBreakdown != null
                       ? formatRateBreakdownLine(selectedPurchaseRateBreakdown)
@@ -478,9 +476,7 @@ export function EditDispatchButton({
             </>
           ) : (
             <>
-              <label htmlFor={`edit-open-purchase-po-${dispatchId}`}>
-                Purchase order number
-              </label>
+              <label htmlFor={`edit-open-purchase-po-${dispatchId}`}>Purchase Order Number</label>
               <input
                 id={`edit-open-purchase-po-${dispatchId}`}
                 required
@@ -516,9 +512,7 @@ export function EditDispatchButton({
                   </option>
                 ))}
               </select>
-              <label htmlFor={`edit-purchase-rate-${dispatchId}`}>
-                Basic rate
-              </label>
+              <label htmlFor={`edit-purchase-rate-${dispatchId}`}>Basic Rate</label>
               <div className="field-with-unit field-with-prefix">
                 <span className="field-unit">Rs</span>
                 <input
@@ -532,7 +526,7 @@ export function EditDispatchButton({
               </div>
               {purchaseRateBreakdown != null && (
                 <>
-                  <label>Rate breakdown</label>
+                  <label>Rate Breakdown</label>
                   <div className="text-sm font-medium">
                     {formatRateBreakdownLine(purchaseRateBreakdown)}
                   </div>
@@ -582,7 +576,7 @@ export function EditDispatchButton({
 
           {saleMode === "existing" ? (
             <>
-              <label htmlFor={`edit-sale-po-${dispatchId}`}>Sale order</label>
+              <label htmlFor={`edit-sale-po-${dispatchId}`}>Sale Order</label>
               <select
                 id={`edit-sale-po-${dispatchId}`}
                 required
@@ -601,13 +595,13 @@ export function EditDispatchButton({
               </select>
               {selectedOrder && (
                 <>
-                  <label>Sale balance</label>
+                  <label>Sale Balance</label>
                   <div className="text-sm">
                     {selectedOrder.balanceOrder != null
                       ? formatMt(selectedOrder.balanceOrder)
                       : "—"}
                   </div>
-                  <label>Rate breakdown</label>
+                  <label>Rate Breakdown</label>
                   <div className="text-sm font-medium">
                     {selectedSaleRateBreakdown != null
                       ? formatRateBreakdownLine(selectedSaleRateBreakdown)
@@ -618,9 +612,7 @@ export function EditDispatchButton({
             </>
           ) : (
             <>
-              <label htmlFor={`edit-open-sale-po-${dispatchId}`}>
-                Sale order number
-              </label>
+              <label htmlFor={`edit-open-sale-po-${dispatchId}`}>Sale Order Number</label>
               <input
                 id={`edit-open-sale-po-${dispatchId}`}
                 required
@@ -642,7 +634,7 @@ export function EditDispatchButton({
                   </option>
                 ))}
               </select>
-              <label htmlFor={`edit-sale-rate-${dispatchId}`}>Basic rate</label>
+              <label htmlFor={`edit-sale-rate-${dispatchId}`}>Basic Rate</label>
               <div className="field-with-unit field-with-prefix">
                 <span className="field-unit">Rs</span>
                 <input
@@ -656,7 +648,7 @@ export function EditDispatchButton({
               </div>
               {saleRateBreakdown != null && (
                 <>
-                  <label>Rate breakdown</label>
+                  <label>Rate Breakdown</label>
                   <div className="text-sm font-medium">
                     {formatRateBreakdownLine(saleRateBreakdown)}
                   </div>
@@ -672,7 +664,7 @@ export function EditDispatchButton({
             </>
           )}
 
-          <label>Delivery terms</label>
+          <label>Delivery Terms</label>
           <div
             className="segment-control"
             role="radiogroup"
@@ -748,27 +740,21 @@ export function EditDispatchButton({
             </>
           )}
 
-          <label htmlFor={`edit-sale-invoice-${dispatchId}`}>
-            Sale invoice number
-          </label>
+          <label htmlFor={`edit-sale-invoice-${dispatchId}`}>Sale Invoice Number</label>
           <input
             id={`edit-sale-invoice-${dispatchId}`}
             value={saleInvoice}
             onChange={(e) => setSaleInvoice(e.target.value.toUpperCase())}
           />
 
-          <label htmlFor={`edit-purchase-invoice-${dispatchId}`}>
-            Purchase invoice number
-          </label>
+          <label htmlFor={`edit-purchase-invoice-${dispatchId}`}>Purchase Invoice Number</label>
           <input
             id={`edit-purchase-invoice-${dispatchId}`}
             value={purchaseInvoice}
             onChange={(e) => setPurchaseInvoice(e.target.value.toUpperCase())}
           />
 
-          <label htmlFor={`edit-received-${dispatchId}`}>
-            Factory receiving quantity
-          </label>
+          <label htmlFor={`edit-received-${dispatchId}`}>Factory Receiving Quantity</label>
           <div className="field-with-unit">
             <input
               id={`edit-received-${dispatchId}`}
@@ -792,7 +778,7 @@ export function EditDispatchButton({
             </p>
           )}
 
-          <label htmlFor={`edit-diff-${dispatchId}`}>Diff quantity</label>
+          <label htmlFor={`edit-diff-${dispatchId}`}>Diff Quantity</label>
           <div className="field-with-unit">
             <input
               id={`edit-diff-${dispatchId}`}
@@ -804,7 +790,7 @@ export function EditDispatchButton({
             <span className="field-unit">MT</span>
           </div>
 
-          <label htmlFor={`edit-tally-${dispatchId}`}>Recorded in Tally</label>
+          <label htmlFor={`edit-tally-${dispatchId}`}>Recorded In Tally</label>
           <input
             id={`edit-tally-${dispatchId}`}
             type="checkbox"

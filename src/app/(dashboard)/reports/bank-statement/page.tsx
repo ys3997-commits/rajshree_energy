@@ -34,7 +34,7 @@ export default async function BankStatementIndexPage() {
 
       {sorted.length === 0 ? (
         <p className="page-subtitle">
-          No bank accounts yet. Add them under Masters → Bank.
+          No bank accounts yet. Add them under Masters → Bank → Create Bank Account.
         </p>
       ) : (
         <div className="home-report-grid">

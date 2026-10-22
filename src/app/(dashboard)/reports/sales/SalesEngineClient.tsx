@@ -568,7 +568,7 @@ export function SalesEngineClient({
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Planning call
+          Planning Call
           <select
             value={plannedCallFilter}
             onChange={(e) =>
@@ -585,7 +585,7 @@ export function SalesEngineClient({
         </label>
         {showSaleExecutiveFilter && (
           <label>
-            Sales executive
+            Sales Executive
             <select
               value={saleExecutiveFilter}
               onChange={(e) => setSaleExecutiveFilter(e.target.value)}

@@ -323,7 +323,7 @@ export function LedgerClient({
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Customer name
+          Customer Name
           <select
             value={customerId}
             onChange={(e) => onCustomerChange(e.target.value)}
@@ -339,7 +339,7 @@ export function LedgerClient({
           </select>
         </label>
         <label>
-          Start date
+          Start Date
           <input
             type="date"
             value={dateFrom}
@@ -349,7 +349,7 @@ export function LedgerClient({
           />
         </label>
         <label>
-          End date
+          End Date
           <input
             type="date"
             value={dateTo}

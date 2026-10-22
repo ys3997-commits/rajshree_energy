@@ -325,7 +325,7 @@ export function TransportLedgerClient({
 
       <form className="filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Transporter name
+          Transporter Name
           <select
             value={transporterId}
             onChange={(e) => onTransporterChange(e.target.value)}
@@ -340,7 +340,7 @@ export function TransportLedgerClient({
           </select>
         </label>
         <label>
-          Start date
+          Start Date
           <input
             type="date"
             value={dateFrom}
@@ -350,7 +350,7 @@ export function TransportLedgerClient({
           />
         </label>
         <label>
-          End date
+          End Date
           <input
             type="date"
             value={dateTo}

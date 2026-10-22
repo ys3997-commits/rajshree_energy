@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { buildExcelWorkbook } from "./excelWorkbook";
 import {
   buildCsv,
   exportPdfHeader,
@@ -62,5 +63,25 @@ describe("buildCsv", () => {
       ],
     );
     expect(csv).toBe("Date,Customer\n1,Alaknanda Steel\n12/09/2026,X");
+  });
+});
+
+describe("buildExcelWorkbook", () => {
+  it("writes an xlsx zip with escaped cell text", () => {
+    const bytes = buildExcelWorkbook(
+      [
+        { key: "vendor", header: "Vendor" },
+        { key: "amount", header: "Amount" },
+      ],
+      [{ vendor: "A & B <Co>", amount: "1,200" }],
+      "Tally Entry",
+    );
+    const text = new TextDecoder().decode(bytes);
+    expect(bytes[0]).toBe(0x50);
+    expect(bytes[1]).toBe(0x4b);
+    expect(text).toContain('name="Tally Entry"');
+    expect(text).toContain("A &amp; B &lt;Co&gt;");
+    expect(text).toContain(">Vendor<");
+    expect(text).toContain(">1,200<");
   });
 });

@@ -1,4 +1,4 @@
-export type PaymentsSection = "transactions" | "discount";
+export type PaymentsSection = "transactions" | "discount" | "txn-saving";
 export type FundFlowType = "received" | "paid";
 
 /** @deprecated use PaymentsSection */
@@ -22,7 +22,11 @@ export function paymentsHref(opts: {
 }): string {
   const section = opts.section ?? opts.tab ?? "transactions";
   const base =
-    section === "discount" ? "/payments/discount" : "/payments";
+    section === "discount"
+      ? "/payments/discount"
+      : section === "txn-saving"
+        ? "/payments/txn-saving"
+        : "/payments";
   const q = new URLSearchParams();
   const dateFrom = opts.dateFrom?.trim() ?? "";
   const dateTo = opts.dateTo?.trim() ?? "";

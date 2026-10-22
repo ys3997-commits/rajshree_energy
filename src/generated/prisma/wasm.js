@@ -210,6 +210,13 @@ exports.Prisma.DealingCompanyOptionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.IndirectExpenseOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.DocumentOptionScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -511,9 +518,17 @@ exports.Prisma.InvestmentPeriodValueScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BankAccountTypeOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.BankAccountScalarFieldEnum = {
   id: 'id',
   accountName: 'accountName',
+  accountTypeId: 'accountTypeId',
   bankName: 'bankName',
   openingBalance: 'openingBalance',
   createdAt: 'createdAt',
@@ -527,6 +542,30 @@ exports.Prisma.BankTransferScalarFieldEnum = {
   receivedAccountId: 'receivedAccountId',
   amount: 'amount',
   createdByStaffId: 'createdByStaffId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BookExpenseScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  paidAccountId: 'paidAccountId',
+  indirectExpenseId: 'indirectExpenseId',
+  amount: 'amount',
+  particular: 'particular',
+  createdByStaffId: 'createdByStaffId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SavingAccountTxnScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  bankAccountId: 'bankAccountId',
+  createdByStaffId: 'createdByStaffId',
+  direction: 'direction',
+  savingAccountName: 'savingAccountName',
+  amount: 'amount',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -624,6 +663,7 @@ exports.Prisma.ModelName = {
   StateOption: 'StateOption',
   SectorOption: 'SectorOption',
   DealingCompanyOption: 'DealingCompanyOption',
+  IndirectExpenseOption: 'IndirectExpenseOption',
   DocumentOption: 'DocumentOption',
   DocumentEntry: 'DocumentEntry',
   MemberDocument: 'MemberDocument',
@@ -645,8 +685,11 @@ exports.Prisma.ModelName = {
   InvestmentOpenDue: 'InvestmentOpenDue',
   InvestmentPeriod: 'InvestmentPeriod',
   InvestmentPeriodValue: 'InvestmentPeriodValue',
+  BankAccountTypeOption: 'BankAccountTypeOption',
   BankAccount: 'BankAccount',
-  BankTransfer: 'BankTransfer'
+  BankTransfer: 'BankTransfer',
+  BookExpense: 'BookExpense',
+  SavingAccountTxn: 'SavingAccountTxn'
 };
 
 /**

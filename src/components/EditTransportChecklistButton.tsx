@@ -227,7 +227,7 @@ export function EditTransportChecklistButton({
           ) : null}
           {showBilty ? (
             <>
-              <label htmlFor={`te-bilty-${fieldId}`}>Bilty hard copy</label>
+              <label htmlFor={`te-bilty-${fieldId}`}>Bilty Hard Copy</label>
               <input
                 id={`te-bilty-${fieldId}`}
                 type="checkbox"
@@ -240,9 +240,7 @@ export function EditTransportChecklistButton({
 
           {showInvoice ? (
             <>
-              <label htmlFor={`te-invoice-no-${fieldId}`}>
-                Transport invoice no.
-              </label>
+              <label htmlFor={`te-invoice-no-${fieldId}`}>Transport Invoice No.</label>
               <input
                 id={`te-invoice-no-${fieldId}`}
                 value={transportInvoiceNo}
@@ -253,7 +251,7 @@ export function EditTransportChecklistButton({
                 autoFocus={!rowSummary}
               />
 
-              <label htmlFor={`te-hard-${fieldId}`}>Invoice hard copy</label>
+              <label htmlFor={`te-hard-${fieldId}`}>Invoice Hard Copy</label>
               <input
                 id={`te-hard-${fieldId}`}
                 type="checkbox"
@@ -262,9 +260,7 @@ export function EditTransportChecklistButton({
                 onChange={(e) => setInvoiceHardCopy(e.target.checked)}
               />
 
-              <label htmlFor={`te-tally-${fieldId}`}>
-                Transport invoice in Tally
-              </label>
+              <label htmlFor={`te-tally-${fieldId}`}>Transport Invoice In Tally</label>
               <input
                 id={`te-tally-${fieldId}`}
                 type="checkbox"

@@ -200,7 +200,7 @@ export function TransportersClient({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onAdd} className="mb-6 form-grid">
-        <label>Company name</label>
+        <label>Company Name</label>
         <input
           required
           value={addForm.name}
@@ -213,7 +213,7 @@ export function TransportersClient({
           onChange={(e) => setAddNameField("ownerName", e.target.value)}
           onBlur={() => blurAddNameField("ownerName")}
         />
-        <label>Owner contact 1</label>
+        <label>Owner Contact 1</label>
         <input
           inputMode="numeric"
           value={addForm.ownerContactNumber1}
@@ -221,7 +221,7 @@ export function TransportersClient({
             setAddPhoneField("ownerContactNumber1", e.target.value)
           }
         />
-        <label>Owner contact 2</label>
+        <label>Owner Contact 2</label>
         <input
           inputMode="numeric"
           value={addForm.ownerContactNumber2}
@@ -248,7 +248,7 @@ export function TransportersClient({
           options={states}
         />
         <label>
-          Opening due
+          Opening Due
           <span className="field-hint"> as on 01/08/2026</span>
         </label>
         <div className="field-with-unit">

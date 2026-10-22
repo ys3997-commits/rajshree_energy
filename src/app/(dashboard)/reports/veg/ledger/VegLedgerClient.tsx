@@ -255,7 +255,7 @@ export function VegLedgerClient({
 
       <form className="filters veg-ledger-filters" onSubmit={(e) => e.preventDefault()}>
         <label>
-          Customer name
+          Customer Name
           <select
             value={customerId}
             onChange={(e) => onCustomerChange(e.target.value)}
@@ -270,7 +270,7 @@ export function VegLedgerClient({
           </select>
         </label>
         <label>
-          Veg name
+          Veg Name
           <select
             value={vegId}
             onChange={(e) => onVegChange(e.target.value)}
@@ -286,7 +286,7 @@ export function VegLedgerClient({
           </select>
         </label>
         <label>
-          Start date
+          Start Date
           <input
             type="date"
             value={dateFrom}
@@ -296,7 +296,7 @@ export function VegLedgerClient({
           />
         </label>
         <label>
-          End date
+          End Date
           <input
             type="date"
             value={dateTo}

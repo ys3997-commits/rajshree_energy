@@ -278,13 +278,13 @@ export function TransactionClient({
 
   return (
     <div>
-      <h1 className="page-title">Transaction Our Bank</h1>
+      <h1 className="page-title">Transaction with our current a/c</h1>
       {error && <div className="error-box">{error}</div>}
 
       <section className="extra-information" aria-label="Extra information">
         <h2 className="extra-information-title">Extra information</h2>
         {accounts.length === 0 ? (
-          <p>No bank accounts yet. Add one under Bank.</p>
+          <p>No bank accounts yet. Add one under Masters → Bank → Create Bank Account.</p>
         ) : (
           <div className="detail-stat-row">
             {accounts.map((account) => {

@@ -3,11 +3,13 @@
 import { clearStaffSession, writeStaffSession } from "@/lib/auth/access";
 import { firstAllowedPath } from "@/lib/auth/pages";
 import { verifyPassword } from "@/lib/auth/password";
+import { usernameFromName } from "@/lib/auth/username";
 import { prisma } from "@/lib/prisma";
 
-export async function signInWithStaffPassword(password: string) {
+export async function signInWithStaffPassword(username: string, password: string) {
+  const login = usernameFromName(username);
   const secret = password.trim();
-  if (!secret) return { ok: false as const };
+  if (!login.includes(".") || !secret) return { ok: false as const };
 
   const staff = await prisma.staff.findMany({
     where: { passwordHash: { not: null } },
@@ -15,6 +17,7 @@ export async function signInWithStaffPassword(password: string) {
   });
 
   for (const row of staff) {
+    if (usernameFromName(row.name) !== login) continue;
     if (!row.passwordHash) continue;
     if (!(await verifyPassword(secret, row.passwordHash))) continue;
     if (row.pageKeys.length === 0) {

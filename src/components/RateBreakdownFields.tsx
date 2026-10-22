@@ -13,7 +13,7 @@ export function RateBreakdownFields({
 }) {
   return (
     <>
-      <label>Rate breakdown</label>
+      <label>Rate Breakdown</label>
       <div className="text-sm font-medium">
         {formatRateBreakdownLine(breakdown)}
       </div>

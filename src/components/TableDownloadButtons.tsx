@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import {
+  buildExcelWorkbook,
+  downloadExcelWorkbook,
+} from "@/lib/export/excelWorkbook";
+import {
   buildCsv,
   downloadTablePdf,
   downloadTextFile,
@@ -15,6 +19,8 @@ type Props = {
   filenameBase: string;
   columns: ExportColumn[];
   rows: ExportRow[];
+  /** Spreadsheet download. Other tables keep CSV. */
+  spreadsheet?: "csv" | "excel";
   /** Show WhatsApp button to share the PDF (Sales Engine, etc.). */
   whatsapp?: boolean;
 };
@@ -24,14 +30,22 @@ export function TableDownloadButtons({
   filenameBase,
   columns,
   rows,
+  spreadsheet = "csv",
   whatsapp = false,
 }: Props) {
-  const [busy, setBusy] = useState<"csv" | "pdf" | "whatsapp" | null>(null);
+  const [busy, setBusy] = useState<"sheet" | "pdf" | "whatsapp" | null>(null);
   const disabled = rows.length === 0 || busy != null;
 
-  function downloadCsv() {
-    setBusy("csv");
+  function downloadSheet() {
+    setBusy("sheet");
     try {
+      if (spreadsheet === "excel") {
+        downloadExcelWorkbook(
+          buildExcelWorkbook(columns, rows, title),
+          `${filenameBase}.xlsx`,
+        );
+        return;
+      }
       const csv = buildCsv(columns, rows);
       downloadTextFile(
         `\uFEFF${csv}`,
@@ -80,9 +94,13 @@ export function TableDownloadButtons({
         type="button"
         className="btn btn-secondary"
         disabled={disabled}
-        onClick={downloadCsv}
+        onClick={downloadSheet}
       >
-        {busy === "csv" ? "Downloading…" : "Download CSV"}
+        {busy === "sheet"
+          ? "Downloading…"
+          : spreadsheet === "excel"
+            ? "Download Excel"
+            : "Download CSV"}
       </button>
       <button
         type="button"

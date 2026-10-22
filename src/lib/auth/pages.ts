@@ -22,6 +22,8 @@ export type AppPage = {
   masterSubPage?: boolean;
   /** Shown under Master → Options on the Team access page. */
   masterOptionsSubPage?: boolean;
+  /** Shown under Master → Bank on the Team access page. */
+  masterBankSubPage?: boolean;
   /** Shown under Reports on the Team access page, not as a top-level row. */
   reportSubPage?: boolean;
 };
@@ -72,6 +74,13 @@ export const UPDATE_SUB_PAGES = [
     group: "Pages" as const,
     updateSubPage: true,
   },
+  {
+    key: "update-tally",
+    href: "/update/tally",
+    label: "Tally Entry",
+    group: "Pages" as const,
+    updateSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const UPDATE_SUB_PAGE_KEYS = UPDATE_SUB_PAGES.map((page) => page.key);
@@ -80,14 +89,28 @@ export const BANK_SUB_PAGES = [
   {
     key: "payments-transactions",
     href: "/payments",
-    label: "Transactions with others",
+    label: "Transaction with others",
     group: "Pages" as const,
     bankSubPage: true,
   },
   {
     key: "bank-transfer",
     href: "/payments/transaction",
-    label: "Transaction Our Bank",
+    label: "Transaction with our current a/c",
+    group: "Pages" as const,
+    bankSubPage: true,
+  },
+  {
+    key: "txn-saving-account",
+    href: "/payments/txn-saving",
+    label: "Transaction with our saving a/c",
+    group: "Pages" as const,
+    bankSubPage: true,
+  },
+  {
+    key: "book-expenses",
+    href: "/payments/book-expenses",
+    label: "Expenses",
     group: "Pages" as const,
     bankSubPage: true,
   },
@@ -102,14 +125,40 @@ export const BANK_SUB_PAGES = [
 
 export const BANK_SUB_PAGE_KEYS = BANK_SUB_PAGES.map((page) => page.key);
 
-export const MASTER_SUB_PAGES = [
+export const MASTER_BANK_SUB_PAGES = [
   {
     key: "bank-accounts",
     href: "/bank-accounts",
-    label: "Bank",
+    label: "Create Bank Account",
     group: "Pages" as const,
     masterSubPage: true,
+    masterBankSubPage: true,
   },
+  {
+    key: "bank-account-types",
+    href: "/bank-accounts/types",
+    label: "Type of Bank Account",
+    group: "Pages" as const,
+    masterSubPage: true,
+    masterBankSubPage: true,
+  },
+] satisfies AppPage[];
+
+export const MASTER_BANK_SUB_PAGE_KEYS = MASTER_BANK_SUB_PAGES.map(
+  (page) => page.key,
+);
+
+export const MASTER_BANK_GROUP = {
+  id: "bank",
+  label: "Bank",
+  pages: MASTER_BANK_SUB_PAGES.map((page) => ({
+    key: page.key,
+    label: page.label,
+  })),
+};
+
+export const MASTER_SUB_PAGES = [
+  ...MASTER_BANK_SUB_PAGES,
   {
     key: "vessels",
     href: "/vessels",
@@ -162,6 +211,10 @@ export const MASTER_SUB_PAGES = [
 ] satisfies AppPage[];
 
 export const MASTER_SUB_PAGE_KEYS = MASTER_SUB_PAGES.map((page) => page.key);
+
+export const MASTER_ENTITY_SUB_PAGES = MASTER_SUB_PAGES.filter(
+  (page) => !page.masterBankSubPage,
+);
 
 export const MASTER_OPTIONS_SUB_PAGES = MASTER_OPTION_CATEGORIES.map(
   (category) => ({
@@ -760,6 +813,18 @@ function bankSubPageKeyForPath(pathname: string): string | null {
   }
   if (path === "/payments/discount" || path.startsWith("/payments/discount/")) {
     return "payments-discount";
+  }
+  if (
+    path === "/payments/book-expenses" ||
+    path.startsWith("/payments/book-expenses/")
+  ) {
+    return "book-expenses";
+  }
+  if (
+    path === "/payments/txn-saving" ||
+    path.startsWith("/payments/txn-saving/")
+  ) {
+    return "txn-saving-account";
   }
   if (path === "/payments" || path.startsWith("/payments/")) {
     return "payments-transactions";

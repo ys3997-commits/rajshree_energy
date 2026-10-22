@@ -42,7 +42,7 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
           </select>
         </label>
         <label>
-          Date start
+          Date Start
           <input
             type="date"
             lang="en-GB"
@@ -53,7 +53,7 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
           />
         </label>
         <label>
-          Date end
+          Date End
           <input
             type="date"
             lang="en-GB"

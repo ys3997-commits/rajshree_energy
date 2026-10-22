@@ -165,7 +165,7 @@ export function InvestmentOpenDueClient({
           />
           <span className="field-unit">Rs</span>
         </div>
-        <label>Due date</label>
+        <label>Due Date</label>
         <input
           type="date"
           value={addForm.dueDate}

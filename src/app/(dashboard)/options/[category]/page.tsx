@@ -1,7 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import { OptionsClient } from "../OptionsClient";
+import { OptionsCategoryScreen } from "../OptionsCategoryScreen";
 import { categoryFromSlug } from "../optionsCategories";
-import { loadOptionsData } from "../loadOptionsData";
 
 type Params = Promise<{ category: string }>;
 
@@ -12,10 +11,8 @@ export default async function OptionsCategoryPage({
 }) {
   const { category: slug } = await params;
   if (slug === "documents") redirect("/documents");
-  const categoryId = categoryFromSlug(slug);
+  const categoryId = categoryFromSlug(slug.trim().toLowerCase());
   if (!categoryId) notFound();
 
-  const data = await loadOptionsData(categoryId);
-
-  return <OptionsClient key={categoryId} categoryId={categoryId} {...data} />;
+  return <OptionsCategoryScreen categoryId={categoryId} />;
 }

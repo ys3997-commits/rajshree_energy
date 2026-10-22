@@ -256,14 +256,14 @@ export function OrderDetailClient({
           : "Edit order fields"}
       </h2>
       <form onSubmit={onSave} className="mb-8 form-grid">
-        <label>Sale order number</label>
+        <label>Sale Order Number</label>
         <input
           required
           value={poNumber}
           onChange={(e) => setPoNumber(e.target.value)}
           placeholder="SO 0001"
         />
-        <label>Order date</label>
+        <label>Order Date</label>
         <input
           type="date"
           value={orderDate}
@@ -281,7 +281,7 @@ export function OrderDetailClient({
           />
           <span className="field-unit">MT</span>
         </div>
-        <label>Number of lorries</label>
+        <label>Number of Lorries</label>
         <input
           type="number"
           min="0"
@@ -290,7 +290,7 @@ export function OrderDetailClient({
           onChange={(e) => setNumberOfLorries(e.target.value)}
           placeholder="0"
         />
-        <label>Basic rate</label>
+        <label>Basic Rate</label>
         <div className="field-with-unit field-with-prefix">
           <span className="field-unit">Rs</span>
           <input
@@ -304,7 +304,7 @@ export function OrderDetailClient({
         {rateBreakdown != null && (
           <RateBreakdownFields breakdown={rateBreakdown} />
         )}
-        <label>Credit period</label>
+        <label>Credit Period</label>
         <div className="field-with-unit">
           <input
             type="number"
@@ -314,7 +314,7 @@ export function OrderDetailClient({
           />
           <span className="field-unit">days</span>
         </div>
-        <label>Quality class</label>
+        <label>Quality Class</label>
         <QualityClassSelect
           value={qualityClassId}
           onChange={setQualityClassId}
@@ -329,7 +329,7 @@ export function OrderDetailClient({
             </option>
           ))}
         </select>
-        <label>Delivery terms</label>
+        <label>Delivery Terms</label>
         <div
           className="segment-control"
           role="radiogroup"
@@ -354,7 +354,7 @@ export function OrderDetailClient({
             Ex-Port
           </button>
         </div>
-        <label>Closing quantity</label>
+        <label>Closing Quantity</label>
         <div className="field-with-unit">
           <input
             type="number"

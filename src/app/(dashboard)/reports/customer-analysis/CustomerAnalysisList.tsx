@@ -296,7 +296,7 @@ export function CustomerAnalysisList({
         </label>
         <form className="sale-analysis-date-form" method="get">
           <label>
-            Start date
+            Start Date
             <input
               type="date"
               name="dateFrom"
@@ -305,7 +305,7 @@ export function CustomerAnalysisList({
             />
           </label>
           <label>
-            End date
+            End Date
             <input
               type="date"
               name="dateTo"

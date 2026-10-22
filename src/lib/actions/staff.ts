@@ -23,6 +23,7 @@ import {
   validateExecScopeForSave,
 } from "@/lib/auth/report-exec-access";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { usernameFromName } from "@/lib/auth/username";
 import { capitalizeName } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -184,6 +185,23 @@ function staffRow<T extends {
   };
 }
 
+async function assertUsernameAvailable(name: string, exceptStaffId?: string) {
+  const username = usernameFromName(name);
+  if (!username.includes(".")) {
+    throw new Error("Login needs a first and last name, like Prakash Surana");
+  }
+  const others = await prisma.staff.findMany({
+    where: {
+      passwordHash: { not: null },
+      ...(exceptStaffId ? { id: { not: exceptStaffId } } : {}),
+    },
+    select: { name: true },
+  });
+  if (others.some((row) => usernameFromName(row.name) === username)) {
+    throw new Error(`Username ${username} is already used`);
+  }
+}
+
 async function assertPasswordAvailable(password: string, exceptStaffId?: string) {
   const others = await prisma.staff.findMany({
     where: {
@@ -238,6 +256,7 @@ export async function createStaff(input: {
     if (pageKeys.length === 0) {
       throw new Error("Select at least one page for login access");
     }
+    await assertUsernameAvailable(name);
     await assertPasswordAvailable(password);
     passwordHash = await hashPassword(password);
   }
@@ -319,6 +338,7 @@ export async function updateStaff(
       passwordHash = await hashPassword(password);
     }
     if (passwordHash) {
+      await assertUsernameAvailable(name, id);
       if (pageKeys.length === 0) {
         throw new Error("Select at least one page for login access");
       }

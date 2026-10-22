@@ -328,9 +328,9 @@ export function PaymentsClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Transactions with others</h1>
+        <h1 className="page-title">Transaction with others</h1>
         <TableDownloadButtons
-          title="Transactions with others"
+          title="Transaction with others"
           filenameBase="fund-flow-transactions"
           columns={downloadColumns}
           rows={downloadRows}
@@ -365,7 +365,7 @@ export function PaymentsClient({
       <section className="extra-information" aria-label="Extra information">
         <h2 className="extra-information-title">Extra information</h2>
         {accounts.length === 0 ? (
-          <p>No bank accounts yet. Add one under Bank.</p>
+          <p>No bank accounts yet. Add one under Masters → Bank → Create Bank Account.</p>
         ) : (
           <div className="detail-stat-row">
             {accounts.map((account) => {

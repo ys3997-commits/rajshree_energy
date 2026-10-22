@@ -121,7 +121,7 @@ export function NewOrderForm({
       {error && <div className="error-box">{error}</div>}
 
       <form onSubmit={onSubmit} className="form-grid form-grid-plain">
-        <label>Sale order number</label>
+        <label>Sale Order Number</label>
         <input
           name="poNumber"
           required
@@ -130,7 +130,7 @@ export function NewOrderForm({
           placeholder="SO 0001"
         />
 
-        <label>Order date</label>
+        <label>Order Date</label>
         <input
           name="orderDate"
           type="date"
@@ -158,7 +158,7 @@ export function NewOrderForm({
           <span className="field-unit">MT</span>
         </div>
 
-        <label>Number of lorries</label>
+        <label>Number of Lorries</label>
         <input
           name="numberOfLorries"
           type="number"
@@ -167,7 +167,7 @@ export function NewOrderForm({
           placeholder="Optional"
         />
 
-        <label>Basic rate</label>
+        <label>Basic Rate</label>
         <div className="field-with-unit field-with-prefix">
           <span className="field-unit">Rs</span>
           <input
@@ -184,7 +184,7 @@ export function NewOrderForm({
           <RateBreakdownFields breakdown={rateBreakdown} />
         )}
 
-        <label>Credit period</label>
+        <label>Credit Period</label>
         <div className="field-with-unit">
           <input
             name="creditDays"
@@ -196,7 +196,7 @@ export function NewOrderForm({
           <span className="field-unit">days</span>
         </div>
 
-        <label>Quality class</label>
+        <label>Quality Class</label>
         <QualityClassSelect
           value={qualityClassId}
           onChange={setQualityClassId}
@@ -213,7 +213,7 @@ export function NewOrderForm({
           ))}
         </select>
 
-        <label>Delivery terms</label>
+        <label>Delivery Terms</label>
         <div
           className="segment-control"
           role="radiogroup"

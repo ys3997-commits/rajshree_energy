@@ -302,7 +302,7 @@ export function AgeingReportClient({
         </label>
         {showSaleExecutiveFilter && (
           <label>
-            Sales executive
+            Sales Executive
             <select
               value={saleExecutiveFilter}
               onChange={(e) => setSaleExecutiveFilter(e.target.value)}
