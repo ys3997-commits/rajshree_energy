@@ -1,4 +1,5 @@
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
+import { Decimal } from "@prisma/client/runtime/library";
 
 function parseFiniteNumber(
   value: { toString(): string } | number | string | null | undefined,
@@ -124,7 +125,20 @@ export function formatDispatchMt(
 }
 
 /**
+ * Nearest rupee from the exact decimal.
+ * 50 paisa and above rounds up: 12445.35 → 12445, 12445.50 → 12446, 12445.65 → 12446.
+ * Half rounds towards +∞, so a 50-paisa negative stays at 0.
+ */
+export function roundToRupee(
+  value: { toString(): string } | number | string,
+): Decimal {
+  const s = typeof value === "string" ? value : value.toString();
+  return new Decimal(s).toDecimalPlaces(0, Decimal.ROUND_HALF_CEIL);
+}
+
+/**
  * Indian-grouped integer amount without currency prefix (reports).
+ * Purchase invoice, sale invoice, and freight use this nearest-rupee round off.
  */
 export function formatAmount(
   value: { toString(): string } | number | string | null | undefined,
@@ -132,9 +146,13 @@ export function formatAmount(
   if (value == null || value === "") return "—";
   const s = typeof value === "string" ? value : value.toString();
   if (s === "—") return "—";
-  const n = Number(s);
-  if (!Number.isFinite(n)) return s;
-  return formatIndianNumber(Math.round(n));
+  try {
+    const amount = new Decimal(s);
+    if (!amount.isFinite()) return s;
+    return formatIndianNumber(roundToRupee(s).toFixed(0));
+  } catch {
+    return s;
+  }
 }
 
 /** True when {@link formatAmount} would show this balance as 0. */
@@ -144,9 +162,13 @@ export function amountRoundsToZero(
   if (value == null || value === "") return true;
   const s = typeof value === "string" ? value : value.toString();
   if (s === "—") return true;
-  const n = Number(s);
-  if (!Number.isFinite(n)) return false;
-  return Math.round(n) === 0;
+  try {
+    const amount = new Decimal(s);
+    if (!amount.isFinite()) return false;
+    return roundToRupee(s).isZero();
+  } catch {
+    return false;
+  }
 }
 
 /**

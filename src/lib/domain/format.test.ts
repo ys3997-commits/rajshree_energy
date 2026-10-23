@@ -51,6 +51,13 @@ describe("formatAmount / formatRs", () => {
     expect(formatAmount(99.4)).toBe("99");
   });
 
+  it("rounds 50 paisa and above up to the next rupee", () => {
+    expect(formatAmount("12445.35")).toBe("12,445");
+    expect(formatAmount("12445.49")).toBe("12,445");
+    expect(formatAmount("12445.50")).toBe("12,446");
+    expect(formatAmount("12445.65")).toBe("12,446");
+  });
+
   it("formatRs adds prefix", () => {
     expect(formatRs(100000)).toBe("Rs 1,00,000");
     expect(formatRs(99.4)).toBe("Rs 99");

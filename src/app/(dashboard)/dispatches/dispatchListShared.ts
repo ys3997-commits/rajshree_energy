@@ -110,6 +110,7 @@ export function formatPurchaseTotalAmount(
   });
   if (gst == null) return "—";
   const tcs = basicAmount.plus(gst).mul(PURCHASE_TCS_RATE);
+  // Invoice total rounds to the nearest rupee; 50 paisa and above rounds up.
   return formatAmount(basicAmount.plus(gst).plus(tcs));
 }
 
@@ -152,6 +153,7 @@ export function formatSaleTotalAmount(
   if (gst == null) return "—";
   if (saleTcsApplies(category)) {
     const tcs = basicAmount.plus(gst).mul(SALE_TCS_RATE);
+    // Invoice total rounds to the nearest rupee; 50 paisa and above rounds up.
     return formatAmount(basicAmount.plus(gst).plus(tcs));
   }
   return formatAmount(basicAmount.plus(gst));
@@ -472,6 +474,7 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
       deliveryTerms: formatDispatchTerms(row.dispatchTerms),
       transporter: row.transporterName ?? "—",
       freightPmt: formatAmount(row.freight),
+      // Freight amount rounds to the nearest rupee; 50 paisa and above rounds up.
       freightAmount: formatAmount(row.freightAmount),
       received: formatDispatchMt(receivedQty),
       diff: formatDispatchMt(diffQty),
