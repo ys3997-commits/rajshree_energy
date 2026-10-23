@@ -143,7 +143,7 @@ export function PurchaseOrderDetailClient({
       {error && <div className="error-box">{error}</div>}
       {message && <div className="success-box">{message}</div>}
 
-      <div className="mb-6 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-2 text-sm">
+      <div className="mb-6 grid max-w-3xl grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
         <div>
           <span className="text-neutral-500">Vendor:</span>{" "}
           {order.importer.name}

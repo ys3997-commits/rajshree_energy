@@ -6,7 +6,9 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
+  type ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 
 export type SearchableSelectOption = {
   value: string;
@@ -34,10 +36,12 @@ export function SearchableSelect({
   className?: string;
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLUListElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [sheet, setSheet] = useState(false);
 
   const selected = useMemo(
     () => options.find((option) => option.value === value) ?? null,
@@ -65,12 +69,21 @@ export function SearchableSelect({
   }, [filtered]);
 
   useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const apply = () => setSheet(media.matches);
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
     function onPointerDown(event: PointerEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-        setQuery("");
-      }
+      const target = event.target as Node;
+      if (rootRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
+      setQuery("");
     }
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
@@ -125,6 +138,58 @@ export function SearchableSelect({
 
   const displayValue = open ? query : (selected?.label ?? "");
 
+  function closeList() {
+    setOpen(false);
+    setQuery("");
+  }
+
+  const menu: ReactNode = (
+    <ul
+      ref={menuRef}
+      className={
+        sheet ? "search-select-menu search-select-menu-sheet" : "search-select-menu"
+      }
+      role="listbox"
+    >
+      {filtered.length === 0 ? (
+        <li className="search-select-empty">No matches</li>
+      ) : (
+        groups.map((group) => (
+          <li key={group.name || "options"}>
+            {group.name ? (
+              <div className="search-select-group">{group.name}</div>
+            ) : null}
+            <ul>
+              {group.options.map((option) => {
+                const index = filtered.indexOf(option);
+                const active = index === activeIndex;
+                return (
+                  <li key={option.value}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={option.value === value}
+                      className={
+                        active
+                          ? "search-select-option search-select-option-active"
+                          : "search-select-option"
+                      }
+                      onMouseEnter={() => setActiveIndex(index)}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => pick(option)}
+                    >
+                      {option.label}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </li>
+        ))
+      )}
+    </ul>
+  );
+
   return (
     <div ref={rootRef} className="search-select">
       <input
@@ -147,46 +212,21 @@ export function SearchableSelect({
         }}
         onKeyDown={onKeyDown}
       />
-      {open ? (
-        <ul className="search-select-menu" role="listbox">
-          {filtered.length === 0 ? (
-            <li className="search-select-empty">No matches</li>
-          ) : (
-            groups.map((group) => (
-              <li key={group.name || "options"}>
-                {group.name ? (
-                  <div className="search-select-group">{group.name}</div>
-                ) : null}
-                <ul>
-                  {group.options.map((option) => {
-                    const index = filtered.indexOf(option);
-                    const active = index === activeIndex;
-                    return (
-                      <li key={option.value}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={option.value === value}
-                          className={
-                            active
-                              ? "search-select-option search-select-option-active"
-                              : "search-select-option"
-                          }
-                          onMouseEnter={() => setActiveIndex(index)}
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => pick(option)}
-                        >
-                          {option.label}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </li>
-            ))
-          )}
-        </ul>
-      ) : null}
+      {open && sheet
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                className="search-select-sheet-backdrop"
+                aria-label="Close list"
+                onClick={closeList}
+              />
+              {menu}
+            </>,
+            document.body,
+          )
+        : null}
+      {open && !sheet ? menu : null}
     </div>
   );
 }
