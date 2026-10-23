@@ -1521,6 +1521,21 @@ table.data tbody tr:hover td {
   background: #f7faf9;
 }
 
+table.data.detail-dispatch-table {
+  background: #ffffff;
+}
+
+table.data.detail-dispatch-table th.col-wrap-head {
+  white-space: normal;
+  line-height: 1.25;
+  vertical-align: middle;
+}
+
+table.data.detail-dispatch-table tbody td,
+table.data.detail-dispatch-table tbody tr:hover td {
+  background: #ffffff !important;
+}
+
 table.data tbody tr.fund-row-in td,
 table.data tbody tr.fund-row-in:hover td {
   background: #f5faf7;
@@ -7536,5 +7551,74 @@ table.data.transport-engine-table.report-screen-table tfoot td {
     border-left: none;
     border-top: 1px solid var(--line-strong);
   }
+}
+
+/*
+  Shared tables: Complete Dispatch cell pattern, Tally Entry headings,
+  white body. Headings keep the tally gray; every other cell is white.
+*/
+.app-main table.data thead tr:not(.report-group-row) > th,
+.app-main table.data thead tr:not(.report-group-row) > th button.th-sort,
+.app-main .home-profit-table thead th,
+table.data thead tr:not(.report-group-row) th,
+table.data thead tr:not(.report-group-row) th button.th-sort,
+.home-profit-table thead th {
+  background: #f8fafb !important;
+  background-color: #f8fafb !important;
+  white-space: pre-line;
+  line-height: 1.2;
+  vertical-align: bottom !important;
+}
+
+table.data thead tr.report-group-row th {
+  background: #f8fafb !important;
+  background-color: #f8fafb !important;
+  vertical-align: bottom;
+}
+
+table.data tbody td,
+table.data tbody th,
+table.data tfoot td,
+table.data tfoot th,
+table.data tbody tr:hover td,
+table.data tbody tr:hover th,
+table.data tbody tr.update-table-row-held td,
+table.data tbody tr.update-table-row-held th,
+.home-profit-table tbody td,
+.home-profit-table tbody th,
+.home-profit-table tbody tr.is-net td,
+.home-profit-table tbody tr.is-net th {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+table.data tbody tr.payment-editing-row td,
+table.data tbody tr.payment-editing-row:hover td {
+  background: #f6e4a8 !important;
+  background-color: #f6e4a8 !important;
+}
+
+table.data thead tr:not(.report-group-row) th,
+table.data tbody td,
+table.data tfoot td {
+  border-left: 1px solid var(--line);
+  padding-left: 0.42rem;
+  padding-right: 0.42rem;
+}
+
+table.data thead tr:not(.report-group-row) th:first-child,
+table.data tbody td:first-child,
+table.data tfoot td:first-child {
+  border-left: none;
+}
+
+table.data tbody td,
+table.data tfoot td {
+  white-space: nowrap;
+}
+
+.home-profit-table-wrap,
+.table-wrap {
+  background: #ffffff;
 }
 

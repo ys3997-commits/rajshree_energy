@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
+import { memoize } from "@/lib/memoryCache";
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { canAccessPath, firstAllowedPath, GRANTABLE_PAGES, staffHasPageKey } from "@/lib/auth/pages";
@@ -54,22 +55,24 @@ export const getCurrentAccess = cache(async function getCurrentAccess(): Promise
 
   if (!staffId) return { kind: "none" };
 
-  const staff = await prisma.staff.findUnique({
-    where: { id: staffId },
-    select: {
-      id: true,
-      name: true,
-      role: true,
-      passwordHash: true,
-      pageKeys: true,
-      collectionSalesExecs: true,
-      salesEngineSalesExecs: true,
-      saleOrderSalesExecs: true,
-      purchaseOrderSalesExecs: true,
-      ageingReportSalesExecs: true,
-      customerLedgerSalesExecs: true,
-    },
-  });
+  const staff = await memoize(`staff:${staffId}`, 20_000, () =>
+    prisma.staff.findUnique({
+      where: { id: staffId },
+      select: {
+        id: true,
+        name: true,
+        role: true,
+        passwordHash: true,
+        pageKeys: true,
+        collectionSalesExecs: true,
+        salesEngineSalesExecs: true,
+        saleOrderSalesExecs: true,
+        purchaseOrderSalesExecs: true,
+        ageingReportSalesExecs: true,
+        customerLedgerSalesExecs: true,
+      },
+    }),
+  );
   const admin = isAdminRole(staff?.role);
   if (!staff?.passwordHash || (!admin && staff.pageKeys.length === 0)) {
     return { kind: "none" };

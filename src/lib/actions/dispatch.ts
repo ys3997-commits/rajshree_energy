@@ -36,7 +36,7 @@ import {
   normalizePurchaseOrderNumber,
   normalizeSaleOrderNumber,
 } from "@/lib/domain/orderNumbers";
-import { requireSignedIn } from "@/lib/auth/access";
+import { requireOwner, requireSignedIn } from "@/lib/auth/access";
 import { AccessDeniedError } from "@/lib/auth/errors";
 import type { Access } from "@/lib/auth/types";
 import {
@@ -1039,6 +1039,8 @@ export async function completeOpenOrder(
   orderId: string,
   details: CompleteOpenOrderInput,
 ): Promise<void> {
+  await requireOwner();
+
   const quantity = toDecimal(details.quantity);
   if (quantity.lt(0)) {
     throw new Error("Quantity must be non-negative");

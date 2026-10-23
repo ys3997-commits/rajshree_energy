@@ -1,36 +1,39 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
-import { completeOpenOrder, deleteDispatch } from "@/lib/actions/dispatch";
-import { deleteOrder, updateOrderFields } from "@/lib/actions/orders";
+import { completeOpenOrder } from "@/lib/actions/dispatch";
+import { updateOrderFields } from "@/lib/actions/orders";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
-import { DISPATCH_DELETE_LOCK_HINT } from "@/lib/auth/editLockHint";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
-import { formatDispatchTerms, formatLorryNumber, formatOrderStatusForDisplay, formatOrderType, formatRs, displayOrderBalance, formatSaleOrderMt } from "@/lib/domain/format";
+import {
+  formatDispatchTerms,
+  formatOrderStatusForDisplay,
+  formatOrderType,
+  formatRs,
+  displayOrderBalance,
+  formatSaleOrderMt,
+} from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import { QualityClassSelect } from "@/components/QualityClassSelect";
 
 type DispatchRow = {
   id: string;
-  dispatchDate: string;
-  dispatchedQuantity: string;
-  dispatchTerms: DispatchTerms;
-  freight: string | null;
-  lorryNumber: string | null;
-  receiptStatus: string;
-  softCopyStatus: boolean;
-  entryInTally: boolean;
-  purchasePoNumber: string;
-  lineProfit: string | null;
-  canDelete: boolean;
-  purchaseOrder: {
-    poNumber: string;
-    importer: { name: string } | null;
-    vessel: { vesselName: string } | null;
-  } | null;
-  transporter: { name: string } | null;
+  dispatchNumber: string;
+  date: string;
+  lorryNumber: string;
+  weight: string;
+  vesselName: string;
+  quality: string;
+  purchaseOrderId: string | null;
+  purchasePo: string;
+  purchaseInvoice: string;
+  vendor: string;
+  basicPrice: string;
+  gst: string;
+  tcs: string;
+  invoiceAmount: string;
 };
 
 type OrderData = {
@@ -51,6 +54,7 @@ type OrderData = {
   qualityClassId: string | null;
   portId: string | null;
   deliveryTerms: DispatchTerms | null;
+  customerId: string;
   customer: { name: string; category: CustomerCategory };
   dispatches: DispatchRow[];
 };
@@ -64,25 +68,34 @@ type QualityClassOpt = {
 
 type PortOpt = { id: string; name: string };
 
+type CustomerOpt = {
+  id: string;
+  name: string;
+  category: CustomerCategory;
+};
+
 export function OrderDetailClient({
   order,
   qualityClasses,
   ports,
+  customers,
+  canEdit,
 }: {
   order: OrderData;
   qualityClasses: QualityClassOpt[];
   ports: PortOpt[];
+  customers: CustomerOpt[];
+  canEdit: boolean;
 }) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [poNumber, setPoNumber] = useState(order.poNumber);
   const [orderDate, setOrderDate] = useState(
     order.orderDate
       ? new Date(order.orderDate).toISOString().slice(0, 10)
       : "",
   );
+  const [customerId, setCustomerId] = useState(order.customerId);
   const [quantity, setQuantity] = useState(
     order.quantity ??
       (order.orderType === OrderType.OPEN ? order.dispatchedOrder : ""),
@@ -105,13 +118,21 @@ export function OrderDetailClient({
     order.deliveryTerms,
   );
 
+  const customerCategory = useMemo(() => {
+    return (
+      customers.find((customer) => customer.id === customerId)?.category ??
+      order.customer.category
+    );
+  }, [customers, customerId, order.customer.category]);
+
   const rateBreakdown = useMemo(() => {
     if (rate === "") return null;
-    return computeSaleRateBreakdown(rate, order.customer.category);
-  }, [rate, order.customer.category]);
+    return computeSaleRateBreakdown(rate, customerCategory);
+  }, [rate, customerCategory]);
 
   async function onSave(e: FormEvent) {
     e.preventDefault();
+    if (!canEdit) return;
     setError(null);
     setMessage(null);
     try {
@@ -125,6 +146,7 @@ export function OrderDetailClient({
         });
         await updateOrderFields(order.id, {
           poNumber,
+          customerId,
           orderDate: orderDate || null,
           deliveryTerms,
           numberOfLorries:
@@ -134,6 +156,7 @@ export function OrderDetailClient({
       } else {
         await updateOrderFields(order.id, {
           poNumber,
+          customerId,
           orderDate: orderDate || null,
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
@@ -153,49 +176,11 @@ export function OrderDetailClient({
     }
   }
 
-  async function onDeleteDispatch(id: string) {
-    if (!confirm("Delete this pending dispatch? Balances will be reversed.")) {
-      return;
-    }
-    setError(null);
-    try {
-      await deleteDispatch(id);
-      window.location.reload();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
-    }
-  }
-
-  async function onDeleteOrder() {
-    if (!confirm("Delete this sale order?")) return;
-    setError(null);
-    setMessage(null);
-    setDeleting(true);
-    try {
-      await deleteOrder(order.id);
-      router.push("/orders");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Delete failed");
-      setDeleting(false);
-    }
-  }
-
-  const canCloseQuantity =
-    formatOrderStatusForDisplay(order) === "Running";
+  const canCloseQuantity = formatOrderStatusForDisplay(order) === "Running";
 
   return (
     <div>
-      <div className="mb-8 items-center gap-4">
-        <h1 className="page-title mb-0">Order {order.poNumber}</h1>
-        <button
-          type="button"
-          className="btn btn-danger mt-3"
-          onClick={onDeleteOrder}
-          disabled={deleting}
-        >
-          {deleting ? "Deleting..." : "Delete order"}
-        </button>
-      </div>
+      <h1 className="page-title">Order {order.poNumber}</h1>
 
       {error && <div className="error-box">{error}</div>}
       {message && <div className="success-box">{message}</div>}
@@ -251,9 +236,11 @@ export function OrderDetailClient({
       </div>
 
       <h2 className="mb-3 text-base font-semibold">
-        {order.orderType === OrderType.OPEN && !order.quantity
-          ? "Complete open order"
-          : "Edit order fields"}
+        {canEdit
+          ? order.orderType === OrderType.OPEN && !order.quantity
+            ? "Complete open order"
+            : "Edit order fields"
+          : "Order fields"}
       </h2>
       <form onSubmit={onSave} className="mb-8 form-grid">
         <label>Sale Order Number</label>
@@ -262,13 +249,32 @@ export function OrderDetailClient({
           value={poNumber}
           onChange={(e) => setPoNumber(e.target.value)}
           placeholder="SO 0001"
+          disabled={!canEdit}
         />
         <label>Order Date</label>
         <input
           type="date"
           value={orderDate}
           onChange={(e) => setOrderDate(e.target.value)}
+          disabled={!canEdit}
         />
+        <label>Customer</label>
+        {canEdit ? (
+          <select
+            required
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+          >
+            <option value="">Select</option>
+            {customers.map((customer) => (
+              <option key={customer.id} value={customer.id}>
+                {customer.name}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input value={order.customer.name} disabled readOnly />
+        )}
         <label>Quantity</label>
         <div className="field-with-unit">
           <input
@@ -278,6 +284,7 @@ export function OrderDetailClient({
             min="0"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
+            disabled={!canEdit}
           />
           <span className="field-unit">MT</span>
         </div>
@@ -289,6 +296,7 @@ export function OrderDetailClient({
           value={numberOfLorries}
           onChange={(e) => setNumberOfLorries(e.target.value)}
           placeholder="0"
+          disabled={!canEdit}
         />
         <label>Basic Rate</label>
         <div className="field-with-unit field-with-prefix">
@@ -299,6 +307,7 @@ export function OrderDetailClient({
             min="0"
             value={rate}
             onChange={(e) => setRate(e.target.value)}
+            disabled={!canEdit}
           />
         </div>
         {rateBreakdown != null && (
@@ -311,6 +320,7 @@ export function OrderDetailClient({
             min="0"
             value={creditDays}
             onChange={(e) => setCreditDays(e.target.value)}
+            disabled={!canEdit}
           />
           <span className="field-unit">days</span>
         </div>
@@ -319,9 +329,14 @@ export function OrderDetailClient({
           value={qualityClassId}
           onChange={setQualityClassId}
           options={qualityClasses}
+          disabled={!canEdit}
         />
         <label>Port</label>
-        <select value={portId} onChange={(e) => setPortId(e.target.value)}>
+        <select
+          value={portId}
+          onChange={(e) => setPortId(e.target.value)}
+          disabled={!canEdit}
+        >
           <option value="">Select</option>
           {ports.map((p) => (
             <option key={p.id} value={p.id}>
@@ -341,6 +356,7 @@ export function OrderDetailClient({
             aria-checked={deliveryTerms === DispatchTerms.FOR}
             className={`segment-option${deliveryTerms === DispatchTerms.FOR ? " segment-option-selected" : ""}`}
             onClick={() => setDeliveryTerms(DispatchTerms.FOR)}
+            disabled={!canEdit}
           >
             FOR
           </button>
@@ -350,6 +366,7 @@ export function OrderDetailClient({
             aria-checked={deliveryTerms === DispatchTerms.EX_PORT}
             className={`segment-option${deliveryTerms === DispatchTerms.EX_PORT ? " segment-option-selected" : ""}`}
             onClick={() => setDeliveryTerms(DispatchTerms.EX_PORT)}
+            disabled={!canEdit}
           >
             Ex-Port
           </button>
@@ -363,74 +380,106 @@ export function OrderDetailClient({
             value={closingQuantity}
             onChange={(e) => setClosingQuantity(e.target.value)}
             placeholder="0"
+            disabled={!canEdit}
           />
           <span className="field-unit">MT</span>
         </div>
-        <div />
-        <button type="submit" className="btn w-fit">
-          Save order
-        </button>
+        {canEdit && (
+          <>
+            <div />
+            <button type="submit" className="btn w-fit">
+              Save order
+            </button>
+          </>
+        )}
       </form>
 
       <h2 className="mb-3 text-base font-semibold">Dispatches</h2>
       <div className="table-wrap">
-        <div className="table-h-scroll"><table className="data">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Purchase PO</th>
-              <th className="num">Quantity</th>
-              <th>Terms</th>
-              <th className="num">Freight</th>
-              <th>Lorry</th>
-              <th>Transporter</th>
-              <th className="num">Profit</th>
-              <th>Receipt</th>
-              <th>Soft copy</th>
-              <th>Tally</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {order.dispatches.map((d) => (
-              <tr key={d.id}>
-                <td>{new Date(d.dispatchDate).toISOString().slice(0, 10)}</td>
-                <td>
-                  {d.purchaseOrder
-                    ? `${d.purchaseOrder.poNumber} — ${d.purchaseOrder.importer?.name ?? "?"} — ${d.purchaseOrder.vessel?.vesselName ?? "?"}`
-                    : d.purchasePoNumber}
-                </td>
-                <td className="num">{formatSaleOrderMt(d.dispatchedQuantity)}</td>
-                <td>{formatDispatchTerms(d.dispatchTerms)}</td>
-                <td className="num">{formatRs(d.freight)}</td>
-                <td>{formatLorryNumber(d.lorryNumber) ?? "—"}</td>
-                <td>{d.transporter?.name ?? "—"}</td>
-                <td className="num">{formatRs(d.lineProfit)}</td>
-                <td>{d.receiptStatus}</td>
-                <td>{d.softCopyStatus ? "yes" : "no"}</td>
-                <td>{d.entryInTally ? "yes" : "no"}</td>
-                <td>
-                  {d.receiptStatus === "PENDING" && (
-                    <button
-                      type="button"
-                      className="btn btn-danger"
-                      onClick={() => onDeleteDispatch(d.id)}
-                      disabled={!d.canDelete}
-                      title={d.canDelete ? undefined : DISPATCH_DELETE_LOCK_HINT}
-                    >
-                      Delete
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {order.dispatches.length === 0 && (
+        <div className="table-h-scroll">
+          <table className="data detail-dispatch-table">
+            <thead>
               <tr>
-                <td colSpan={12}>No dispatches yet.</td>
+                <th className="col-wrap-head">
+                  Dispatch
+                  <br />
+                  no
+                </th>
+                <th>Date</th>
+                <th className="col-wrap-head">
+                  Lorry
+                  <br />
+                  no
+                </th>
+                <th className="num">Weight</th>
+                <th className="col-wrap-head">
+                  Vessel
+                  <br />
+                  name
+                </th>
+                <th>Quality</th>
+                <th className="col-wrap-head">
+                  PO
+                  <br />
+                  no
+                </th>
+                <th className="col-wrap-head">
+                  Purchase
+                  <br />
+                  invoice
+                </th>
+                <th>Vendor</th>
+                <th className="num col-wrap-head">
+                  Basic
+                  <br />
+                  price
+                </th>
+                <th className="num">GST</th>
+                <th className="num">TCS</th>
+                <th className="num col-wrap-head">
+                  Invoice
+                  <br />
+                  Amount
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table></div>
+            </thead>
+            <tbody>
+              {order.dispatches.map((d) => (
+                <tr key={d.id}>
+                  <td>{d.dispatchNumber}</td>
+                  <td>{d.date}</td>
+                  <td>{d.lorryNumber}</td>
+                  <td className="num">{d.weight}</td>
+                  <td>{d.vesselName}</td>
+                  <td>{d.quality}</td>
+                  <td>
+                    {d.purchaseOrderId ? (
+                      <Link
+                        href={`/purchase-orders/${d.purchaseOrderId}`}
+                        className="font-medium"
+                      >
+                        {d.purchasePo}
+                      </Link>
+                    ) : (
+                      d.purchasePo
+                    )}
+                  </td>
+                  <td>{d.purchaseInvoice}</td>
+                  <td>{d.vendor}</td>
+                  <td className="num">{d.basicPrice}</td>
+                  <td className="num">{d.gst}</td>
+                  <td className="num">{d.tcs}</td>
+                  <td className="num">{d.invoiceAmount}</td>
+                </tr>
+              ))}
+              {order.dispatches.length === 0 && (
+                <tr>
+                  <td colSpan={13}>No dispatches yet.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

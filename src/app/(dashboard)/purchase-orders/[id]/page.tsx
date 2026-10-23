@@ -1,12 +1,24 @@
 import { notFound } from "next/navigation";
 import { getPurchaseOrder } from "@/lib/actions/purchaseOrders";
 import { listQualityClasses } from "@/lib/actions/qualities";
-import { lineProfit } from "@/lib/domain/computations";
+import { listCustomers } from "@/lib/actions/customers";
 import { getCurrentAccess } from "@/lib/auth/access";
+import { hasFullPower } from "@/lib/auth/fullPower";
 import {
-  DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
-  sameDayEntryPermissions,
-} from "@/lib/auth/sameDayEntryModify";
+  displayOrderDigits,
+  formatSaleGstAmount,
+  formatSaleTcsAmount,
+  formatSaleTotalAmount,
+} from "@/app/(dashboard)/dispatches/dispatchListShared";
+import { displayDispatchNumber } from "@/lib/domain/dispatchNumbers";
+import {
+  formatAmount,
+  formatDateDdMmYyyy,
+  formatDispatchMt,
+  formatDispatchTerms,
+  formatLorryNumber,
+  formatQualityClass,
+} from "@/lib/domain/format";
 import { PurchaseOrderDetailClient } from "./PurchaseOrderDetailClient";
 
 export default async function PurchaseOrderDetailPage({
@@ -23,8 +35,24 @@ export default async function PurchaseOrderDetailPage({
   if (!order) notFound();
   if (access.kind === "none") notFound();
 
+  const canEdit = hasFullPower(access);
+  const vendors = canEdit
+    ? (await listCustomers({ activeOnly: true })).map((customer) => ({
+        id: customer.id,
+        name: customer.name,
+      }))
+    : [];
+  if (
+    canEdit &&
+    !vendors.some((vendor) => vendor.id === order.importerId)
+  ) {
+    vendors.unshift({ id: order.importer.id, name: order.importer.name });
+  }
+
   return (
     <PurchaseOrderDetailClient
+      canEdit={canEdit}
+      vendors={vendors}
       qualityClasses={qualityClasses.map((qc) => ({
         id: qc.id,
         domestic: qc.domestic,
@@ -44,34 +72,50 @@ export default async function PurchaseOrderDetailPage({
         rate: order.rate?.toString() ?? null,
         finalRate: order.finalRate?.toString() ?? null,
         qualityClassId: order.qualityClassId,
+        importerId: order.importerId,
         importer: { name: order.importer.name },
         vessel: { vesselName: order.vessel.vesselName },
-        dispatches: order.dispatches.map((d) => ({
-          id: d.id,
-          dispatchDate: d.dispatchDate.toISOString(),
-          dispatchedQuantity: d.dispatchedQuantity.toString(),
-          dispatchTerms: d.dispatchTerms,
-          freight: d.freight?.toString() ?? null,
-          lorryNumber: d.lorryNumber,
-          receiptStatus: d.receiptStatus,
-          softCopyStatus: d.softCopyStatus,
-          entryInTally: d.entryInTally,
-          ...sameDayEntryPermissions(access, d, {
-            extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
-          }),
-          order: d.order
-            ? { id: d.order.id, poNumber: d.order.poNumber }
-            : null,
-          transporter: d.transporter,
-          lineProfit:
-            lineProfit({
-              saleRate: d.order?.rate ?? null,
-              costRate: order.rate,
-              quantity: d.dispatchedQuantity,
-              dispatchTerms: d.dispatchTerms,
-              freight: d.freight,
-            })?.toString() ?? null,
-        })),
+        dispatches: order.dispatches.map((d) => {
+          const quality =
+            order.qualityClass ??
+            d.vessel.qualityClass ??
+            d.order?.qualityClass ??
+            null;
+          return {
+            id: d.id,
+            dispatchNumber: displayDispatchNumber(d.dispatchNumber),
+            date: formatDateDdMmYyyy(d.dispatchDate.toISOString()),
+            lorryNumber: formatLorryNumber(d.lorryNumber) ?? "—",
+            weight: formatDispatchMt(d.dispatchedQuantity),
+            vesselName: d.vessel.vesselName,
+            quality: formatQualityClass(quality),
+            saleOrderId: d.order?.id ?? null,
+            salePo: d.order
+              ? displayOrderDigits(d.order.poNumber, "sale")
+              : "—",
+            saleInvoice: d.saleInvoiceNumber ?? "—",
+            customerName: d.order?.customer?.name ?? "—",
+            basicPrice: formatAmount(d.order?.rate),
+            gst: formatSaleGstAmount(d.dispatchedQuantity, d.order?.rate),
+            tcs: formatSaleTcsAmount(
+              d.dispatchedQuantity,
+              d.order?.rate,
+              d.order?.customer?.category,
+            ),
+            invoiceAmount: formatSaleTotalAmount(
+              d.dispatchedQuantity,
+              d.order?.rate,
+              d.order?.customer?.category,
+            ),
+            deliveryTerms: formatDispatchTerms(d.dispatchTerms),
+            transporterName: d.transporter?.name ?? "—",
+            freightPmt: formatAmount(d.freight),
+            freightAmount:
+              d.freight == null
+                ? "—"
+                : formatAmount(d.freight.mul(d.dispatchedQuantity)),
+          };
+        }),
       }}
     />
   );

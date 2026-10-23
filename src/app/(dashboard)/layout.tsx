@@ -2,6 +2,7 @@ import { AppNav } from "@/components/AppNav";
 import { listBankAccounts } from "@/lib/actions/bankAccounts";
 import { canVisit, getCurrentAccess, landingPath } from "@/lib/auth/access";
 import { listDocumentGroups } from "@/lib/actions/option-lists";
+import { memoize } from "@/lib/memoryCache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -20,8 +21,8 @@ export default async function DashboardLayout({
   }
 
   const [documentGroups, bankAccounts] = await Promise.all([
-    listDocumentGroups(),
-    listBankAccounts(),
+    memoize("nav:document-groups", 20_000, () => listDocumentGroups()),
+    memoize("nav:bank-accounts", 20_000, () => listBankAccounts()),
   ]);
 
   return (

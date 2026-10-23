@@ -17,6 +17,7 @@ export function QualityClassSelect({
   required,
   allowEmpty = true,
   emptyLabel = "Select",
+  disabled = false,
 }: {
   name?: string;
   value: string;
@@ -25,6 +26,7 @@ export function QualityClassSelect({
   required?: boolean;
   allowEmpty?: boolean;
   emptyLabel?: string;
+  disabled?: boolean;
 }) {
   return (
     <select
@@ -32,6 +34,7 @@ export function QualityClassSelect({
       required={required}
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
     >
       {allowEmpty && <option value="">{emptyLabel}</option>}
       {options.map((qc) => (

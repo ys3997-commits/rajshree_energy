@@ -2,7 +2,11 @@
 
 import { DispatchTerms, OrderStatus, OrderType, type Prisma } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
-import { AccessDeniedError, getCurrentAccess } from "@/lib/auth/access";
+import {
+  AccessDeniedError,
+  getCurrentAccess,
+  requireOwner,
+} from "@/lib/auth/access";
 import {
   execScopeToCustomerWhere,
   getStaffReportExecScope,
@@ -226,15 +230,31 @@ export async function getOrder(id: string) {
       },
       dispatches: {
         include: {
-          vessel: { select: { vesselName: true } },
-          transporter: { select: { name: true } },
+          vessel: {
+            select: {
+              vesselName: true,
+              qualityClass: {
+                select: {
+                  domestic: true,
+                  origin: { select: { name: true } },
+                  qualityOption: { select: { name: true } },
+                },
+              },
+            },
+          },
           purchaseOrder: {
             select: {
+              id: true,
               poNumber: true,
               rate: true,
-              finalRate: true,
               importer: { select: { name: true } },
-              vessel: { select: { vesselName: true } },
+              qualityClass: {
+                select: {
+                  domestic: true,
+                  origin: { select: { name: true } },
+                  qualityOption: { select: { name: true } },
+                },
+              },
             },
           },
         },
@@ -353,6 +373,7 @@ export async function updateOrderFields(
   id: string,
   data: {
     poNumber?: string;
+    customerId?: string;
     orderDate?: string | null;
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
@@ -364,12 +385,29 @@ export async function updateOrderFields(
     closingQuantity?: DecimalLike | null;
   },
 ) {
+  await requireOwner();
+
   const existing = await prisma.order.findUnique({
     where: { id },
     include: { customer: { select: { category: true, saleExecutive: true } } },
   });
   if (!existing) throw new Error("Order not found");
   await assertSaleOrderCustomerAccess(existing.customer.saleExecutive);
+
+  let customerId = existing.customerId;
+  let category = existing.customer.category;
+  if (data.customerId !== undefined && data.customerId !== existing.customerId) {
+    if (!data.customerId) throw new Error("Customer is required");
+    const nextCustomer = await prisma.customer.findUnique({
+      where: { id: data.customerId },
+      select: { category: true, saleExecutive: true },
+    });
+    if (!nextCustomer) throw new Error("Customer not found");
+    await assertSaleOrderCustomerAccess(nextCustomer.saleExecutive);
+    customerId = data.customerId;
+    category = nextCustomer.category;
+  }
+  const customerChanged = customerId !== existing.customerId;
 
   let poNumber = existing.poNumber;
   if (data.poNumber !== undefined) {
@@ -428,8 +466,8 @@ export async function updateOrderFields(
     rate = data.rate === null ? null : toDecimal(data.rate);
   }
   const finalRate =
-    data.rate !== undefined
-      ? computeSaleFinalRate(rate, existing.customer.category)
+    data.rate !== undefined || customerChanged
+      ? computeSaleFinalRate(rate, category)
       : existing.finalRate;
 
   const orderStatus = computeOrderStatus({
@@ -444,16 +482,16 @@ export async function updateOrderFields(
     existing.dispatchedOrder,
   );
   const newAmount = dispatchedAmount(finalRate, existing.dispatchedOrder);
-  const dueDelta = newAmount.minus(oldAmount);
 
   const order = await prisma.$transaction(async (tx) => {
     const updated = await tx.order.update({
       where: { id },
       data: {
         poNumber,
+        customerId,
         quantity,
         rate,
-        ...(data.rate !== undefined ? { finalRate } : {}),
+        ...(data.rate !== undefined || customerChanged ? { finalRate } : {}),
         creditDays: data.creditDays === undefined ? undefined : data.creditDays,
         qualityClassId:
           data.qualityClassId === undefined ? undefined : data.qualityClassId,
@@ -474,7 +512,16 @@ export async function updateOrderFields(
       },
     });
 
-    await adjustCustomerDue(tx, existing.customerId, dueDelta);
+    if (customerChanged) {
+      await adjustCustomerDue(tx, existing.customerId, oldAmount.neg());
+      await adjustCustomerDue(tx, customerId, newAmount);
+    } else {
+      await adjustCustomerDue(
+        tx,
+        existing.customerId,
+        newAmount.minus(oldAmount),
+      );
+    }
     return updated;
   });
 

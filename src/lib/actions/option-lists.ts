@@ -11,6 +11,7 @@ import {
 import { Prisma } from "@/generated/prisma";
 import { capitalizeName } from "@/lib/domain/format";
 import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
+import { forgetMemo } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -249,6 +250,7 @@ export async function listDocumentGroups(): Promise<DocumentGroup[]> {
 }
 
 function revalidateDocumentPaths() {
+  forgetMemo("nav:document-groups");
   revalidateOptionPaths();
   revalidatePath("/", "layout");
 }

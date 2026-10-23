@@ -6,7 +6,11 @@ import {
   type Prisma,
 } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
-import { AccessDeniedError, getCurrentAccess } from "@/lib/auth/access";
+import {
+  AccessDeniedError,
+  getCurrentAccess,
+  requireOwner,
+} from "@/lib/auth/access";
 import {
   execScopeToCustomerWhere,
   getStaffReportExecScope,
@@ -173,9 +177,34 @@ export async function getPurchaseOrder(id: string) {
       dispatches: {
         include: {
           order: {
-            select: { id: true, poNumber: true, rate: true, finalRate: true },
+            select: {
+              id: true,
+              poNumber: true,
+              rate: true,
+              finalRate: true,
+              customer: { select: { name: true, category: true } },
+              qualityClass: {
+                select: {
+                  domestic: true,
+                  origin: { select: { name: true } },
+                  qualityOption: { select: { name: true } },
+                },
+              },
+            },
           },
           transporter: { select: { name: true } },
+          vessel: {
+            select: {
+              vesselName: true,
+              qualityClass: {
+                select: {
+                  domestic: true,
+                  origin: { select: { name: true } },
+                  qualityOption: { select: { name: true } },
+                },
+              },
+            },
+          },
         },
         orderBy: { dispatchDate: "desc" },
       },
@@ -357,17 +386,27 @@ export async function updatePurchaseOrderFields(
   data: {
     poNumber?: string;
     orderDate?: string | null;
+    importerId?: string;
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     qualityClassId?: string | null;
   },
 ) {
+  await requireOwner();
+
   const existing = await prisma.purchaseOrder.findUnique({
     where: { id },
     include: { importer: { select: { saleExecutive: true } } },
   });
   if (!existing) throw new Error("Purchase order not found");
   await assertPurchaseOrderImporterAccess(existing.importer.saleExecutive);
+
+  let importerId = existing.importerId;
+  if (data.importerId !== undefined && data.importerId !== existing.importerId) {
+    if (!data.importerId) throw new Error("Vendor is required");
+    await assertImporterPurchaseOrderAccess(data.importerId);
+    importerId = data.importerId;
+  }
 
   let poNumber = existing.poNumber;
   if (data.poNumber !== undefined) {
@@ -407,14 +446,12 @@ export async function updatePurchaseOrderFields(
     existing.dispatchedOrder,
   );
   const newAmount = dispatchedAmount(finalRate, existing.dispatchedOrder);
-  // Purchase decreases due, so delta is inverted.
-  const dueDelta = oldAmount.minus(newAmount);
-
   const order = await prisma.$transaction(async (tx) => {
     const updated = await tx.purchaseOrder.update({
       where: { id },
       data: {
         poNumber,
+        importerId,
         quantity,
         rate,
         ...(data.rate !== undefined ? { finalRate } : {}),
@@ -430,7 +467,16 @@ export async function updatePurchaseOrderFields(
       },
     });
 
-    await adjustCustomerDue(tx, existing.importerId, dueDelta);
+    if (importerId !== existing.importerId) {
+      await tx.dispatch.updateMany({
+        where: { purchasePoNumber: poNumber },
+        data: { importerId },
+      });
+      await adjustCustomerDue(tx, existing.importerId, oldAmount);
+      await adjustCustomerDue(tx, importerId, newAmount.neg());
+    } else {
+      await adjustCustomerDue(tx, existing.importerId, oldAmount.minus(newAmount));
+    }
     return updated;
   });
 
@@ -450,6 +496,8 @@ export async function completeOpenPurchaseOrder(
   orderId: string,
   details: CompleteOpenPurchaseOrderInput,
 ): Promise<void> {
+  await requireOwner();
+
   const quantity = toDecimal(details.quantity);
   if (quantity.lt(0)) {
     throw new Error("Quantity must be non-negative");

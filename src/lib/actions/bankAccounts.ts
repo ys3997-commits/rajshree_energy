@@ -5,6 +5,7 @@ import { PaymentDirection, Prisma } from "@/generated/prisma";
 import { bankAccountBalance } from "@/lib/domain/bankBalance";
 import { capitalizeName } from "@/lib/domain/format";
 import { toDecimal } from "@/lib/domain/computations";
+import { forgetMemo } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -223,6 +224,7 @@ export async function createBankAccount(input: BankAccountInput) {
   } catch (error) {
     asUniqueAccountError(error);
   }
+  forgetMemo("nav:bank-accounts");
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
@@ -242,6 +244,7 @@ export async function updateBankAccount(id: string, input: BankAccountInput) {
   } catch (error) {
     asUniqueAccountError(error);
   }
+  forgetMemo("nav:bank-accounts");
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
@@ -263,6 +266,7 @@ export async function deleteBankAccount(id: string) {
     }
     throw error;
   }
+  forgetMemo("nav:bank-accounts");
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");

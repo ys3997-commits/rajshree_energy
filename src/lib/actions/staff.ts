@@ -27,6 +27,7 @@ import {
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { usernameFromName } from "@/lib/auth/username";
 import { capitalizeName } from "@/lib/domain/format";
+import { forgetMemoPrefix } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -43,6 +44,7 @@ const STAFF_PATHS = [
 const GRANTABLE_KEYS = new Set(GRANTABLE_PAGES.map((page) => page.key));
 
 function revalidateStaffPaths() {
+  forgetMemoPrefix("staff:");
   for (const path of STAFF_PATHS) {
     revalidatePath(path);
   }

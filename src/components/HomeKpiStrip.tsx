@@ -60,7 +60,7 @@ export function HomeKpiStrip({
       </div>
       <div className="home-kpi-row home-key-row">
         {tiles.map((tile) => (
-          <Link key={tile.label} href={tile.href} className="home-kpi">
+          <Link key={tile.label} href={tile.href} className="home-kpi" prefetch={false}>
             <span className="home-kpi-label">{tile.label}</span>
             <span className="home-kpi-value">{tile.value}</span>
           </Link>

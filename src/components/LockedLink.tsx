@@ -28,7 +28,7 @@ export function LockedLink({
   }
 
   return (
-    <Link href={href} className={className} {...rest}>
+    <Link href={href} className={className} {...rest} prefetch={false}>
       {children}
     </Link>
   );
