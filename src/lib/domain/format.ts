@@ -1,5 +1,4 @@
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
-import { Decimal } from "@prisma/client/runtime/library";
 
 function parseFiniteNumber(
   value: { toString(): string } | number | string | null | undefined,
@@ -124,16 +123,41 @@ export function formatDispatchMt(
   return formatMt(value);
 }
 
+function incrementInteger(digits: string): string {
+  const chars = digits.split("");
+  let carry = 1;
+  for (let i = chars.length - 1; i >= 0 && carry; i--) {
+    const sum = chars[i].charCodeAt(0) - 48 + carry;
+    chars[i] = String(sum % 10);
+    carry = sum >= 10 ? 1 : 0;
+  }
+  return carry ? `1${chars.join("")}` : chars.join("");
+}
+
 /**
- * Nearest rupee from the exact decimal.
+ * Nearest rupee from the exact decimal string.
  * 50 paisa and above rounds up: 12445.35 → 12445, 12445.50 → 12446, 12445.65 → 12446.
  * Half rounds towards +∞, so a 50-paisa negative stays at 0.
+ * Returns null when the value is not a finite decimal.
  */
 export function roundToRupee(
   value: { toString(): string } | number | string,
-): Decimal {
-  const s = typeof value === "string" ? value : value.toString();
-  return new Decimal(s).toDecimalPlaces(0, Decimal.ROUND_HALF_CEIL);
+): string | null {
+  const raw = (typeof value === "string" ? value : value.toString()).trim();
+  const match = /^([+-])?(\d+)(?:\.(\d+))?$/.exec(raw);
+  if (!match) return null;
+  const negative = match[1] === "-";
+  let intPart = match[2].replace(/^0+(?=\d)/, "");
+  const frac = match[3] ?? "";
+  const first = frac[0] ?? "0";
+  const restHasNonZero = /[1-9]/.test(frac.slice(1));
+  const aboveHalf = first > "5" || (first === "5" && restHasNonZero);
+  const exactHalf = frac.length > 0 && first === "5" && !restHasNonZero;
+  if (aboveHalf || (exactHalf && !negative)) {
+    intPart = incrementInteger(intPart);
+  }
+  if (intPart === "0") return "0";
+  return negative ? `-${intPart}` : intPart;
 }
 
 /**
@@ -146,13 +170,9 @@ export function formatAmount(
   if (value == null || value === "") return "—";
   const s = typeof value === "string" ? value : value.toString();
   if (s === "—") return "—";
-  try {
-    const amount = new Decimal(s);
-    if (!amount.isFinite()) return s;
-    return formatIndianNumber(roundToRupee(s).toFixed(0));
-  } catch {
-    return s;
-  }
+  const rounded = roundToRupee(s);
+  if (rounded == null) return s;
+  return formatIndianNumber(rounded);
 }
 
 /** True when {@link formatAmount} would show this balance as 0. */
@@ -162,13 +182,9 @@ export function amountRoundsToZero(
   if (value == null || value === "") return true;
   const s = typeof value === "string" ? value : value.toString();
   if (s === "—") return true;
-  try {
-    const amount = new Decimal(s);
-    if (!amount.isFinite()) return false;
-    return roundToRupee(s).isZero();
-  } catch {
-    return false;
-  }
+  const rounded = roundToRupee(s);
+  if (rounded == null) return false;
+  return rounded === "0";
 }
 
 /**

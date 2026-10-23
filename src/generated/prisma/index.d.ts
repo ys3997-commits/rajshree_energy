@@ -188,17 +188,17 @@ export type BankAccountTypeOption = $Result.DefaultSelection<Prisma.$BankAccount
 export type BankAccount = $Result.DefaultSelection<Prisma.$BankAccountPayload>
 /**
  * Model BankTransfer
- * Money moved from one bank account to another (Bank → Transaction).
+ * Money moved from one bank account to another (Bank → Transaction with Our Current a/c).
  */
 export type BankTransfer = $Result.DefaultSelection<Prisma.$BankTransferPayload>
 /**
  * Model BookExpense
- * Bank expense booked against an indirect expense type (Bank → Book Expenses).
+ * Bank expense booked against an indirect expense type (Bank → Expenses).
  */
 export type BookExpense = $Result.DefaultSelection<Prisma.$BookExpensePayload>
 /**
  * Model SavingAccountTxn
- * Fund flow against a saving bank account (Bank → Txn in Saving A/c).
+ * Fund flow against a saving bank account (Bank → Transaction with Our saving a/c).
  */
 export type SavingAccountTxn = $Result.DefaultSelection<Prisma.$SavingAccountTxnPayload>
 
