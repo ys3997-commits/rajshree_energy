@@ -44,14 +44,19 @@ function sheetName(name: string): string {
   return cleaned || "Sheet1";
 }
 
+function isTotalRow(columns: ExportColumn[], row: ExportRow): boolean {
+  return columns.some((column) => row[column.key] === "Total");
+}
+
 function worksheetXml(
   tables: { columns: ExportColumn[]; rows: ExportRow[] }[],
 ): string {
-  const cells = (values: string[], rowNumber: number) =>
+  const cells = (values: string[], rowNumber: number, bold: boolean) =>
     values
       .map((value, index) => {
         const ref = `${columnLetter(index)}${rowNumber}`;
-        return `<c r="${ref}" t="inlineStr"><is><t>${escapeXml(value)}</t></is></c>`;
+        const style = bold ? ` s="1"` : "";
+        return `<c r="${ref}"${style} t="inlineStr"><is><t>${escapeXml(value)}</t></is></c>`;
       })
       .join("");
   let rowNumber = 1;
@@ -64,6 +69,7 @@ function worksheetXml(
           exportWrappedHeader(column.header).replace(/\n/g, " "),
         ),
         rowNumber,
+        true,
       )}</row>`,
     );
     rowNumber += 1;
@@ -72,6 +78,7 @@ function worksheetXml(
         `<row r="${rowNumber}">${cells(
           table.columns.map((column) => row[column.key] ?? ""),
           rowNumber,
+          isTotalRow(table.columns, row),
         )}</row>`,
       );
       rowNumber += 1;
@@ -87,13 +94,17 @@ function workbookXml(name: string): string {
 }
 
 const CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`;
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
 
 const ROOT_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
 
 const WORKBOOK_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>`;
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+
+/** Style 0 is regular. Style 1 is bold, used for headings and total rows. */
+const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>`;
 
 function storeZip(files: { name: string; data: Uint8Array }[]): Uint8Array {
   const locals: Uint8Array[] = [];
@@ -165,6 +176,7 @@ export function buildExcelWorkbook(
     xmlFile("_rels/.rels", ROOT_RELS),
     xmlFile("xl/workbook.xml", workbookXml(sheet)),
     xmlFile("xl/_rels/workbook.xml.rels", WORKBOOK_RELS),
+    xmlFile("xl/styles.xml", STYLES),
     xmlFile(
       "xl/worksheets/sheet1.xml",
       worksheetXml([{ columns, rows }, ...extraTables]),

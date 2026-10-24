@@ -113,6 +113,7 @@ export function downloadTextFile(
 type PdfDoc = {
   internal: { pageSize: { getWidth: () => number } };
   setFontSize: (size: number) => void;
+  setFont: (fontName: string, fontStyle: string) => void;
   text: (text: string, x: number, y: number) => void;
   setDrawColor: (r: number, g: number, b: number) => void;
   setLineWidth: (width: number) => void;
@@ -203,17 +204,27 @@ function drawPdfTable(
     ),
     didParseCell: (data: {
       column: { index: number };
+      row: { index: number };
+      section: string;
       cell: {
         text: string[];
         styles: {
           lineWidth: number | { top: number; right: number; bottom: number; left: number };
           halign?: string;
+          fontStyle?: string;
         };
       };
     }) => {
       const col = columns[data.column.index];
       const prev = columns[data.column.index - 1];
       const next = columns[data.column.index + 1];
+
+      if (
+        data.section === "body" &&
+        columns.some((column) => rows[data.row.index]?.[column.key] === "Total")
+      ) {
+        data.cell.styles.fontStyle = "bold";
+      }
 
       if (col?.divider) {
         data.cell.text = [""];
@@ -293,8 +304,10 @@ export async function buildTablePdfBlob(options: {
   const manyColumns = options.columns.filter((c) => !c.divider).length > 12;
   const marginX = manyColumns ? 8 : 16;
 
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
   doc.text(options.title, marginX, 28);
+  doc.setFont("helvetica", "normal");
   drawPdfTable(doc, autoTable, options.columns, options.rows, 38, true);
 
   for (const table of options.extraTables ?? []) {

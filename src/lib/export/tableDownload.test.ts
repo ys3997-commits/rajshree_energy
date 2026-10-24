@@ -78,6 +78,8 @@ describe("buildExcelWorkbook", () => {
     expect(text).toContain("A &amp; B &lt;Co&gt;");
     expect(text).toContain(">Vendor<");
     expect(text).toContain(">1,200<");
+    expect(text).toContain('<c r="A1" s="1"');
+    expect(text).not.toContain('<c r="A2" s="1"');
   });
 
   it("writes a second table two rows below the first", () => {
@@ -103,5 +105,25 @@ describe("buildExcelWorkbook", () => {
     expect(text).not.toContain('<row r="4">');
     expect(text).toContain(">Total No Of Lorries<");
     expect(text).toContain(">6 Lorry<");
+    expect(text).toContain('<c r="A5" s="1"');
+    expect(text).not.toContain('<c r="A6" s="1"');
+  });
+
+  it("bolds a total row", () => {
+    const bytes = buildExcelWorkbook(
+      [
+        { key: "date", header: "Date" },
+        { key: "amount", header: "Amount" },
+      ],
+      [
+        { date: "24/10/2026", amount: "100" },
+        { date: "Total", amount: "100" },
+      ],
+    );
+    const text = new TextDecoder().decode(bytes);
+    expect(text).toContain('<c r="A3" s="1"');
+    expect(text).toContain('<c r="B3" s="1"');
+    expect(text).not.toContain('<c r="A2" s="1"');
+    expect(text).toContain("<b/>");
   });
 });
