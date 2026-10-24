@@ -6606,6 +6606,25 @@ table.data.update-tally-table tfoot td strong {
   font-weight: 700;
 }
 
+.update-page .table-wrap.update-tally-quality-summary {
+  margin-top: 2lh;
+  margin-left: -2rem;
+  width: max-content;
+  max-width: calc(100% + 2rem);
+}
+
+.app-main .table-wrap.update-tally-quality-summary > table.data {
+  width: max-content;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .update-page .table-wrap.update-tally-quality-summary {
+    margin-left: 0;
+    max-width: 100%;
+  }
+}
+
 table.data.update-sale-table {
   --update-sale-sticky-dispatch: 5rem;
   --update-sale-sticky-date: 7rem;

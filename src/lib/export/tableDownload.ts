@@ -8,6 +8,11 @@ export type ExportColumn = {
 
 export type ExportRow = Record<string, string>;
 
+export type ExportTable = {
+  columns: ExportColumn[];
+  rows: ExportRow[];
+};
+
 /** Keep short all-caps tokens intact when converting headers to title case. */
 const HEADER_ACRONYMS = new Set([
   "PO",
@@ -105,41 +110,39 @@ export function downloadTextFile(
   URL.revokeObjectURL(url);
 }
 
-export async function buildTablePdfBlob(options: {
-  title: string;
-  columns: ExportColumn[];
-  rows: ExportRow[];
-}): Promise<Blob> {
-  const { jsPDF } = await import("jspdf");
-  const autoTable = (await import("jspdf-autotable")).default;
+type PdfDoc = {
+  internal: { pageSize: { getWidth: () => number } };
+  setFontSize: (size: number) => void;
+  text: (text: string, x: number, y: number) => void;
+  setDrawColor: (r: number, g: number, b: number) => void;
+  setLineWidth: (width: number) => void;
+  line: (x1: number, y1: number, x2: number, y2: number) => void;
+  output: (type: "blob") => Blob;
+  lastAutoTable?: { finalY: number };
+};
 
-  const doc = new jsPDF({
-    orientation: "landscape",
-    unit: "pt",
-    format: "a4",
-  });
-
+function drawPdfTable(
+  doc: PdfDoc,
+  autoTable: (doc: PdfDoc, options: object) => void,
+  columns: ExportColumn[],
+  rows: ExportRow[],
+  startY: number,
+  fullWidth: boolean,
+) {
   const pageWidth = doc.internal.pageSize.getWidth();
-  const dataColumnCount = options.columns.filter((c) => !c.divider).length;
+  const dataColumnCount = columns.filter((c) => !c.divider).length;
   const manyColumns = dataColumnCount > 12;
   const marginX = manyColumns ? 8 : 16;
   const horizontalPad = manyColumns ? 2 : 5;
   const fontSize = manyColumns ? 6.5 : 8;
 
-  doc.setFontSize(14);
-  doc.text(options.title, marginX, 28);
-
   autoTable(doc, {
-    startY: 38,
+    startY,
     theme: "grid",
-    tableWidth: pageWidth - marginX * 2,
+    tableWidth: fullWidth ? pageWidth - marginX * 2 : "auto",
     horizontalPageBreak: false,
-    head: [
-      options.columns.map((c) => exportPdfHeader(c.header)),
-    ],
-    body: options.rows.map((row) =>
-      options.columns.map((c) => row[c.key] ?? ""),
-    ),
+    head: [columns.map((c) => exportPdfHeader(c.header))],
+    body: rows.map((row) => columns.map((c) => row[c.key] ?? "")),
     styles: {
       fontSize,
       cellPadding: {
@@ -168,7 +171,7 @@ export async function buildTablePdfBlob(options: {
       },
     },
     columnStyles: Object.fromEntries(
-      options.columns.map((c, i) => {
+      columns.map((c, i) => {
         if (c.divider) {
           return [
             i,
@@ -198,10 +201,19 @@ export async function buildTablePdfBlob(options: {
         ];
       }),
     ),
-    didParseCell: (data) => {
-      const col = options.columns[data.column.index];
-      const prev = options.columns[data.column.index - 1];
-      const next = options.columns[data.column.index + 1];
+    didParseCell: (data: {
+      column: { index: number };
+      cell: {
+        text: string[];
+        styles: {
+          lineWidth: number | { top: number; right: number; bottom: number; left: number };
+          halign?: string;
+        };
+      };
+    }) => {
+      const col = columns[data.column.index];
+      const prev = columns[data.column.index - 1];
+      const next = columns[data.column.index + 1];
 
       if (col?.divider) {
         data.cell.text = [""];
@@ -245,8 +257,12 @@ export async function buildTablePdfBlob(options: {
         }
       }
     },
-    didDrawCell: (data) => {
-      const col = options.columns[data.column.index];
+    didDrawCell: (data: {
+      column: { index: number };
+      cell: { x: number; y: number; width: number; height: number };
+      doc: PdfDoc;
+    }) => {
+      const col = columns[data.column.index];
       if (!col?.divider) return;
       const x = data.cell.x + data.cell.width / 2;
       const y1 = data.cell.y;
@@ -257,6 +273,34 @@ export async function buildTablePdfBlob(options: {
     },
     margin: { left: marginX, right: marginX },
   });
+}
+
+export async function buildTablePdfBlob(options: {
+  title: string;
+  columns: ExportColumn[];
+  rows: ExportRow[];
+  extraTables?: ExportTable[];
+}): Promise<Blob> {
+  const { jsPDF } = await import("jspdf");
+  const autoTable = (await import("jspdf-autotable")).default;
+
+  const doc = new jsPDF({
+    orientation: "landscape",
+    unit: "pt",
+    format: "a4",
+  }) as PdfDoc;
+
+  const manyColumns = options.columns.filter((c) => !c.divider).length > 12;
+  const marginX = manyColumns ? 8 : 16;
+
+  doc.setFontSize(14);
+  doc.text(options.title, marginX, 28);
+  drawPdfTable(doc, autoTable, options.columns, options.rows, 38, true);
+
+  for (const table of options.extraTables ?? []) {
+    const finalY = doc.lastAutoTable?.finalY ?? 38;
+    drawPdfTable(doc, autoTable, table.columns, table.rows, finalY + 28, false);
+  }
 
   return doc.output("blob");
 }
@@ -266,6 +310,7 @@ export async function downloadTablePdf(options: {
   filename: string;
   columns: ExportColumn[];
   rows: ExportRow[];
+  extraTables?: ExportTable[];
 }) {
   const blob = await buildTablePdfBlob(options);
   const url = URL.createObjectURL(blob);

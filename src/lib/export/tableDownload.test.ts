@@ -79,4 +79,29 @@ describe("buildExcelWorkbook", () => {
     expect(text).toContain(">Vendor<");
     expect(text).toContain(">1,200<");
   });
+
+  it("writes a second table two rows below the first", () => {
+    const bytes = buildExcelWorkbook(
+      [{ key: "vendor", header: "Vendor" }],
+      [{ vendor: "A" }],
+      "Tally Entry",
+      [
+        {
+          columns: [
+            { key: "quality", header: "Quality" },
+            { key: "lorries", header: "Total no of lorries" },
+          ],
+          rows: [{ quality: "ROM", lorries: "6 Lorry" }],
+        },
+      ],
+    );
+    const text = new TextDecoder().decode(bytes);
+    expect(text).toContain('<row r="1">');
+    expect(text).toContain('<row r="2">');
+    expect(text).toContain('<row r="5">');
+    expect(text).not.toContain('<row r="3">');
+    expect(text).not.toContain('<row r="4">');
+    expect(text).toContain(">Total No Of Lorries<");
+    expect(text).toContain(">6 Lorry<");
+  });
 });

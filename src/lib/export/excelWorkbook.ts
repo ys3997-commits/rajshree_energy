@@ -44,7 +44,9 @@ function sheetName(name: string): string {
   return cleaned || "Sheet1";
 }
 
-function worksheetXml(columns: ExportColumn[], rows: ExportRow[]): string {
+function worksheetXml(
+  tables: { columns: ExportColumn[]; rows: ExportRow[] }[],
+): string {
   const cells = (values: string[], rowNumber: number) =>
     values
       .map((value, index) => {
@@ -52,23 +54,31 @@ function worksheetXml(columns: ExportColumn[], rows: ExportRow[]): string {
         return `<c r="${ref}" t="inlineStr"><is><t>${escapeXml(value)}</t></is></c>`;
       })
       .join("");
-  const header = `<row r="1">${cells(
-    columns.map((column) =>
-      exportWrappedHeader(column.header).replace(/\n/g, " "),
-    ),
-    1,
-  )}</row>`;
-  const body = rows
-    .map((row, index) => {
-      const rowNumber = index + 2;
-      return `<row r="${rowNumber}">${cells(
-        columns.map((column) => row[column.key] ?? ""),
+  let rowNumber = 1;
+  const body: string[] = [];
+  tables.forEach((table, tableIndex) => {
+    if (tableIndex > 0) rowNumber += 2;
+    body.push(
+      `<row r="${rowNumber}">${cells(
+        table.columns.map((column) =>
+          exportWrappedHeader(column.header).replace(/\n/g, " "),
+        ),
         rowNumber,
-      )}</row>`;
-    })
-    .join("");
+      )}</row>`,
+    );
+    rowNumber += 1;
+    for (const row of table.rows) {
+      body.push(
+        `<row r="${rowNumber}">${cells(
+          table.columns.map((column) => row[column.key] ?? ""),
+          rowNumber,
+        )}</row>`,
+      );
+      rowNumber += 1;
+    }
+  });
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${header}${body}</sheetData></worksheet>`;
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${body.join("")}</sheetData></worksheet>`;
 }
 
 function workbookXml(name: string): string {
@@ -148,13 +158,17 @@ export function buildExcelWorkbook(
   columns: ExportColumn[],
   rows: ExportRow[],
   sheet = "Sheet1",
+  extraTables: { columns: ExportColumn[]; rows: ExportRow[] }[] = [],
 ): Uint8Array {
   return storeZip([
     xmlFile("[Content_Types].xml", CONTENT_TYPES),
     xmlFile("_rels/.rels", ROOT_RELS),
     xmlFile("xl/workbook.xml", workbookXml(sheet)),
     xmlFile("xl/_rels/workbook.xml.rels", WORKBOOK_RELS),
-    xmlFile("xl/worksheets/sheet1.xml", worksheetXml(columns, rows)),
+    xmlFile(
+      "xl/worksheets/sheet1.xml",
+      worksheetXml([{ columns, rows }, ...extraTables]),
+    ),
   ]);
 }
 

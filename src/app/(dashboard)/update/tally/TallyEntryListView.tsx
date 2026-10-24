@@ -7,6 +7,7 @@ import {
   formatCreditPeriod,
   formatDateDdMmYyyy,
   formatDispatchMt,
+  formatIndianNumber,
   formatLorryNumber,
 } from "@/lib/domain/format";
 import { PURCHASE_TCS_RATE } from "@/lib/domain/purchaseRate";
@@ -32,6 +33,12 @@ const COLUMNS = [
   { key: "transporter", header: "Transporter\nName" },
   { key: "freightPmt", header: "Freight\nPMT", align: "right" as const },
   { key: "freightAmount", header: "Freight\nAmount", align: "right" as const },
+];
+
+const QUALITY_COLUMNS = [
+  { key: "quality", header: "Quality" },
+  { key: "lorries", header: "Total no of lorries" },
+  { key: "quantity", header: "Total Quantities", align: "right" as const },
 ];
 
 const TOTAL_KEYS = new Set([
@@ -60,8 +67,29 @@ function roundedAmount(value: Decimal | null): number {
   return Number.isFinite(amount) ? Math.round(amount) : 0;
 }
 
+function qualitySummaries(dispatches: DispatchListData["dispatches"]) {
+  const groups = new Map<string, { count: number; quantity: Decimal }>();
+  for (const row of dispatches) {
+    const quality = row.qualityClass?.qualityOption.name ?? "—";
+    const current = groups.get(quality) ?? {
+      count: 0,
+      quantity: toDecimal(0),
+    };
+    current.count += 1;
+    current.quantity = current.quantity.plus(toDecimal(row.dispatchedQuantity));
+    groups.set(quality, current);
+  }
+
+  return [...groups.entries()].map(([quality, group]) => ({
+    quality,
+    lorries: `${group.count} Lorry`,
+    quantity: formatDispatchMt(group.quantity),
+  }));
+}
+
 export function TallyEntryListView({ data }: { data: DispatchListData }) {
   const { filters, dispatches } = data;
+  const qualityRows = qualitySummaries(dispatches);
   let quantityTotal = toDecimal(0);
   let purchaseTotal = 0;
   let saleTotal = 0;
@@ -92,11 +120,11 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
       quality: row.qualityClass?.qualityOption.name ?? "—",
       vesselName: row.vesselName,
       vendor: row.vendorName ?? "—",
-      purchasePrice: formatAmount(row.purchaseTotalRate),
+      purchasePrice: formatIndianNumber(row.purchaseTotalRate, 2),
       purchaseAmount: formatAmount(purchaseAmount),
       customer: row.customerName ?? "—",
       creditDays: formatCreditPeriod(row.creditDays),
-      salePrice: formatAmount(salePrice),
+      salePrice: formatIndianNumber(salePrice, 2),
       saleAmount: formatAmount(saleAmount),
       transporter: row.transporterName ?? "—",
       freightPmt: formatAmount(row.freight),
@@ -145,6 +173,11 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
           filenameBase={`tally-entry-${filters.dispatchDate}`}
           columns={COLUMNS}
           rows={exportRows.length === 0 ? exportRows : [...exportRows, totalRow]}
+          extraTables={
+            qualityRows.length === 0
+              ? undefined
+              : [{ columns: QUALITY_COLUMNS, rows: qualityRows }]
+          }
         />
       </form>
 
@@ -210,6 +243,29 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
           </table>
         </div>
       </div>
+
+      {qualityRows.length > 0 && (
+        <div className="table-wrap update-tally-quality-summary">
+          <table className="data">
+            <thead>
+              <tr>
+                <th>Quality</th>
+                <th>Total no of lorries</th>
+                <th className="cell-num">Total Quantities</th>
+              </tr>
+            </thead>
+            <tbody>
+              {qualityRows.map((row) => (
+                <tr key={row.quality}>
+                  <td>{row.quality}</td>
+                  <td>{row.lorries}</td>
+                  <td className="cell-num">{row.quantity}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 }

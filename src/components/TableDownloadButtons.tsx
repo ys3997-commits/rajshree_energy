@@ -10,6 +10,7 @@ import {
   shareTablePdfViaWhatsApp,
   type ExportColumn,
   type ExportRow,
+  type ExportTable,
 } from "@/lib/export/tableDownload";
 
 type Props = {
@@ -17,6 +18,8 @@ type Props = {
   filenameBase: string;
   columns: ExportColumn[];
   rows: ExportRow[];
+  /** Further tables written below the first, in the same PDF and Excel file. */
+  extraTables?: ExportTable[];
   /** Show WhatsApp button to share the PDF (Sales Engine, etc.). */
   whatsapp?: boolean;
 };
@@ -26,6 +29,7 @@ export function TableDownloadButtons({
   filenameBase,
   columns,
   rows,
+  extraTables,
   whatsapp = false,
 }: Props) {
   const [busy, setBusy] = useState<"sheet" | "pdf" | "whatsapp" | null>(null);
@@ -35,7 +39,7 @@ export function TableDownloadButtons({
     setBusy("sheet");
     try {
       downloadExcelWorkbook(
-        buildExcelWorkbook(columns, rows, title),
+        buildExcelWorkbook(columns, rows, title, extraTables),
         `${filenameBase}.xlsx`,
       );
     } finally {
@@ -51,6 +55,7 @@ export function TableDownloadButtons({
         filename: `${filenameBase}.pdf`,
         columns,
         rows,
+        extraTables,
       });
     } finally {
       setBusy(null);
