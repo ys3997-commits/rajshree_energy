@@ -37,7 +37,7 @@ const COLUMNS = [
 
 const QUALITY_COLUMNS = [
   { key: "quality", header: "Quality" },
-  { key: "lorries", header: "Total no of lorries" },
+  { key: "lorries", header: "Total no of lorries", align: "right" as const },
   { key: "quantity", header: "Total Quantities", align: "right" as const },
 ];
 
@@ -69,6 +69,8 @@ function roundedAmount(value: Decimal | null): number {
 
 function qualitySummaries(dispatches: DispatchListData["dispatches"]) {
   const groups = new Map<string, { count: number; quantity: Decimal }>();
+  let lorryTotal = 0;
+  let quantityTotal = toDecimal(0);
   for (const row of dispatches) {
     const quality = row.qualityClass?.qualityOption.name ?? "—";
     const current = groups.get(quality) ?? {
@@ -78,18 +80,29 @@ function qualitySummaries(dispatches: DispatchListData["dispatches"]) {
     current.count += 1;
     current.quantity = current.quantity.plus(toDecimal(row.dispatchedQuantity));
     groups.set(quality, current);
+    lorryTotal += 1;
+    quantityTotal = quantityTotal.plus(toDecimal(row.dispatchedQuantity));
   }
 
-  return [...groups.entries()].map(([quality, group]) => ({
+  const rows = [...groups.entries()].map(([quality, group]) => ({
     quality,
     lorries: `${group.count} Lorry`,
     quantity: formatDispatchMt(group.quantity),
   }));
+
+  return {
+    rows,
+    total: {
+      quality: "Total",
+      lorries: `${lorryTotal} Lorry`,
+      quantity: formatDispatchMt(quantityTotal),
+    },
+  };
 }
 
 export function TallyEntryListView({ data }: { data: DispatchListData }) {
   const { filters, dispatches } = data;
-  const qualityRows = qualitySummaries(dispatches);
+  const { rows: qualityRows, total: qualityTotal } = qualitySummaries(dispatches);
   let quantityTotal = toDecimal(0);
   let purchaseTotal = 0;
   let saleTotal = 0;
@@ -176,7 +189,7 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
           extraTables={
             qualityRows.length === 0
               ? undefined
-              : [{ columns: QUALITY_COLUMNS, rows: qualityRows }]
+              : [{ columns: QUALITY_COLUMNS, rows: [...qualityRows, qualityTotal] }]
           }
         />
       </form>
@@ -249,20 +262,48 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
           <table className="data">
             <thead>
               <tr>
-                <th>Quality</th>
-                <th>Total no of lorries</th>
-                <th className="cell-num">Total Quantities</th>
+                {QUALITY_COLUMNS.map((column) => (
+                  <th
+                    key={column.key}
+                    className={column.align === "right" ? "cell-num" : undefined}
+                  >
+                    {column.header}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {qualityRows.map((row) => (
                 <tr key={row.quality}>
-                  <td>{row.quality}</td>
-                  <td>{row.lorries}</td>
-                  <td className="cell-num">{row.quantity}</td>
+                  {QUALITY_COLUMNS.map((column) => (
+                    <td
+                      key={column.key}
+                      className={column.align === "right" ? "cell-num" : undefined}
+                    >
+                      {row[column.key as keyof typeof row]}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                {QUALITY_COLUMNS.map((column) => (
+                  <td
+                    key={column.key}
+                    className={column.align === "right" ? "cell-num" : undefined}
+                  >
+                    {column.key === "quality" ? (
+                      qualityTotal.quality
+                    ) : (
+                      <strong>
+                        {qualityTotal[column.key as keyof typeof qualityTotal]}
+                      </strong>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
           </table>
         </div>
       )}
