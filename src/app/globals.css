@@ -6606,6 +6606,19 @@ table.data.update-tally-table tfoot td strong {
   font-weight: 700;
 }
 
+table.data.update-tally-table th.update-tally-customer,
+table.data.update-tally-table td.update-tally-customer {
+  width: calc(16.5rem * 0.85);
+  max-width: calc(16.5rem * 0.85);
+  white-space: normal;
+}
+
+table.data.update-tally-table .update-tally-customer-text {
+  display: inline-block;
+  max-width: calc(16.5rem * 0.85);
+  white-space: normal;
+}
+
 .update-page .table-wrap.update-tally-quality-summary {
   margin-top: 2lh;
   margin-left: -2rem;

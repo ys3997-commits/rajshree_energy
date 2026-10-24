@@ -114,6 +114,7 @@ type PdfDoc = {
   internal: { pageSize: { getWidth: () => number } };
   setFontSize: (size: number) => void;
   setFont: (fontName: string, fontStyle: string) => void;
+  getTextWidth: (text: string) => number;
   text: (text: string, x: number, y: number) => void;
   setDrawColor: (r: number, g: number, b: number) => void;
   setLineWidth: (width: number) => void;
@@ -121,6 +122,28 @@ type PdfDoc = {
   output: (type: "blob") => Blob;
   lastAutoTable?: { finalY: number };
 };
+
+function measuredCustomerWidth(
+  doc: PdfDoc,
+  columns: ExportColumn[],
+  rows: ExportRow[],
+  fontSize: number,
+  horizontalPad: number,
+): number | null {
+  const column = columns.find((item) => item.key === "customer");
+  if (!column) return null;
+  doc.setFontSize(fontSize);
+  doc.setFont("helvetica", "bold");
+  let max = doc.getTextWidth(exportPdfHeader(column.header));
+  doc.setFont("helvetica", "normal");
+  for (const row of rows) {
+    for (const line of (row.customer ?? "").split("\n")) {
+      max = Math.max(max, doc.getTextWidth(line));
+    }
+  }
+  doc.setFont("helvetica", "normal");
+  return (max + horizontalPad * 2) * 0.85;
+}
 
 function drawPdfTable(
   doc: PdfDoc,
@@ -136,11 +159,18 @@ function drawPdfTable(
   const marginX = manyColumns ? 8 : 16;
   const horizontalPad = manyColumns ? 2 : 5;
   const fontSize = manyColumns ? 6.5 : 8;
+  const customerWidth = measuredCustomerWidth(
+    doc,
+    columns,
+    rows,
+    fontSize,
+    horizontalPad,
+  );
 
   autoTable(doc, {
     startY,
     theme: "grid",
-    tableWidth: fullWidth ? pageWidth - marginX * 2 : "auto",
+    tableWidth: fullWidth ? pageWidth - marginX * 2 : "wrap",
     horizontalPageBreak: false,
     head: [columns.map((c) => exportPdfHeader(c.header))],
     body: rows.map((row) => columns.map((c) => row[c.key] ?? "")),
@@ -198,6 +228,9 @@ function drawPdfTable(
               left: horizontalPad,
               right: horizontalPad,
             },
+            ...(c.key === "customer" && customerWidth != null
+              ? { cellWidth: customerWidth }
+              : {}),
           },
         ];
       }),

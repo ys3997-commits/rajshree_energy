@@ -41,6 +41,13 @@ const QUALITY_COLUMNS = [
   { key: "quantity", header: "Total Quantities", align: "right" as const },
 ];
 
+function tallyCellClass(column: { key: string; align?: "right" }) {
+  const classes: string[] = [];
+  if (column.align === "right") classes.push("cell-num");
+  if (column.key === "customer") classes.push("update-tally-customer");
+  return classes.length > 0 ? classes.join(" ") : undefined;
+}
+
 const TOTAL_KEYS = new Set([
   "quantity",
   "purchaseAmount",
@@ -200,10 +207,7 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
             <thead>
               <tr>
                 {COLUMNS.map((column) => (
-                  <th
-                    key={column.key}
-                    className={column.align === "right" ? "cell-num" : undefined}
-                  >
+                  <th key={column.key} className={tallyCellClass(column)}>
                     {column.header}
                   </th>
                 ))}
@@ -220,11 +224,15 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
                     {COLUMNS.map((column) => (
                       <td
                         key={column.key}
-                        className={
-                          column.align === "right" ? "cell-num" : undefined
-                        }
+                        className={tallyCellClass(column)}
                       >
-                        {row[column.key as keyof typeof row]}
+                        {column.key === "customer" ? (
+                          <span className="update-tally-customer-text">
+                            {row.customer}
+                          </span>
+                        ) : (
+                          row[column.key as keyof typeof row]
+                        )}
                       </td>
                     ))}
                   </tr>
@@ -237,9 +245,7 @@ export function TallyEntryListView({ data }: { data: DispatchListData }) {
                   {COLUMNS.map((column) => (
                     <td
                       key={column.key}
-                      className={
-                        column.align === "right" ? "cell-num" : undefined
-                      }
+                      className={tallyCellClass(column)}
                     >
                       {TOTAL_KEYS.has(column.key) ? (
                         <strong>
