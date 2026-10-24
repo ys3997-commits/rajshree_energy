@@ -37,7 +37,7 @@ const COLUMNS = [
 
 const QUALITY_COLUMNS = [
   { key: "quality", header: "Quality" },
-  { key: "lorries", header: "Total no of lorries", align: "right" as const },
+  { key: "lorries", header: "Total Lorries", align: "right" as const },
   { key: "quantity", header: "Total Quantities", align: "right" as const },
 ];
 

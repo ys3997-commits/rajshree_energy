@@ -88,6 +88,28 @@ export function DispatchListView({
 
       <form className="filters" method="get" action={filterPath}>
         <label>
+          Start Date
+          <input
+            type="date"
+            lang="en-GB"
+            className="field-input"
+            name="dispatchDateStart"
+            defaultValue={filters.dispatchDateStart}
+            max={filters.dispatchDateEnd || undefined}
+          />
+        </label>
+        <label>
+          End Date
+          <input
+            type="date"
+            lang="en-GB"
+            className="field-input"
+            name="dispatchDateEnd"
+            defaultValue={filters.dispatchDateEnd}
+            min={filters.dispatchDateStart || undefined}
+          />
+        </label>
+        <label>
           Receipt Status
           <select name="receiptStatus" defaultValue={filters.receiptStatus}>
             <option value="">All</option>
@@ -117,14 +139,6 @@ export function DispatchListView({
             name="purchasePoNumber"
             defaultValue={filters.purchasePoNumber}
             placeholder="Search purchase PO"
-          />
-        </label>
-        <label>
-          Dispatch Date
-          <input
-            type="date"
-            name="dispatchDate"
-            defaultValue={filters.dispatchDate}
           />
         </label>
         <label>

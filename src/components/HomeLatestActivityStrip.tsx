@@ -17,7 +17,7 @@ export function HomeLatestActivityStrip({
       label: "Purchase & sales",
       value: formatDateDdMmYyyy(purchaseSalesDate),
       href: purchaseSalesDate
-        ? `/dispatches?dispatchDate=${purchaseSalesDate}`
+        ? `/dispatches?dispatchDateStart=${purchaseSalesDate}&dispatchDateEnd=${purchaseSalesDate}`
         : "/dispatches",
     },
     {
