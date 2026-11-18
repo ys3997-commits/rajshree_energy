@@ -11,6 +11,11 @@ const reports = [
     desc: "Current balance for each bank account.",
   },
   {
+    href: "/reports/bank/discount",
+    title: "Discount",
+    desc: "Discounts received from or paid to customers, transporters, and investments.",
+  },
+  {
     href: "/reports/bank-statement",
     title: "Bank Statement",
     desc: "Statement for each bank account from Masters → Bank → Create Bank Account.",

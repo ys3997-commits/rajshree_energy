@@ -107,15 +107,6 @@ function partyLabel(row: DiscountRow): string {
   return row.customerName;
 }
 
-function resetAddFormAfterSave(form: FormState): FormState {
-  return {
-    ...form,
-    status: "" as Status,
-    amount: "",
-    remarks: "",
-  };
-}
-
 function hasListFilters(
   dateFrom: string,
   dateTo: string,
@@ -153,7 +144,7 @@ export function DiscountsClient({
   const { rows, total, page, pageSize, totalPages, totals } = initial;
   const listFilters = { dateFrom, dateTo, party, type };
 
-  const [addForm, setAddForm] = useState(() => emptyForm());
+  const [addForm, setAddForm] = useState<FormState>(() => emptyForm());
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -232,6 +223,31 @@ export function DiscountsClient({
     return null;
   }
 
+  function onAdd(event: FormEvent) {
+    event.preventDefault();
+    const message = validate(addForm);
+    if (message) {
+      setError(message);
+      return;
+    }
+    const payload = payloadFrom(addForm);
+    setError(null);
+    startTransition(async () => {
+      try {
+        await createDiscount(payload);
+        setAddForm((current) => ({
+          ...emptyForm(),
+          date: current.date,
+          status: current.status,
+          coalOrigin: current.coalOrigin,
+        }));
+        goToPage(1);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Save failed");
+      }
+    });
+  }
+
   function goToPage(targetPage: number) {
     router.push(
       paymentsHref({ section: "discount", page: targetPage, ...listFilters }),
@@ -252,26 +268,6 @@ export function DiscountsClient({
   function cancelEdit() {
     setEditingId(null);
     setEditForm(emptyForm());
-  }
-
-  function onAdd(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const message = validate(addForm);
-    if (message) {
-      setError(message);
-      return;
-    }
-    const payload = payloadFrom(addForm);
-    startTransition(async () => {
-      try {
-        await createDiscount(payload);
-        setAddForm((prev) => resetAddFormAfterSave(prev));
-        goToPage(1);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
-      }
-    });
   }
 
   function saveEdit() {
@@ -332,6 +328,111 @@ export function DiscountsClient({
         />
       </div>
 
+      <form className="bank-entry" onSubmit={onAdd} noValidate>
+        <div className="bank-entry-row">
+          <label className="bank-entry-field bank-entry-field-date">
+            <span>Date</span>
+            <input
+              type="date"
+              className="field-input"
+              aria-label="Date"
+              value={addForm.date}
+              onChange={(event) =>
+                setAddForm({ ...addForm, date: event.target.value })
+              }
+            />
+          </label>
+          <label className="bank-entry-field">
+            <span>Type</span>
+            <select
+              className="field-input"
+              aria-label="Type"
+              value={addForm.status}
+              onChange={(event) =>
+                setAddForm({
+                  ...addForm,
+                  status: event.target.value as Status,
+                })
+              }
+            >
+              <option value="">Select</option>
+              <option value="RECEIVED">Discount Received</option>
+              <option value="PAID">Discount Paid</option>
+            </select>
+          </label>
+          <label className="bank-entry-field">
+            <span>
+              {addForm.status === "PAID"
+                ? "Fund received account"
+                : "Fund paid account"}
+            </span>
+            <SearchableSelect
+              className="field-input"
+              ariaLabel={
+                addForm.status === "PAID"
+                  ? "Fund received account"
+                  : "Fund paid account"
+              }
+              placeholder="Search customer, transporter, or investment"
+              value={addForm.partyId}
+              onChange={(partyId) => setAddForm({ ...addForm, partyId })}
+              options={partyOptions}
+            />
+          </label>
+          <label className="bank-entry-field">
+            <span>Coal</span>
+            <select
+              className="field-input"
+              aria-label="Domestic or imported coal"
+              value={addForm.coalOrigin}
+              onChange={(event) =>
+                setAddForm({
+                  ...addForm,
+                  coalOrigin: event.target.value as CoalOriginValue,
+                })
+              }
+            >
+              <option value="">Select</option>
+              <option value="DOMESTIC">Domestic coal</option>
+              <option value="IMPORTED">Imported coal</option>
+            </select>
+          </label>
+          <label className="bank-entry-field bank-entry-field-amount">
+            <span>Amount</span>
+            <input
+              type="text"
+              inputMode="decimal"
+              className="field-input"
+              placeholder="0.00"
+              aria-label="Amount"
+              value={addAmountDisplay}
+              onChange={(event) => {
+                const next = changeAmount(addForm, event.target.value);
+                if (next) setAddForm(next);
+              }}
+            />
+          </label>
+          <label className="bank-entry-field bank-entry-field-particular">
+            <span>Particular</span>
+            <input
+              type="text"
+              className="field-input"
+              aria-label="Particular"
+              placeholder="Transaction details"
+              value={addForm.remarks}
+              onChange={(event) =>
+                setAddForm({ ...addForm, remarks: event.target.value })
+              }
+            />
+          </label>
+          <div className="bank-entry-actions">
+            <button type="submit" className="btn" disabled={pending}>
+              Add
+            </button>
+          </div>
+        </div>
+      </form>
+
       {totals ? (
         <FundFlowTotals
           receivedLabel="Discount received"
@@ -369,112 +470,6 @@ export function DiscountsClient({
             </tr>
           </thead>
           <tbody>
-            <tr className="payment-entry-row">
-              <td>
-                <input
-                  form="discount-add-form"
-                  type="date"
-                  required
-                  className="field-input"
-                  aria-label="Date"
-                  value={addForm.date}
-                  onChange={(e) =>
-                    setAddForm({ ...addForm, date: e.target.value })
-                  }
-                />
-              </td>
-              <td>
-                <SearchableSelect
-                  form="discount-add-form"
-                  required
-                  className="field-input"
-                  ariaLabel="Customer, transporter, or investment company"
-                  placeholder="Search customer, transporter, or investment"
-                  value={addForm.partyId}
-                  onChange={(partyId) => setAddForm({ ...addForm, partyId })}
-                  options={partyOptions}
-                />
-              </td>
-              <td>
-                <select
-                  form="discount-add-form"
-                  required
-                  className="field-input"
-                  aria-label="Type"
-                  value={addForm.status}
-                  onChange={(e) =>
-                    setAddForm({
-                      ...addForm,
-                      status: e.target.value as Status,
-                    })
-                  }
-                >
-                  <option value="">Select</option>
-                  <option value="RECEIVED">Discount Received</option>
-                  <option value="PAID">Discount Paid</option>
-                </select>
-              </td>
-              <td className="cell-num payment-amount-cell">
-                <input
-                  form="discount-add-form"
-                  type="text"
-                  inputMode="decimal"
-                  required
-                  className="field-input"
-                  placeholder="0.00"
-                  aria-label="Amount"
-                  value={addAmountDisplay}
-                  onChange={(e) => {
-                    const next = changeAmount(addForm, e.target.value);
-                    if (next) setAddForm(next);
-                  }}
-                />
-              </td>
-              <td>
-                <select
-                  form="discount-add-form"
-                  required
-                  className="field-input"
-                  aria-label="Domestic / Imported"
-                  value={addForm.coalOrigin}
-                  onChange={(e) =>
-                    setAddForm({
-                      ...addForm,
-                      coalOrigin: e.target.value as CoalOriginValue,
-                    })
-                  }
-                >
-                  <option value="">Select</option>
-                  <option value="DOMESTIC">Domestic coal</option>
-                  <option value="IMPORTED">Imported coal</option>
-                </select>
-              </td>
-              <td>
-                <input
-                  form="discount-add-form"
-                  type="text"
-                  required
-                  className="field-input"
-                  placeholder="Write remarks…"
-                  aria-label="Remarks"
-                  value={addForm.remarks}
-                  onChange={(e) =>
-                    setAddForm({ ...addForm, remarks: e.target.value })
-                  }
-                />
-              </td>
-              <td className="space-x-2 whitespace-nowrap">
-                <button
-                  form="discount-add-form"
-                  type="submit"
-                  className="btn btn-sm"
-                  disabled={pending || editingId != null}
-                >
-                  Add
-                </button>
-              </td>
-            </tr>
-
             {rows.map((row, index) => {
               const prevDate = index > 0 ? rows[index - 1].date : null;
               const dateBreak = prevDate != null && prevDate !== row.date;
@@ -703,8 +698,6 @@ export function DiscountsClient({
           </div>
         </div>
       )}
-
-      <form id="discount-add-form" onSubmit={onAdd} hidden />
       <form id="discount-edit-form" onSubmit={onUpdate} hidden />
     </div>
   );

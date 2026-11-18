@@ -101,6 +101,7 @@ export async function getBankStatement(
         createdAt: true,
         amount: true,
         particular: true,
+        direction: true,
         indirectExpense: { select: { name: true } },
       },
       orderBy: [{ date: "asc" }, { createdAt: "asc" }],
@@ -170,6 +171,7 @@ export async function getBankStatement(
   }
 
   for (const expense of bookExpenses) {
+    const received = expense.direction === PaymentDirection.RECEIVED;
     movements.push({
       id: `expense:${expense.id}`,
       date: isoDate(expense.date),
@@ -179,8 +181,8 @@ export async function getBankStatement(
         expense.indirectExpense.name,
         expense.particular,
       ),
-      debit: expense.amount.toString(),
-      credit: 0,
+      debit: received ? 0 : expense.amount.toString(),
+      credit: received ? expense.amount.toString() : 0,
     });
   }
 

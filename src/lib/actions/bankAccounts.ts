@@ -149,7 +149,7 @@ export async function listBankAccountBalances(): Promise<BankAccountBalanceRow[]
       _sum: { amount: true },
     }),
     prisma.bookExpense.groupBy({
-      by: ["paidAccountId"],
+      by: ["paidAccountId", "direction"],
       _sum: { amount: true },
     }),
     prisma.savingAccountTxn.groupBy({
@@ -183,7 +183,12 @@ export async function listBankAccountBalances(): Promise<BankAccountBalanceRow[]
   }
   for (const group of bookExpenses) {
     const current = movementFor(totals, group.paidAccountId);
-    current.paid = current.paid.plus(toDecimal(group._sum.amount ?? 0));
+    const sum = toDecimal(group._sum.amount ?? 0);
+    if (group.direction === PaymentDirection.RECEIVED) {
+      current.received = current.received.plus(sum);
+    } else {
+      current.paid = current.paid.plus(sum);
+    }
     totals.set(group.paidAccountId, current);
   }
   for (const group of savingTxns) {

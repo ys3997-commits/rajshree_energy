@@ -41417,6 +41417,7 @@ export namespace Prisma {
     date: Date | null
     paidAccountId: string | null
     indirectExpenseId: string | null
+    direction: $Enums.PaymentDirection | null
     amount: Decimal | null
     particular: string | null
     createdByStaffId: string | null
@@ -41429,6 +41430,7 @@ export namespace Prisma {
     date: Date | null
     paidAccountId: string | null
     indirectExpenseId: string | null
+    direction: $Enums.PaymentDirection | null
     amount: Decimal | null
     particular: string | null
     createdByStaffId: string | null
@@ -41441,6 +41443,7 @@ export namespace Prisma {
     date: number
     paidAccountId: number
     indirectExpenseId: number
+    direction: number
     amount: number
     particular: number
     createdByStaffId: number
@@ -41463,6 +41466,7 @@ export namespace Prisma {
     date?: true
     paidAccountId?: true
     indirectExpenseId?: true
+    direction?: true
     amount?: true
     particular?: true
     createdByStaffId?: true
@@ -41475,6 +41479,7 @@ export namespace Prisma {
     date?: true
     paidAccountId?: true
     indirectExpenseId?: true
+    direction?: true
     amount?: true
     particular?: true
     createdByStaffId?: true
@@ -41487,6 +41492,7 @@ export namespace Prisma {
     date?: true
     paidAccountId?: true
     indirectExpenseId?: true
+    direction?: true
     amount?: true
     particular?: true
     createdByStaffId?: true
@@ -41586,6 +41592,7 @@ export namespace Prisma {
     date: Date
     paidAccountId: string
     indirectExpenseId: string
+    direction: $Enums.PaymentDirection
     amount: Decimal
     particular: string
     createdByStaffId: string | null
@@ -41617,6 +41624,7 @@ export namespace Prisma {
     date?: boolean
     paidAccountId?: boolean
     indirectExpenseId?: boolean
+    direction?: boolean
     amount?: boolean
     particular?: boolean
     createdByStaffId?: boolean
@@ -41632,6 +41640,7 @@ export namespace Prisma {
     date?: boolean
     paidAccountId?: boolean
     indirectExpenseId?: boolean
+    direction?: boolean
     amount?: boolean
     particular?: boolean
     createdByStaffId?: boolean
@@ -41647,6 +41656,7 @@ export namespace Prisma {
     date?: boolean
     paidAccountId?: boolean
     indirectExpenseId?: boolean
+    direction?: boolean
     amount?: boolean
     particular?: boolean
     createdByStaffId?: boolean
@@ -41677,6 +41687,7 @@ export namespace Prisma {
       date: Date
       paidAccountId: string
       indirectExpenseId: string
+      direction: $Enums.PaymentDirection
       amount: Prisma.Decimal
       particular: string
       createdByStaffId: string | null
@@ -42082,6 +42093,7 @@ export namespace Prisma {
     readonly date: FieldRef<"BookExpense", 'DateTime'>
     readonly paidAccountId: FieldRef<"BookExpense", 'String'>
     readonly indirectExpenseId: FieldRef<"BookExpense", 'String'>
+    readonly direction: FieldRef<"BookExpense", 'PaymentDirection'>
     readonly amount: FieldRef<"BookExpense", 'Decimal'>
     readonly particular: FieldRef<"BookExpense", 'String'>
     readonly createdByStaffId: FieldRef<"BookExpense", 'String'>
@@ -44033,6 +44045,7 @@ export namespace Prisma {
     date: 'date',
     paidAccountId: 'paidAccountId',
     indirectExpenseId: 'indirectExpenseId',
+    direction: 'direction',
     amount: 'amount',
     particular: 'particular',
     createdByStaffId: 'createdByStaffId',
@@ -47225,6 +47238,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"BookExpense"> | Date | string
     paidAccountId?: StringFilter<"BookExpense"> | string
     indirectExpenseId?: StringFilter<"BookExpense"> | string
+    direction?: EnumPaymentDirectionFilter<"BookExpense"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"BookExpense"> | Decimal | DecimalJsLike | number | string
     particular?: StringFilter<"BookExpense"> | string
     createdByStaffId?: StringNullableFilter<"BookExpense"> | string | null
@@ -47240,6 +47254,7 @@ export namespace Prisma {
     date?: SortOrder
     paidAccountId?: SortOrder
     indirectExpenseId?: SortOrder
+    direction?: SortOrder
     amount?: SortOrder
     particular?: SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
@@ -47258,6 +47273,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"BookExpense"> | Date | string
     paidAccountId?: StringFilter<"BookExpense"> | string
     indirectExpenseId?: StringFilter<"BookExpense"> | string
+    direction?: EnumPaymentDirectionFilter<"BookExpense"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"BookExpense"> | Decimal | DecimalJsLike | number | string
     particular?: StringFilter<"BookExpense"> | string
     createdByStaffId?: StringNullableFilter<"BookExpense"> | string | null
@@ -47273,6 +47289,7 @@ export namespace Prisma {
     date?: SortOrder
     paidAccountId?: SortOrder
     indirectExpenseId?: SortOrder
+    direction?: SortOrder
     amount?: SortOrder
     particular?: SortOrder
     createdByStaffId?: SortOrderInput | SortOrder
@@ -47293,6 +47310,7 @@ export namespace Prisma {
     date?: DateTimeWithAggregatesFilter<"BookExpense"> | Date | string
     paidAccountId?: StringWithAggregatesFilter<"BookExpense"> | string
     indirectExpenseId?: StringWithAggregatesFilter<"BookExpense"> | string
+    direction?: EnumPaymentDirectionWithAggregatesFilter<"BookExpense"> | $Enums.PaymentDirection
     amount?: DecimalWithAggregatesFilter<"BookExpense"> | Decimal | DecimalJsLike | number | string
     particular?: StringWithAggregatesFilter<"BookExpense"> | string
     createdByStaffId?: StringNullableWithAggregatesFilter<"BookExpense"> | string | null
@@ -50500,6 +50518,7 @@ export namespace Prisma {
   export type BookExpenseCreateInput = {
     id?: string
     date: Date | string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdAt?: Date | string
@@ -50514,6 +50533,7 @@ export namespace Prisma {
     date: Date | string
     paidAccountId: string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdByStaffId?: string | null
@@ -50524,6 +50544,7 @@ export namespace Prisma {
   export type BookExpenseUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50538,6 +50559,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50550,6 +50572,7 @@ export namespace Prisma {
     date: Date | string
     paidAccountId: string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdByStaffId?: string | null
@@ -50560,6 +50583,7 @@ export namespace Prisma {
   export type BookExpenseUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50571,6 +50595,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52947,6 +52972,7 @@ export namespace Prisma {
     date?: SortOrder
     paidAccountId?: SortOrder
     indirectExpenseId?: SortOrder
+    direction?: SortOrder
     amount?: SortOrder
     particular?: SortOrder
     createdByStaffId?: SortOrder
@@ -52963,6 +52989,7 @@ export namespace Prisma {
     date?: SortOrder
     paidAccountId?: SortOrder
     indirectExpenseId?: SortOrder
+    direction?: SortOrder
     amount?: SortOrder
     particular?: SortOrder
     createdByStaffId?: SortOrder
@@ -52975,6 +53002,7 @@ export namespace Prisma {
     date?: SortOrder
     paidAccountId?: SortOrder
     indirectExpenseId?: SortOrder
+    direction?: SortOrder
     amount?: SortOrder
     particular?: SortOrder
     createdByStaffId?: SortOrder
@@ -56894,6 +56922,7 @@ export namespace Prisma {
   export type BookExpenseCreateWithoutCreatedByStaffInput = {
     id?: string
     date: Date | string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdAt?: Date | string
@@ -56907,6 +56936,7 @@ export namespace Prisma {
     date: Date | string
     paidAccountId: string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdAt?: Date | string
@@ -57324,6 +57354,7 @@ export namespace Prisma {
     date?: DateTimeFilter<"BookExpense"> | Date | string
     paidAccountId?: StringFilter<"BookExpense"> | string
     indirectExpenseId?: StringFilter<"BookExpense"> | string
+    direction?: EnumPaymentDirectionFilter<"BookExpense"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"BookExpense"> | Decimal | DecimalJsLike | number | string
     particular?: StringFilter<"BookExpense"> | string
     createdByStaffId?: StringNullableFilter<"BookExpense"> | string | null
@@ -57802,6 +57833,7 @@ export namespace Prisma {
   export type BookExpenseCreateWithoutIndirectExpenseInput = {
     id?: string
     date: Date | string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdAt?: Date | string
@@ -57814,6 +57846,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     paidAccountId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdByStaffId?: string | null
@@ -63270,6 +63303,7 @@ export namespace Prisma {
   export type BookExpenseCreateWithoutPaidAccountInput = {
     id?: string
     date: Date | string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdAt?: Date | string
@@ -63282,6 +63316,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdByStaffId?: string | null
@@ -64298,6 +64333,7 @@ export namespace Prisma {
     date: Date | string
     paidAccountId: string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdAt?: Date | string
@@ -64829,6 +64865,7 @@ export namespace Prisma {
   export type BookExpenseUpdateWithoutCreatedByStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64842,6 +64879,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -64853,6 +64891,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65338,6 +65377,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     paidAccountId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdByStaffId?: string | null
@@ -65348,6 +65388,7 @@ export namespace Prisma {
   export type BookExpenseUpdateWithoutIndirectExpenseInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -65360,6 +65401,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -65371,6 +65413,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -67007,6 +67050,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
     createdByStaffId?: string | null
@@ -67127,6 +67171,7 @@ export namespace Prisma {
   export type BookExpenseUpdateWithoutPaidAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -67139,6 +67184,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -67150,6 +67196,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null

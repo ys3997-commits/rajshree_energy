@@ -1,5 +1,6 @@
 "use server";
 
+import { PaymentDirection } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal } from "@/lib/domain/computations";
 import { revalidatePath } from "next/cache";
@@ -11,6 +12,7 @@ export type BookExpenseInput = {
   date: string;
   paidAccountId: string;
   indirectExpenseId: string;
+  direction?: "RECEIVED" | "SENT" | string;
   amount: string | number;
   particular: string;
 };
@@ -22,6 +24,7 @@ export type BookExpenseRow = {
   paidAccountName: string;
   indirectExpenseId: string;
   indirectExpenseName: string;
+  direction: "RECEIVED" | "SENT";
   amount: string;
   particular: string;
   canEdit: boolean;
@@ -59,6 +62,14 @@ function parseAmount(value: string | number): Decimal {
   return amount.toDecimalPlaces(2);
 }
 
+function parseDirection(value: string | undefined): PaymentDirection {
+  if (value === PaymentDirection.RECEIVED) return PaymentDirection.RECEIVED;
+  if (value === PaymentDirection.SENT || value == null || value === "") {
+    return PaymentDirection.SENT;
+  }
+  throw new Error("Select Fund Received or Fund Paid");
+}
+
 function parseParticular(value: string): string {
   const particular = value.trim();
   if (!particular) throw new Error("Particular is required");
@@ -94,6 +105,7 @@ function toRow(
     date: Date;
     amount: { toString(): string };
     particular: string;
+    direction: PaymentDirection;
     createdAt: Date;
     createdByStaffId: string | null;
     paidAccount: { id: string; accountName: string };
@@ -109,6 +121,7 @@ function toRow(
     paidAccountName: row.paidAccount.accountName,
     indirectExpenseId: row.indirectExpense.id,
     indirectExpenseName: row.indirectExpense.name,
+    direction: row.direction,
     amount: row.amount.toString(),
     particular: row.particular,
     canEdit: allowed,
@@ -166,6 +179,7 @@ export async function createBookExpense(
       paidAccountId: refs.paidAccountId,
       indirectExpenseId: refs.indirectExpenseId,
       amount: parseAmount(input.amount),
+      direction: parseDirection(input.direction),
       particular: parseParticular(input.particular),
       ...(access.kind === "staff" ? { createdByStaffId: access.id } : {}),
     },
@@ -201,6 +215,7 @@ export async function updateBookExpense(
       date: parseDate(input.date),
       paidAccountId: refs.paidAccountId,
       indirectExpenseId: refs.indirectExpenseId,
+      direction: parseDirection(input.direction),
       amount: parseAmount(input.amount),
       particular: parseParticular(input.particular),
     },

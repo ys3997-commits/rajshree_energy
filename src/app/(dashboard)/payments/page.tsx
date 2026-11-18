@@ -1,9 +1,5 @@
-import { listBankAccountBalances } from "@/lib/actions/bankAccounts";
-import { listPayments } from "@/lib/actions/payments";
 import { redirect } from "next/navigation";
-import { PaymentsClient } from "./PaymentsClient";
-import { loadFundFlowParties } from "./fundFlowParties";
-import { parseFundFlowType } from "./paymentsHref";
+import { BankRegister } from "./BankRegister";
 
 type SearchParams = Promise<{
   page?: string;
@@ -36,41 +32,8 @@ export default async function PaymentsPage({
     if (sp.party) params.set("party", sp.party);
     if (sp.type) params.set("type", sp.type);
     const qs = params.toString();
-    redirect(qs ? `/payments/discount?${qs}` : "/payments/discount");
+    redirect(qs ? `/reports/bank/discount?${qs}` : "/reports/bank/discount");
   }
 
-  const page = Math.max(1, Number.parseInt(sp.page || "1", 10) || 1);
-  const dateFrom = sp.dateFrom?.trim() || "";
-  const dateTo = sp.dateTo?.trim() || "";
-  const party = sp.party?.trim() || "";
-  const type = parseFundFlowType(sp.type);
-  const account = sp.account?.trim() || "";
-  const listFilter = {
-    dateFrom: dateFrom || undefined,
-    dateTo: dateTo || undefined,
-    party: party || undefined,
-    type: type || undefined,
-    account: account || undefined,
-  };
-
-  const [parties, accounts, payments, exportPayments] = await Promise.all([
-    loadFundFlowParties(),
-    listBankAccountBalances(),
-    listPayments({ page, ...listFilter }),
-    listPayments({ all: true, ...listFilter }),
-  ]);
-
-  return (
-    <PaymentsClient
-      initial={payments}
-      exportRows={exportPayments.rows}
-      parties={parties}
-      accounts={accounts}
-      dateFrom={dateFrom}
-      dateTo={dateTo}
-      party={party}
-      type={type}
-      account={account}
-    />
-  );
+  return <BankRegister />;
 }

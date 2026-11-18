@@ -106,7 +106,13 @@ describe("canAccessPath", () => {
       false,
     );
     expect(canAccessPath(["payments-discount"], "/payments/discount")).toBe(true);
+    expect(canAccessPath(["payments-discount"], "/reports/bank/discount")).toBe(
+      true,
+    );
     expect(canAccessPath(["payments-discount"], "/payments")).toBe(false);
+    expect(
+      canAccessPath(["payments-transactions"], "/reports/bank/discount"),
+    ).toBe(false);
     expect(canAccessPath(["payments-transactions"], "/payments/transaction")).toBe(
       false,
     );
@@ -123,6 +129,7 @@ describe("canAccessPath", () => {
     ).toBe(false);
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
+    expect(canAccessPath(["payments"], "/reports/bank/discount")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/transaction")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/book-expenses")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/txn-saving")).toBe(true);

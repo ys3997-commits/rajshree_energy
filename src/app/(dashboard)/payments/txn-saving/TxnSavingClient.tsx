@@ -5,12 +5,12 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
 import {
-  createSavingAccountTxn,
   deleteSavingAccountTxn,
   updateSavingAccountTxn,
   type PaymentListResult,
   type PaymentRow,
 } from "@/lib/actions/savingAccountTxns";
+import { useBankAccountPicker } from "../BankEntryForm";
 import {
   capitalizeName,
   formatIndianAmountTyping,
@@ -83,15 +83,6 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
   return `${day}/${month}/${year}`;
 }
 
-function resetAddFormAfterSave(form: FormState): FormState {
-  return {
-    ...form,
-    direction: "" as Direction,
-    savingAccountName: "",
-    amount: "",
-  };
-}
-
 function accountLabel(
   accountName: string | null | undefined,
   bankName: string | null | undefined,
@@ -127,19 +118,15 @@ export function TxnSavingClient({
   account: string;
 }) {
   const router = useRouter();
+  const entry = useBankAccountPicker();
   const { rows, total, page, pageSize, totalPages, totals } = initial;
   const listFilters = { dateFrom, dateTo, type, account };
 
-  const [addForm, setAddForm] = useState(() => emptyForm());
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const addAmountDisplay = useMemo(
-    () => formatIndianAmountTyping(addForm.amount),
-    [addForm.amount],
-  );
   const editAmountDisplay = useMemo(
     () => formatIndianAmountTyping(editForm.amount),
     [editForm.amount],
@@ -211,26 +198,6 @@ export function TxnSavingClient({
   function cancelEdit() {
     setEditingId(null);
     setEditForm(emptyForm());
-  }
-
-  function onAdd(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const message = validate(addForm);
-    if (message) {
-      setError(message);
-      return;
-    }
-    const payload = payloadFrom(addForm);
-    startTransition(async () => {
-      try {
-        await createSavingAccountTxn(payload);
-        setAddForm((prev) => resetAddFormAfterSave(prev));
-        goToPage(1);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
-      }
-    });
   }
 
   function saveEdit() {
@@ -326,7 +293,7 @@ export function TxnSavingClient({
             {accounts.map((row) => {
               const selectedId = editingId
                 ? editForm.bankAccountId
-                : addForm.bankAccountId;
+                : entry.bankAccountId;
               const negative = Number(row.balance) < 0;
               return (
                 <button
@@ -338,7 +305,7 @@ export function TxnSavingClient({
                     if (editingId) {
                       setEditForm({ ...editForm, bankAccountId: row.id });
                     } else {
-                      setAddForm({ ...addForm, bankAccountId: row.id });
+                      entry.pickAccount(row.id);
                     }
                   }}
                 >
@@ -374,110 +341,6 @@ export function TxnSavingClient({
               </tr>
             </thead>
             <tbody>
-              <tr className="payment-entry-row">
-                <td>
-                  <input
-                    form="saving-add-form"
-                    type="date"
-                    required
-                    className="field-input"
-                    aria-label="Date"
-                    value={addForm.date}
-                    onChange={(e) =>
-                      setAddForm({ ...addForm, date: e.target.value })
-                    }
-                  />
-                </td>
-                <td>
-                  <select
-                    form="saving-add-form"
-                    required
-                    className="field-input"
-                    aria-label="Type"
-                    value={addForm.direction}
-                    onChange={(e) =>
-                      setAddForm({
-                        ...addForm,
-                        direction: e.target.value as Direction,
-                      })
-                    }
-                  >
-                    <option value="">Select</option>
-                    <option value="RECEIVED">Fund Received</option>
-                    <option value="SENT">Fund Paid</option>
-                  </select>
-                </td>
-                <td className="payment-account-cell">
-                  <select
-                    form="saving-add-form"
-                    required
-                    className="field-input"
-                    aria-label="Account"
-                    value={addForm.bankAccountId}
-                    onChange={(e) =>
-                      setAddForm({ ...addForm, bankAccountId: e.target.value })
-                    }
-                  >
-                    <option value="">Select account</option>
-                    {accounts.map((row) => (
-                      <option key={row.id} value={row.id}>
-                        {accountLabel(row.accountName, row.bankName)}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  <input
-                    form="saving-add-form"
-                    type="text"
-                    required
-                    className="field-input"
-                    aria-label="Saving Account Name"
-                    value={addForm.savingAccountName}
-                    onChange={(e) =>
-                      setAddForm({
-                        ...addForm,
-                        savingAccountName: e.target.value,
-                      })
-                    }
-                    onBlur={() =>
-                      setAddForm((form) => ({
-                        ...form,
-                        savingAccountName:
-                          capitalizeName(form.savingAccountName) ??
-                          form.savingAccountName,
-                      }))
-                    }
-                  />
-                </td>
-                <td className="cell-num payment-amount-cell">
-                  <input
-                    form="saving-add-form"
-                    type="text"
-                    inputMode="decimal"
-                    required
-                    className="field-input"
-                    placeholder="0.00"
-                    aria-label="Amount"
-                    value={addAmountDisplay}
-                    onChange={(e) => {
-                      const next = changeAmount(addForm, e.target.value);
-                      if (next) setAddForm(next);
-                    }}
-                  />
-                </td>
-                <td className="space-x-2 whitespace-nowrap">
-                  <button
-                    form="saving-add-form"
-                    type="submit"
-                    className="btn btn-sm"
-                    disabled={pending || editingId != null}
-                  >
-                    Add
-                  </button>
-                </td>
-              </tr>
-
               {rows.map((row, index) => {
                 const prevDate = index > 0 ? rows[index - 1].date : null;
                 const dateBreak = prevDate != null && prevDate !== row.date;
@@ -696,8 +559,6 @@ export function TxnSavingClient({
           </div>
         </div>
       )}
-
-      <form id="saving-add-form" onSubmit={onAdd} hidden />
       <form id="saving-edit-form" onSubmit={onUpdate} hidden />
     </div>
   );

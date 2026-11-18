@@ -800,11 +800,12 @@ model BankTransfer {
 
 /// Bank expense booked against an indirect expense type (Bank → Expenses).
 model BookExpense {
-  id                String   @id @default(cuid())
+  id                String           @id @default(cuid())
   date              DateTime
   paidAccountId     String
   indirectExpenseId String
-  amount            Decimal  @db.Decimal(18, 2)
+  direction         PaymentDirection @default(SENT)
+  amount            Decimal          @db.Decimal(18, 2)
   particular        String
   createdByStaffId  String?
   createdAt         DateTime @default(now())

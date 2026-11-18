@@ -28,7 +28,7 @@ export function HomeLatestActivityStrip({
     {
       label: "Discount received & paid",
       value: formatDateDdMmYyyy(discountDate),
-      href: "/payments/discount",
+      href: "/reports/bank/discount",
     },
   ];
 

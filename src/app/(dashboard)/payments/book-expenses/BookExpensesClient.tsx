@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
 import {
-  createBookExpense,
   deleteBookExpense,
   updateBookExpense,
   type BookExpenseRow,
 } from "@/lib/actions/bookExpenses";
+import { useBankAccountPicker } from "../BankEntryForm";
 import {
   formatIndianAmountTyping,
   formatRs,
@@ -74,16 +74,12 @@ export function BookExpensesClient({
   initial: BookExpenseRow[];
 }) {
   const router = useRouter();
-  const [addForm, setAddForm] = useState<FormState>(() => emptyForm());
+  const entry = useBankAccountPicker();
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const addAmountDisplay = useMemo(
-    () => formatIndianAmountTyping(addForm.amount),
-    [addForm.amount],
-  );
   const editAmountDisplay = useMemo(
     () => formatIndianAmountTyping(editForm.amount),
     [editForm.amount],
@@ -105,28 +101,6 @@ export function BookExpensesClient({
     }
     if (!form.particular.trim()) return "Particular is required";
     return null;
-  }
-
-  function onAdd(e: FormEvent) {
-    e.preventDefault();
-    const message = validate(addForm);
-    if (message) {
-      setError(message);
-      return;
-    }
-    setError(null);
-    startTransition(async () => {
-      try {
-        await createBookExpense(addForm);
-        setAddForm({
-          ...emptyForm(),
-          date: addForm.date,
-        });
-        router.refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
-      }
-    });
   }
 
   function startEdit(row: BookExpenseRow) {
@@ -230,13 +204,11 @@ export function BookExpensesClient({
     );
   }
 
-  const activeForm = editingId ? editForm : addForm;
-
   function pickAccount(accountId: string) {
     if (editingId) {
       setEditForm((form) => ({ ...form, paidAccountId: accountId }));
     } else {
-      setAddForm((form) => ({ ...form, paidAccountId: accountId }));
+      entry.pickAccount(accountId);
     }
   }
 
@@ -252,7 +224,9 @@ export function BookExpensesClient({
         ) : (
           <div className="detail-stat-row">
             {accounts.map((account) => {
-              const selected = activeForm.paidAccountId === account.id;
+              const selected = editingId
+                ? editForm.paidAccountId === account.id
+                : entry.bankAccountId === account.id;
               const negative = Number(account.balance) < 0;
               return (
                 <button
@@ -294,83 +268,6 @@ export function BookExpensesClient({
               </tr>
             </thead>
             <tbody>
-              <tr className="payment-entry-row">
-                <td>
-                  <input
-                    form="expense-add-form"
-                    type="date"
-                    required
-                    className="field-input"
-                    aria-label="Date"
-                    value={addForm.date}
-                    onChange={(e) =>
-                      setAddForm({ ...addForm, date: e.target.value })
-                    }
-                  />
-                </td>
-                <td className="payment-account-cell">
-                  {accountSelect(
-                    "expense-add-form",
-                    "Fund paid",
-                    addForm.paidAccountId,
-                    accounts,
-                    (paidAccountId) => setAddForm({ ...addForm, paidAccountId }),
-                  )}
-                </td>
-                <td className="payment-account-cell">
-                  {expenseSelect(
-                    "expense-add-form",
-                    addForm.indirectExpenseId,
-                    (indirectExpenseId) =>
-                      setAddForm({ ...addForm, indirectExpenseId }),
-                  )}
-                </td>
-                <td className="cell-num payment-amount-cell">
-                  <input
-                    form="expense-add-form"
-                    type="text"
-                    inputMode="decimal"
-                    required
-                    className="field-input"
-                    placeholder="0.00"
-                    aria-label="Amount"
-                    value={addAmountDisplay}
-                    onChange={(e) => {
-                      const next = changeAmount(addForm, e.target.value);
-                      if (next) setAddForm(next);
-                    }}
-                  />
-                </td>
-                <td>
-                  <input
-                    form="expense-add-form"
-                    type="text"
-                    required
-                    className="field-input"
-                    aria-label="Particular"
-                    value={addForm.particular}
-                    onChange={(e) =>
-                      setAddForm({ ...addForm, particular: e.target.value })
-                    }
-                  />
-                </td>
-                <td className="space-x-2 whitespace-nowrap">
-                  <button
-                    form="expense-add-form"
-                    type="submit"
-                    className="btn btn-sm"
-                    disabled={
-                      pending ||
-                      editingId != null ||
-                      accounts.length < 1 ||
-                      expenses.length < 1
-                    }
-                  >
-                    Add
-                  </button>
-                </td>
-              </tr>
-
               {initial.map((row) => {
                 const isEditing = editingId === row.id;
                 return (
@@ -504,8 +401,6 @@ export function BookExpensesClient({
           </table>
         </div>
       </div>
-
-      <form id="expense-add-form" onSubmit={onAdd} hidden />
       <form id="expense-edit-form" onSubmit={onUpdate} hidden />
     </div>
   );

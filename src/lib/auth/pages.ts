@@ -89,7 +89,7 @@ export const BANK_SUB_PAGES = [
   {
     key: "payments-transactions",
     href: "/payments",
-    label: "Transaction with others",
+    label: "Transaction with Coal",
     group: "Pages" as const,
     bankSubPage: true,
   },
@@ -111,13 +111,6 @@ export const BANK_SUB_PAGES = [
     key: "book-expenses",
     href: "/payments/book-expenses",
     label: "Expenses",
-    group: "Pages" as const,
-    bankSubPage: true,
-  },
-  {
-    key: "payments-discount",
-    href: "/payments/discount",
-    label: "Discount",
     group: "Pages" as const,
     bankSubPage: true,
   },
@@ -406,6 +399,13 @@ export const REPORT_SUB_PAGES = [
     group: "Reports" as const,
     reportSubPage: true,
   },
+  {
+    key: "payments-discount",
+    href: "/reports/bank/discount",
+    label: "Discount",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const REPORT_SUB_PAGE_KEYS = REPORT_SUB_PAGES.map((page) => page.key);
@@ -489,6 +489,7 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
     pages: [
       { key: "reports-bank-balances", label: "Bank Balances" },
       { key: "reports-bank-statement", label: "Bank Statement" },
+      { key: "payments-discount", label: "Discount" },
     ],
   },
 ];
@@ -597,7 +598,9 @@ export function expandLegacyDispatchPageKeys(pageKeys: string[]): string[] {
 export function expandLegacyBankPageKeys(pageKeys: string[]): string[] {
   if (!pageKeys.includes(LEGACY_BANK_PAGE_KEY)) return pageKeys;
   const withoutLegacy = pageKeys.filter((key) => key !== LEGACY_BANK_PAGE_KEY);
-  return [...new Set([...withoutLegacy, ...BANK_SUB_PAGE_KEYS])];
+  return [
+    ...new Set([...withoutLegacy, ...BANK_SUB_PAGE_KEYS, "payments-discount"]),
+  ];
 }
 
 export function expandLegacyOptionsPageKeys(pageKeys: string[]): string[] {
@@ -889,7 +892,7 @@ export function canAccessPath(pageKeys: string[] | "all", pathname: string): boo
   if (path === "/reports") return hasAnyReportAccess(pageKeys);
   if (canAccessDispatchPath(pageKeys, pathname)) return true;
   if (canAccessUpdatePath(pageKeys, pathname)) return true;
-  if (canAccessBankPath(pageKeys, pathname)) return true;
+  if (bankSubPageKeyForPath(path)) return canAccessBankPath(pageKeys, path);
   if (canAccessMasterOptionsPath(pageKeys, pathname)) return true;
   if (documentMemberFromPath(path)) {
     return canAccessDocumentMemberPath(pageKeys, path);

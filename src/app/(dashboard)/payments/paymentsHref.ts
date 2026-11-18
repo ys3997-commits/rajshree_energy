@@ -23,7 +23,7 @@ export function paymentsHref(opts: {
   const section = opts.section ?? opts.tab ?? "transactions";
   const base =
     section === "discount"
-      ? "/payments/discount"
+      ? "/reports/bank/discount"
       : section === "txn-saving"
         ? "/payments/txn-saving"
         : "/payments";

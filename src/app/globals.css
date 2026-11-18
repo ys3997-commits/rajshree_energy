@@ -1416,6 +1416,230 @@ table.data.bank-balances-table tbody td {
   text-align: right;
 }
 
+.bank-entry {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.bank-entry-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.65rem 0.5rem;
+}
+
+.bank-entry-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1 1 0;
+  min-width: 8.25rem;
+}
+
+.bank-entry-field > span {
+  min-height: 2.05em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.bank-entry-field-category {
+  flex: 1.35 1 11.5rem;
+  min-width: 11.5rem;
+}
+
+.bank-entry-field-date {
+  flex: 0 0 9.1rem;
+  min-width: 9.1rem;
+}
+
+.bank-entry-field-amount {
+  flex: 0 0 7.25rem;
+  min-width: 7.25rem;
+}
+
+.bank-entry-field-amount .field-input {
+  text-align: right;
+}
+
+.bank-entry-field-particular {
+  flex: 1.15 1 9rem;
+  min-width: 9rem;
+}
+
+.bank-entry .field-input,
+.bank-entry .field-input:disabled {
+  min-height: 2.55rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
+}
+
+.bank-entry .field-input:disabled {
+  background: #f3f4f6;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.bank-entry-field .search-select {
+  width: 100%;
+  min-width: 0;
+}
+
+.bank-entry-actions {
+  flex: 0 0 auto;
+}
+
+.bank-entry-actions .btn {
+  min-height: 2.55rem;
+  min-width: 4.5rem;
+}
+
+.bank-entry .error-box {
+  margin: 0.75rem 0 0;
+}
+
+.bank-register-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  margin: 0 0 0.9rem;
+}
+
+.bank-register-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.bank-register-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bank-register-pill span {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bank-register-pill.is-active {
+  background: var(--accent, #1f5c55);
+  border-color: var(--accent, #1f5c55);
+  color: #fff;
+}
+
+.bank-register-pill.is-active span {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bank-register-dates {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bank-register-dates label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.bank-register-dates .field-input {
+  min-height: 2.3rem;
+}
+
+.bank-kind {
+  display: inline-block;
+  max-width: 16rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  background: #eef2f2;
+  color: var(--ink);
+}
+
+.bank-kind-others { background: #e7f0ee; }
+.bank-kind-current { background: #e8eef8; }
+.bank-kind-saving { background: #f3eee4; }
+.bank-kind-expenses { background: #f8ebe8; }
+.bank-kind-discount { background: #eeeaf6; }
+
+.payments-table tr.bank-register-date td {
+  background: #f4f6f6;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+
+.bank-register-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.65rem;
+  padding: 0.35rem 0;
+}
+
+.bank-register-edit label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1 1 10rem;
+  min-width: 9rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.bank-register-edit-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+  .bank-entry-field,
+  .bank-entry-field-category,
+  .bank-entry-field-date,
+  .bank-entry-field-amount,
+  .bank-entry-field-particular {
+    flex: 1 1 calc(50% - 0.55rem);
+  }
+
+  .bank-entry-field-particular,
+  .bank-entry-actions {
+    flex-basis: 100%;
+  }
+
+  .bank-entry-actions .btn {
+    width: 100%;
+  }
+}
+
 .payments-table tbody tr.payment-date-break > td {
   box-shadow: inset 0 1.5px 0 0 var(--ink-soft);
 }

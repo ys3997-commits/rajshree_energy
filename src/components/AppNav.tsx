@@ -31,11 +31,10 @@ const ordersLinks: NavLeaf[] = [
 ];
 
 const bankLinks: NavLeaf[] = [
-  { href: "/payments", label: "Transaction with others" },
+  { href: "/payments", label: "Transaction with Coal" },
   { href: "/payments/transaction", label: "Transaction with our current a/c" },
   { href: "/payments/txn-saving", label: "Transaction with our saving a/c" },
   { href: "/payments/book-expenses", label: "Expenses" },
-  { href: "/payments/discount", label: "Discount" },
 ];
 
 const userMenuCategoryIdSet = new Set<string>(USER_MENU_CATEGORY_IDS);
@@ -209,6 +208,7 @@ function buildReportLinks(bankAccounts: BankAccountNavItem[]): ReportItem[] {
       label: "Bank",
       children: [
         { href: "/reports/bank-balances", label: "Bank Balances" },
+        { href: "/reports/bank/discount", label: "Discount" },
         {
           label: "Bank Statement",
           children: bankStatementChildren,

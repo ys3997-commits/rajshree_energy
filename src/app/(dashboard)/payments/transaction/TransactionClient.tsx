@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState, useTransition } from "react";
 import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
 import {
-  createBankTransfer,
   deleteBankTransfer,
   updateBankTransfer,
   type BankTransferRow,
 } from "@/lib/actions/bankTransfers";
+import { useBankAccountPicker } from "../BankEntryForm";
 import {
   formatIndianAmountTyping,
   formatRs,
@@ -85,16 +85,12 @@ export function TransactionClient({
   initial: BankTransferRow[];
 }) {
   const router = useRouter();
-  const [addForm, setAddForm] = useState<FormState>(() => emptyForm());
+  const entry = useBankAccountPicker();
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const addAmountDisplay = useMemo(
-    () => formatIndianAmountTyping(addForm.amount),
-    [addForm.amount],
-  );
   const editAmountDisplay = useMemo(
     () => formatIndianAmountTyping(editForm.amount),
     [editForm.amount],
@@ -147,28 +143,6 @@ export function TransactionClient({
       return "Amount must be greater than zero";
     }
     return null;
-  }
-
-  function onAdd(e: FormEvent) {
-    e.preventDefault();
-    const message = validate(addForm);
-    if (message) {
-      setError(message);
-      return;
-    }
-    setError(null);
-    startTransition(async () => {
-      try {
-        await createBankTransfer(addForm);
-        setAddForm({
-          ...emptyForm(),
-          date: addForm.date,
-        });
-        router.refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
-      }
-    });
   }
 
   function startEdit(row: BankTransferRow) {
@@ -248,19 +222,12 @@ export function TransactionClient({
     );
   }
 
-  const addPaidOptions = optionsExceptName(
-    accounts,
-    accountNameOf(accounts, addForm.receivedAccountId),
-  );
-  const addReceivedOptions = optionsExceptName(
-    accounts,
-    accountNameOf(accounts, addForm.paidAccountId),
-  );
-
-  const activeForm = editingId ? editForm : addForm;
-
   function pickAccount(accountId: string) {
-    const apply = (form: FormState): FormState => {
+    if (!editingId) {
+      entry.pickAccount(accountId);
+      return;
+    }
+    setEditForm((form) => {
       if (form.paidAccountId === accountId || form.receivedAccountId === accountId) {
         return form;
       }
@@ -271,9 +238,7 @@ export function TransactionClient({
         return setReceived(form, accountId);
       }
       return setPaid(form, accountId);
-    };
-    if (editingId) setEditForm((form) => apply(form));
-    else setAddForm((form) => apply(form));
+    });
   }
 
   return (
@@ -288,9 +253,11 @@ export function TransactionClient({
         ) : (
           <div className="detail-stat-row">
             {accounts.map((account) => {
-              const selected =
-                activeForm.paidAccountId === account.id ||
-                activeForm.receivedAccountId === account.id;
+              const paidId = editingId ? editForm.paidAccountId : entry.paidAccountId;
+              const receivedId = editingId
+                ? editForm.receivedAccountId
+                : entry.receivedAccountId;
+              const selected = paidId === account.id || receivedId === account.id;
               const negative = Number(account.balance) < 0;
               return (
                 <button
@@ -331,67 +298,6 @@ export function TransactionClient({
               </tr>
             </thead>
             <tbody>
-              <tr className="payment-entry-row">
-                <td>
-                  <input
-                    form="transfer-add-form"
-                    type="date"
-                    required
-                    className="field-input"
-                    aria-label="Date"
-                    value={addForm.date}
-                    onChange={(e) =>
-                      setAddForm({ ...addForm, date: e.target.value })
-                    }
-                  />
-                </td>
-                <td className="payment-account-cell">
-                  {accountSelect(
-                    "transfer-add-form",
-                    "Fund paid",
-                    addForm.paidAccountId,
-                    addPaidOptions,
-                    (paidAccountId) => setAddForm(setPaid(addForm, paidAccountId)),
-                  )}
-                </td>
-                <td className="payment-account-cell">
-                  {accountSelect(
-                    "transfer-add-form",
-                    "Fund received",
-                    addForm.receivedAccountId,
-                    addReceivedOptions,
-                    (receivedAccountId) =>
-                      setAddForm(setReceived(addForm, receivedAccountId)),
-                  )}
-                </td>
-                <td className="cell-num payment-amount-cell">
-                  <input
-                    form="transfer-add-form"
-                    type="text"
-                    inputMode="decimal"
-                    required
-                    className="field-input"
-                    placeholder="0.00"
-                    aria-label="Amount"
-                    value={addAmountDisplay}
-                    onChange={(e) => {
-                      const next = changeAmount(addForm, e.target.value);
-                      if (next) setAddForm(next);
-                    }}
-                  />
-                </td>
-                <td className="space-x-2 whitespace-nowrap">
-                  <button
-                    form="transfer-add-form"
-                    type="submit"
-                    className="btn btn-sm"
-                    disabled={pending || editingId != null || accounts.length < 2}
-                  >
-                    Add
-                  </button>
-                </td>
-              </tr>
-
               {initial.map((row) => {
                 const isEditing = editingId === row.id;
                 const editPaidOptions = optionsExceptName(
@@ -518,8 +424,6 @@ export function TransactionClient({
           </table>
         </div>
       </div>
-
-      <form id="transfer-add-form" onSubmit={onAdd} hidden />
       <form id="transfer-edit-form" onSubmit={onUpdate} hidden />
     </div>
   );

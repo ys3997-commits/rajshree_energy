@@ -6,12 +6,12 @@ import { FormEvent, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
 import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
 import {
-  createPayment,
   deletePayment,
   updatePayment,
   type PaymentListResult,
   type PaymentRow,
 } from "@/lib/actions/payments";
+import { useBankAccountPicker } from "./BankEntryForm";
 import {
   formatCustomerCategory,
   formatIndianAmountTyping,
@@ -97,15 +97,6 @@ function formatDateDdMmYyyy(value: string | null | undefined): string {
   return `${day}/${month}/${year}`;
 }
 
-function resetAddFormAfterSave(form: FormState): FormState {
-  return {
-    ...form,
-    partyId: "",
-    direction: "" as Direction,
-    amount: "",
-  };
-}
-
 function accountLabel(
   accountName: string | null | undefined,
   bankName: string | null | undefined,
@@ -152,19 +143,15 @@ export function PaymentsClient({
   account: string;
 }) {
   const router = useRouter();
+  const entry = useBankAccountPicker();
   const { rows, total, page, pageSize, totalPages, totals } = initial;
   const listFilters = { dateFrom, dateTo, party, type, account };
 
-  const [addForm, setAddForm] = useState(() => emptyForm());
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const addAmountDisplay = useMemo(
-    () => formatIndianAmountTyping(addForm.amount),
-    [addForm.amount],
-  );
   const editAmountDisplay = useMemo(
     () => formatIndianAmountTyping(editForm.amount),
     [editForm.amount],
@@ -259,26 +246,6 @@ export function PaymentsClient({
     setEditForm(emptyForm());
   }
 
-  function onAdd(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const message = validate(addForm);
-    if (message) {
-      setError(message);
-      return;
-    }
-    const payload = payloadFrom(addForm);
-    startTransition(async () => {
-      try {
-        await createPayment(payload);
-        setAddForm((prev) => resetAddFormAfterSave(prev));
-        goToPage(1);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
-      }
-    });
-  }
-
   function saveEdit() {
     if (!editingId) return;
     setError(null);
@@ -328,9 +295,9 @@ export function PaymentsClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Transaction with others</h1>
+        <h1 className="page-title">Transaction with Coal</h1>
         <TableDownloadButtons
-          title="Transaction with others"
+          title="Transaction with Coal"
           filenameBase="fund-flow-transactions"
           columns={downloadColumns}
           rows={downloadRows}
@@ -371,7 +338,7 @@ export function PaymentsClient({
             {accounts.map((account) => {
               const selectedId = editingId
                 ? editForm.bankAccountId
-                : addForm.bankAccountId;
+                : entry.bankAccountId;
               const negative = Number(account.balance) < 0;
               return (
                 <button
@@ -383,7 +350,7 @@ export function PaymentsClient({
                     if (editingId) {
                       setEditForm({ ...editForm, bankAccountId: account.id });
                     } else {
-                      setAddForm({ ...addForm, bankAccountId: account.id });
+                      entry.pickAccount(account.id);
                     }
                   }}
                 >
@@ -418,98 +385,6 @@ export function PaymentsClient({
             </tr>
           </thead>
           <tbody>
-            <tr className="payment-entry-row">
-              <td>
-                <input
-                  form="payment-add-form"
-                  type="date"
-                  required
-                  className="field-input"
-                  aria-label="Date"
-                  value={addForm.date}
-                  onChange={(e) =>
-                    setAddForm({ ...addForm, date: e.target.value })
-                  }
-                />
-              </td>
-              <td className="payment-account-cell">
-                <select
-                  form="payment-add-form"
-                  required
-                  className="field-input"
-                  aria-label="Account"
-                  value={addForm.bankAccountId}
-                  onChange={(e) =>
-                    setAddForm({ ...addForm, bankAccountId: e.target.value })
-                  }
-                >
-                  <option value="">Select account</option>
-                  {accounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {accountLabel(account.accountName, account.bankName)}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <SearchableSelect
-                  form="payment-add-form"
-                  required
-                  className="field-input"
-                  ariaLabel="Customer, transporter, or investment company"
-                  placeholder="Search customer, transporter, or investment"
-                  value={addForm.partyId}
-                  onChange={(partyId) => setAddForm({ ...addForm, partyId })}
-                  options={partyOptions}
-                />
-              </td>
-              <td>
-                <select
-                  form="payment-add-form"
-                  required
-                  className="field-input"
-                  aria-label="Type"
-                  value={addForm.direction}
-                  onChange={(e) =>
-                    setAddForm({
-                      ...addForm,
-                      direction: e.target.value as Direction,
-                    })
-                  }
-                >
-                  <option value="">Select</option>
-                  <option value="RECEIVED">Fund Received</option>
-                  <option value="SENT">Fund Paid</option>
-                </select>
-              </td>
-              <td className="cell-num payment-amount-cell">
-                <input
-                  form="payment-add-form"
-                  type="text"
-                  inputMode="decimal"
-                  required
-                  className="field-input"
-                  placeholder="0.00"
-                  aria-label="Amount"
-                  value={addAmountDisplay}
-                  onChange={(e) => {
-                    const next = changeAmount(addForm, e.target.value);
-                    if (next) setAddForm(next);
-                  }}
-                />
-              </td>
-              <td className="space-x-2 whitespace-nowrap">
-                <button
-                  form="payment-add-form"
-                  type="submit"
-                  className="btn btn-sm"
-                  disabled={pending || editingId != null}
-                >
-                  Add
-                </button>
-              </td>
-            </tr>
-
             {rows.map((row, index) => {
               const prevDate = index > 0 ? rows[index - 1].date : null;
               const dateBreak = prevDate != null && prevDate !== row.date;
@@ -725,7 +600,6 @@ export function PaymentsClient({
         </div>
       )}
 
-      <form id="payment-add-form" onSubmit={onAdd} hidden />
       <form id="payment-edit-form" onSubmit={onUpdate} hidden />
     </div>
   );

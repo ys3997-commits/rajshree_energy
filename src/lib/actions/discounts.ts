@@ -234,6 +234,8 @@ async function assertPartyExists(party: PaymentParty) {
 function revalidateDiscountPaths(party?: PaymentParty) {
   revalidatePath("/");
   revalidatePath("/payments");
+  revalidatePath("/payments/discount");
+  revalidatePath("/reports/bank/discount");
   revalidatePath("/customers");
   revalidatePath("/reports/collection");
   revalidatePath("/reports/collection/vendor");

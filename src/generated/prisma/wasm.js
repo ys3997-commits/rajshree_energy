@@ -551,6 +551,7 @@ exports.Prisma.BookExpenseScalarFieldEnum = {
   date: 'date',
   paidAccountId: 'paidAccountId',
   indirectExpenseId: 'indirectExpenseId',
+  direction: 'direction',
   amount: 'amount',
   particular: 'particular',
   createdByStaffId: 'createdByStaffId',
