@@ -220,6 +220,12 @@ export function EditDispatchButton({
     [selectedOrder?.rate, selectedOrder?.customer?.category],
   );
 
+  const buyerCategory =
+    saleMode === "open"
+      ? (selectedCustomer?.category ?? null)
+      : (selectedOrder?.customer?.category ?? null);
+  const transporterRequired = buyerCategory === CustomerCategory.INDUSTRY;
+
   const diffQty = useMemo(() => {
     if (terms === DispatchTerms.EX_PORT) return 0;
     const trimmed = receivedQty.trim();
@@ -283,6 +289,9 @@ export function EditDispatchButton({
           throw new Error("Sale order number is required");
         }
         if (!customerId) throw new Error("Customer is required");
+      }
+      if (transporterRequired && !transporter) {
+        throw new Error("Transporter is required");
       }
 
       const trimmedReceived =
@@ -668,7 +677,7 @@ export function EditDispatchButton({
           <label htmlFor={`edit-transporter-${dispatchId}`}>Transporter</label>
           <select
             id={`edit-transporter-${dispatchId}`}
-            required
+            required={transporterRequired}
             value={transporter}
             onChange={(e) => setTransporter(e.target.value)}
           >

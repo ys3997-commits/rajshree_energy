@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  CustomerCategory,
   DispatchTerms,
   OrderStatus,
   OrderType,
@@ -187,12 +188,22 @@ function normalizeInvoiceNumber(
   return trimmed.length > 0 ? trimmed : null;
 }
 
+/** Industry buyers must name a transporter. Trader and vendor buyers may omit it. */
+function buyerRequiresTransporter(
+  category: CustomerCategory | null | undefined,
+): boolean {
+  return category === CustomerCategory.INDUSTRY;
+}
+
 function resolveDispatchTermsFields(input: {
   dispatchTerms: DispatchTerms;
   transporterId?: string | null;
   freight?: DecimalLike | null;
+  /** Defaults to required. Pass the buyer-category result to relax it. */
+  transporterRequired?: boolean;
 }): { transporterId: string | null; freight: Decimal | null } {
-  if (!input.transporterId) {
+  const transporterId = input.transporterId || null;
+  if (input.transporterRequired !== false && !transporterId) {
     throw new Error("Transporter is required");
   }
   if (input.dispatchTerms === DispatchTerms.FOR) {
@@ -207,10 +218,10 @@ function resolveDispatchTermsFields(input: {
     if (freight.lt(0)) {
       throw new Error("Freight cannot be negative");
     }
-    return { transporterId: input.transporterId, freight };
+    return { transporterId, freight };
   }
 
-  return { transporterId: input.transporterId, freight: null };
+  return { transporterId, freight: null };
 }
 
 async function deniedForNewOrderParty(
@@ -567,7 +578,14 @@ export async function createDispatch(
     throw new Error("Dispatched quantity must be positive");
   }
 
-  const termsFields = resolveDispatchTermsFields(input);
+  const saleBuyer = await prisma.order.findUnique({
+    where: { poNumber: input.poNumber },
+    select: { customer: { select: { category: true } } },
+  });
+  const termsFields = resolveDispatchTermsFields({
+    ...input,
+    transporterRequired: buyerRequiresTransporter(saleBuyer?.customer.category),
+  });
   await ensureDispatchNumbers();
 
   const dispatch = await prisma.$transaction(async (tx) => {
@@ -650,7 +668,15 @@ export async function createOpenOrderDispatch(
     throw new Error("Dispatched quantity must be positive");
   }
 
-  const termsFields = resolveDispatchTermsFields(input);
+  const buyer = await prisma.customer.findUnique({
+    where: { id: input.customerId },
+    select: { category: true },
+  });
+  if (!buyer) throw new Error("Customer not found");
+  const termsFields = resolveDispatchTermsFields({
+    ...input,
+    transporterRequired: buyerRequiresTransporter(buyer.category),
+  });
   await ensureDispatchNumbers();
 
   const dispatch = await prisma.$transaction(async (tx) => {
@@ -931,6 +957,10 @@ export async function updateDispatch(
     }
 
     if (termsChanging) {
+      const saleBuyer = await tx.order.findUnique({
+        where: { poNumber: nextPo },
+        select: { customer: { select: { category: true } } },
+      });
       const termsFields = resolveDispatchTermsFields({
         dispatchTerms: nextTerms,
         transporterId:
@@ -939,6 +969,9 @@ export async function updateDispatch(
             : existing.transporterId,
         freight:
           changes.freight !== undefined ? changes.freight : existing.freight,
+        transporterRequired: buyerRequiresTransporter(
+          saleBuyer?.customer.category,
+        ),
       });
       data.dispatchTerms = nextTerms;
       data.freight = termsFields.freight;

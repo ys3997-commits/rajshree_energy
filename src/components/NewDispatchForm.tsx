@@ -145,6 +145,12 @@ export function NewDispatchForm({
     [selectedOrder?.rate, selectedOrder?.customer?.category],
   );
 
+  const buyerCategory =
+    mode === "open"
+      ? (selectedCustomer?.category ?? null)
+      : (selectedOrder?.customer?.category ?? null);
+  const transporterRequired = buyerCategory === CustomerCategory.INDUSTRY;
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
@@ -190,7 +196,9 @@ export function NewDispatchForm({
         purchaseInvoiceNumber: purchaseInvoiceNumber || null,
       };
 
-      if (!transporterId) throw new Error("Transporter is required");
+      if (transporterRequired && !transporterId) {
+        throw new Error("Transporter is required");
+      }
       if (dispatchTerms === DispatchTerms.FOR && !freight.trim()) {
         throw new Error("Freight is required");
       }
@@ -531,7 +539,7 @@ export function NewDispatchForm({
 
         <label>Transporter</label>
         <select
-          required
+          required={transporterRequired}
           value={transporterId}
           onChange={(e) => setTransporterId(e.target.value)}
         >
