@@ -13,6 +13,7 @@ import {
   formatIndianAmountTyping,
   formatRs,
   parseAmountInput,
+  toTitleCase,
 } from "@/lib/domain/format";
 
 type AccountOption = BankAccountBalanceRow;
@@ -338,6 +339,16 @@ export function BookExpensesClient({
                                 particular: e.target.value,
                               })
                             }
+                            onBlur={() =>
+                              setEditForm((current) =>
+                                current
+                                  ? {
+                                      ...current,
+                                      particular: toTitleCase(current.particular),
+                                    }
+                                  : current,
+                              )
+                            }
                           />
                         </td>
                         <td className="space-x-2 whitespace-nowrap">
@@ -365,7 +376,11 @@ export function BookExpensesClient({
                         <td>{row.paidAccountName}</td>
                         <td>{row.indirectExpenseName}</td>
                         <td className="cell-num">{formatRs(row.amount)}</td>
-                        <td>{row.particular}</td>
+                        <td
+                          className={toTitleCase(row.particular) ? undefined : "cell-dash"}
+                        >
+                          {toTitleCase(row.particular) || "—"}
+                        </td>
                         <td className="space-x-2 whitespace-nowrap">
                           <button
                             type="button"

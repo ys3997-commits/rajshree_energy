@@ -52,7 +52,7 @@ function exportRsAmount(value: string | null | undefined): string {
   return exportBlank(formatAmount(value));
 }
 
-/** Fund paid and discount received display as "- Rs …". */
+/** Fund paid and discount received display as "- …". */
 function formatFundAmount(
   fundType: LedgerRow["fundType"],
   amount: string | null,

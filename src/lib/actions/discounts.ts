@@ -2,6 +2,7 @@
 
 import { CoalOrigin, DiscountStatus, type Prisma } from "@/generated/prisma";
 import { toDecimal } from "@/lib/domain/computations";
+import { toTitleCase } from "@/lib/domain/format";
 import { hasDateFilter, utcDayRange } from "@/lib/domain/dateRange";
 import {
   adjustCustomerDue,
@@ -153,7 +154,7 @@ function toDiscountRow(
 
 function validateDiscountInput(input: DiscountInput) {
   const party = parsePaymentParty(input);
-  const remarks = String(input.remarks ?? "").trim();
+  const remarks = toTitleCase(String(input.remarks ?? ""));
   if (!remarks) throw new Error("Remarks are required");
   const amount = toDecimal(input.amount);
   if (!amount.isFinite() || amount.lte(0)) {

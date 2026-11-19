@@ -4,10 +4,11 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CustomerCategory } from "@/generated/prisma";
 import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
-import { deleteBankTransfer, updateBankTransfer } from "@/lib/actions/bankTransfers";
-import { deleteBookExpense, updateBookExpense } from "@/lib/actions/bookExpenses";
-import { deletePayment, updatePayment } from "@/lib/actions/payments";
+import { createBankTransfer, deleteBankTransfer, updateBankTransfer } from "@/lib/actions/bankTransfers";
+import { createBookExpense, deleteBookExpense, updateBookExpense } from "@/lib/actions/bookExpenses";
+import { createPayment, deletePayment, updatePayment } from "@/lib/actions/payments";
 import {
+  createSavingAccountTxn,
   deleteSavingAccountTxn,
   updateSavingAccountTxn,
 } from "@/lib/actions/savingAccountTxns";
@@ -20,6 +21,7 @@ import {
   formatIndianAmountTyping,
   formatRs,
   parseAmountInput,
+  toTitleCase,
 } from "@/lib/domain/format";
 import {
   parsePartyKey,
@@ -49,6 +51,7 @@ type Party = {
 };
 
 type EditState = {
+  originalKind: BankRegisterKind;
   kind: BankRegisterKind;
   id: string;
   date: string;
@@ -65,6 +68,7 @@ type EditState = {
 
 function editFromRow(row: BankRegisterRow): EditState {
   return {
+    originalKind: row.kind,
     kind: row.kind,
     id: row.id,
     date: row.date,
@@ -87,15 +91,87 @@ function sameAccountName(left: string, right: string) {
 }
 
 function particularText(row: BankRegisterRow) {
-  return row.particular || "—";
+  return toTitleCase(row.particular) || "—";
 }
 
-function typeClass(row: BankRegisterRow) {
-  if (row.direction === "RECEIVED") return "fund-type-in";
-  if (row.direction === "SENT") {
-    return "fund-type-out";
+function showBalanceCard(account: BankAccountBalanceRow) {
+  const name = account.accountName.trim().toLowerCase();
+  const bank = account.bankName.trim().toLowerCase();
+  return !(name === "other" && bank.includes("icici"));
+}
+
+function withCategory(current: EditState, nextKind: BankRegisterKind): EditState {
+  if (current.kind === nextKind) return current;
+  const direction =
+    nextKind === "current"
+      ? ""
+      : current.direction === "RECEIVED" || current.direction === "SENT"
+        ? current.direction
+        : "";
+  return {
+    ...current,
+    kind: nextKind,
+    direction,
+    bankAccountId:
+      nextKind === "current" ? "" : current.bankAccountId || current.paidAccountId,
+    paidAccountId:
+      nextKind === "current" ? current.paidAccountId || current.bankAccountId : "",
+    receivedAccountId: nextKind === "current" ? current.receivedAccountId : "",
+    partyId: nextKind === "others" ? current.partyId : "",
+    savingName: nextKind === "saving" ? current.savingName : "",
+    expenseId: nextKind === "expenses" ? current.expenseId : "",
+    particular: nextKind === "expenses" ? current.particular : "",
+  };
+}
+
+async function deleteEditedEntry(kind: BankRegisterKind, id: string) {
+  if (kind === "others") await deletePayment(id);
+  else if (kind === "current") await deleteBankTransfer(id);
+  else if (kind === "saving") await deleteSavingAccountTxn(id);
+  else await deleteBookExpense(id);
+}
+
+async function createEditedEntry(form: EditState) {
+  if (form.kind === "others") {
+    const party = parsePartyKey(form.partyId);
+    await createPayment({
+      date: form.date,
+      bankAccountId: form.bankAccountId,
+      customerId: party.kind === "customer" ? party.id : null,
+      transporterId: party.kind === "transporter" ? party.id : null,
+      investmentCompanyId: party.kind === "investment" ? party.id : null,
+      direction: form.direction,
+      amount: form.amount,
+    });
+    return;
   }
-  return undefined;
+  if (form.kind === "current") {
+    await createBankTransfer({
+      date: form.date,
+      paidAccountId: form.paidAccountId,
+      receivedAccountId: form.receivedAccountId,
+      amount: form.amount,
+    });
+    return;
+  }
+  if (form.kind === "saving") {
+    await createSavingAccountTxn({
+      date: form.date,
+      bankAccountId: form.bankAccountId,
+      direction: form.direction,
+      savingAccountName: form.savingName,
+      amount: form.amount,
+    });
+    return;
+  }
+  await createBookExpense({
+    date: form.date,
+    paidAccountId: form.bankAccountId,
+    indirectExpenseId: form.expenseId,
+    direction: form.direction,
+    amount: form.amount,
+    particular: form.particular,
+  });
 }
 
 export function BankRegisterClient({
@@ -161,19 +237,23 @@ export function BankRegisterClient({
     return map;
   }, [rows]);
 
-  const downloadRows = useMemo(
-    () =>
-      filtered.map((row) => ({
-        date: formatDateDdMmYyyy(row.date),
-        category: KIND_LABEL[row.kind],
-        type: row.typeLabel,
-        fundPaid: row.fundPaid,
-        fundReceived: row.fundReceived,
-        amount: formatRs(row.amount),
-        particular: particularText(row),
-      })),
-    [filtered],
-  );
+  const downloadRows = useMemo(() => {
+    const ordered = [...filtered].sort((left, right) => {
+      if (left.date !== right.date) return left.date < right.date ? -1 : 1;
+      const kindOrder = kinds.indexOf(left.kind) - kinds.indexOf(right.kind);
+      if (kindOrder !== 0) return kindOrder;
+      return left.id < right.id ? -1 : 1;
+    });
+    return ordered.map((row) => ({
+      date: formatDateDdMmYyyy(row.date),
+      category: KIND_LABEL[row.kind],
+      type: row.typeLabel,
+      fundPaid: row.fundPaid,
+      fundReceived: row.fundReceived,
+      amount: formatRs(row.amount),
+      particular: particularText(row),
+    }));
+  }, [filtered, kinds]);
 
   const amountDisplay = formatIndianAmountTyping(editing?.amount ?? "");
 
@@ -238,7 +318,10 @@ export function BankRegisterClient({
     setError(null);
     startTransition(async () => {
       try {
-        if (form.kind === "others") {
+        if (form.kind !== form.originalKind) {
+          await createEditedEntry(form);
+          await deleteEditedEntry(form.originalKind, form.id);
+        } else if (form.kind === "others") {
           const party = parsePartyKey(form.partyId);
           await updatePayment(form.id, {
             date: form.date,
@@ -293,7 +376,7 @@ export function BankRegisterClient({
         else if (row.kind === "current") await deleteBankTransfer(row.id);
         else if (row.kind === "saving") await deleteSavingAccountTxn(row.id);
         else await deleteBookExpense(row.id);
-        if (editing?.id === row.id && editing.kind === row.kind) setEditing(null);
+        if (editing?.id === row.id && editing.originalKind === row.kind) setEditing(null);
         router.refresh();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Delete failed");
@@ -360,11 +443,11 @@ export function BankRegisterClient({
     <div className="bank-register">
       <section className="extra-information" aria-label="Extra information">
         <h2 className="extra-information-title">Extra information</h2>
-        {accounts.length === 0 ? (
+        {accounts.filter(showBalanceCard).length === 0 ? (
           <p>No bank accounts yet. Add one under Masters → Bank → Create Bank Account.</p>
         ) : (
           <div className="detail-stat-row">
-            {accounts.map((account) => {
+            {accounts.filter(showBalanceCard).map((account) => {
               const negative = Number(account.balance) < 0;
               return (
                 <button
@@ -392,10 +475,9 @@ export function BankRegisterClient({
         )}
       </section>
 
-      <div className="page-header">
-        <h1 className="page-title">All transactions</h1>
+      <div className="page-header bank-register-downloads">
         <TableDownloadButtons
-          title="All transactions"
+          title="Bank transactions"
           filenameBase="bank-transactions"
           columns={[
             { key: "date", header: "Date" },
@@ -476,8 +558,6 @@ export function BankRegisterClient({
             <thead>
               <tr>
                 <th>Date</th>
-                <th>Category</th>
-                <th>Type</th>
                 <th>Fund paid</th>
                 <th>Fund received</th>
                 <th className="cell-num">Amount</th>
@@ -489,10 +569,12 @@ export function BankRegisterClient({
               {pageRows.map((row, index) => {
                 const previous = index > 0 ? pageRows[index - 1] : null;
                 const dateBreak = !previous || previous.date !== row.date;
-                const isEditing = editing?.kind === row.kind && editing.id === row.id;
+                const isEditing =
+                  editing?.originalKind === row.kind && editing.id === row.id;
                 return (
                   <RegisterRows
                     key={`${row.kind}:${row.id}`}
+                    kinds={kinds}
                     row={row}
                     dateBreak={dateBreak}
                     isEditing={isEditing}
@@ -521,7 +603,7 @@ export function BankRegisterClient({
               })}
               {pageRows.length === 0 && (
                 <tr>
-                  <td colSpan={8}>
+                  <td colSpan={6}>
                     {rows.length === 0
                       ? "No transactions yet."
                       : "No transactions match these filters."}
@@ -566,6 +648,7 @@ export function BankRegisterClient({
 }
 
 function RegisterRows({
+  kinds,
   row,
   dateBreak,
   isEditing,
@@ -582,6 +665,7 @@ function RegisterRows({
   onDelete,
   onChange,
 }: {
+  kinds: BankRegisterKind[];
   row: BankRegisterRow;
   dateBreak: boolean;
   isEditing: boolean;
@@ -602,19 +686,17 @@ function RegisterRows({
     <>
       {dateBreak ? (
         <tr className="bank-register-date">
-          <td colSpan={8}>{formatDateDdMmYyyy(row.date)}</td>
+          <td colSpan={6}>{formatDateDdMmYyyy(row.date)}</td>
         </tr>
       ) : null}
       <tr className={isEditing ? "payment-editing-row" : undefined}>
         <td>{formatDateDdMmYyyy(row.date)}</td>
-        <td>
-          <span className={`bank-kind bank-kind-${row.kind}`}>{KIND_LABEL[row.kind]}</span>
-        </td>
-        <td className={typeClass(row)}>{row.typeLabel}</td>
         <td>{row.fundPaid}</td>
         <td>{row.fundReceived}</td>
         <td className="cell-num">{formatRs(row.amount)}</td>
-        <td>{particularText(row)}</td>
+        <td className={particularText(row) === "—" ? "cell-dash" : undefined}>
+          {particularText(row)}
+        </td>
         <td className="payment-actions">
           <button
             type="button"
@@ -638,8 +720,9 @@ function RegisterRows({
       </tr>
       {isEditing && editing ? (
         <tr className="payment-editing-row">
-          <td colSpan={8}>
+          <td colSpan={6}>
             <EditFields
+              kinds={kinds}
               editing={editing}
               accounts={accounts}
               expenses={expenses}
@@ -659,6 +742,7 @@ function RegisterRows({
 }
 
 function EditFields({
+  kinds,
   editing,
   accounts,
   expenses,
@@ -670,6 +754,7 @@ function EditFields({
   onSave,
   onChange,
 }: {
+  kinds: BankRegisterKind[];
   editing: EditState;
   accounts: BankAccountBalanceRow[];
   expenses: { id: string; name: string }[];
@@ -702,6 +787,23 @@ function EditFields({
         onSave();
       }}
     >
+      <label>
+        <span>Category</span>
+        <select
+          className="field-input"
+          aria-label="Category"
+          value={editing.kind}
+          onChange={(event) =>
+            onChange(withCategory(editing, event.target.value as BankRegisterKind))
+          }
+        >
+          {kinds.map((kind) => (
+            <option key={kind} value={kind}>
+              {KIND_LABEL[kind]}
+            </option>
+          ))}
+        </select>
+      </label>
       <label>
         <span>Date</span>
         <input
@@ -910,6 +1012,9 @@ function EditFields({
             className="field-input"
             value={editing.particular}
             onChange={(event) => onChange({ ...editing, particular: event.target.value })}
+            onBlur={() =>
+              onChange({ ...editing, particular: toTitleCase(editing.particular) })
+            }
           />
         </label>
       ) : null}

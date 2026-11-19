@@ -80,7 +80,7 @@ function formatValue(value: number, kind: HomeSplitValueKind): string {
 
 function formatStat(value: number, kind: HomeSplitValueKind): string {
   if (kind === "rupees") {
-    return `Rs ${formatChartRs(value)}`;
+    return formatChartRs(value);
   }
   return `${formatChartQty(value)} MT`;
 }
@@ -90,9 +90,9 @@ function hasBarValue(value: number, kind: HomeSplitValueKind): boolean {
 }
 
 function formatSignedRs(value: number): string {
-  if (!Number.isFinite(value) || value === 0) return `Rs ${formatChartRs(0)}`;
-  if (value > 0) return `+ Rs ${formatChartRs(value)}`;
-  return `− Rs ${formatChartRs(Math.abs(value))}`;
+  if (!Number.isFinite(value) || value === 0) return formatChartRs(0);
+  if (value > 0) return `+ ${formatChartRs(value)}`;
+  return `− ${formatChartRs(Math.abs(value))}`;
 }
 
 function discountTone(value: number): string {

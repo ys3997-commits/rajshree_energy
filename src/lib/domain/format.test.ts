@@ -12,6 +12,7 @@ import {
   formatSaleOrderMt,
   formatRs,
   normalizeLorryNumber,
+  toTitleCase,
 } from "./format";
 
 describe("formatIndianNumber", () => {
@@ -58,9 +59,15 @@ describe("formatAmount / formatRs", () => {
     expect(formatAmount("12445.65")).toBe("12,446");
   });
 
-  it("formatRs adds prefix", () => {
-    expect(formatRs(100000)).toBe("Rs 1,00,000");
-    expect(formatRs(99.4)).toBe("Rs 99");
+  it("formatRs uses Indian grouping without a currency prefix", () => {
+    expect(formatRs(100000)).toBe("1,00,000");
+    expect(formatRs(99.4)).toBe("99");
+  });
+
+  it("toTitleCase capitalizes each word", () => {
+    expect(toTitleCase("PETROL")).toBe("Petrol");
+    expect(toTitleCase("bajaj insurance")).toBe("Bajaj Insurance");
+    expect(toTitleCase("")).toBe("");
   });
 
   it("treats a balance that displays as 0 as zero", () => {

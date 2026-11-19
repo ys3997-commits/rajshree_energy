@@ -1320,6 +1320,15 @@ table.data td.num {
   white-space: nowrap;
 }
 
+.page-header.bank-register-downloads {
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+td.cell-dash {
+  text-align: center;
+}
+
 th.cell-num,
 table.data th.num,
 table.data th.cell-num,
@@ -1734,6 +1743,10 @@ table.data tfoot td {
 table.data td.cell-num {
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+table.data td.cell-dash {
+  text-align: center;
 }
 
 table.data th {

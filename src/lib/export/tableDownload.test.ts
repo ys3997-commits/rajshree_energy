@@ -77,7 +77,8 @@ describe("buildExcelWorkbook", () => {
     expect(text).toContain('name="Tally Entry"');
     expect(text).toContain("A &amp; B &lt;Co&gt;");
     expect(text).toContain(">Vendor<");
-    expect(text).toContain(">1,200<");
+    expect(text).toContain('<c r="B2" s="2"><v>1200</v></c>');
+    expect(text).not.toContain(">1,200<");
     expect(text).toContain('<c r="A1" s="1"');
     expect(text).not.toContain('<c r="A2" s="1"');
   });
@@ -122,7 +123,7 @@ describe("buildExcelWorkbook", () => {
     );
     const text = new TextDecoder().decode(bytes);
     expect(text).toContain('<c r="A3" s="1"');
-    expect(text).toContain('<c r="B3" s="1"');
+    expect(text).toContain('<c r="B3" s="4"><v>100</v></c>');
     expect(text).not.toContain('<c r="A2" s="1"');
     expect(text).toContain("<b/>");
   });

@@ -58,7 +58,7 @@ function formatOpeningBalanceTyping(value: string): string {
 }
 
 function formatOpeningBalanceDisplay(value: string): string {
-  return `Rs ${formatIndianNumber(value, 2)}`;
+  return formatIndianNumber(value, 2);
 }
 
 export function BankAccountsClient({

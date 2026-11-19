@@ -55,7 +55,7 @@ function exportRsAmount(value: string | null | undefined): string {
   return exportBlank(formatAmount(value));
 }
 
-/** Fund paid and discount paid display as "- Rs …". */
+/** Fund paid and discount paid display as "- …". */
 function formatFundAmount(
   fundType: TransportLedgerRow["fundType"],
   amount: string | null,

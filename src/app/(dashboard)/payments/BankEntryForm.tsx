@@ -23,6 +23,7 @@ import {
   formatCustomerCategory,
   formatIndianAmountTyping,
   parseAmountInput,
+  toTitleCase,
 } from "@/lib/domain/format";
 import {
   parsePartyKey,
@@ -664,6 +665,12 @@ function BankEntryBar({
                 setForm((current) => ({
                   ...current,
                   particular: e.target.value,
+                }))
+              }
+              onBlur={() =>
+                setForm((current) => ({
+                  ...current,
+                  particular: toTitleCase(current.particular),
                 }))
               }
             />

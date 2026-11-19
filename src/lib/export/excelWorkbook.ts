@@ -48,16 +48,90 @@ function isTotalRow(columns: ExportColumn[], row: ExportRow): boolean {
   return columns.some((column) => row[column.key] === "Total");
 }
 
+function isAmountColumn(column: ExportColumn): boolean {
+  const label = `${column.key} ${column.header}`
+    .toLowerCase()
+    .replace(/[_-]+/g, " ");
+  if (
+    /credit days|credit period|quantity|qty|weight|lorr|percent|pmt|\bmt\b|\bdays\b/.test(
+      label,
+    )
+  ) {
+    return false;
+  }
+  return /amount|balance|due|profit|price|freight|debit|credit|outstanding|opening|closing|rate|value|collection|discount/.test(
+    label,
+  );
+}
+
+function parseExcelAmount(
+  value: string,
+): { value: number; decimals: boolean } | null {
+  let text = value.trim();
+  if (!text || text === "—" || text === "-" || text === "–") return null;
+  text = text
+    .replace(/₹/g, "")
+    .replace(/\brs\.?\b/gi, "")
+    .replace(/,/g, "")
+    .replace(/\s+/g, "")
+    .replace(/−/g, "-");
+  if (text.startsWith("(") && text.endsWith(")")) {
+    text = `-${text.slice(1, -1)}`;
+  }
+  if (!/^-?\d+(\.\d+)?$/.test(text)) return null;
+  const parsed = Number(text);
+  if (!Number.isFinite(parsed)) return null;
+  return { value: parsed, decimals: text.includes(".") };
+}
+
+function excelNumberText(value: number): string {
+  if (Object.is(value, -0) || value === 0) return "0";
+  if (Number.isInteger(value)) return String(value);
+  return value.toFixed(2);
+}
+
+function cellXml(
+  column: ExportColumn | null,
+  value: string,
+  ref: string,
+  bold: boolean,
+): string {
+  if (column && isAmountColumn(column)) {
+    const amount = parseExcelAmount(value);
+    if (amount) {
+      const style = bold
+        ? amount.decimals
+          ? 5
+          : 4
+        : amount.decimals
+          ? 3
+          : 2;
+      return `<c r="${ref}" s="${style}"><v>${excelNumberText(amount.value)}</v></c>`;
+    }
+  }
+  const style = bold ? ` s="1"` : "";
+  return `<c r="${ref}"${style} t="inlineStr"><is><t>${escapeXml(value)}</t></is></c>`;
+}
+
 function worksheetXml(
   tables: { columns: ExportColumn[]; rows: ExportRow[] }[],
 ): string {
-  const cells = (values: string[], rowNumber: number, bold: boolean) =>
+  const cells = (
+    columns: ExportColumn[],
+    values: string[],
+    rowNumber: number,
+    bold: boolean,
+    amounts: boolean,
+  ) =>
     values
-      .map((value, index) => {
-        const ref = `${columnLetter(index)}${rowNumber}`;
-        const style = bold ? ` s="1"` : "";
-        return `<c r="${ref}"${style} t="inlineStr"><is><t>${escapeXml(value)}</t></is></c>`;
-      })
+      .map((value, index) =>
+        cellXml(
+          amounts ? columns[index] : null,
+          value,
+          `${columnLetter(index)}${rowNumber}`,
+          bold,
+        ),
+      )
       .join("");
   let rowNumber = 1;
   const body: string[] = [];
@@ -65,20 +139,24 @@ function worksheetXml(
     if (tableIndex > 0) rowNumber += 2;
     body.push(
       `<row r="${rowNumber}">${cells(
+        table.columns,
         table.columns.map((column) =>
           exportWrappedHeader(column.header).replace(/\n/g, " "),
         ),
         rowNumber,
         true,
+        false,
       )}</row>`,
     );
     rowNumber += 1;
     for (const row of table.rows) {
       body.push(
         `<row r="${rowNumber}">${cells(
+          table.columns,
           table.columns.map((column) => row[column.key] ?? ""),
           rowNumber,
           isTotalRow(table.columns, row),
+          true,
         )}</row>`,
       );
       rowNumber += 1;
@@ -102,9 +180,9 @@ const ROOT_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 const WORKBOOK_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
 
-/** Style 0 is regular. Style 1 is bold, used for headings and total rows. */
+/** Style 0 is text. Style 1 is bold text. Styles 2–5 are amount numbers. */
 const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>`;
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="#,##,##0"/><numFmt numFmtId="165" formatCode="#,##,##0.00"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="6"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="164" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/><xf numFmtId="165" fontId="1" fillId="0" borderId="0" xfId="0" applyNumberFormat="1" applyFont="1"/></cellXfs></styleSheet>`;
 
 function storeZip(files: { name: string; data: Uint8Array }[]): Uint8Array {
   const locals: Uint8Array[] = [];

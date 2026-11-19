@@ -3,6 +3,7 @@
 import { PaymentDirection } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal } from "@/lib/domain/computations";
+import { toTitleCase } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -71,7 +72,7 @@ function parseDirection(value: string | undefined): PaymentDirection {
 }
 
 function parseParticular(value: string): string {
-  const particular = value.trim();
+  const particular = toTitleCase(value);
   if (!particular) throw new Error("Particular is required");
   return particular;
 }

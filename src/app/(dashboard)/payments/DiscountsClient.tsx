@@ -17,6 +17,7 @@ import {
   formatIndianAmountTyping,
   formatRs,
   parseAmountInput,
+  toTitleCase,
 } from "@/lib/domain/format";
 import { parsePartyKey, partyKey, partyOptionGroup, partyOptionLabel } from "@/lib/domain/paymentParty";
 import { SearchableSelect } from "@/components/SearchableSelect";
@@ -191,7 +192,7 @@ export function DiscountsClient({
         type: statusLabel(row.status),
         amount: formatRs(row.amount),
         origin: formatCoalOrigin(row.coalOrigin),
-        remarks: row.remarks || "—",
+        remarks: toTitleCase(row.remarks) || "—",
       })),
     [exportRows],
   );
@@ -423,6 +424,12 @@ export function DiscountsClient({
               onChange={(event) =>
                 setAddForm({ ...addForm, remarks: event.target.value })
               }
+              onBlur={() =>
+                setAddForm((current) => ({
+                  ...current,
+                  remarks: toTitleCase(current.remarks),
+                }))
+              }
             />
           </label>
           <div className="bank-entry-actions">
@@ -581,6 +588,16 @@ export function DiscountsClient({
                               remarks: e.target.value,
                             })
                           }
+                          onBlur={() =>
+                            setEditForm((current) =>
+                              current
+                                ? {
+                                    ...current,
+                                    remarks: toTitleCase(current.remarks),
+                                  }
+                                : current,
+                            )
+                          }
                         />
                       </td>
                       <td className="space-x-2 whitespace-nowrap">
@@ -620,7 +637,9 @@ export function DiscountsClient({
                         {formatRs(row.amount)}
                       </td>
                       <td>{formatCoalOrigin(row.coalOrigin)}</td>
-                      <td>{row.remarks || "—"}</td>
+                      <td className={toTitleCase(row.remarks) ? undefined : "cell-dash"}>
+                        {toTitleCase(row.remarks) || "—"}
+                      </td>
                       <td className="space-x-2 whitespace-nowrap">
                         <button
                           type="button"

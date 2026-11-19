@@ -188,13 +188,12 @@ export function amountRoundsToZero(
 }
 
 /**
- * Format a rate/amount for display with Rs prefix (integer, Indian grouping).
+ * Format a rate/amount for display (integer, Indian grouping).
  */
 export function formatRs(
   value: { toString(): string } | number | string | null | undefined,
 ): string {
-  const amount = formatAmount(value);
-  return amount === "—" ? "—" : `Rs ${amount}`;
+  return formatAmount(value);
 }
 
 export function formatCustomerCategory(
@@ -245,7 +244,7 @@ export function formatCoalOrigin(
   return "—";
 }
 
-/** e.g. "Rs 1000.00 + Rs 180.00 + Rs 23.60 = Rs 1203.60" (TCS omitted when null). */
+/** e.g. "1000.00 + 180.00 + 23.60 = 1203.60" (TCS omitted when null). */
 export function formatRateBreakdownLine(breakdown: {
   base: string;
   gst: string;
@@ -342,6 +341,25 @@ export function daysSinceOrder(
     asOf.getUTCDate(),
   );
   return Math.floor((end - start) / 86_400_000);
+}
+
+/** Title case: first letter of each word capital, the rest lowercase. */
+export function toTitleCase(value: string | null | undefined): string {
+  if (value == null) return "";
+  return value
+    .trim()
+    .split(/(\s+)/)
+    .map((part) => {
+      const lower = part.toLowerCase();
+      const index = lower.search(/[a-z]/);
+      if (index < 0) return part;
+      return (
+        lower.slice(0, index) +
+        lower.charAt(index).toUpperCase() +
+        lower.slice(index + 1)
+      );
+    })
+    .join("");
 }
 
 /** Capitalize the first letter of each word in a name. */
