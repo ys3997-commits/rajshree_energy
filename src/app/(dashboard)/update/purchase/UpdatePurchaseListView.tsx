@@ -29,14 +29,14 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
     <>
       <form className="filters" method="get" action="/update/purchase">
         <label>
-          Purchase Status
+          Pending Status
           <select
             name="purchaseUpdateStatus"
             defaultValue={filters.purchaseUpdateStatus}
           >
             <option value="">All</option>
-            <option value="PENDING">Pending</option>
-            <option value="RECEIVED">Received</option>
+            <option value="INVOICE">Purchase Invoice</option>
+            <option value="TALLY">Purchase In Tally</option>
           </select>
         </label>
         <label>

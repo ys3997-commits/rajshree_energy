@@ -48,6 +48,11 @@ const nextConfig: NextConfig = {
         destination: "/reports/profit-analysis/month-wise",
         permanent: false,
       },
+      {
+        source: "/reports/purchase-sale/monthly-wise",
+        destination: "/reports/purchase-sale/month-wise",
+        permanent: false,
+      },
     ];
   },
 };

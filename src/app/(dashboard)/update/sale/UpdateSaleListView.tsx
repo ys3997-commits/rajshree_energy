@@ -31,14 +31,14 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
     <>
       <form className="filters" method="get" action="/update/sale">
         <label>
-          Received Qty
+          Pending Status
           <select
             name="receivedQtyStatus"
             defaultValue={filters.receivedQtyStatus}
           >
             <option value="">All</option>
-            <option value="PENDING">Pending</option>
-            <option value="RECEIVED">Received</option>
+            <option value="INVOICE">Sale Invoice</option>
+            <option value="WEIGHT">Factory Weight</option>
           </select>
         </label>
         <label>

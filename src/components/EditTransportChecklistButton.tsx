@@ -49,7 +49,7 @@ function SummaryField({ label, value }: { label: string; value: string }) {
 }
 
 function modalTitle(mode: TransportChecklistMode, hasSummary: boolean): string {
-  if (mode === "bilty") return "Bilty edit";
+  if (mode === "bilty") return "Bilty";
   if (mode === "invoice") return "Invoice edit";
   if (mode === "hardCopy") return "Invoice Hard Copy";
   if (mode === "transportInvoice") return "Transport Invoice";

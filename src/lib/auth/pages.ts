@@ -274,6 +274,13 @@ export const REPORT_SUB_PAGES = [
     reportSubPage: true,
   },
   {
+    key: "reports-purchase-sale",
+    href: "/reports/purchase-sale",
+    label: "Purchase / Sale",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
     key: "reports-sale-analysis",
     href: "/reports/analysis",
     label: "Sale Analysis",
@@ -430,6 +437,7 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
       { key: "reports-ageing", label: "Ageing Report" },
       { key: "reports-customer-analysis", label: "Customer Analysis" },
       { key: "reports-profit-analysis", label: "Profit Analysis" },
+      { key: "reports-purchase-sale", label: "Purchase / Sale" },
       { key: "reports-sale-analysis", label: "Sale Analysis" },
       { key: "reports-vendor-analysis", label: "Vendor Analysis" },
     ],

@@ -136,16 +136,8 @@ const staticReportLinks: ReportItem[] = [
     children: [
       { href: "/reports/ageing-report", label: "Ageing Report" },
       { href: "/reports/customer-analysis", label: "Customer Analysis" },
-      {
-        label: "Profit Analysis",
-        children: [
-          { href: "/reports/profit-analysis/daily", label: "Daily wise" },
-          {
-            href: "/reports/profit-analysis/month-wise",
-            label: "Monthly wise",
-          },
-        ],
-      },
+      { href: "/reports/profit-analysis", label: "Profit Analysis" },
+      { href: "/reports/purchase-sale", label: "Purchase / Sale" },
       { href: "/reports/analysis", label: "Sale Analysis" },
       { href: "/reports/vendor-analysis", label: "Vendor Analysis" },
     ],

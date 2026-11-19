@@ -1882,3 +1882,125 @@ export async function listProfitAnalysisMonthReport(
     }));
 }
 
+export type PurchaseSaleRow = {
+  date: string;
+  quantity: string;
+  purchaseAmount: string;
+  saleAmount: string;
+  freightAmount: string;
+  profit: string;
+  truckCount: string;
+};
+
+function emptyPurchaseSale() {
+  return {
+    quantity: new Decimal(0),
+    purchaseAmount: new Decimal(0),
+    saleAmount: new Decimal(0),
+    freightAmount: new Decimal(0),
+    profit: new Decimal(0),
+    trucks: 0,
+  };
+}
+
+function toPurchaseSaleRow(
+  period: string,
+  agg: ReturnType<typeof emptyPurchaseSale>,
+): PurchaseSaleRow {
+  return {
+    date: period,
+    quantity: agg.quantity.toString(),
+    purchaseAmount: agg.purchaseAmount.toDecimalPlaces(2).toString(),
+    saleAmount: agg.saleAmount.toDecimalPlaces(2).toString(),
+    freightAmount: agg.freightAmount.toDecimalPlaces(2).toString(),
+    profit: agg.profit.toDecimalPlaces(2).toString(),
+    truckCount: String(agg.trucks),
+  };
+}
+
+/** Day-wise quantity, invoice amounts, invoice profit, and trucks. */
+export async function listPurchaseSaleReport(
+  filters: CustomerAnalysisFilters = {},
+): Promise<PurchaseSaleRow[]> {
+  const dateFilter = dispatchDateWhere(filters);
+  const dispatches = await prisma.dispatch.findMany({
+    where: dateFilter ? { dispatchDate: dateFilter } : undefined,
+    select: {
+      dispatchDate: true,
+      dispatchedQuantity: true,
+      freight: true,
+      purchaseOrder: { select: { finalRate: true } },
+      order: { select: { finalRate: true } },
+    },
+  });
+
+  const byDate = new Map<string, ReturnType<typeof emptyPurchaseSale>>();
+
+  for (const d of dispatches) {
+    const date = isoLocalDay(d.dispatchDate);
+    let agg = byDate.get(date);
+    if (!agg) {
+      agg = emptyPurchaseSale();
+      byDate.set(date, agg);
+    }
+
+    agg.quantity = agg.quantity.plus(d.dispatchedQuantity);
+    agg.trucks += 1;
+
+    // Invoice total = all-in rate (basic + GST + TCS) × dispatched quantity.
+    const purchase = purchaseBasicAmount(
+      d.purchaseOrder.finalRate,
+      d.dispatchedQuantity,
+    );
+    if (purchase != null) {
+      agg.purchaseAmount = agg.purchaseAmount.plus(purchase);
+    }
+
+    const sale = purchaseBasicAmount(
+      d.order.finalRate,
+      d.dispatchedQuantity,
+    );
+    if (sale != null) agg.saleAmount = agg.saleAmount.plus(sale);
+
+    // Freight amount = freight per tonne × dispatched quantity.
+    const freight = freightAmount(d.freight, d.dispatchedQuantity);
+    agg.freightAmount = agg.freightAmount.plus(freight);
+
+    // Sale invoice − freight amount − purchase invoice.
+    agg.profit = agg.profit
+      .plus(sale ?? 0)
+      .minus(freight)
+      .minus(purchase ?? 0);
+  }
+
+  return [...byDate.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([date, agg]) => toPurchaseSaleRow(date, agg));
+}
+
+export async function listPurchaseSaleMonthReport(
+  filters: CustomerAnalysisFilters = {},
+): Promise<PurchaseSaleRow[]> {
+  const dailyRows = await listPurchaseSaleReport(filters);
+  const byMonth = new Map<string, ReturnType<typeof emptyPurchaseSale>>();
+
+  for (const row of dailyRows) {
+    const month = row.date.slice(0, 7);
+    let agg = byMonth.get(month);
+    if (!agg) {
+      agg = emptyPurchaseSale();
+      byMonth.set(month, agg);
+    }
+    agg.quantity = agg.quantity.plus(row.quantity);
+    agg.purchaseAmount = agg.purchaseAmount.plus(row.purchaseAmount);
+    agg.saleAmount = agg.saleAmount.plus(row.saleAmount);
+    agg.freightAmount = agg.freightAmount.plus(row.freightAmount);
+    agg.profit = agg.profit.plus(row.profit);
+    agg.trucks += Number(row.truckCount) || 0;
+  }
+
+  return [...byMonth.entries()]
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([month, agg]) => toPurchaseSaleRow(month, agg));
+}
+

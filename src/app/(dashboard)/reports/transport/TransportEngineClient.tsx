@@ -27,6 +27,12 @@ type TransportSortKey =
   | "deliveryTerms"
   | "transporterName";
 type SortDir = "asc" | "desc";
+type TransportPendingFilter =
+  | ""
+  | "bilty"
+  | "hardCopy"
+  | "transportInvoice"
+  | "tally";
 
 function formatChecklistYes(value: boolean): string {
   return value ? "Yes" : "—";
@@ -122,6 +128,7 @@ export function TransportEngineClient({
   const [completeFilter, setCompleteFilter] = useState<"" | "complete" | "pending">(
     "",
   );
+  const [pendingFilter, setPendingFilter] = useState<TransportPendingFilter>("");
   const [dateStart, setDateStart] = useState("");
   const [dateEnd, setDateEnd] = useState("");
   const [sortKey, setSortKey] = useState<TransportSortKey | null>(null);
@@ -141,7 +148,7 @@ export function TransportEngineClient({
       transporterFilter ||
       (deliveryTermsFilter &&
         !(variant === "update" && deliveryTermsFilter === DispatchTerms.FOR)) ||
-      completeFilter ||
+      (variant === "update" ? pendingFilter : completeFilter) ||
       dateStart ||
       dateEnd,
   );
@@ -163,7 +170,19 @@ export function TransportEngineClient({
       if (deliveryTermsFilter && row.dispatchTerms !== deliveryTermsFilter) {
         return false;
       }
-      if (completeFilter) {
+      if (variant === "update") {
+        if (pendingFilter === "bilty" && row.biltyHardCopy) return false;
+        if (pendingFilter === "hardCopy" && row.invoiceHardCopy) return false;
+        if (
+          pendingFilter === "transportInvoice" &&
+          Boolean(row.transportInvoiceNo?.trim())
+        ) {
+          return false;
+        }
+        if (pendingFilter === "tally" && row.transportEntryInTally) {
+          return false;
+        }
+      } else if (completeFilter) {
         const complete = isTransportChecklistComplete(row);
         if (completeFilter === "complete" && !complete) return false;
         if (completeFilter === "pending" && complete) return false;
@@ -178,6 +197,8 @@ export function TransportEngineClient({
     transporterFilter,
     deliveryTermsFilter,
     completeFilter,
+    pendingFilter,
+    variant,
     dateStart,
     dateEnd,
   ]);
@@ -384,19 +405,37 @@ export function TransportEngineClient({
             <option value={DispatchTerms.EX_PORT}>Ex-Port</option>
           </select>
         </label>
-        <label>
-          Checklist
-          <select
-            value={completeFilter}
-            onChange={(e) =>
-              setCompleteFilter(e.target.value as "" | "complete" | "pending")
-            }
-          >
-            <option value="">All</option>
-            <option value="complete">Complete</option>
-            <option value="pending">Pending</option>
-          </select>
-        </label>
+        {variant === "update" ? (
+          <label>
+            Pending Status
+            <select
+              value={pendingFilter}
+              onChange={(e) =>
+                setPendingFilter(e.target.value as TransportPendingFilter)
+              }
+            >
+              <option value="">All</option>
+              <option value="bilty">Bilty</option>
+              <option value="hardCopy">Invoice Hard Copy</option>
+              <option value="transportInvoice">Transport Invoice</option>
+              <option value="tally">Transport in Tally</option>
+            </select>
+          </label>
+        ) : (
+          <label>
+            Checklist
+            <select
+              value={completeFilter}
+              onChange={(e) =>
+                setCompleteFilter(e.target.value as "" | "complete" | "pending")
+              }
+            >
+              <option value="">All</option>
+              <option value="complete">Complete</option>
+              <option value="pending">Pending</option>
+            </select>
+          </label>
+        )}
         <label>
           Date Start
           <input
@@ -739,7 +778,7 @@ export function TransportEngineClient({
                             softCopyStatus={row.softCopyStatus}
                             transportEntryInTally={row.transportEntryInTally}
                             canEdit={row.canEdit}
-                            buttonLabel="Bilty Edit"
+                            buttonLabel="Bilty"
                             rowSummary={buildTransportEditRowSummary(row)}
                             onUpdated={applyChecklist}
                           />

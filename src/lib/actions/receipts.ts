@@ -26,9 +26,9 @@ const qualityClassInclude = {
 
 export type DispatchFilters = {
   receiptStatus?: ReceiptStatus | "";
-  purchaseUpdateStatus?: "PENDING" | "RECEIVED" | "";
+  purchaseUpdateStatus?: "INVOICE" | "TALLY" | "";
   saleUpdateStatus?: "PENDING" | "RECEIVED" | "";
-  receivedQtyStatus?: "PENDING" | "RECEIVED" | "";
+  receivedQtyStatus?: "INVOICE" | "WEIGHT" | "";
   reconciliationStatus?: "PENDING" | "RECONCILED" | "";
   dispatchNumber?: string;
   poNumber?: string;
@@ -66,18 +66,15 @@ export async function listDispatches(filters: DispatchFilters = {}) {
 
   const where: Prisma.DispatchWhereInput = {};
   if (filters.receiptStatus) where.receiptStatus = filters.receiptStatus;
-  if (filters.purchaseUpdateStatus === "RECEIVED") {
-    where.entryInTally = true;
-    where.AND = [
-      { purchaseInvoiceNumber: { not: null } },
-      { NOT: { purchaseInvoiceNumber: "" } },
-    ];
-  } else if (filters.purchaseUpdateStatus === "PENDING") {
-    where.OR = [
-      { entryInTally: false },
-      { purchaseInvoiceNumber: null },
-      { purchaseInvoiceNumber: "" },
-    ];
+  if (filters.purchaseUpdateStatus === "INVOICE") {
+    appendWhereAnd(where, {
+      OR: [
+        { purchaseInvoiceNumber: null },
+        { purchaseInvoiceNumber: "" },
+      ],
+    });
+  } else if (filters.purchaseUpdateStatus === "TALLY") {
+    where.entryInTally = false;
   }
   if (filters.saleUpdateStatus === "RECEIVED") {
     appendWhereAnd(where, {
@@ -94,14 +91,11 @@ export async function listDispatches(filters: DispatchFilters = {}) {
       ],
     });
   }
-  if (filters.receivedQtyStatus === "RECEIVED") {
+  if (filters.receivedQtyStatus === "INVOICE") {
     appendWhereAnd(where, {
-      OR: [
-        { receivingQuantity: { not: null } },
-        { dispatchTerms: DispatchTerms.EX_PORT },
-      ],
+      OR: [{ saleInvoiceNumber: null }, { saleInvoiceNumber: "" }],
     });
-  } else if (filters.receivedQtyStatus === "PENDING") {
+  } else if (filters.receivedQtyStatus === "WEIGHT") {
     appendWhereAnd(where, {
       receivingQuantity: null,
       NOT: { dispatchTerms: DispatchTerms.EX_PORT },

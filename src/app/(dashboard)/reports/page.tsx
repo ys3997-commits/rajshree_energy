@@ -52,14 +52,14 @@ const reports = [
     desc: "Sale-side dispatched quantity by product, state, and city.",
   },
   {
-    href: "/reports/profit-analysis/daily",
-    title: "Profit Analysis — Daily wise",
-    desc: "Day-wise domestic and imported quantity and profit.",
+    href: "/reports/profit-analysis",
+    title: "Profit Analysis",
+    desc: "Domestic and imported quantity and profit, daily or monthly.",
   },
   {
-    href: "/reports/profit-analysis/month-wise",
-    title: "Profit Analysis — Monthly wise",
-    desc: "Month-wise domestic and imported quantity and profit.",
+    href: "/reports/purchase-sale",
+    title: "Purchase / Sale",
+    desc: "Quantity, purchase amount, sale amount, and profit, daily or monthly.",
   },
   {
     href: "/reports/ledger",

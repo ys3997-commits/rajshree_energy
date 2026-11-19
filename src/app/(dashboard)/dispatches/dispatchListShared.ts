@@ -486,8 +486,7 @@ export function buildDispatchExportRows(dispatches: DispatchRow[]) {
 
 export async function loadDispatchListData(sp: DispatchSearchParams) {
   const purchaseUpdateStatus: DispatchFilters["purchaseUpdateStatus"] =
-    sp.purchaseUpdateStatus === "PENDING" ||
-    sp.purchaseUpdateStatus === "RECEIVED"
+    sp.purchaseUpdateStatus === "INVOICE" || sp.purchaseUpdateStatus === "TALLY"
       ? sp.purchaseUpdateStatus
       : "";
   const saleUpdateStatus: DispatchFilters["saleUpdateStatus"] =
@@ -495,7 +494,7 @@ export async function loadDispatchListData(sp: DispatchSearchParams) {
       ? sp.saleUpdateStatus
       : "";
   const receivedQtyStatus: DispatchFilters["receivedQtyStatus"] =
-    sp.receivedQtyStatus === "PENDING" || sp.receivedQtyStatus === "RECEIVED"
+    sp.receivedQtyStatus === "INVOICE" || sp.receivedQtyStatus === "WEIGHT"
       ? sp.receivedQtyStatus
       : "";
   const reconciliationStatus: DispatchFilters["reconciliationStatus"] =
