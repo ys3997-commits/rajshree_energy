@@ -19,7 +19,7 @@ import {
   formatCustomerCategory,
   formatDateDdMmYyyy,
   formatIndianAmountTyping,
-  formatRs,
+  formatBankAmount,
   parseAmountInput,
   toTitleCase,
 } from "@/lib/domain/format";
@@ -250,7 +250,7 @@ export function BankRegisterClient({
       type: row.typeLabel,
       fundPaid: row.fundPaid,
       fundReceived: row.fundReceived,
-      amount: formatRs(row.amount),
+      amount: formatBankAmount(row.amount),
       particular: particularText(row),
     }));
   }, [filtered, kinds]);
@@ -366,7 +366,7 @@ export function BankRegisterClient({
   }
 
   function onDelete(row: BankRegisterRow) {
-    if (!confirm(`Delete this ${KIND_LABEL[row.kind]} entry of ${formatRs(row.amount)}?`)) {
+    if (!confirm(`Delete this ${KIND_LABEL[row.kind]} entry of ${formatBankAmount(row.amount)}?`)) {
       return;
     }
     setError(null);
@@ -466,7 +466,7 @@ export function BankRegisterClient({
                         : "detail-stat-value"
                     }
                   >
-                    {formatRs(account.balance)}
+                    {formatBankAmount(account.balance)}
                   </span>
                 </button>
               );
@@ -693,7 +693,7 @@ function RegisterRows({
         <td>{formatDateDdMmYyyy(row.date)}</td>
         <td>{row.fundPaid}</td>
         <td>{row.fundReceived}</td>
-        <td className="cell-num">{formatRs(row.amount)}</td>
+        <td className="cell-num">{formatBankAmount(row.amount)}</td>
         <td className={particularText(row) === "—" ? "cell-dash" : undefined}>
           {particularText(row)}
         </td>

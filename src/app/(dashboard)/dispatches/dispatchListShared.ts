@@ -289,7 +289,6 @@ export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
     const afterIndex = columns.findIndex((column) => column.key === afterKey);
     columns.splice(afterIndex + 1, 0, column);
   };
-  moveColumn("purchaseInvoice", "date");
   moveColumn("purchaseBasic", "weight");
   const purchaseBasicIndex = columns.findIndex(
     (column) => column.key === "purchaseBasic",
@@ -304,6 +303,7 @@ export const dispatchExportColumnsPurchaseInvoiceAfterDate = (() => {
   moveColumn("purchaseTotalAmount", "purchaseTcsAmount");
   moveColumn("vendor", "purchaseTotalAmount");
   moveColumn("gstState", "vendor");
+  moveColumn("purchaseInvoice", "date");
   const hiddenKeys = new Set([
     "salePo",
     "saleInvoice",

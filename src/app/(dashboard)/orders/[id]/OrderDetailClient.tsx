@@ -5,6 +5,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { CustomerCategory, DispatchTerms, OrderType } from "@/generated/prisma";
 import { completeOpenOrder } from "@/lib/actions/dispatch";
 import { updateOrderFields } from "@/lib/actions/orders";
+import { throwIfActionError } from "@/lib/auth/errors";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
 import {
@@ -144,7 +145,7 @@ export function OrderDetailClient({
           qualityClassId: qualityClassId || null,
           portId: portId || null,
         });
-        await updateOrderFields(order.id, {
+        throwIfActionError(await updateOrderFields(order.id, {
           poNumber,
           customerId,
           orderDate: orderDate || null,
@@ -152,9 +153,9 @@ export function OrderDetailClient({
           numberOfLorries:
             numberOfLorries === "" ? null : Number(numberOfLorries),
           closingQuantity: closingQuantity === "" ? null : closingQuantity,
-        });
+        }));
       } else {
-        await updateOrderFields(order.id, {
+        throwIfActionError(await updateOrderFields(order.id, {
           poNumber,
           customerId,
           orderDate: orderDate || null,
@@ -167,7 +168,7 @@ export function OrderDetailClient({
           numberOfLorries:
             numberOfLorries === "" ? null : Number(numberOfLorries),
           closingQuantity: closingQuantity === "" ? null : closingQuantity,
-        });
+        }));
       }
       setMessage("Order updated.");
       window.location.reload();

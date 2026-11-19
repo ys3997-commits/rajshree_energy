@@ -6,6 +6,7 @@ import { UpdateTableInteraction } from "@/components/UpdateTableInteraction";
 import { EditTransportChecklistButton } from "@/components/EditTransportChecklistButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
+  type TransportChecklistInput,
   type TransportEngineRow,
 } from "@/lib/actions/transportEngine";
 import {
@@ -589,6 +590,22 @@ export function TransportEngineClient({
           <tbody>
             {displayed.map((row) => {
               const lorry = formatLorryNumber(row.lorryNumber);
+              const applyChecklist = (result: TransportChecklistInput) => {
+                setRows((prev) =>
+                  prev.map((item) =>
+                    item.id === row.id
+                      ? {
+                          ...item,
+                          biltyHardCopy: result.biltyHardCopy,
+                          transportInvoiceNo: result.transportInvoiceNo,
+                          invoiceHardCopy: result.invoiceHardCopy,
+                          softCopyStatus: result.softCopyStatus,
+                          transportEntryInTally: result.transportEntryInTally,
+                        }
+                      : item,
+                  ),
+                );
+              };
               return (
                 <tr key={row.id} data-dispatch-id={row.id}>
                   {isUpdateLayout ? (
@@ -724,54 +741,46 @@ export function TransportEngineClient({
                             canEdit={row.canEdit}
                             buttonLabel="Bilty Edit"
                             rowSummary={buildTransportEditRowSummary(row)}
-                            onUpdated={(result) => {
-                              setRows((prev) =>
-                                prev.map((item) =>
-                                  item.id === row.id
-                                    ? {
-                                        ...item,
-                                        biltyHardCopy: result.biltyHardCopy,
-                                        transportInvoiceNo:
-                                          result.transportInvoiceNo,
-                                        invoiceHardCopy: result.invoiceHardCopy,
-                                        softCopyStatus: result.softCopyStatus,
-                                        transportEntryInTally:
-                                          result.transportEntryInTally,
-                                      }
-                                    : item,
-                                ),
-                              );
-                            }}
+                            onUpdated={applyChecklist}
                           />
                           <EditTransportChecklistButton
                             dispatchId={row.id}
-                            mode="invoice"
+                            mode="hardCopy"
                             biltyHardCopy={row.biltyHardCopy}
                             transportInvoiceNo={row.transportInvoiceNo}
                             invoiceHardCopy={row.invoiceHardCopy}
                             softCopyStatus={row.softCopyStatus}
                             transportEntryInTally={row.transportEntryInTally}
                             canEdit={row.canEdit}
-                            buttonLabel="Invoice Edit"
+                            buttonLabel="Invoice Hard Copy"
                             rowSummary={buildTransportEditRowSummary(row)}
-                            onUpdated={(result) => {
-                              setRows((prev) =>
-                                prev.map((item) =>
-                                  item.id === row.id
-                                    ? {
-                                        ...item,
-                                        biltyHardCopy: result.biltyHardCopy,
-                                        transportInvoiceNo:
-                                          result.transportInvoiceNo,
-                                        invoiceHardCopy: result.invoiceHardCopy,
-                                        softCopyStatus: result.softCopyStatus,
-                                        transportEntryInTally:
-                                          result.transportEntryInTally,
-                                      }
-                                    : item,
-                                ),
-                              );
-                            }}
+                            onUpdated={applyChecklist}
+                          />
+                          <EditTransportChecklistButton
+                            dispatchId={row.id}
+                            mode="transportInvoice"
+                            biltyHardCopy={row.biltyHardCopy}
+                            transportInvoiceNo={row.transportInvoiceNo}
+                            invoiceHardCopy={row.invoiceHardCopy}
+                            softCopyStatus={row.softCopyStatus}
+                            transportEntryInTally={row.transportEntryInTally}
+                            canEdit={row.canEdit}
+                            buttonLabel="Transport Invoice"
+                            rowSummary={buildTransportEditRowSummary(row)}
+                            onUpdated={applyChecklist}
+                          />
+                          <EditTransportChecklistButton
+                            dispatchId={row.id}
+                            mode="tally"
+                            biltyHardCopy={row.biltyHardCopy}
+                            transportInvoiceNo={row.transportInvoiceNo}
+                            invoiceHardCopy={row.invoiceHardCopy}
+                            softCopyStatus={row.softCopyStatus}
+                            transportEntryInTally={row.transportEntryInTally}
+                            canEdit={row.canEdit}
+                            buttonLabel="Transport in Tally"
+                            rowSummary={buildTransportEditRowSummary(row)}
+                            onUpdated={applyChecklist}
                           />
                         </>
                       ) : (

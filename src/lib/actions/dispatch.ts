@@ -11,6 +11,9 @@ import {
 import { Decimal } from "@prisma/client/runtime/library";
 import { cache } from "react";
 import { revalidatePath } from "next/cache";
+import { customerAccessFailure } from "@/lib/auth/errors";
+import { assertAuthorisedSaleCustomer } from "@/lib/actions/orders";
+import { assertAuthorisedPurchaseVendor } from "@/lib/actions/purchaseOrders";
 import { prisma, type PrismaTx } from "@/lib/prisma";
 import {
   computeOrderStatus,
@@ -189,16 +192,16 @@ function resolveDispatchTermsFields(input: {
   transporterId?: string | null;
   freight?: DecimalLike | null;
 }): { transporterId: string | null; freight: Decimal | null } {
+  if (!input.transporterId) {
+    throw new Error("Transporter is required");
+  }
   if (input.dispatchTerms === DispatchTerms.FOR) {
-    if (!input.transporterId) {
-      throw new Error("Transporter is required for FOR dispatches");
-    }
     if (
       input.freight === undefined ||
       input.freight === null ||
       input.freight === ""
     ) {
-      throw new Error("Freight (Rs/MT) is required for FOR dispatches");
+      throw new Error("Freight is required");
     }
     const freight = toDecimal(input.freight);
     if (freight.lt(0)) {
@@ -207,7 +210,23 @@ function resolveDispatchTermsFields(input: {
     return { transporterId: input.transporterId, freight };
   }
 
-  return { transporterId: null, freight: null };
+  return { transporterId: input.transporterId, freight: null };
+}
+
+async function deniedForNewOrderParty(
+  customerId: string | null | undefined,
+  kind: "sale" | "purchase",
+): Promise<{ error: string } | null> {
+  if (!customerId) return null;
+  try {
+    if (kind === "sale") await assertAuthorisedSaleCustomer(customerId);
+    else await assertAuthorisedPurchaseVendor(customerId);
+    return null;
+  } catch (error) {
+    const denied = customerAccessFailure(error);
+    if (denied) return denied;
+    throw error;
+  }
 }
 
 async function resolvePurchaseForDispatch(
@@ -535,7 +554,13 @@ export async function suggestNextDispatchNumber(): Promise<string> {
 
 export async function createDispatch(
   input: CreateDispatchInput,
-): Promise<{ id: string }> {
+): Promise<{ id: string } | { error: string }> {
+  const deniedVendor = await deniedForNewOrderParty(
+    input.openPurchase?.importerId,
+    "purchase",
+  );
+  if (deniedVendor) return deniedVendor;
+
   const access = await requireSignedIn();
   const qty = toDecimal(input.dispatchedQuantity);
   if (qty.lte(0)) {
@@ -599,7 +624,18 @@ export async function createDispatch(
 
 export async function createOpenOrderDispatch(
   input: CreateOpenOrderDispatchInput,
-): Promise<{ id: string }> {
+): Promise<{ id: string } | { error: string }> {
+  const deniedCustomer = await deniedForNewOrderParty(
+    input.customerId,
+    "sale",
+  );
+  if (deniedCustomer) return deniedCustomer;
+  const deniedVendor = await deniedForNewOrderParty(
+    input.openPurchase?.importerId,
+    "purchase",
+  );
+  if (deniedVendor) return deniedVendor;
+
   const access = await requireSignedIn();
   const poNumber = normalizeSaleOrderNumber(input.poNumber);
   if (!input.customerId) throw new Error("Customer is required");
@@ -702,7 +738,7 @@ export async function createOpenOrderDispatch(
 export async function updateDispatch(
   id: string,
   changes: UpdateDispatchInput,
-): Promise<{ id: string }> {
+): Promise<{ id: string } | { error: string }> {
   const access = await requireSignedIn();
   const updateKind = classifyDispatchUpdate(changes);
   if (updateKind === "reconciliation") {
@@ -733,6 +769,17 @@ export async function updateDispatch(
       extraCalendarDays: DISPATCH_STAFF_EDIT_EXTRA_CALENDAR_DAYS,
     });
   }
+
+  const deniedCustomer = await deniedForNewOrderParty(
+    changes.openSale?.customerId,
+    "sale",
+  );
+  if (deniedCustomer) return deniedCustomer;
+  const deniedVendor = await deniedForNewOrderParty(
+    changes.openPurchase?.importerId,
+    "purchase",
+  );
+  if (deniedVendor) return deniedVendor;
 
   const updated = await prisma.$transaction(async (tx) => {
     const existing = await tx.dispatch.findUnique({ where: { id } });
@@ -1055,11 +1102,6 @@ export async function completeOpenOrder(
     if (order.orderType !== OrderType.OPEN) {
       throw new Error("Only OPEN orders can be completed this way");
     }
-    if (quantity.lt(order.dispatchedOrder)) {
-      throw new Error(
-        `Cannot set quantity (${quantity}) below dispatchedOrder (${order.dispatchedOrder})`,
-      );
-    }
 
     const rate =
       details.rate === undefined || details.rate === null
@@ -1070,7 +1112,12 @@ export async function completeOpenOrder(
         ? order.finalRate
         : computeSaleFinalRate(rate, order.customer.category);
 
-    const nextStatus = OrderStatus.COMPLETED;
+    const nextStatus = computeOrderStatus({
+      orderType: order.orderType,
+      quantity,
+      dispatchedOrder: order.dispatchedOrder,
+      closingQuantity: order.closingQuantity,
+    });
 
     const oldAmount = dispatchedAmount(order.finalRate, order.dispatchedOrder);
     const newAmount = dispatchedAmount(nextFinalRate, order.dispatchedOrder);

@@ -11,7 +11,7 @@ import {
 import { useBankAccountPicker } from "../BankEntryForm";
 import {
   formatIndianAmountTyping,
-  formatRs,
+  formatBankAmount,
   parseAmountInput,
 } from "@/lib/domain/format";
 
@@ -183,7 +183,7 @@ export function TransactionClient({
   }
 
   function onDelete(row: BankTransferRow) {
-    if (!confirm(`Delete transaction of ${formatRs(row.amount)}?`)) return;
+    if (!confirm(`Delete transaction of ${formatBankAmount(row.amount)}?`)) return;
     setError(null);
     startTransition(async () => {
       try {
@@ -276,7 +276,7 @@ export function TransactionClient({
                         : "detail-stat-value"
                     }
                   >
-                    {formatRs(account.balance)}
+                    {formatBankAmount(account.balance)}
                   </span>
                 </button>
               );
@@ -388,7 +388,7 @@ export function TransactionClient({
                         <td>{formatDateDdMmYyyy(row.date)}</td>
                         <td>{row.paidAccountName}</td>
                         <td>{row.receivedAccountName}</td>
-                        <td className="cell-num">{formatRs(row.amount)}</td>
+                        <td className="cell-num">{formatBankAmount(row.amount)}</td>
                         <td className="space-x-2 whitespace-nowrap">
                           <button
                             type="button"

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import { getCustomerOrderDefaults } from "@/lib/actions/customers";
 import { createRegularOrder } from "@/lib/actions/orders";
+import { throwIfActionError } from "@/lib/auth/errors";
 import { computeSaleRateBreakdown } from "@/lib/domain/saleRate";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
 import {
@@ -88,7 +89,7 @@ export function NewOrderForm({
     setError(null);
     const fd = new FormData(e.currentTarget);
     try {
-      await createRegularOrder({
+      throwIfActionError(await createRegularOrder({
         poNumber: String(fd.get("poNumber") || ""),
         customerId,
         orderDate: String(fd.get("orderDate") || "") || null,
@@ -102,7 +103,7 @@ export function NewOrderForm({
           return raw === "" ? null : Number(raw);
         })(),
         deliveryTerms,
-      });
+      }));
       if (onSuccess) {
         onSuccess();
         router.refresh();

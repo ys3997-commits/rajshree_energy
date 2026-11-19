@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   amountRoundsToZero,
   formatAmount,
+  formatBankAmount,
   formatDateDdMmYyyy,
   formatDispatchMt,
   formatLorryNumber,
@@ -30,6 +31,15 @@ describe("formatIndianNumber", () => {
   it("returns em dash for empty values", () => {
     expect(formatIndianNumber(null)).toBe("—");
     expect(formatIndianNumber("")).toBe("—");
+  });
+});
+
+describe("formatBankAmount", () => {
+  it("keeps two decimal places", () => {
+    expect(formatBankAmount("1846.4")).toBe("1,846.40");
+    expect(formatBankAmount(1808.64)).toBe("1,808.64");
+    expect(formatBankAmount(-12.5)).toBe("-12.50");
+    expect(formatBankAmount(null)).toBe("—");
   });
 });
 

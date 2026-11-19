@@ -14,7 +14,13 @@ import {
   isTransportInvoiceChecklistComplete,
 } from "@/lib/domain/dispatchChecklist";
 
-export type TransportChecklistMode = "all" | "bilty" | "invoice";
+export type TransportChecklistMode =
+  | "all"
+  | "bilty"
+  | "invoice"
+  | "hardCopy"
+  | "transportInvoice"
+  | "tally";
 
 export type TransportEditRowSummary = {
   dispatchNumber: string;
@@ -45,7 +51,19 @@ function SummaryField({ label, value }: { label: string; value: string }) {
 function modalTitle(mode: TransportChecklistMode, hasSummary: boolean): string {
   if (mode === "bilty") return "Bilty edit";
   if (mode === "invoice") return "Invoice edit";
+  if (mode === "hardCopy") return "Invoice Hard Copy";
+  if (mode === "transportInvoice") return "Transport Invoice";
+  if (mode === "tally") return "Transport in Tally";
   return hasSummary ? "Transport edit" : "Transport checklist";
+}
+
+function sectionTitle(mode: TransportChecklistMode): string {
+  if (mode === "bilty") return "Update bilty";
+  if (mode === "hardCopy") return "Update invoice hard copy";
+  if (mode === "transportInvoice") return "Update transport invoice";
+  if (mode === "tally") return "Update transport in tally";
+  if (mode === "invoice") return "Update invoice";
+  return "Update transport";
 }
 
 export function EditTransportChecklistButton({
@@ -86,24 +104,34 @@ export function EditTransportChecklistButton({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const showBilty = mode === "all" || mode === "bilty";
-  const showInvoice = mode === "all" || mode === "invoice";
+  const showHardCopy =
+    mode === "all" || mode === "invoice" || mode === "hardCopy";
+  const showTransportInvoice =
+    mode === "all" || mode === "invoice" || mode === "transportInvoice";
+  const showTally = mode === "all" || mode === "invoice" || mode === "tally";
   const fieldId = `${mode}-${dispatchId}`;
 
   const complete =
     mode === "bilty"
       ? isBiltyChecklistComplete({ biltyHardCopy: initialBiltyHardCopy })
-      : mode === "invoice"
-        ? isTransportInvoiceChecklistComplete({
-            transportInvoiceNo: initialTransportInvoiceNo,
-            invoiceHardCopy: initialInvoiceHardCopy,
-            transportEntryInTally: initialTransportEntryInTally,
-          })
-        : isTransportChecklistComplete({
-            biltyHardCopy: initialBiltyHardCopy,
-            transportInvoiceNo: initialTransportInvoiceNo,
-            invoiceHardCopy: initialInvoiceHardCopy,
-            transportEntryInTally: initialTransportEntryInTally,
-          });
+      : mode === "hardCopy"
+        ? initialInvoiceHardCopy
+        : mode === "transportInvoice"
+          ? Boolean(initialTransportInvoiceNo?.trim())
+          : mode === "tally"
+            ? initialTransportEntryInTally
+            : mode === "invoice"
+              ? isTransportInvoiceChecklistComplete({
+                  transportInvoiceNo: initialTransportInvoiceNo,
+                  invoiceHardCopy: initialInvoiceHardCopy,
+                  transportEntryInTally: initialTransportEntryInTally,
+                })
+              : isTransportChecklistComplete({
+                  biltyHardCopy: initialBiltyHardCopy,
+                  transportInvoiceNo: initialTransportInvoiceNo,
+                  invoiceHardCopy: initialInvoiceHardCopy,
+                  transportEntryInTally: initialTransportEntryInTally,
+                });
 
   function openModal() {
     setBiltyHardCopy(initialBiltyHardCopy);
@@ -121,14 +149,14 @@ export function EditTransportChecklistButton({
     try {
       const result = await updateTransportChecklist(dispatchId, {
         biltyHardCopy: showBilty ? biltyHardCopy : initialBiltyHardCopy,
-        transportInvoiceNo: showInvoice
+        transportInvoiceNo: showTransportInvoice
           ? transportInvoiceNo.trim() === ""
             ? null
             : transportInvoiceNo
           : initialTransportInvoiceNo,
-        invoiceHardCopy: showInvoice ? invoiceHardCopy : initialInvoiceHardCopy,
+        invoiceHardCopy: showHardCopy ? invoiceHardCopy : initialInvoiceHardCopy,
         softCopyStatus,
-        transportEntryInTally: showInvoice
+        transportEntryInTally: showTally
           ? transportEntryInTally
           : initialTransportEntryInTally,
       });
@@ -218,11 +246,7 @@ export function EditTransportChecklistButton({
               className="purchase-edit-section-title"
               style={{ gridColumn: "1 / -1" }}
             >
-              {mode === "bilty"
-                ? "Update bilty"
-                : mode === "invoice"
-                  ? "Update invoice"
-                  : "Update transport"}
+              {sectionTitle(mode)}
             </h3>
           ) : null}
           {showBilty ? (
@@ -238,9 +262,13 @@ export function EditTransportChecklistButton({
             </>
           ) : null}
 
-          {showInvoice ? (
+          {showTransportInvoice ? (
             <>
-              <label htmlFor={`te-invoice-no-${fieldId}`}>Transport Invoice No.</label>
+              <label htmlFor={`te-invoice-no-${fieldId}`}>
+                {mode === "transportInvoice"
+                  ? "Transport Invoice"
+                  : "Transport Invoice No."}
+              </label>
               <input
                 id={`te-invoice-no-${fieldId}`}
                 value={transportInvoiceNo}
@@ -250,7 +278,11 @@ export function EditTransportChecklistButton({
                 placeholder="Transport invoice number"
                 autoFocus={!rowSummary}
               />
+            </>
+          ) : null}
 
+          {showHardCopy ? (
+            <>
               <label htmlFor={`te-hard-${fieldId}`}>Invoice Hard Copy</label>
               <input
                 id={`te-hard-${fieldId}`}
@@ -259,8 +291,16 @@ export function EditTransportChecklistButton({
                 checked={invoiceHardCopy}
                 onChange={(e) => setInvoiceHardCopy(e.target.checked)}
               />
+            </>
+          ) : null}
 
-              <label htmlFor={`te-tally-${fieldId}`}>Transport Invoice In Tally</label>
+          {showTally ? (
+            <>
+              <label htmlFor={`te-tally-${fieldId}`}>
+                {mode === "tally"
+                  ? "Transport in Tally"
+                  : "Transport Invoice In Tally"}
+              </label>
               <input
                 id={`te-tally-${fieldId}`}
                 type="checkbox"

@@ -174,6 +174,21 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                   row.customerCategory,
                 );
                 const overdue = isUpdateSaleReceivingOverdue(row);
+                const rowSummary = {
+                  dispatchNumber: displayDispatchNumber(row.dispatchNumber),
+                  date: formatDateDdMmYyyy(
+                    new Date(row.dispatchDate).toISOString().slice(0, 10),
+                  ),
+                  lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
+                  weight: formatDispatchMt(row.dispatchedQuantity),
+                  basicPrice: formatAmount(row.saleBasicRate),
+                  gst: gstAmount,
+                  tcs: tcsAmount,
+                  totalAmount,
+                  customer: row.customerName ?? "—",
+                  deliveryTerms: formatDispatchTerms(row.dispatchTerms),
+                  transporter: row.transporterName ?? "—",
+                };
 
                 return (
                   <tr
@@ -245,6 +260,7 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                       <div className="dispatch-edit-actions">
                         <EditDispatchSaleButton
                           dispatchId={row.id}
+                          mode="invoice"
                           saleInvoiceNumber={row.saleInvoiceNumber}
                           dispatchedQuantity={row.dispatchedQuantity.toString()}
                           receivingQuantity={
@@ -252,28 +268,19 @@ export function UpdateSaleListView({ data }: { data: DispatchListData }) {
                           }
                           dispatchTerms={row.dispatchTerms}
                           canEdit={row.canEditSale}
-                          rowSummary={{
-                            dispatchNumber: displayDispatchNumber(
-                              row.dispatchNumber,
-                            ),
-                            date: formatDateDdMmYyyy(
-                              new Date(row.dispatchDate)
-                                .toISOString()
-                                .slice(0, 10),
-                            ),
-                            lorryNumber:
-                              formatLorryNumber(row.lorryNumber) ?? "—",
-                            weight: formatDispatchMt(row.dispatchedQuantity),
-                            basicPrice: formatAmount(row.saleBasicRate),
-                            gst: gstAmount,
-                            tcs: tcsAmount,
-                            totalAmount,
-                            customer: row.customerName ?? "—",
-                            deliveryTerms: formatDispatchTerms(
-                              row.dispatchTerms,
-                            ),
-                            transporter: row.transporterName ?? "—",
-                          }}
+                          rowSummary={rowSummary}
+                        />
+                        <EditDispatchSaleButton
+                          dispatchId={row.id}
+                          mode="weight"
+                          saleInvoiceNumber={row.saleInvoiceNumber}
+                          dispatchedQuantity={row.dispatchedQuantity.toString()}
+                          receivingQuantity={
+                            row.receivingQuantity?.toString() ?? null
+                          }
+                          dispatchTerms={row.dispatchTerms}
+                          canEdit={row.canEditSale}
+                          rowSummary={rowSummary}
                         />
                       </div>
                     </td>

@@ -12,6 +12,10 @@ import {
   requireOwner,
 } from "@/lib/auth/access";
 import {
+  customerAccessFailure,
+  UNAUTHORISED_CUSTOMER_MESSAGE,
+} from "@/lib/auth/errors";
+import {
   execScopeToCustomerWhere,
   getStaffReportExecScope,
   mergePurchaseOrderImporterFilter,
@@ -62,8 +66,12 @@ async function assertPurchaseOrderImporterAccess(
   const scope = getStaffReportExecScope(access, PURCHASE_ORDERS_PAGE_KEY);
   if (scope === "all") return;
   if (!rowMatchesExecScope(saleExecutive, scope)) {
-    throw new AccessDeniedError();
+    throw new AccessDeniedError(UNAUTHORISED_CUSTOMER_MESSAGE);
   }
+}
+
+export async function assertAuthorisedPurchaseVendor(importerId: string) {
+  await assertImporterPurchaseOrderAccess(importerId);
 }
 
 async function applyPurchaseOrderExecScope(
@@ -250,7 +258,7 @@ export async function listPurchaseOrdersWithBalance() {
   });
   return rows
     .map(withPurchaseOrderComputed)
-    .filter((o) => o.balanceOrder != null && o.balanceOrder.gt(0));
+    .filter((o) => o.balanceOrder != null && !o.balanceOrder.eq(0));
 }
 
 /** Suggest next sequential purchase order number (PO 0001, PO 0002, …). */
@@ -282,6 +290,18 @@ export type CreateRegularPurchaseOrderInput = {
 };
 
 export async function createRegularPurchaseOrder(
+  input: CreateRegularPurchaseOrderInput,
+) {
+  try {
+    return await createRegularPurchaseOrderInner(input);
+  } catch (error) {
+    const denied = customerAccessFailure(error);
+    if (denied) return denied;
+    throw error;
+  }
+}
+
+async function createRegularPurchaseOrderInner(
   input: CreateRegularPurchaseOrderInput,
 ) {
   const quantity = toDecimal(input.quantity);
@@ -383,6 +403,19 @@ export async function createOpenPurchaseOrder(
 
 export async function updatePurchaseOrderFields(
   id: string,
+  data: Parameters<typeof updatePurchaseOrderFieldsInner>[1],
+) {
+  try {
+    return await updatePurchaseOrderFieldsInner(id, data);
+  } catch (error) {
+    const denied = customerAccessFailure(error);
+    if (denied) return denied;
+    throw error;
+  }
+}
+
+async function updatePurchaseOrderFieldsInner(
+  id: string,
   data: {
     poNumber?: string;
     orderDate?: string | null;
@@ -390,6 +423,7 @@ export async function updatePurchaseOrderFields(
     quantity?: DecimalLike;
     rate?: DecimalLike | null;
     qualityClassId?: string | null;
+    closingQuantity?: DecimalLike | null;
   },
 ) {
   await requireOwner();
@@ -422,10 +456,24 @@ export async function updatePurchaseOrderFields(
   const quantity =
     data.quantity !== undefined ? toDecimal(data.quantity) : existing.quantity;
 
-  if (quantity != null && quantity.lt(existing.dispatchedOrder)) {
-    throw new Error(
-      `Cannot set quantity (${quantity}) below dispatchedOrder (${existing.dispatchedOrder})`,
-    );
+  let closingQuantity = existing.closingQuantity;
+  if (data.closingQuantity !== undefined) {
+    if (data.closingQuantity === null || data.closingQuantity === "") {
+      closingQuantity = null;
+    } else {
+      closingQuantity = toDecimal(data.closingQuantity);
+      if (!closingQuantity.isFinite() || closingQuantity.lt(0)) {
+        throw new Error("Closing quantity must be a valid amount ≥ 0");
+      }
+      if (quantity != null) {
+        const maxClosing = quantity.minus(existing.dispatchedOrder);
+        if (maxClosing.gte(0) && closingQuantity.gt(maxClosing)) {
+          throw new Error(
+            `Closing quantity cannot exceed remaining (${maxClosing})`,
+          );
+        }
+      }
+    }
   }
 
   let rate = existing.rate;
@@ -438,7 +486,7 @@ export async function updatePurchaseOrderFields(
   const orderStatus = computePurchaseOrderStatus({
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
-    closingQuantity: existing.closingQuantity,
+    closingQuantity,
   });
 
   const oldAmount = dispatchedAmount(
@@ -457,6 +505,8 @@ export async function updatePurchaseOrderFields(
         ...(data.rate !== undefined ? { finalRate } : {}),
         qualityClassId:
           data.qualityClassId === undefined ? undefined : data.qualityClassId,
+        closingQuantity:
+          data.closingQuantity === undefined ? undefined : closingQuantity,
         orderDate:
           data.orderDate === undefined
             ? undefined
@@ -512,11 +562,6 @@ export async function completeOpenPurchaseOrder(
     await assertPurchaseOrderImporterAccess(order.importer.saleExecutive);
     if (order.orderType !== OrderType.OPEN) {
       throw new Error("Only OPEN purchase orders can be completed this way");
-    }
-    if (quantity.lt(order.dispatchedOrder)) {
-      throw new Error(
-        `Cannot set quantity (${quantity}) below dispatchedOrder (${order.dispatchedOrder})`,
-      );
     }
 
     const rate =

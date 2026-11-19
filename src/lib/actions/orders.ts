@@ -8,6 +8,10 @@ import {
   requireOwner,
 } from "@/lib/auth/access";
 import {
+  customerAccessFailure,
+  UNAUTHORISED_CUSTOMER_MESSAGE,
+} from "@/lib/auth/errors";
+import {
   execScopeToCustomerWhere,
   getStaffReportExecScope,
   mergeOrderCustomerFilter,
@@ -74,8 +78,17 @@ async function assertSaleOrderCustomerAccess(
   const scope = getStaffReportExecScope(access, SALE_ORDERS_PAGE_KEY);
   if (scope === "all") return;
   if (!rowMatchesExecScope(saleExecutive, scope)) {
-    throw new AccessDeniedError();
+    throw new AccessDeniedError(UNAUTHORISED_CUSTOMER_MESSAGE);
   }
+}
+
+export async function assertAuthorisedSaleCustomer(customerId: string) {
+  const customer = await prisma.customer.findUnique({
+    where: { id: customerId },
+    select: { saleExecutive: true },
+  });
+  if (!customer) throw new Error("Customer not found");
+  await assertSaleOrderCustomerAccess(customer.saleExecutive);
 }
 
 async function applySaleOrderExecScope(where: Prisma.OrderWhereInput) {
@@ -291,7 +304,7 @@ export async function listOrdersWithBalance() {
   });
   return rows
     .map(withOrderComputed)
-    .filter((o) => o.balanceOrder != null && o.balanceOrder.gt(0));
+    .filter((o) => o.balanceOrder != null && !o.balanceOrder.eq(0));
 }
 
 export type CreateRegularOrderInput = {
@@ -319,6 +332,16 @@ async function resolveCustomerCategory(customerId: string) {
 }
 
 export async function createRegularOrder(input: CreateRegularOrderInput) {
+  try {
+    return await createRegularOrderInner(input);
+  } catch (error) {
+    const denied = customerAccessFailure(error);
+    if (denied) return denied;
+    throw error;
+  }
+}
+
+async function createRegularOrderInner(input: CreateRegularOrderInput) {
   const quantity = toDecimal(input.quantity);
   const rate =
     input.rate === undefined || input.rate === null
@@ -370,6 +393,19 @@ export async function createRegularOrder(input: CreateRegularOrderInput) {
 }
 
 export async function updateOrderFields(
+  id: string,
+  data: Parameters<typeof updateOrderFieldsInner>[1],
+) {
+  try {
+    return await updateOrderFieldsInner(id, data);
+  } catch (error) {
+    const denied = customerAccessFailure(error);
+    if (denied) return denied;
+    throw error;
+  }
+}
+
+async function updateOrderFieldsInner(
   id: string,
   data: {
     poNumber?: string;
@@ -423,12 +459,6 @@ export async function updateOrderFields(
   const quantity =
     data.quantity !== undefined ? toDecimal(data.quantity) : existing.quantity;
 
-  if (quantity != null && quantity.lt(existing.dispatchedOrder)) {
-    throw new Error(
-      `Cannot set quantity (${quantity}) below dispatchedOrder (${existing.dispatchedOrder})`,
-    );
-  }
-
   let numberOfLorries = existing.numberOfLorries;
   if (data.numberOfLorries !== undefined) {
     if (data.numberOfLorries === null) {
@@ -452,7 +482,7 @@ export async function updateOrderFields(
       }
       if (quantity != null) {
         const maxClosing = quantity.minus(existing.dispatchedOrder);
-        if (closingQuantity.gt(maxClosing)) {
+        if (maxClosing.gte(0) && closingQuantity.gt(maxClosing)) {
           throw new Error(
             `Closing quantity cannot exceed remaining (${maxClosing})`,
           );

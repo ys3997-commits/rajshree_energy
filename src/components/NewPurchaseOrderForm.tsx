@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createRegularPurchaseOrder } from "@/lib/actions/purchaseOrders";
+import { throwIfActionError } from "@/lib/auth/errors";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import { formatQualityClass, type QualityClassLabel } from "@/lib/domain/format";
 import { RateBreakdownFields } from "@/components/RateBreakdownFields";
@@ -52,7 +53,7 @@ export function NewPurchaseOrderForm({
     setError(null);
     const fd = new FormData(e.currentTarget);
     try {
-      await createRegularPurchaseOrder({
+      throwIfActionError(await createRegularPurchaseOrder({
         poNumber: String(fd.get("poNumber") || ""),
         importerId: String(fd.get("importerId") || ""),
         vesselId: String(fd.get("vesselId") || ""),
@@ -60,7 +61,7 @@ export function NewPurchaseOrderForm({
         qualityClassId: selectedVessel?.qualityClassId || null,
         rate: rate || null,
         quantity: String(fd.get("quantity") || ""),
-      });
+      }));
 
       router.push(`/purchase-orders`);
     } catch (err) {

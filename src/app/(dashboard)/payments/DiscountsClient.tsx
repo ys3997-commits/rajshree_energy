@@ -15,7 +15,7 @@ import {
   formatCoalOrigin,
   formatCustomerCategory,
   formatIndianAmountTyping,
-  formatRs,
+  formatBankAmount,
   parseAmountInput,
   toTitleCase,
 } from "@/lib/domain/format";
@@ -190,7 +190,7 @@ export function DiscountsClient({
         date: formatDateDdMmYyyy(row.date),
         customer: partyLabel(row),
         type: statusLabel(row.status),
-        amount: formatRs(row.amount),
+        amount: formatBankAmount(row.amount),
         origin: formatCoalOrigin(row.coalOrigin),
         remarks: toTitleCase(row.remarks) || "—",
       })),
@@ -298,7 +298,7 @@ export function DiscountsClient({
   }
 
   function onDelete(row: DiscountRow) {
-    if (!confirm(`Delete discount of ${formatRs(row.amount)}?`)) return;
+    if (!confirm(`Delete discount of ${formatBankAmount(row.amount)}?`)) return;
     setError(null);
     startTransition(async () => {
       try {
@@ -634,7 +634,7 @@ export function DiscountsClient({
                         {statusLabel(row.status)}
                       </td>
                       <td className={`cell-num ${typeClass(row.status)}`}>
-                        {formatRs(row.amount)}
+                        {formatBankAmount(row.amount)}
                       </td>
                       <td>{formatCoalOrigin(row.coalOrigin)}</td>
                       <td className={toTitleCase(row.remarks) ? undefined : "cell-dash"}>

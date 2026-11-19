@@ -5875,8 +5875,8 @@ table.data.collection-engine-table tbody td {
   background: #ffffff;
 }
 
-table.data.collection-engine-table:not(.update-table-hold-active) tbody tr:hover td,
-table.data.collection-engine-table tbody tr.update-table-row-held td {
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr:not(.collection-row-due-call):not(.collection-row-call-today):not(.collection-row-call-future):not(.collection-row-call-none):hover td,
+table.data.collection-engine-table tbody tr.update-table-row-held:not(.collection-row-due-call):not(.collection-row-call-today):not(.collection-row-call-future):not(.collection-row-call-none) td {
   background: #d4e0dc;
 }
 
@@ -5915,8 +5915,8 @@ table.data.collection-engine-table tbody tr.update-table-row-held td.collection-
   background-color: #d4e0dc;
 }
 
-table.data.collection-engine-table.update-table-hold-active tbody tr:not(.update-table-row-held):not(.payment-row-yesterday):not(.collection-row-call-today):not(.collection-row-due-call):hover td,
-table.data.collection-engine-table.update-table-hold-active tbody tr:not(.update-table-row-held):not(.payment-row-yesterday):not(.collection-row-call-today):not(.collection-row-due-call):hover td.collection-engine-customer-col {
+table.data.collection-engine-table.update-table-hold-active tbody tr:not(.update-table-row-held):not(.payment-row-yesterday):not(.collection-row-call-today):not(.collection-row-due-call):not(.collection-row-call-future):not(.collection-row-call-none):hover td,
+table.data.collection-engine-table.update-table-hold-active tbody tr:not(.update-table-row-held):not(.payment-row-yesterday):not(.collection-row-call-today):not(.collection-row-due-call):not(.collection-row-call-future):not(.collection-row-call-none):hover td.collection-engine-customer-col {
   background: #ffffff !important;
   background-color: #ffffff !important;
 }
@@ -5978,48 +5978,96 @@ table.data.collection-engine-table tbody tr.payment-row-yesterday.update-table-r
   background: rgba(31, 92, 85, 0.18) !important;
 }
 
-table.data.collection-engine-table tbody tr.collection-row-call-today td {
-  background: rgba(180, 140, 20, 0.08);
-}
-
-table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-today:hover td,
-table.data.collection-engine-table tbody tr.collection-row-call-today.update-table-row-held td {
-  background: rgba(180, 140, 20, 0.14) !important;
-}
-
 table.data.collection-engine-table tbody tr.collection-row-due-call td {
-  background: rgba(155, 44, 44, 0.08);
+  background: #fdecec !important;
+  background-color: #fdecec !important;
 }
 
 table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td,
 table.data.collection-engine-table tbody tr.collection-row-due-call.update-table-row-held td {
-  background: rgba(155, 44, 44, 0.14) !important;
+  background: #f8dede !important;
 }
 
-table.data.collection-engine-table tbody tr.collection-row-call-today td.collection-engine-customer-col {
-  background-color: #f9f5ec;
+table.data.collection-engine-table tbody tr.collection-row-call-today td {
+  background: #eefaf2 !important;
+  background-color: #eefaf2 !important;
 }
 
-table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-today:hover td.collection-engine-customer-col,
-table.data.collection-engine-table tbody tr.collection-row-call-today.update-table-row-held td.collection-engine-customer-col {
-  background-color: #f4efde !important;
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-today:hover td,
+table.data.collection-engine-table tbody tr.collection-row-call-today.update-table-row-held td {
+  background: #dff3e6 !important;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-future td {
+  background: #f0f6fd !important;
+  background-color: #f0f6fd !important;
+}
+
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-future:hover td,
+table.data.collection-engine-table tbody tr.collection-row-call-future.update-table-row-held td {
+  background: #e3eefb !important;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-none td {
+  background: #fffbeb !important;
+  background-color: #fffbeb !important;
+}
+
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-none:hover td,
+table.data.collection-engine-table tbody tr.collection-row-call-none.update-table-row-held td {
+  background: #fff4d0 !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-due-call td.collection-engine-customer-col {
-  background-color: #f7eeee;
+  background-color: #fdecec;
 }
 
 table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-due-call:hover td.collection-engine-customer-col,
 table.data.collection-engine-table tbody tr.collection-row-due-call.update-table-row-held td.collection-engine-customer-col {
-  background-color: #f1e1e1 !important;
+  background-color: #f8dede !important;
 }
 
-table.data.collection-engine-table tbody tr.collection-row-call-today .collection-date-input {
-  border-color: rgba(180, 140, 20, 0.35);
+table.data.collection-engine-table tbody tr.collection-row-call-today td.collection-engine-customer-col {
+  background-color: #eefaf2;
+}
+
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-today:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.collection-row-call-today.update-table-row-held td.collection-engine-customer-col {
+  background-color: #dff3e6 !important;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-future td.collection-engine-customer-col {
+  background-color: #f0f6fd;
+}
+
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-future:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.collection-row-call-future.update-table-row-held td.collection-engine-customer-col {
+  background-color: #e3eefb !important;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-none td.collection-engine-customer-col {
+  background-color: #fffbeb;
+}
+
+table.data.collection-engine-table:not(.update-table-hold-active) tbody tr.collection-row-call-none:hover td.collection-engine-customer-col,
+table.data.collection-engine-table tbody tr.collection-row-call-none.update-table-row-held td.collection-engine-customer-col {
+  background-color: #fff4d0 !important;
 }
 
 table.data.collection-engine-table tbody tr.collection-row-due-call .collection-date-input {
-  border-color: rgba(155, 44, 44, 0.35);
+  border-color: #e3a3a3;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-today .collection-date-input {
+  border-color: #8fcea8;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-future .collection-date-input {
+  border-color: #a9c6ea;
+}
+
+table.data.collection-engine-table tbody tr.collection-row-call-none .collection-date-input {
+  border-color: #e6d08a;
 }
 
 table.data.collection-engine-table tfoot td {
@@ -6133,28 +6181,60 @@ table.data.sales-engine-table td .collection-date-input {
   min-width: 0;
 }
 
-table.data.sales-engine-table tbody tr.collection-row-call-today td:not(.sales-engine-customer-col) {
-  background: rgba(180, 140, 20, 0.08);
+table.data.sales-engine-table tbody tr.collection-row-due-call td {
+  background: #fdecec !important;
+  background-color: #fdecec !important;
 }
 
-table.data.sales-engine-table tbody tr.collection-row-call-today:hover td:not(.sales-engine-customer-col) {
-  background: rgba(180, 140, 20, 0.14);
+table.data.sales-engine-table tbody tr.collection-row-due-call:hover td {
+  background: #f8dede !important;
+  background-color: #f8dede !important;
 }
 
-table.data.sales-engine-table tbody tr.collection-row-due-call td:not(.sales-engine-customer-col) {
-  background: rgba(155, 44, 44, 0.08);
+table.data.sales-engine-table tbody tr.collection-row-call-today td {
+  background: #eefaf2 !important;
+  background-color: #eefaf2 !important;
 }
 
-table.data.sales-engine-table tbody tr.collection-row-due-call:hover td:not(.sales-engine-customer-col) {
-  background: rgba(155, 44, 44, 0.14);
+table.data.sales-engine-table tbody tr.collection-row-call-today:hover td {
+  background: #dff3e6 !important;
+  background-color: #dff3e6 !important;
 }
 
-table.data.sales-engine-table tbody tr.collection-row-call-today .collection-date-input {
-  border-color: rgba(180, 140, 20, 0.35);
+table.data.sales-engine-table tbody tr.collection-row-call-future td {
+  background: #f0f6fd !important;
+  background-color: #f0f6fd !important;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-future:hover td {
+  background: #e3eefb !important;
+  background-color: #e3eefb !important;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-none td {
+  background: #fffbeb !important;
+  background-color: #fffbeb !important;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-none:hover td {
+  background: #fff4d0 !important;
+  background-color: #fff4d0 !important;
 }
 
 table.data.sales-engine-table tbody tr.collection-row-due-call .collection-date-input {
-  border-color: rgba(155, 44, 44, 0.35);
+  border-color: #e3a3a3;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-today .collection-date-input {
+  border-color: #8fcea8;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-future .collection-date-input {
+  border-color: #a9c6ea;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-none .collection-date-input {
+  border-color: #e6d08a;
 }
 
 /* Sales Engine — sticky customer column (after .app-main table rules) */
@@ -6167,11 +6247,11 @@ table.data.sales-engine-table thead th button.th-sort {
   background-color: #f8fafb;
 }
 
-table.data.sales-engine-table tbody td {
+table.data.sales-engine-table tbody tr:not(.collection-row-due-call):not(.collection-row-call-today):not(.collection-row-call-future):not(.collection-row-call-none) td {
   background-color: #ffffff;
 }
 
-table.data.sales-engine-table tbody tr:hover td {
+table.data.sales-engine-table tbody tr:not(.collection-row-due-call):not(.collection-row-call-today):not(.collection-row-call-future):not(.collection-row-call-none):hover td {
   background-color: #ffffff;
 }
 
@@ -6201,27 +6281,46 @@ table.data.sales-engine-table td.sales-engine-customer-col {
 
 table.data.sales-engine-table td.sales-engine-customer-col {
   z-index: 4;
+}
+
+table.data.sales-engine-table tbody tr:not(.collection-row-due-call):not(.collection-row-call-today):not(.collection-row-call-future):not(.collection-row-call-none) td.sales-engine-customer-col {
   background-color: #ffffff;
 }
 
-table.data.sales-engine-table tbody tr:hover td.sales-engine-customer-col {
+table.data.sales-engine-table tbody tr:not(.collection-row-due-call):not(.collection-row-call-today):not(.collection-row-call-future):not(.collection-row-call-none):hover td.sales-engine-customer-col {
   background-color: #f7faf9;
 }
 
-table.data.sales-engine-table tbody tr.collection-row-call-today td.sales-engine-customer-col {
-  background-color: #f9f5ec;
-}
-
-table.data.sales-engine-table tbody tr.collection-row-call-today:hover td.sales-engine-customer-col {
-  background-color: #f4efde;
-}
-
 table.data.sales-engine-table tbody tr.collection-row-due-call td.sales-engine-customer-col {
-  background-color: #f7eeee;
+  background-color: #fdecec;
 }
 
 table.data.sales-engine-table tbody tr.collection-row-due-call:hover td.sales-engine-customer-col {
-  background-color: #f1e1e1;
+  background-color: #f8dede;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-today td.sales-engine-customer-col {
+  background-color: #eefaf2;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-today:hover td.sales-engine-customer-col {
+  background-color: #dff3e6;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-future td.sales-engine-customer-col {
+  background-color: #f0f6fd;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-future:hover td.sales-engine-customer-col {
+  background-color: #e3eefb;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-none td.sales-engine-customer-col {
+  background-color: #fffbeb;
+}
+
+table.data.sales-engine-table tbody tr.collection-row-call-none:hover td.sales-engine-customer-col {
+  background-color: #fff4d0;
 }
 
 table.data.sales-engine-table th.sales-engine-customer-col button.th-sort {
@@ -6697,7 +6796,7 @@ table.data.update-purchase-table col.update-purchase-col-tally {
 }
 
 table.data.update-purchase-table col.update-purchase-col-actions {
-  width: 8.5rem;
+  width: 21rem;
 }
 
 table.data.update-purchase-table thead th {
@@ -6807,7 +6906,7 @@ table.data.update-purchase-table td.update-purchase-actions-col {
 }
 
 table.data.update-purchase-table .dispatch-edit-actions {
-  gap: 0;
+  gap: 0.4rem;
 }
 
 table.data.update-tally-table {
@@ -6927,7 +7026,7 @@ table.data.update-sale-table col.update-sale-col-transporter {
 }
 
 table.data.update-sale-table col.update-sale-col-actions {
-  width: 8.5rem;
+  width: 16.5rem;
 }
 
 table.data.update-sale-table thead th,
@@ -7162,7 +7261,7 @@ table.data.update-sale-table td.update-sale-actions-col {
 }
 
 table.data.update-sale-table .dispatch-edit-actions {
-  gap: 0;
+  gap: 0.4rem;
 }
 
 table.data.update-transport-table {
@@ -7230,7 +7329,7 @@ table.data.update-transport-table col.update-transport-col-tally {
 }
 
 table.data.update-transport-table col.update-transport-col-actions {
-  width: 15.5rem;
+  width: 38rem;
 }
 
 table.data.update-transport-table thead th,

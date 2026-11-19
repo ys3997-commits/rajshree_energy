@@ -32,6 +32,28 @@ function SummaryField({ label, value }: { label: string; value: string }) {
   );
 }
 
+export type SaleEditMode = "all" | "invoice" | "weight";
+
+function modalTitle(mode: SaleEditMode): string {
+  if (mode === "invoice") return "Sale Invoice";
+  if (mode === "weight") return "Factory Weight";
+  return "Sale edit";
+}
+
+function sectionTitle(mode: SaleEditMode): string {
+  if (mode === "invoice") return "Update sale invoice";
+  if (mode === "weight") return "Update factory weight";
+  return "Update sale";
+}
+
+function isFactoryWeightComplete(input: {
+  receivingQuantity: string | null;
+  dispatchTerms: DispatchTerms;
+}): boolean {
+  if (input.dispatchTerms === DispatchTerms.EX_PORT) return true;
+  return Boolean(input.receivingQuantity?.trim());
+}
+
 export function EditDispatchSaleButton({
   dispatchId,
   saleInvoiceNumber,
@@ -40,6 +62,7 @@ export function EditDispatchSaleButton({
   dispatchTerms,
   rowSummary,
   canEdit = true,
+  mode = "all",
 }: {
   dispatchId: string;
   saleInvoiceNumber: string | null;
@@ -48,6 +71,7 @@ export function EditDispatchSaleButton({
   dispatchTerms: DispatchTerms;
   rowSummary?: SaleEditRowSummary;
   canEdit?: boolean;
+  mode?: SaleEditMode;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -59,14 +83,22 @@ export function EditDispatchSaleButton({
   );
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const showInvoice = mode === "all" || mode === "invoice";
+  const showWeight = mode === "all" || mode === "weight";
+  const fieldId = `${mode}-${dispatchId}`;
 
   const isExPort = dispatchTerms === DispatchTerms.EX_PORT;
 
-  const complete = isSaleChecklistComplete({
-    saleInvoiceNumber,
-    receivingQuantity,
-    dispatchTerms,
-  });
+  const complete =
+    mode === "invoice"
+      ? Boolean(saleInvoiceNumber?.trim())
+      : mode === "weight"
+        ? isFactoryWeightComplete({ receivingQuantity, dispatchTerms })
+        : isSaleChecklistComplete({
+            saleInvoiceNumber,
+            receivingQuantity,
+            dispatchTerms,
+          });
 
   const diffQty = useMemo(() => {
     if (isExPort) return 0;
@@ -96,8 +128,13 @@ export function EditDispatchSaleButton({
         ? dispatchedQuantity.trim()
         : receivedQty.trim();
       await updateDispatch(dispatchId, {
-        saleInvoiceNumber: saleInvoice,
-        receivingQuantity: trimmedReceived === "" ? null : trimmedReceived,
+        ...(showInvoice ? { saleInvoiceNumber: saleInvoice } : {}),
+        ...(showWeight
+          ? {
+              receivingQuantity:
+                trimmedReceived === "" ? null : trimmedReceived,
+            }
+          : {}),
       });
       setOpen(false);
       router.refresh();
@@ -119,11 +156,11 @@ export function EditDispatchSaleButton({
         disabled={!canEdit}
         title={canEdit ? undefined : CHECKLIST_EDIT_LOCK_HINT}
       >
-        Sale edit
+        {modalTitle(mode)}
       </button>
       <Modal
         open={open}
-        title="Sale edit"
+        title={modalTitle(mode)}
         wide={Boolean(rowSummary)}
         onClose={() => {
           if (!saving) setOpen(false);
@@ -166,53 +203,66 @@ export function EditDispatchSaleButton({
               className="purchase-edit-section-title"
               style={{ gridColumn: "1 / -1" }}
             >
-              Update sale
+              {sectionTitle(mode)}
             </h3>
           ) : null}
-          <label htmlFor={`sale-invoice-${dispatchId}`}>Sale Invoice Number</label>
-          <input
-            id={`sale-invoice-${dispatchId}`}
-            value={saleInvoice}
-            onChange={(e) => setSaleInvoice(e.target.value.toUpperCase())}
-            placeholder="Sale invoice number"
-            autoFocus={!rowSummary}
-          />
+          {showInvoice ? (
+            <>
+              <label htmlFor={`sale-invoice-${fieldId}`}>
+                {mode === "invoice" ? "Sale Invoice" : "Sale Invoice Number"}
+              </label>
+              <input
+                id={`sale-invoice-${fieldId}`}
+                value={saleInvoice}
+                onChange={(e) => setSaleInvoice(e.target.value.toUpperCase())}
+                placeholder="Sale invoice number"
+                autoFocus={!rowSummary}
+              />
+            </>
+          ) : null}
 
-          <label htmlFor={`factory-qty-${dispatchId}`}>Factory Receiving Quantity</label>
-          <div className="field-with-unit">
-            <input
-              id={`factory-qty-${dispatchId}`}
-              type="number"
-              step="any"
-              min="0"
-              value={receivedQty}
-              onChange={(e) => setReceivedQty(e.target.value)}
-              placeholder={dispatchedQuantity}
-              readOnly={isExPort}
-              tabIndex={isExPort ? -1 : undefined}
-            />
-            <span className="field-unit">MT</span>
-          </div>
-          {isExPort && (
-            <p
-              className="text-sm text-neutral-600"
-              style={{ gridColumn: "1 / -1" }}
-            >
-              Ex-Port: received quantity matches weight automatically (diff 0).
-            </p>
-          )}
+          {showWeight ? (
+            <>
+              <label htmlFor={`factory-qty-${fieldId}`}>
+                Factory Receiving Quantity
+              </label>
+              <div className="field-with-unit">
+                <input
+                  id={`factory-qty-${fieldId}`}
+                  type="number"
+                  step="any"
+                  min="0"
+                  value={receivedQty}
+                  onChange={(e) => setReceivedQty(e.target.value)}
+                  placeholder={dispatchedQuantity}
+                  readOnly={isExPort}
+                  tabIndex={isExPort ? -1 : undefined}
+                  autoFocus={mode === "weight" && !rowSummary && !isExPort}
+                />
+                <span className="field-unit">MT</span>
+              </div>
+              {isExPort && (
+                <p
+                  className="text-sm text-neutral-600"
+                  style={{ gridColumn: "1 / -1" }}
+                >
+                  Ex-Port: received quantity matches weight automatically (diff 0).
+                </p>
+              )}
 
-          <label htmlFor={`diff-qty-${dispatchId}`}>Diff Quantity</label>
-          <div className="field-with-unit">
-            <input
-              id={`diff-qty-${dispatchId}`}
-              type="text"
-              readOnly
-              value={diffQty == null ? "—" : formatMtNumber(diffQty)}
-              tabIndex={-1}
-            />
-            <span className="field-unit">MT</span>
-          </div>
+              <label htmlFor={`diff-qty-${fieldId}`}>Diff Quantity</label>
+              <div className="field-with-unit">
+                <input
+                  id={`diff-qty-${fieldId}`}
+                  type="text"
+                  readOnly
+                  value={diffQty == null ? "—" : formatMtNumber(diffQty)}
+                  tabIndex={-1}
+                />
+                <span className="field-unit">MT</span>
+              </div>
+            </>
+          ) : null}
 
           <div />
           <div className="modal-actions">

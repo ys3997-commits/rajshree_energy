@@ -1,4 +1,4 @@
-import { formatRs } from "@/lib/domain/format";
+import { formatBankAmount } from "@/lib/domain/format";
 
 export function FundFlowTotals({
   receivedLabel,
@@ -18,13 +18,13 @@ export function FundFlowTotals({
       <div className="detail-stat">
         <span className="detail-stat-label">{receivedLabel}</span>
         <span className="detail-stat-value fund-type-in">
-          {formatRs(received)}
+          {formatBankAmount(received)}
         </span>
       </div>
       <div className="detail-stat">
         <span className="detail-stat-label">{paidLabel}</span>
         <span className="detail-stat-value fund-type-out">
-          {formatRs(paid)}
+          {formatBankAmount(paid)}
         </span>
       </div>
       <div className="detail-stat">
@@ -36,7 +36,7 @@ export function FundFlowTotals({
               : "detail-stat-value fund-type-in"
           }
         >
-          {formatRs(net)}
+          {formatBankAmount(net)}
         </span>
       </div>
     </div>

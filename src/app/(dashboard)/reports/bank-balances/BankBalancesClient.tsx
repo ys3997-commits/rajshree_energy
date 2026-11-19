@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { BankAccountBalanceRow } from "@/lib/actions/bankAccounts";
-import { formatAmount } from "@/lib/domain/format";
+import { formatBankAmount } from "@/lib/domain/format";
 import type { ExportColumn, ExportRow } from "@/lib/export/tableDownload";
 
 type SortKey = "accountName" | "accountTypeName" | "bankName" | "balance";
@@ -128,7 +128,7 @@ export function BankBalancesClient({
         accountName: row.accountName,
         accountTypeName: row.accountTypeName ?? "—",
         bankName: row.bankName,
-        balance: formatAmount(row.balance),
+        balance: formatBankAmount(row.balance),
       })),
     [filteredRows],
   );
@@ -191,7 +191,7 @@ export function BankBalancesClient({
                   : "detail-stat-value"
               }
             >
-              {formatAmount(totalBalance)}
+              {formatBankAmount(totalBalance)}
             </span>
           </div>
           {typeTotals.map((item) => {
@@ -208,7 +208,7 @@ export function BankBalancesClient({
                       : "detail-stat-value"
                   }
                 >
-                  {formatAmount(item.balance)}
+                  {formatBankAmount(item.balance)}
                 </span>
               </div>
             );
@@ -281,7 +281,7 @@ export function BankBalancesClient({
                           negative ? "cell-num fund-type-out" : "cell-num"
                         }
                       >
-                        {formatAmount(row.balance)}
+                        {formatBankAmount(row.balance)}
                       </td>
                     </tr>
                   );

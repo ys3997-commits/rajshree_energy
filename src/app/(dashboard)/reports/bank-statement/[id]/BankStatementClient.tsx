@@ -7,7 +7,7 @@ import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { BankStatementLine } from "@/lib/domain/bankStatement";
 import {
   capitalizeName,
-  formatAmount,
+  formatBankAmount,
   formatDateDdMmYyyy,
 } from "@/lib/domain/format";
 
@@ -23,7 +23,7 @@ function exportDate(value: string | null | undefined): string {
 
 function exportRsAmount(value: string | null | undefined): string {
   if (value == null || value === "") return "";
-  return exportBlank(formatAmount(value));
+  return exportBlank(formatBankAmount(value));
 }
 
 export function BankStatementClient({
@@ -154,19 +154,19 @@ export function BankStatementClient({
           <div className="detail-stat">
             <span className="detail-stat-label">Opening balance</span>
             <span className="detail-stat-value">
-              {formatAmount(openingBalance)}
+              {formatBankAmount(openingBalance)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Credit</span>
             <span className="detail-stat-value fund-type-in">
-              {formatAmount(totalCredit)}
+              {formatBankAmount(totalCredit)}
             </span>
           </div>
           <div className="detail-stat">
             <span className="detail-stat-label">Debit</span>
             <span className="detail-stat-value fund-type-out">
-              {formatAmount(totalDebit)}
+              {formatBankAmount(totalDebit)}
             </span>
           </div>
           <div className="detail-stat">
@@ -178,7 +178,7 @@ export function BankStatementClient({
                   : "detail-stat-value"
               }
             >
-              {formatAmount(closingBalance)}
+              {formatBankAmount(closingBalance)}
             </span>
           </div>
         </div>
@@ -206,7 +206,7 @@ export function BankStatementClient({
           />
         </label>
         <TableDownloadButtons
-          title={`Bank Statement — ${titleName}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Opening ${formatAmount(openingBalance)} · Credit ${formatAmount(totalCredit)} · Debit ${formatAmount(totalDebit)} · Closing ${formatAmount(closingBalance)}`}
+          title={`Bank Statement — ${titleName}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Opening ${formatBankAmount(openingBalance)} · Credit ${formatBankAmount(totalCredit)} · Debit ${formatBankAmount(totalDebit)} · Closing ${formatBankAmount(closingBalance)}`}
           filenameBase={filenameBase}
           columns={exportColumns}
           rows={exportRows}
@@ -231,7 +231,7 @@ export function BankStatementClient({
                 <td>Opening balance</td>
                 <td className="cell-num">—</td>
                 <td className="cell-num">—</td>
-                <td className="cell-num">{formatAmount(openingBalance)}</td>
+                <td className="cell-num">{formatBankAmount(openingBalance)}</td>
               </tr>
               {rows.length === 0 ? (
                 <tr>
@@ -254,7 +254,7 @@ export function BankStatementClient({
                             : "cell-num"
                         }
                       >
-                        {row.debit != null ? formatAmount(row.debit) : "—"}
+                        {row.debit != null ? formatBankAmount(row.debit) : "—"}
                       </td>
                       <td
                         className={
@@ -263,9 +263,9 @@ export function BankStatementClient({
                             : "cell-num"
                         }
                       >
-                        {row.credit != null ? formatAmount(row.credit) : "—"}
+                        {row.credit != null ? formatBankAmount(row.credit) : "—"}
                       </td>
-                      <td className="cell-num">{formatAmount(row.balance)}</td>
+                      <td className="cell-num">{formatBankAmount(row.balance)}</td>
                     </tr>
                   );
                 })
@@ -274,10 +274,10 @@ export function BankStatementClient({
                 <td>—</td>
                 <td>Closing balance</td>
                 <td className="cell-num fund-type-out">
-                  {formatAmount(totalDebit)}
+                  {formatBankAmount(totalDebit)}
                 </td>
                 <td className="cell-num fund-type-in">
-                  {formatAmount(totalCredit)}
+                  {formatBankAmount(totalCredit)}
                 </td>
                 <td
                   className={
@@ -286,7 +286,7 @@ export function BankStatementClient({
                       : "cell-num"
                   }
                 >
-                  {formatAmount(closingBalance)}
+                  {formatBankAmount(closingBalance)}
                 </td>
               </tr>
             </tbody>

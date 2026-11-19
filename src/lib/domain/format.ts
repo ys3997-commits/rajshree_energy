@@ -196,6 +196,16 @@ export function formatRs(
   return formatAmount(value);
 }
 
+/** Bank amounts keep paise: two decimal places, Indian grouping. */
+export function formatBankAmount(
+  value: { toString(): string } | number | string | null | undefined,
+): string {
+  if (value == null || value === "") return "—";
+  const s = typeof value === "string" ? value : value.toString();
+  if (s === "—") return "—";
+  return formatIndianNumber(s, 2);
+}
+
 export function formatCustomerCategory(
   category: CustomerCategory | string | null | undefined,
 ): string {
@@ -231,7 +241,7 @@ export type QualityClassLabel = {
 export function formatQualityClass(
   qc: QualityClassLabel | null | undefined,
 ): string {
-  if (!qc) return "—";
+  if (!qc?.origin?.name || !qc.qualityOption?.name) return "—";
   const domestic = qc.domestic ? "Domestic" : "Imported";
   return `${domestic} · ${qc.origin.name} · ${qc.qualityOption.name}`;
 }

@@ -1,4 +1,3 @@
-import { asSessionCookie } from "@/lib/auth/browserSession";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import {
@@ -44,7 +43,7 @@ export async function updateSession(request: NextRequest) {
           );
           supabaseResponse = nextWithPath(request);
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, asSessionCookie(options)),
+            supabaseResponse.cookies.set(name, value, options),
           );
         },
       },

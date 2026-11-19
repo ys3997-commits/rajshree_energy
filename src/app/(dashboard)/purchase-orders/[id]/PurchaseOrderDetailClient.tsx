@@ -7,6 +7,7 @@ import {
   completeOpenPurchaseOrder,
   updatePurchaseOrderFields,
 } from "@/lib/actions/purchaseOrders";
+import { throwIfActionError } from "@/lib/auth/errors";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
 import {
@@ -93,6 +94,9 @@ export function PurchaseOrderDetailClient({
   const [qualityClassId, setQualityClassId] = useState(
     order.qualityClassId ?? "",
   );
+  const [closingQuantity, setClosingQuantity] = useState(
+    order.closingQuantity ?? "",
+  );
 
   const rateBreakdown = useMemo(() => {
     if (rate === "") return null;
@@ -111,20 +115,22 @@ export function PurchaseOrderDetailClient({
           rate: rate || null,
           qualityClassId: qualityClassId || null,
         });
-        await updatePurchaseOrderFields(order.id, {
+        throwIfActionError(await updatePurchaseOrderFields(order.id, {
           poNumber,
           orderDate: orderDate || null,
           importerId,
-        });
+          closingQuantity: closingQuantity === "" ? null : closingQuantity,
+        }));
       } else {
-        await updatePurchaseOrderFields(order.id, {
+        throwIfActionError(await updatePurchaseOrderFields(order.id, {
           poNumber,
           orderDate: orderDate || null,
           importerId,
           quantity: quantity || undefined,
           rate: rate === "" ? null : rate,
           qualityClassId: qualityClassId || null,
-        });
+          closingQuantity: closingQuantity === "" ? null : closingQuantity,
+        }));
       }
       setMessage("Purchase order updated.");
       window.location.reload();
@@ -265,6 +271,19 @@ export function PurchaseOrderDetailClient({
           options={qualityClasses}
           disabled={!canEdit}
         />
+        <label>Closing Qty</label>
+        <div className="field-with-unit">
+          <input
+            type="number"
+            step="any"
+            min="0"
+            value={closingQuantity}
+            onChange={(e) => setClosingQuantity(e.target.value)}
+            placeholder="0"
+            disabled={!canEdit}
+          />
+          <span className="field-unit">MT</span>
+        </div>
         {canEdit && (
           <>
             <div />

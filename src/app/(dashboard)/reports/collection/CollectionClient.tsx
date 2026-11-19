@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
@@ -86,26 +85,16 @@ function matchesPlannedCallFilter(
   return p > tomorrow;
 }
 
-function rowHighlightClass(
-  planned: string | null,
-  today: string,
-): string | undefined {
+function rowHighlightClass(planned: string | null, today: string): string {
   const p = normalizePlannedDate(planned);
-  if (!p) return undefined;
+  if (!p) return "collection-row-call-none";
   if (p === today) return "collection-row-call-today";
   if (p < today) return "collection-row-due-call";
-  return undefined;
+  return "collection-row-call-future";
 }
 
-function rowClassName(
-  plannedDate: string | null,
-  today: string,
-  lastPaidYesterday: boolean,
-): string | undefined {
-  const highlight = rowHighlightClass(plannedDate, today);
-  if (highlight) return highlight;
-  if (lastPaidYesterday) return "payment-row-yesterday";
-  return undefined;
+function rowClassName(plannedDate: string | null, today: string): string {
+  return rowHighlightClass(plannedDate, today);
 }
 
 function distinctTrimmed(values: Array<string | null | undefined>): string[] {
@@ -195,7 +184,6 @@ export function CollectionClient({
   const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const today = todayLocal();
-  const yesterday = addLocalDays(today, -1);
   const tomorrow = addLocalDays(today, 1);
 
   const buyerRows = useMemo(
@@ -727,8 +715,6 @@ export function CollectionClient({
           </thead>
           <tbody>
             {filteredRows.map((row) => {
-              const lastPaidYesterday =
-                normalizePlannedDate(row.lastPaymentDate) === yesterday;
               const paymentWaInput: CollectionWhatsAppInput = {
                 recipientName: row.paymentInChargeName,
                 recipientContact: row.paymentInChargeContact,
@@ -759,16 +745,10 @@ export function CollectionClient({
                   className={rowClassName(
                     row.plannedCollectionCallDate,
                     today,
-                    lastPaidYesterday,
                   )}
                 >
                   <td className="collection-engine-customer-col">
-                    <Link
-                      href={`/reports/customer-analysis/${row.id}`}
-                      className="btn-link"
-                    >
-                      {capitalizeName(row.name) ?? row.name}
-                    </Link>
+                    {capitalizeName(row.name) ?? row.name}
                   </td>
                   <td>
                     {row.paymentInChargeName

@@ -11,7 +11,7 @@ import {
 import { useBankAccountPicker } from "../BankEntryForm";
 import {
   formatIndianAmountTyping,
-  formatRs,
+  formatBankAmount,
   parseAmountInput,
   toTitleCase,
 } from "@/lib/domain/format";
@@ -142,7 +142,7 @@ export function BookExpensesClient({
   }
 
   function onDelete(row: BookExpenseRow) {
-    if (!confirm(`Delete expense of ${formatRs(row.amount)}?`)) return;
+    if (!confirm(`Delete expense of ${formatBankAmount(row.amount)}?`)) return;
     setError(null);
     startTransition(async () => {
       try {
@@ -246,7 +246,7 @@ export function BookExpensesClient({
                         : "detail-stat-value"
                     }
                   >
-                    {formatRs(account.balance)}
+                    {formatBankAmount(account.balance)}
                   </span>
                 </button>
               );
@@ -375,7 +375,7 @@ export function BookExpensesClient({
                         <td>{formatDateDdMmYyyy(row.date)}</td>
                         <td>{row.paidAccountName}</td>
                         <td>{row.indirectExpenseName}</td>
-                        <td className="cell-num">{formatRs(row.amount)}</td>
+                        <td className="cell-num">{formatBankAmount(row.amount)}</td>
                         <td
                           className={toTitleCase(row.particular) ? undefined : "cell-dash"}
                         >

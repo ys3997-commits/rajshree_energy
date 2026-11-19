@@ -133,16 +133,41 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
               </tr>
             </thead>
             <tbody>
-              {dispatches.map((row) => (
+              {dispatches.map((row) => {
+                const rowSummary = {
+                  dispatchNumber: displayDispatchNumber(row.dispatchNumber),
+                  date: formatDateDdMmYyyy(
+                    new Date(row.dispatchDate).toISOString().slice(0, 10),
+                  ),
+                  lorryNumber: formatLorryNumber(row.lorryNumber) ?? "—",
+                  weight: formatDispatchMt(row.dispatchedQuantity),
+                  basicPrice: formatAmount(row.purchaseBasicRate),
+                  basicAmount: formatPurchaseBasicAmount(
+                    row.dispatchedQuantity,
+                    row.purchaseBasicRate,
+                  ),
+                  gst: formatPurchaseGstAmount(
+                    row.dispatchedQuantity,
+                    row.purchaseBasicRate,
+                  ),
+                  tcs: formatPurchaseTcsAmount(
+                    row.dispatchedQuantity,
+                    row.purchaseBasicRate,
+                  ),
+                  totalAmount: formatPurchaseTotalAmount(
+                    row.dispatchedQuantity,
+                    row.purchaseBasicRate,
+                  ),
+                  vendor: row.vendorName ?? "—",
+                  gstState: row.gstState ?? "—",
+                };
+
+                return (
                 <tr key={row.id} data-dispatch-id={row.id}>
                   <td className="update-purchase-dispatch-col">
-                    {displayDispatchNumber(row.dispatchNumber)}
+                    {rowSummary.dispatchNumber}
                   </td>
-                  <td className="update-purchase-date-col">
-                    {formatDateDdMmYyyy(
-                      new Date(row.dispatchDate).toISOString().slice(0, 10),
-                    )}
-                  </td>
+                  <td className="update-purchase-date-col">{rowSummary.date}</td>
                   <td
                     className={
                       row.purchaseInvoiceNumber ? undefined : "cell-center"
@@ -151,38 +176,14 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
                     {row.purchaseInvoiceNumber ?? "—"}
                   </td>
                   <td className={row.lorryNumber ? undefined : "cell-center"}>
-                    {formatLorryNumber(row.lorryNumber) ?? "—"}
+                    {rowSummary.lorryNumber}
                   </td>
-                  <td className="cell-num">
-                    {formatDispatchMt(row.dispatchedQuantity)}
-                  </td>
-                  <td className="cell-num">
-                    {formatAmount(row.purchaseBasicRate)}
-                  </td>
-                  <td className="cell-num">
-                    {formatPurchaseBasicAmount(
-                      row.dispatchedQuantity,
-                      row.purchaseBasicRate,
-                    )}
-                  </td>
-                  <td className="cell-num">
-                    {formatPurchaseGstAmount(
-                      row.dispatchedQuantity,
-                      row.purchaseBasicRate,
-                    )}
-                  </td>
-                  <td className="cell-num">
-                    {formatPurchaseTcsAmount(
-                      row.dispatchedQuantity,
-                      row.purchaseBasicRate,
-                    )}
-                  </td>
-                  <td className="cell-num">
-                    {formatPurchaseTotalAmount(
-                      row.dispatchedQuantity,
-                      row.purchaseBasicRate,
-                    )}
-                  </td>
+                  <td className="cell-num">{rowSummary.weight}</td>
+                  <td className="cell-num">{rowSummary.basicPrice}</td>
+                  <td className="cell-num">{rowSummary.basicAmount}</td>
+                  <td className="cell-num">{rowSummary.gst}</td>
+                  <td className="cell-num">{rowSummary.tcs}</td>
+                  <td className="cell-num">{rowSummary.totalAmount}</td>
                   <td
                     className={`update-purchase-vendor-cell${
                       row.vendorName ? "" : " cell-center"
@@ -201,46 +202,25 @@ export function UpdatePurchaseListView({ data }: { data: DispatchListData }) {
                     <div className="dispatch-edit-actions">
                       <EditDispatchPurchaseButton
                         dispatchId={row.id}
+                        mode="invoice"
                         purchaseInvoiceNumber={row.purchaseInvoiceNumber}
                         entryInTally={row.entryInTally}
                         canEdit={row.canEditPurchase}
-                        rowSummary={{
-                          dispatchNumber: displayDispatchNumber(
-                            row.dispatchNumber,
-                          ),
-                          date: formatDateDdMmYyyy(
-                            new Date(row.dispatchDate)
-                              .toISOString()
-                              .slice(0, 10),
-                          ),
-                          lorryNumber:
-                            formatLorryNumber(row.lorryNumber) ?? "—",
-                          weight: formatDispatchMt(row.dispatchedQuantity),
-                          basicPrice: formatAmount(row.purchaseBasicRate),
-                          basicAmount: formatPurchaseBasicAmount(
-                            row.dispatchedQuantity,
-                            row.purchaseBasicRate,
-                          ),
-                          gst: formatPurchaseGstAmount(
-                            row.dispatchedQuantity,
-                            row.purchaseBasicRate,
-                          ),
-                          tcs: formatPurchaseTcsAmount(
-                            row.dispatchedQuantity,
-                            row.purchaseBasicRate,
-                          ),
-                          totalAmount: formatPurchaseTotalAmount(
-                            row.dispatchedQuantity,
-                            row.purchaseBasicRate,
-                          ),
-                          vendor: row.vendorName ?? "—",
-                          gstState: row.gstState ?? "—",
-                        }}
+                        rowSummary={rowSummary}
+                      />
+                      <EditDispatchPurchaseButton
+                        dispatchId={row.id}
+                        mode="tally"
+                        purchaseInvoiceNumber={row.purchaseInvoiceNumber}
+                        entryInTally={row.entryInTally}
+                        canEdit={row.canEditPurchase}
+                        rowSummary={rowSummary}
                       />
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
               {dispatches.length === 0 && (
                 <tr>
                   <td colSpan={COLUMN_COUNT}>No dispatches match filters.</td>

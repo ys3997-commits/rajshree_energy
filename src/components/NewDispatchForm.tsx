@@ -7,6 +7,7 @@ import {
   createDispatch,
   createOpenOrderDispatch,
 } from "@/lib/actions/dispatch";
+import { throwIfActionError } from "@/lib/auth/errors";
 import {
   formatQualityClass,
   formatMt,
@@ -189,20 +190,29 @@ export function NewDispatchForm({
         purchaseInvoiceNumber: purchaseInvoiceNumber || null,
       };
 
+      if (!transporterId) throw new Error("Transporter is required");
+      if (dispatchTerms === DispatchTerms.FOR && !freight.trim()) {
+        throw new Error("Freight is required");
+      }
+
       if (mode === "open") {
         if (!customerId) throw new Error("Customer is required");
-        await createOpenOrderDispatch({
-          poNumber: openPoNumber,
-          customerId,
-          rate: saleRate.trim() || null,
-          ...shared,
-        });
+        throwIfActionError(
+          await createOpenOrderDispatch({
+            poNumber: openPoNumber,
+            customerId,
+            rate: saleRate.trim() || null,
+            ...shared,
+          }),
+        );
       } else {
         if (!poNumber) throw new Error("Select an existing sale PO");
-        await createDispatch({
-          poNumber,
-          ...shared,
-        });
+        throwIfActionError(
+          await createDispatch({
+            poNumber,
+            ...shared,
+          }),
+        );
       }
       if (onSuccess) {
         onSuccess();
@@ -519,6 +529,20 @@ export function NewDispatchForm({
           </>
         )}
 
+        <label>Transporter</label>
+        <select
+          required
+          value={transporterId}
+          onChange={(e) => setTransporterId(e.target.value)}
+        >
+          <option value="">Select</option>
+          {transporters.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
+
         <label>Delivery Terms</label>
         <div
           className="segment-control"
@@ -541,31 +565,12 @@ export function NewDispatchForm({
             className={`segment-option${dispatchTerms === DispatchTerms.EX_PORT ? " segment-option-selected" : ""}`}
             onClick={() => {
               setDispatchTerms(DispatchTerms.EX_PORT);
-              setTransporterId("");
               setFreight("");
             }}
           >
             Ex-Port
           </button>
         </div>
-
-        <label>Transporter</label>
-        {dispatchTerms === DispatchTerms.FOR ? (
-          <select
-            required
-            value={transporterId}
-            onChange={(e) => setTransporterId(e.target.value)}
-          >
-            <option value="">Select</option>
-            {transporters.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div className="text-sm text-neutral-600">Not required for Ex-Port</div>
-        )}
 
         {dispatchTerms === DispatchTerms.FOR ? (
           <>
@@ -582,13 +587,6 @@ export function NewDispatchForm({
               />
               <span className="field-unit">Rs/MT</span>
             </div>
-            <p
-              className="text-sm text-neutral-600"
-              style={{ gridColumn: "1 / -1" }}
-            >
-              FOR: sale rate includes freight. Freight is subtracted to get the
-              goods price for profit.
-            </p>
           </>
         ) : (
           <>

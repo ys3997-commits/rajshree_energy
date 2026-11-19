@@ -30,18 +30,40 @@ function SummaryField({ label, value }: { label: string; value: string }) {
   );
 }
 
+export type PurchaseEditMode = "all" | "invoice" | "tally";
+
+function modalTitle(mode: PurchaseEditMode): string {
+  if (mode === "invoice") return "Purchase Invoice";
+  if (mode === "tally") return "Purchase In Tally";
+  return "Purchase edit";
+}
+
+function sectionTitle(mode: PurchaseEditMode): string {
+  if (mode === "invoice") return "Update purchase invoice";
+  if (mode === "tally") return "Update purchase in tally";
+  return "Update purchase";
+}
+
+function defaultButtonLabel(mode: PurchaseEditMode): string {
+  return modalTitle(mode);
+}
+
 export function EditDispatchPurchaseButton({
   dispatchId,
   purchaseInvoiceNumber,
   entryInTally,
   rowSummary,
   canEdit = true,
+  mode = "all",
+  buttonLabel,
 }: {
   dispatchId: string;
   purchaseInvoiceNumber: string | null;
   entryInTally: boolean;
   rowSummary?: PurchaseEditRowSummary;
   canEdit?: boolean;
+  mode?: PurchaseEditMode;
+  buttonLabel?: string;
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -51,11 +73,19 @@ export function EditDispatchPurchaseButton({
   const [tally, setTally] = useState(entryInTally);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const showInvoice = mode === "all" || mode === "invoice";
+  const showTally = mode === "all" || mode === "tally";
+  const fieldId = `${mode}-${dispatchId}`;
 
-  const complete = isPurchaseChecklistComplete({
-    purchaseInvoiceNumber,
-    entryInTally,
-  });
+  const complete =
+    mode === "invoice"
+      ? Boolean(purchaseInvoiceNumber?.trim())
+      : mode === "tally"
+        ? entryInTally
+        : isPurchaseChecklistComplete({
+            purchaseInvoiceNumber,
+            entryInTally,
+          });
 
   function openModal() {
     setPurchaseInvoice(purchaseInvoiceNumber ?? "");
@@ -70,8 +100,8 @@ export function EditDispatchPurchaseButton({
     setSaving(true);
     try {
       await updateDispatch(dispatchId, {
-        purchaseInvoiceNumber: purchaseInvoice,
-        entryInTally: tally,
+        ...(showInvoice ? { purchaseInvoiceNumber: purchaseInvoice } : {}),
+        ...(showTally ? { entryInTally: tally } : {}),
       });
       setOpen(false);
       router.refresh();
@@ -93,11 +123,11 @@ export function EditDispatchPurchaseButton({
         disabled={!canEdit}
         title={canEdit ? undefined : CHECKLIST_EDIT_LOCK_HINT}
       >
-        Purchase edit
+        {buttonLabel ?? defaultButtonLabel(mode)}
       </button>
       <Modal
         open={open}
-        title="Purchase edit"
+        title={modalTitle(mode)}
         wide={Boolean(rowSummary)}
         onClose={() => {
           if (!saving) setOpen(false);
@@ -137,26 +167,44 @@ export function EditDispatchPurchaseButton({
               className="purchase-edit-section-title"
               style={{ gridColumn: "1 / -1" }}
             >
-              Update purchase
+              {sectionTitle(mode)}
             </h3>
           ) : null}
-          <label htmlFor={`purchase-invoice-${dispatchId}`}>Purchase Invoice Number</label>
-          <input
-            id={`purchase-invoice-${dispatchId}`}
-            value={purchaseInvoice}
-            onChange={(e) => setPurchaseInvoice(e.target.value.toUpperCase())}
-            placeholder="Purchase invoice number"
-            autoFocus={!rowSummary}
-          />
+          {showInvoice ? (
+            <>
+              <label htmlFor={`purchase-invoice-${fieldId}`}>
+                {mode === "invoice"
+                  ? "Purchase Invoice"
+                  : "Purchase Invoice Number"}
+              </label>
+              <input
+                id={`purchase-invoice-${fieldId}`}
+                value={purchaseInvoice}
+                onChange={(e) =>
+                  setPurchaseInvoice(e.target.value.toUpperCase())
+                }
+                placeholder="Purchase invoice number"
+                autoFocus={!rowSummary}
+              />
+            </>
+          ) : null}
 
-          <label htmlFor={`tally-${dispatchId}`}>Purchase Invoice In Tally</label>
-          <input
-            id={`tally-${dispatchId}`}
-            type="checkbox"
-            className="dispatch-bool-toggle"
-            checked={tally}
-            onChange={(e) => setTally(e.target.checked)}
-          />
+          {showTally ? (
+            <>
+              <label htmlFor={`tally-${fieldId}`}>
+                {mode === "tally"
+                  ? "Purchase In Tally"
+                  : "Purchase Invoice In Tally"}
+              </label>
+              <input
+                id={`tally-${fieldId}`}
+                type="checkbox"
+                className="dispatch-bool-toggle"
+                checked={tally}
+                onChange={(e) => setTally(e.target.checked)}
+              />
+            </>
+          ) : null}
 
           <div />
           <div className="modal-actions">

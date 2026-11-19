@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CustomerCategory, DispatchTerms } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
 import { updateDispatch } from "@/lib/actions/dispatch";
+import { throwIfActionError } from "@/lib/auth/errors";
 import { DISPATCH_EDIT_LOCK_HINT } from "@/lib/auth/editLockHint";
 import {
   formatMt,
@@ -287,7 +288,7 @@ export function EditDispatchButton({
       const trimmedReceived =
         terms === DispatchTerms.EX_PORT ? qty.trim() : receivedQty.trim();
 
-      await updateDispatch(dispatchId, {
+      throwIfActionError(await updateDispatch(dispatchId, {
         dispatchDate: date,
         lorryNumber: lorry.trim()
           ? (normalizeLorryNumber(lorry) ?? null)
@@ -313,14 +314,14 @@ export function EditDispatchButton({
             }
           : { poNumber: salePo }),
         dispatchTerms: terms,
-        transporterId: terms === DispatchTerms.FOR ? transporter || null : null,
+        transporterId: transporter || null,
         freight:
           terms === DispatchTerms.FOR ? freightValue.trim() || null : null,
         saleInvoiceNumber: saleInvoice,
         purchaseInvoiceNumber: purchaseInvoice,
         receivingQuantity: trimmedReceived === "" ? null : trimmedReceived,
         entryInTally: tally,
-      });
+      }));
       setOpen(false);
       router.refresh();
     } catch (err) {
@@ -664,6 +665,21 @@ export function EditDispatchButton({
             </>
           )}
 
+          <label htmlFor={`edit-transporter-${dispatchId}`}>Transporter</label>
+          <select
+            id={`edit-transporter-${dispatchId}`}
+            required
+            value={transporter}
+            onChange={(e) => setTransporter(e.target.value)}
+          >
+            <option value="">Select</option>
+            {transporters.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
+
           <label>Delivery Terms</label>
           <div
             className="segment-control"
@@ -686,7 +702,6 @@ export function EditDispatchButton({
               className={`segment-option${terms === DispatchTerms.EX_PORT ? " segment-option-selected" : ""}`}
               onClick={() => {
                 setTerms(DispatchTerms.EX_PORT);
-                setTransporter("");
                 setFreightValue("");
                 setReceivedQty(qty);
               }}
@@ -694,27 +709,6 @@ export function EditDispatchButton({
               Ex-Port
             </button>
           </div>
-
-          <label htmlFor={`edit-transporter-${dispatchId}`}>Transporter</label>
-          {terms === DispatchTerms.FOR ? (
-            <select
-              id={`edit-transporter-${dispatchId}`}
-              required
-              value={transporter}
-              onChange={(e) => setTransporter(e.target.value)}
-            >
-              <option value="">Select</option>
-              {transporters.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <div className="text-sm text-neutral-600">
-              Not required for Ex-Port
-            </div>
-          )}
 
           {terms === DispatchTerms.FOR ? (
             <>

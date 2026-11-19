@@ -1,4 +1,3 @@
-import { asSessionCookie } from "@/lib/auth/browserSession";
 import { createBrowserClient } from "@supabase/ssr";
 import { parse, serialize } from "cookie";
 import type { Database } from "@/types/database";
@@ -18,7 +17,7 @@ export function createClient() {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            document.cookie = serialize(name, value, asSessionCookie(options));
+            document.cookie = serialize(name, value, options);
           });
         },
       },

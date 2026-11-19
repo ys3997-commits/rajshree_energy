@@ -15,7 +15,7 @@ import { useBankAccountPicker } from "./BankEntryForm";
 import {
   formatCustomerCategory,
   formatIndianAmountTyping,
-  formatRs,
+  formatBankAmount,
   parseAmountInput,
 } from "@/lib/domain/format";
 import { parsePartyKey, partyKey, partyOptionGroup, partyOptionLabel } from "@/lib/domain/paymentParty";
@@ -187,7 +187,7 @@ export function PaymentsClient({
         account: accountLabel(row.accountName, row.bankName),
         customer: partyLabel(row),
         type: directionLabel(row.direction),
-        amount: formatRs(row.amount),
+        amount: formatBankAmount(row.amount),
       })),
     [exportRows],
   );
@@ -273,7 +273,7 @@ export function PaymentsClient({
   }
 
   function onDelete(row: PaymentRow) {
-    if (!confirm(`Delete payment of ${formatRs(row.amount)}?`)) return;
+    if (!confirm(`Delete payment of ${formatBankAmount(row.amount)}?`)) return;
     setError(null);
     startTransition(async () => {
       try {
@@ -363,7 +363,7 @@ export function PaymentsClient({
                         : "detail-stat-value"
                     }
                   >
-                    {formatRs(account.balance)}
+                    {formatBankAmount(account.balance)}
                   </span>
                 </button>
               );
@@ -520,7 +520,7 @@ export function PaymentsClient({
                         {directionLabel(row.direction)}
                       </td>
                       <td className={`cell-num ${typeClass(row.direction)}`}>
-                        {formatRs(row.amount)}
+                        {formatBankAmount(row.amount)}
                       </td>
                       <td className="space-x-2 whitespace-nowrap">
                         <button

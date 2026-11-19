@@ -1,23 +1,22 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { BrandMark } from "@/components/BrandMark";
-import { markBrowserSession } from "@/lib/auth/browserSession";
 import { signInWithStaffPassword, signOutStaff } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    const form = new FormData(e.currentTarget);
+    const username = String(form.get("username") || "");
+    const password = String(form.get("password") || "");
 
     const supabase = createClient();
     if (username.includes("@")) {
@@ -28,24 +27,20 @@ export default function LoginPage() {
 
       if (!signInError) {
         await signOutStaff();
-        markBrowserSession();
-        setLoading(false);
-        router.push("/");
-        router.refresh();
+        window.location.assign("/");
         return;
       }
     }
 
     const staff = await signInWithStaffPassword(username, password);
-    setLoading(false);
 
     if (staff.ok) {
       await supabase.auth.signOut();
-      markBrowserSession();
-      router.push(staff.href);
-      router.refresh();
+      window.location.assign(staff.href);
       return;
     }
+
+    setLoading(false);
 
     if ("reason" in staff && staff.reason === "no-pages") {
       setError("This login has no pages assigned. Ask the owner to grant access.");
@@ -57,7 +52,13 @@ export default function LoginPage() {
 
   return (
     <div className="login-shell">
-      <form onSubmit={onSubmit} className="login-card">
+      <form
+        method="post"
+        action="/login"
+        autoComplete="on"
+        onSubmit={onSubmit}
+        className="login-card"
+      >
         <div className="login-brand">
           <BrandMark size="md" />
           <div>
@@ -73,10 +74,9 @@ export default function LoginPage() {
           <label htmlFor="username">Username</label>
           <input
             id="username"
+            name="username"
             type="text"
             required
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
             autoComplete="username"
             autoCapitalize="none"
             autoCorrect="off"
@@ -89,10 +89,9 @@ export default function LoginPage() {
           <label htmlFor="password">Password</label>
           <input
             id="password"
+            name="password"
             type="password"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
         </div>

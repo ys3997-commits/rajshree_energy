@@ -14,7 +14,7 @@ import { useBankAccountPicker } from "../BankEntryForm";
 import {
   capitalizeName,
   formatIndianAmountTyping,
-  formatRs,
+  formatBankAmount,
   parseAmountInput,
 } from "@/lib/domain/format";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
@@ -146,7 +146,7 @@ export function TxnSavingClient({
         type: directionLabel(row.direction),
         account: accountLabel(row.accountName, row.bankName),
         savingAccountName: row.savingAccountName,
-        amount: formatRs(row.amount),
+        amount: formatBankAmount(row.amount),
       })),
     [exportRows],
   );
@@ -227,7 +227,7 @@ export function TxnSavingClient({
   }
 
   function onDelete(row: PaymentRow) {
-    if (!confirm(`Delete transaction of ${formatRs(row.amount)}?`)) return;
+    if (!confirm(`Delete transaction of ${formatBankAmount(row.amount)}?`)) return;
     setError(null);
     startTransition(async () => {
       try {
@@ -318,7 +318,7 @@ export function TxnSavingClient({
                         : "detail-stat-value"
                     }
                   >
-                    {formatRs(row.balance)}
+                    {formatBankAmount(row.balance)}
                   </span>
                 </button>
               );
@@ -479,7 +479,7 @@ export function TxnSavingClient({
                         <td>{accountLabel(row.accountName, row.bankName)}</td>
                         <td>{row.savingAccountName}</td>
                         <td className={`cell-num ${typeClass(row.direction)}`}>
-                          {formatRs(row.amount)}
+                          {formatBankAmount(row.amount)}
                         </td>
                         <td className="space-x-2 whitespace-nowrap">
                           <button

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { Modal } from "@/components/Modal";
@@ -90,15 +89,12 @@ function matchesPlannedCallFilter(
   return p > tomorrow;
 }
 
-function rowHighlightClass(
-  planned: string | null,
-  today: string,
-): string | undefined {
+function rowHighlightClass(planned: string | null, today: string): string {
   const p = normalizePlannedDate(planned);
-  if (!p) return undefined;
+  if (!p) return "collection-row-call-none";
   if (p === today) return "collection-row-call-today";
   if (p < today) return "collection-row-due-call";
-  return undefined;
+  return "collection-row-call-future";
 }
 
 function distinctTrimmed(values: Array<string | null | undefined>): string[] {
@@ -801,12 +797,7 @@ export function SalesEngineClient({
               return (
                 <tr key={row.id} className={rowClass}>
                   <td className="sales-engine-customer-col">
-                    <Link
-                      href={`/reports/customer-analysis/${row.id}`}
-                      className="btn-link"
-                    >
-                      {capitalizeName(row.name) ?? row.name}
-                    </Link>
+                    {capitalizeName(row.name) ?? row.name}
                   </td>
                   <td>
                     {row.purchaserName
