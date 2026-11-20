@@ -135,6 +135,14 @@ export const MASTER_BANK_SUB_PAGES = [
     masterSubPage: true,
     masterBankSubPage: true,
   },
+  {
+    key: "options-indirect-expenses",
+    href: optionsHref("indirectExpenses"),
+    label: "Indirect Expenses",
+    group: "Pages" as const,
+    masterSubPage: true,
+    masterBankSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const MASTER_BANK_SUB_PAGE_KEYS = MASTER_BANK_SUB_PAGES.map(
@@ -616,7 +624,13 @@ export function expandLegacyOptionsPageKeys(pageKeys: string[]): string[] {
   const withoutLegacy = pageKeys.filter(
     (key) => key !== LEGACY_OPTIONS_PAGE_KEY,
   );
-  return [...new Set([...withoutLegacy, ...MASTER_OPTIONS_SUB_PAGE_KEYS])];
+  return [
+    ...new Set([
+      ...withoutLegacy,
+      ...MASTER_OPTIONS_SUB_PAGE_KEYS,
+      "options-indirect-expenses",
+    ]),
+  ];
 }
 
 const LEGACY_OPTIONS_DOCUMENTS_KEY = "options-documents";
@@ -751,8 +765,16 @@ function masterOptionsSubPageKeyForPath(pathname: string): string | null {
   return matches[0]?.key ?? null;
 }
 
+function isMasterBankOptionsPath(pathname: string): boolean {
+  const path = canonicalPath(pathname);
+  return MASTER_BANK_SUB_PAGES.some(
+    (page) => page.href.startsWith("/options/") && pathMatchesHref(path, page.href),
+  );
+}
+
 function canAccessMasterOptionsPath(pageKeys: string[], pathname: string): boolean {
   if (isOwnerOnlyOptionsPath(pathname)) return false;
+  if (isMasterBankOptionsPath(pathname)) return false;
   const path = canonicalPath(pathname);
   const expanded = expandStaffPageKeys(pageKeys);
   const subKey = masterOptionsSubPageKeyForPath(pathname);

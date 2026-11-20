@@ -95,13 +95,20 @@ export const USER_MENU_CATEGORY_IDS = ["people", "owners"] as const satisfies re
 
 const userMenuCategoryIdSet = new Set<CategoryId>(USER_MENU_CATEGORY_IDS);
 
+/** Option lists shown under Masters → Bank instead of Masters → Options. */
+const BANK_MENU_CATEGORY_IDS = ["indirectExpenses"] as const satisfies readonly CategoryId[];
+
+const bankMenuCategoryIdSet = new Set<CategoryId>(BANK_MENU_CATEGORY_IDS);
+
 export const USER_MENU_CATEGORIES = OPTION_CATEGORIES.filter((category) =>
   userMenuCategoryIdSet.has(category.id),
 );
 
-/** Option lists under Masters → Options (excludes Team/Admin in Users menu). */
+/** Option lists under Masters → Options (excludes Team/Admin and bank lists). */
 export const MASTER_OPTION_CATEGORIES = OPTION_CATEGORIES.filter(
-  (category) => !userMenuCategoryIdSet.has(category.id),
+  (category) =>
+    !userMenuCategoryIdSet.has(category.id) &&
+    !bankMenuCategoryIdSet.has(category.id),
 );
 
 const slugById = new Map(

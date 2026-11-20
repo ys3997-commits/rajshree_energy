@@ -176,7 +176,26 @@ describe("canAccessPath", () => {
   it("expands legacy options key to all master option sub-pages", () => {
     expect(canAccessPath(["options"], "/options/ports")).toBe(true);
     expect(canAccessPath(["options"], "/options/origins")).toBe(true);
+    expect(canAccessPath(["options"], "/options/indirect-expenses")).toBe(true);
     expect(canAccessPath(["options"], "/options/team")).toBe(false);
+  });
+
+  it("treats indirect expenses as a master bank page", () => {
+    expect(pageForPath("/options/indirect-expenses")?.key).toBe(
+      "options-indirect-expenses",
+    );
+    expect(
+      canAccessPath(["options-indirect-expenses"], "/options/indirect-expenses"),
+    ).toBe(true);
+    expect(canAccessPath(["options-origins"], "/options/indirect-expenses")).toBe(
+      false,
+    );
+    expect(canAccessPath(["options-indirect-expenses"], "/options/origins")).toBe(
+      false,
+    );
+    expect(canAccessPath(["bank-accounts"], "/options/indirect-expenses")).toBe(
+      false,
+    );
   });
 
   it("allows master entity pages when the key is granted", () => {

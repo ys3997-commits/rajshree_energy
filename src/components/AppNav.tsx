@@ -10,9 +10,8 @@ import { BrandMark } from "@/components/BrandMark";
 import { LockedLink } from "@/components/LockedLink";
 import { LogoutButton } from "@/components/LogoutButton";
 import {
-  OPTION_CATEGORIES,
+  MASTER_OPTION_CATEGORIES,
   optionsHref,
-  USER_MENU_CATEGORY_IDS,
 } from "@/app/(dashboard)/options/optionsCategories";
 import {
   documentHref,
@@ -37,11 +36,7 @@ const bankLinks: NavLeaf[] = [
   { href: "/payments/book-expenses", label: "Expenses" },
 ];
 
-const userMenuCategoryIdSet = new Set<string>(USER_MENU_CATEGORY_IDS);
-
-const optionsLinks: NavLeaf[] = OPTION_CATEGORIES.filter(
-  (category) => !userMenuCategoryIdSet.has(category.id),
-).map((category) => ({
+const optionsLinks: NavLeaf[] = MASTER_OPTION_CATEGORIES.map((category) => ({
   href: optionsHref(category.id),
   label: category.label,
 }));
@@ -58,6 +53,7 @@ const links = [
 const mastersBankLinks: NavLeaf[] = [
   { href: "/bank-accounts", label: "Create Bank Account" },
   { href: "/bank-accounts/types", label: "Type of Bank Account" },
+  { href: optionsHref("indirectExpenses"), label: "Indirect Expenses" },
 ];
 
 const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [
