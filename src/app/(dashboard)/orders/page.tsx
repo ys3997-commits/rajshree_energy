@@ -17,6 +17,7 @@ import {
   formatOrderStatusForDisplay,
   formatQualityClass,
   formatSaleOrderMt,
+  orderBalanceRowClass,
 } from "@/lib/domain/format";
 import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
@@ -279,8 +280,11 @@ export default async function OrdersPage({
             {orders.map((row) => {
               const canClose =
                 formatOrderStatusForDisplay(row) === "Running";
+              const balanceClass = orderBalanceRowClass(
+                displayOrderBalance(row),
+              );
               return (
-              <tr key={row.id}>
+              <tr key={row.id} className={balanceClass || undefined}>
                 <td className="orders-sticky-po">
                   <Link
                     href={`/orders/${row.id}`}

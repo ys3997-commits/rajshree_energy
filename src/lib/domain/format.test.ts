@@ -10,6 +10,7 @@ import {
   formatIndianNumber,
   formatMt,
   formatOrderStatusForDisplay,
+  orderBalanceRowClass,
   formatSaleOrderMt,
   formatRs,
   normalizeLorryNumber,
@@ -200,5 +201,24 @@ describe("formatOrderStatusForDisplay", () => {
         orderStatus: "RUNNING",
       }),
     ).toBe("Completed");
+  });
+});
+
+describe("orderBalanceRowClass", () => {
+  it("is yellow above 0 MT and below 7 MT", () => {
+    expect(orderBalanceRowClass(0.001)).toBe("order-row-balance-low");
+    expect(orderBalanceRowClass("6.999")).toBe("order-row-balance-low");
+  });
+
+  it("is red below 0 MT", () => {
+    expect(orderBalanceRowClass(-0.1)).toBe("order-row-balance-negative");
+    expect(orderBalanceRowClass("-2")).toBe("order-row-balance-negative");
+  });
+
+  it("leaves 0 MT, 7 MT, and empty balances uncoloured", () => {
+    expect(orderBalanceRowClass(0)).toBe("");
+    expect(orderBalanceRowClass(7)).toBe("");
+    expect(orderBalanceRowClass(12)).toBe("");
+    expect(orderBalanceRowClass(null)).toBe("");
   });
 });

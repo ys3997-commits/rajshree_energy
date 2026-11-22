@@ -20330,8 +20330,14 @@ export namespace Prisma {
     openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
+    collectionFollowUp1: Date | null
+    collectionFollowUp2: Date | null
+    collectionFollowUp3: Date | null
     collectionThrough: $Enums.CollectionThrough | null
     plannedSaleCallDate: Date | null
+    saleFollowUp1: Date | null
+    saleFollowUp2: Date | null
+    saleFollowUp3: Date | null
     offerPrice: Decimal | null
     offerFreight: Decimal | null
     smsType: $Enums.SalesSmsType | null
@@ -20369,8 +20375,14 @@ export namespace Prisma {
     openingDue: Decimal | null
     due: Decimal | null
     plannedCollectionCallDate: Date | null
+    collectionFollowUp1: Date | null
+    collectionFollowUp2: Date | null
+    collectionFollowUp3: Date | null
     collectionThrough: $Enums.CollectionThrough | null
     plannedSaleCallDate: Date | null
+    saleFollowUp1: Date | null
+    saleFollowUp2: Date | null
+    saleFollowUp3: Date | null
     offerPrice: Decimal | null
     offerFreight: Decimal | null
     smsType: $Enums.SalesSmsType | null
@@ -20408,8 +20420,14 @@ export namespace Prisma {
     openingDue: number
     due: number
     plannedCollectionCallDate: number
+    collectionFollowUp1: number
+    collectionFollowUp2: number
+    collectionFollowUp3: number
     collectionThrough: number
     plannedSaleCallDate: number
+    saleFollowUp1: number
+    saleFollowUp2: number
+    saleFollowUp3: number
     offerPrice: number
     offerFreight: number
     smsType: number
@@ -20465,8 +20483,14 @@ export namespace Prisma {
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
+    collectionFollowUp1?: true
+    collectionFollowUp2?: true
+    collectionFollowUp3?: true
     collectionThrough?: true
     plannedSaleCallDate?: true
+    saleFollowUp1?: true
+    saleFollowUp2?: true
+    saleFollowUp3?: true
     offerPrice?: true
     offerFreight?: true
     smsType?: true
@@ -20504,8 +20528,14 @@ export namespace Prisma {
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
+    collectionFollowUp1?: true
+    collectionFollowUp2?: true
+    collectionFollowUp3?: true
     collectionThrough?: true
     plannedSaleCallDate?: true
+    saleFollowUp1?: true
+    saleFollowUp2?: true
+    saleFollowUp3?: true
     offerPrice?: true
     offerFreight?: true
     smsType?: true
@@ -20543,8 +20573,14 @@ export namespace Prisma {
     openingDue?: true
     due?: true
     plannedCollectionCallDate?: true
+    collectionFollowUp1?: true
+    collectionFollowUp2?: true
+    collectionFollowUp3?: true
     collectionThrough?: true
     plannedSaleCallDate?: true
+    saleFollowUp1?: true
+    saleFollowUp2?: true
+    saleFollowUp3?: true
     offerPrice?: true
     offerFreight?: true
     smsType?: true
@@ -20669,8 +20705,14 @@ export namespace Prisma {
     openingDue: Decimal
     due: Decimal
     plannedCollectionCallDate: Date | null
+    collectionFollowUp1: Date | null
+    collectionFollowUp2: Date | null
+    collectionFollowUp3: Date | null
     collectionThrough: $Enums.CollectionThrough | null
     plannedSaleCallDate: Date | null
+    saleFollowUp1: Date | null
+    saleFollowUp2: Date | null
+    saleFollowUp3: Date | null
     offerPrice: Decimal | null
     offerFreight: Decimal | null
     smsType: $Enums.SalesSmsType | null
@@ -20727,8 +20769,14 @@ export namespace Prisma {
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    collectionFollowUp1?: boolean
+    collectionFollowUp2?: boolean
+    collectionFollowUp3?: boolean
     collectionThrough?: boolean
     plannedSaleCallDate?: boolean
+    saleFollowUp1?: boolean
+    saleFollowUp2?: boolean
+    saleFollowUp3?: boolean
     offerPrice?: boolean
     offerFreight?: boolean
     smsType?: boolean
@@ -20774,8 +20822,14 @@ export namespace Prisma {
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    collectionFollowUp1?: boolean
+    collectionFollowUp2?: boolean
+    collectionFollowUp3?: boolean
     collectionThrough?: boolean
     plannedSaleCallDate?: boolean
+    saleFollowUp1?: boolean
+    saleFollowUp2?: boolean
+    saleFollowUp3?: boolean
     offerPrice?: boolean
     offerFreight?: boolean
     smsType?: boolean
@@ -20814,8 +20868,14 @@ export namespace Prisma {
     openingDue?: boolean
     due?: boolean
     plannedCollectionCallDate?: boolean
+    collectionFollowUp1?: boolean
+    collectionFollowUp2?: boolean
+    collectionFollowUp3?: boolean
     collectionThrough?: boolean
     plannedSaleCallDate?: boolean
+    saleFollowUp1?: boolean
+    saleFollowUp2?: boolean
+    saleFollowUp3?: boolean
     offerPrice?: boolean
     offerFreight?: boolean
     smsType?: boolean
@@ -20891,6 +20951,14 @@ export namespace Prisma {
        */
       plannedCollectionCallDate: Date | null
       /**
+       * Earlier planned collection dates, oldest first. A date moves here only
+       * when the planned call is changed on or after that planned day. Dates
+       * before the customer's last payment are cleared.
+       */
+      collectionFollowUp1: Date | null
+      collectionFollowUp2: Date | null
+      collectionFollowUp3: Date | null
+      /**
        * How the next collection follow-up will be made.
        */
       collectionThrough: $Enums.CollectionThrough | null
@@ -20898,6 +20966,14 @@ export namespace Prisma {
        * Next planned sales call date (calendar day) — separate from collection.
        */
       plannedSaleCallDate: Date | null
+      /**
+       * Earlier planned sales dates, oldest first. A date moves here only when
+       * the planned call is changed on or after that planned day. Cleared when
+       * the customer's order in hand is above 0 MT.
+       */
+      saleFollowUp1: Date | null
+      saleFollowUp2: Date | null
+      saleFollowUp3: Date | null
       /**
        * Latest offer price (Rs/MT) noted on Sales Engine.
        */
@@ -21341,8 +21417,14 @@ export namespace Prisma {
     readonly openingDue: FieldRef<"Customer", 'Decimal'>
     readonly due: FieldRef<"Customer", 'Decimal'>
     readonly plannedCollectionCallDate: FieldRef<"Customer", 'DateTime'>
+    readonly collectionFollowUp1: FieldRef<"Customer", 'DateTime'>
+    readonly collectionFollowUp2: FieldRef<"Customer", 'DateTime'>
+    readonly collectionFollowUp3: FieldRef<"Customer", 'DateTime'>
     readonly collectionThrough: FieldRef<"Customer", 'CollectionThrough'>
     readonly plannedSaleCallDate: FieldRef<"Customer", 'DateTime'>
+    readonly saleFollowUp1: FieldRef<"Customer", 'DateTime'>
+    readonly saleFollowUp2: FieldRef<"Customer", 'DateTime'>
+    readonly saleFollowUp3: FieldRef<"Customer", 'DateTime'>
     readonly offerPrice: FieldRef<"Customer", 'Decimal'>
     readonly offerFreight: FieldRef<"Customer", 'Decimal'>
     readonly smsType: FieldRef<"Customer", 'SalesSmsType'>
@@ -43730,8 +43812,14 @@ export namespace Prisma {
     openingDue: 'openingDue',
     due: 'due',
     plannedCollectionCallDate: 'plannedCollectionCallDate',
+    collectionFollowUp1: 'collectionFollowUp1',
+    collectionFollowUp2: 'collectionFollowUp2',
+    collectionFollowUp3: 'collectionFollowUp3',
     collectionThrough: 'collectionThrough',
     plannedSaleCallDate: 'plannedSaleCallDate',
+    saleFollowUp1: 'saleFollowUp1',
+    saleFollowUp2: 'saleFollowUp2',
+    saleFollowUp3: 'saleFollowUp3',
     offerPrice: 'offerPrice',
     offerFreight: 'offerFreight',
     smsType: 'smsType',
@@ -45394,8 +45482,14 @@ export namespace Prisma {
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp1?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp2?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp3?: DateTimeNullableFilter<"Customer"> | Date | string | null
     collectionThrough?: EnumCollectionThroughNullableFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp1?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp2?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp3?: DateTimeNullableFilter<"Customer"> | Date | string | null
     offerPrice?: DecimalNullableFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     offerFreight?: DecimalNullableFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     smsType?: EnumSalesSmsTypeNullableFilter<"Customer"> | $Enums.SalesSmsType | null
@@ -45440,8 +45534,14 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
+    collectionFollowUp1?: SortOrderInput | SortOrder
+    collectionFollowUp2?: SortOrderInput | SortOrder
+    collectionFollowUp3?: SortOrderInput | SortOrder
     collectionThrough?: SortOrderInput | SortOrder
     plannedSaleCallDate?: SortOrderInput | SortOrder
+    saleFollowUp1?: SortOrderInput | SortOrder
+    saleFollowUp2?: SortOrderInput | SortOrder
+    saleFollowUp3?: SortOrderInput | SortOrder
     offerPrice?: SortOrderInput | SortOrder
     offerFreight?: SortOrderInput | SortOrder
     smsType?: SortOrderInput | SortOrder
@@ -45489,8 +45589,14 @@ export namespace Prisma {
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp1?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp2?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp3?: DateTimeNullableFilter<"Customer"> | Date | string | null
     collectionThrough?: EnumCollectionThroughNullableFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp1?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp2?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp3?: DateTimeNullableFilter<"Customer"> | Date | string | null
     offerPrice?: DecimalNullableFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     offerFreight?: DecimalNullableFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     smsType?: EnumSalesSmsTypeNullableFilter<"Customer"> | $Enums.SalesSmsType | null
@@ -45535,8 +45641,14 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrderInput | SortOrder
+    collectionFollowUp1?: SortOrderInput | SortOrder
+    collectionFollowUp2?: SortOrderInput | SortOrder
+    collectionFollowUp3?: SortOrderInput | SortOrder
     collectionThrough?: SortOrderInput | SortOrder
     plannedSaleCallDate?: SortOrderInput | SortOrder
+    saleFollowUp1?: SortOrderInput | SortOrder
+    saleFollowUp2?: SortOrderInput | SortOrder
+    saleFollowUp3?: SortOrderInput | SortOrder
     offerPrice?: SortOrderInput | SortOrder
     offerFreight?: SortOrderInput | SortOrder
     smsType?: SortOrderInput | SortOrder
@@ -45582,8 +45694,14 @@ export namespace Prisma {
     openingDue?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    collectionFollowUp1?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    collectionFollowUp2?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    collectionFollowUp3?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     collectionThrough?: EnumCollectionThroughNullableWithAggregatesFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    saleFollowUp1?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    saleFollowUp2?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    saleFollowUp3?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
     offerPrice?: DecimalNullableWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     offerFreight?: DecimalNullableWithAggregatesFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     smsType?: EnumSalesSmsTypeNullableWithAggregatesFilter<"Customer"> | $Enums.SalesSmsType | null
@@ -48506,8 +48624,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -48552,8 +48676,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -48596,8 +48726,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -48642,8 +48778,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -48687,8 +48829,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -48725,8 +48873,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -48764,8 +48918,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -51543,8 +51703,14 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    collectionFollowUp1?: SortOrder
+    collectionFollowUp2?: SortOrder
+    collectionFollowUp3?: SortOrder
     collectionThrough?: SortOrder
     plannedSaleCallDate?: SortOrder
+    saleFollowUp1?: SortOrder
+    saleFollowUp2?: SortOrder
+    saleFollowUp3?: SortOrder
     offerPrice?: SortOrder
     offerFreight?: SortOrder
     smsType?: SortOrder
@@ -51590,8 +51756,14 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    collectionFollowUp1?: SortOrder
+    collectionFollowUp2?: SortOrder
+    collectionFollowUp3?: SortOrder
     collectionThrough?: SortOrder
     plannedSaleCallDate?: SortOrder
+    saleFollowUp1?: SortOrder
+    saleFollowUp2?: SortOrder
+    saleFollowUp3?: SortOrder
     offerPrice?: SortOrder
     offerFreight?: SortOrder
     smsType?: SortOrder
@@ -51629,8 +51801,14 @@ export namespace Prisma {
     openingDue?: SortOrder
     due?: SortOrder
     plannedCollectionCallDate?: SortOrder
+    collectionFollowUp1?: SortOrder
+    collectionFollowUp2?: SortOrder
+    collectionFollowUp3?: SortOrder
     collectionThrough?: SortOrder
     plannedSaleCallDate?: SortOrder
+    saleFollowUp1?: SortOrder
+    saleFollowUp2?: SortOrder
+    saleFollowUp3?: SortOrder
     offerPrice?: SortOrder
     offerFreight?: SortOrder
     smsType?: SortOrder
@@ -56512,8 +56690,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -56556,8 +56740,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -57034,8 +57224,14 @@ export namespace Prisma {
     openingDue?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     due?: DecimalFilter<"Customer"> | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp1?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp2?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    collectionFollowUp3?: DateTimeNullableFilter<"Customer"> | Date | string | null
     collectionThrough?: EnumCollectionThroughNullableFilter<"Customer"> | $Enums.CollectionThrough | null
     plannedSaleCallDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp1?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp2?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    saleFollowUp3?: DateTimeNullableFilter<"Customer"> | Date | string | null
     offerPrice?: DecimalNullableFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     offerFreight?: DecimalNullableFilter<"Customer"> | Decimal | DecimalJsLike | number | string | null
     smsType?: EnumSalesSmsTypeNullableFilter<"Customer"> | $Enums.SalesSmsType | null
@@ -58940,8 +59136,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -58985,8 +59187,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -59104,8 +59312,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -59149,8 +59363,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -59490,8 +59710,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -59535,8 +59761,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -59777,8 +60009,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -59822,8 +60060,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -60006,8 +60250,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -60051,8 +60301,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -60240,8 +60496,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -60285,8 +60547,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -60564,8 +60832,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -60609,8 +60883,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -60903,8 +61183,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -60948,8 +61234,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -61054,8 +61346,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -61099,8 +61397,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -61314,8 +61618,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -61359,8 +61669,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -61582,8 +61898,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -61627,8 +61949,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -61809,8 +62137,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -61854,8 +62188,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -64192,8 +64532,14 @@ export namespace Prisma {
     openingDue?: Decimal | DecimalJsLike | number | string
     due?: Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: Date | string | null
+    collectionFollowUp1?: Date | string | null
+    collectionFollowUp2?: Date | string | null
+    collectionFollowUp3?: Date | string | null
     collectionThrough?: $Enums.CollectionThrough | null
     plannedSaleCallDate?: Date | string | null
+    saleFollowUp1?: Date | string | null
+    saleFollowUp2?: Date | string | null
+    saleFollowUp3?: Date | string | null
     offerPrice?: Decimal | DecimalJsLike | number | string | null
     offerFreight?: Decimal | DecimalJsLike | number | string | null
     smsType?: $Enums.SalesSmsType | null
@@ -64380,8 +64726,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -64424,8 +64776,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null
@@ -64468,8 +64826,14 @@ export namespace Prisma {
     openingDue?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     due?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     plannedCollectionCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collectionFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     collectionThrough?: NullableEnumCollectionThroughFieldUpdateOperationsInput | $Enums.CollectionThrough | null
     plannedSaleCallDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp1?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp2?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleFollowUp3?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     offerPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     offerFreight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     smsType?: NullableEnumSalesSmsTypeFieldUpdateOperationsInput | $Enums.SalesSmsType | null

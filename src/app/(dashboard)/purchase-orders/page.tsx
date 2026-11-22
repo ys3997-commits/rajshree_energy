@@ -17,6 +17,7 @@ import {
   formatOrderType,
   formatQualityClass,
   formatSaleOrderMt,
+  orderBalanceRowClass,
 } from "@/lib/domain/format";
 import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
@@ -210,8 +211,14 @@ export default async function PurchaseOrdersPage({
             {orders.map((row) => {
               const canClose =
                 formatOrderStatusForDisplay(row) === "Running";
+              const balanceClass = orderBalanceRowClass(
+                displayOrderBalance(row),
+              );
               return (
-                <tr key={row.id}>
+                <tr
+                  key={row.id}
+                  className={balanceClass || undefined}
+                >
                   <td>
                     <Link
                       href={`/purchase-orders/${row.id}`}

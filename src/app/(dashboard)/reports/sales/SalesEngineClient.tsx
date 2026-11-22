@@ -19,6 +19,7 @@ import {
 } from "@/lib/domain/salesWhatsApp";
 import { openWhatsAppMessage } from "@/lib/domain/whatsappWeb";
 import type { ExecScopeFilter } from "@/lib/auth/report-exec-access";
+import { applyPlannedSaleCallChange } from "@/lib/domain/collectionFollowUps";
 import {
   capitalizeName,
   formatAmount,
@@ -390,6 +391,9 @@ export function SalesEngineClient({
     { key: "overdue", header: "Overdue", align: "right" as const },
     { key: "creditPeriod", header: "Credit Period", align: "right" as const },
     { key: "plannedCall", header: "Planned Call" },
+    { key: "followUp3", header: "Follow up 3" },
+    { key: "followUp2", header: "Follow up 2" },
+    { key: "followUp1", header: "Follow up 1" },
     { key: "offerPrice", header: "Offer Price", align: "right" as const },
     { key: "offerFreight", header: "Offer Freight", align: "right" as const },
     { key: "smsType", header: "SMS Type" },
@@ -414,6 +418,9 @@ export function SalesEngineClient({
         overdue: formatAmount(row.overdue),
         creditPeriod: formatCreditPeriod(row.creditDays),
         plannedCall: formatDateDdMmYyyy(row.plannedSaleCallDate),
+        followUp3: formatDateDdMmYyyy(row.saleFollowUp3),
+        followUp2: formatDateDdMmYyyy(row.saleFollowUp2),
+        followUp1: formatDateDdMmYyyy(row.saleFollowUp1),
         offerPrice: row.offerPrice ? formatRs(row.offerPrice) : "",
         offerFreight: row.offerFreight ? formatRs(row.offerFreight) : "",
         smsType: formatSalesSmsType(row.smsType),
@@ -423,13 +430,34 @@ export function SalesEngineClient({
 
   function onPlannedCallChange(customerId: string, value: string) {
     const nextDate = value.trim() === "" ? null : value;
+    if (nextDate && nextDate < today) {
+      setError("Planned call date cannot be in the past");
+      return;
+    }
     setError(null);
     setRows((prev) =>
-      prev.map((row) =>
-        row.id === customerId
-          ? { ...row, plannedSaleCallDate: nextDate }
-          : row,
-      ),
+      prev.map((row) => {
+        if (row.id !== customerId) return row;
+        const next = applyPlannedSaleCallChange({
+          schedule: {
+            plannedCallDate: row.plannedSaleCallDate,
+            followUp1: row.saleFollowUp1,
+            followUp2: row.saleFollowUp2,
+            followUp3: row.saleFollowUp3,
+          },
+          nextPlannedCallDate: nextDate,
+          changedOn: today,
+          orderInHand: row.orderInHand,
+          lastPaymentDate: row.lastPaymentDate,
+        });
+        return {
+          ...row,
+          plannedSaleCallDate: next.plannedCallDate,
+          saleFollowUp1: next.followUp1,
+          saleFollowUp2: next.followUp2,
+          saleFollowUp3: next.followUp3,
+        };
+      }),
     );
     setSavingCallId(customerId);
     startTransition(async () => {
@@ -438,7 +466,13 @@ export function SalesEngineClient({
         setRows((prev) =>
           prev.map((row) =>
             row.id === customerId
-              ? { ...row, plannedSaleCallDate: result.plannedSaleCallDate }
+              ? {
+                  ...row,
+                  plannedSaleCallDate: result.plannedSaleCallDate,
+                  saleFollowUp1: result.saleFollowUp1,
+                  saleFollowUp2: result.saleFollowUp2,
+                  saleFollowUp3: result.saleFollowUp3,
+                }
               : row,
           ),
         );
@@ -761,6 +795,9 @@ export function SalesEngineClient({
               </th>
               <th className="cell-num">Credit Period</th>
               <th className="collection-date-col">Planned Call</th>
+              <th className="collection-followup-col">Follow up 3</th>
+              <th className="collection-followup-col">Follow up 2</th>
+              <th className="collection-followup-col">Follow up 1</th>
               <th className="cell-num sales-offer-col">Offer Price</th>
               <th className="cell-num sales-offer-col">Offer Freight</th>
               <th className="sales-sms-type-col">SMS Type</th>
@@ -827,12 +864,22 @@ export function SalesEngineClient({
                       lang="en-GB"
                       className="field-input collection-date-input"
                       aria-label={`Planned sales call for ${row.name}`}
+                      min={today}
                       value={row.plannedSaleCallDate ?? ""}
                       disabled={savingCallId === row.id || pending}
                       onChange={(e) =>
                         onPlannedCallChange(row.id, e.target.value)
                       }
                     />
+                  </td>
+                  <td className="collection-followup-col">
+                    {formatDateDdMmYyyy(row.saleFollowUp3)}
+                  </td>
+                  <td className="collection-followup-col">
+                    {formatDateDdMmYyyy(row.saleFollowUp2)}
+                  </td>
+                  <td className="collection-followup-col">
+                    {formatDateDdMmYyyy(row.saleFollowUp1)}
                   </td>
                   <td className="cell-num sales-offer-col">
                     <OfferAmountInput
@@ -919,7 +966,7 @@ export function SalesEngineClient({
             })}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={17}>
+                <td colSpan={20}>
                   {rows.length === 0
                     ? "No active customers."
                     : "No customers match these filters."}

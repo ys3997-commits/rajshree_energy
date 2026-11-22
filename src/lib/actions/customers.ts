@@ -8,6 +8,10 @@ import {
   dispatchedAmount,
   sumSalesSuppliedInCreditWindow,
 } from "@/lib/domain/customerDue";
+import {
+  clearCollectionCallsBeforePayment,
+  isoDateOnly,
+} from "@/lib/domain/collectionFollowUps";
 import { amountRoundsToZero, capitalizeName } from "@/lib/domain/format";
 import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
@@ -201,6 +205,9 @@ export type CustomerDueRow = {
   dealingCompany: string | null;
   creditDays: number | null;
   plannedCollectionCallDate: string | null;
+  collectionFollowUp1: string | null;
+  collectionFollowUp2: string | null;
+  collectionFollowUp3: string | null;
   collectionThrough: "CALL" | "SMS" | null;
   due: string;
   overdue: string;
@@ -233,6 +240,9 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       sector: true,
       dealingCompany: true,
       plannedCollectionCallDate: true,
+      collectionFollowUp1: true,
+      collectionFollowUp2: true,
+      collectionFollowUp3: true,
       collectionThrough: true,
     },
     orderBy: { due: "desc" },
@@ -310,6 +320,15 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       recentSales,
     );
     const last = customerPayments[0] ?? null;
+    const calls = clearCollectionCallsBeforePayment(
+      {
+        plannedCallDate: isoDateOnly(customer.plannedCollectionCallDate),
+        followUp1: isoDateOnly(customer.collectionFollowUp1),
+        followUp2: isoDateOnly(customer.collectionFollowUp2),
+        followUp3: isoDateOnly(customer.collectionFollowUp3),
+      },
+      isoDateOnly(last?.date),
+    );
 
     return {
       id: customer.id,
@@ -327,9 +346,10 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
       sector: customer.sector,
       dealingCompany: customer.dealingCompany,
       creditDays: customer.creditDays,
-      plannedCollectionCallDate: customer.plannedCollectionCallDate
-        ? customer.plannedCollectionCallDate.toISOString().slice(0, 10)
-        : null,
+      plannedCollectionCallDate: calls.plannedCallDate,
+      collectionFollowUp1: calls.followUp1,
+      collectionFollowUp2: calls.followUp2,
+      collectionFollowUp3: calls.followUp3,
       collectionThrough: customer.collectionThrough,
       due: customer.due.toString(),
       overdue: overdue.toString(),

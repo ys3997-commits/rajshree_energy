@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { CustomerCategory } from "@/generated/prisma";
 import { updatePlannedCollectionCall } from "@/lib/actions/collection";
 import type { CustomerDueRow } from "@/lib/actions/customers";
+import { applyPlannedCollectionCallChange } from "@/lib/domain/collectionFollowUps";
 import {
   amountRoundsToZero,
   capitalizeName,
@@ -366,13 +367,33 @@ export function CollectionClient({
 
   function onPlannedCallChange(customerId: string, value: string) {
     const nextDate = value.trim() === "" ? null : value;
+    if (nextDate && nextDate < today) {
+      setError("Planned call date cannot be in the past");
+      return;
+    }
     setError(null);
     setRows((prev) =>
-      prev.map((row) =>
-        row.id === customerId
-          ? { ...row, plannedCollectionCallDate: nextDate }
-          : row,
-      ),
+      prev.map((row) => {
+        if (row.id !== customerId) return row;
+        const next = applyPlannedCollectionCallChange({
+          schedule: {
+            plannedCallDate: row.plannedCollectionCallDate,
+            followUp1: row.collectionFollowUp1,
+            followUp2: row.collectionFollowUp2,
+            followUp3: row.collectionFollowUp3,
+          },
+          nextPlannedCallDate: nextDate,
+          changedOn: today,
+          lastPaymentDate: row.lastPaymentDate,
+        });
+        return {
+          ...row,
+          plannedCollectionCallDate: next.plannedCallDate,
+          collectionFollowUp1: next.followUp1,
+          collectionFollowUp2: next.followUp2,
+          collectionFollowUp3: next.followUp3,
+        };
+      }),
     );
     setSavingCallId(customerId);
     startTransition(async () => {
@@ -384,6 +405,9 @@ export function CollectionClient({
               ? {
                   ...row,
                   plannedCollectionCallDate: result.plannedCollectionCallDate,
+                  collectionFollowUp1: result.collectionFollowUp1,
+                  collectionFollowUp2: result.collectionFollowUp2,
+                  collectionFollowUp3: result.collectionFollowUp3,
                 }
               : row,
           ),
@@ -709,6 +733,9 @@ export function CollectionClient({
                   )}
                 </button>
               </th>
+              <th className="collection-followup-col">Follow up 3</th>
+              <th className="collection-followup-col">Follow up 2</th>
+              <th className="collection-followup-col">Follow up 1</th>
               <th className="collection-whatsapp-col">Payment</th>
               <th className="collection-whatsapp-col">Owner</th>
             </tr>
@@ -791,12 +818,22 @@ export function CollectionClient({
                       lang="en-GB"
                       className="field-input collection-date-input"
                       aria-label={`Planned call for ${row.name}`}
+                      min={today}
                       value={row.plannedCollectionCallDate ?? ""}
                       disabled={savingCallId === row.id || pending}
                       onChange={(e) =>
                         onPlannedCallChange(row.id, e.target.value)
                       }
                     />
+                  </td>
+                  <td className="collection-followup-col">
+                    {formatDateDdMmYyyy(row.collectionFollowUp3)}
+                  </td>
+                  <td className="collection-followup-col">
+                    {formatDateDdMmYyyy(row.collectionFollowUp2)}
+                  </td>
+                  <td className="collection-followup-col">
+                    {formatDateDdMmYyyy(row.collectionFollowUp1)}
                   </td>
                   <td className="collection-whatsapp-col">
                     <CollectionWhatsAppButton
@@ -837,7 +874,7 @@ export function CollectionClient({
             })}
             {filteredRows.length === 0 && (
               <tr>
-                <td colSpan={14}>
+                <td colSpan={17}>
                   {buyerRows.length === 0
                     ? "No outstanding dues."
                     : "No customers match these filters."}
@@ -860,6 +897,9 @@ export function CollectionClient({
                 <td className="cell-num">
                   {formatAmount(totals.overdue.toFixed(2))}
                 </td>
+                <td />
+                <td />
+                <td />
                 <td />
                 <td />
                 <td />

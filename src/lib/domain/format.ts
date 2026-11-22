@@ -334,6 +334,20 @@ export function displayOrderBalance(order: {
   return order.balanceOrder;
 }
 
+/**
+ * Row colour for a balance in MT.
+ * Above 0 and below 7 is low (yellow). Below 0 is negative (red).
+ */
+export function orderBalanceRowClass(
+  balance: { toString(): string } | number | string | null | undefined,
+): string {
+  const n = parseFiniteNumber(balance);
+  if (n == null || n === 0) return "";
+  if (n < 0) return "order-row-balance-negative";
+  if (n < 7) return "order-row-balance-low";
+  return "";
+}
+
 /** Whole calendar days from order date (UTC) to today. Falls back to createdAt. */
 export function daysSinceOrder(
   orderDate: Date | string | null | undefined,

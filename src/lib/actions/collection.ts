@@ -8,6 +8,12 @@ import {
   getStaffReportExecScope,
   rowMatchesExecScope,
 } from "@/lib/auth/report-exec-access";
+import {
+  applyPlannedCollectionCallChange,
+  collectionChangeDate,
+  isoDateOnly,
+  type CollectionCallSchedule,
+} from "@/lib/domain/collectionFollowUps";
 import { prisma } from "@/lib/prisma";
 
 function parseOptionalDate(value: string | null): Date | null {
@@ -51,31 +57,95 @@ function parseCollectionThrough(
   throw new Error("Invalid through value");
 }
 
+export type PlannedCollectionCallResult = {
+  plannedCollectionCallDate: string | null;
+  collectionFollowUp1: string | null;
+  collectionFollowUp2: string | null;
+  collectionFollowUp3: string | null;
+};
+
+function scheduleToDb(schedule: CollectionCallSchedule) {
+  const toDb = (iso: string | null) =>
+    iso ? new Date(`${iso}T00:00:00.000Z`) : null;
+  return {
+    plannedCollectionCallDate: toDb(schedule.plannedCallDate),
+    collectionFollowUp1: toDb(schedule.followUp1),
+    collectionFollowUp2: toDb(schedule.followUp2),
+    collectionFollowUp3: toDb(schedule.followUp3),
+  };
+}
+
+function scheduleFromRow(row: {
+  plannedCollectionCallDate: Date | null;
+  collectionFollowUp1: Date | null;
+  collectionFollowUp2: Date | null;
+  collectionFollowUp3: Date | null;
+}): PlannedCollectionCallResult {
+  return {
+    plannedCollectionCallDate: isoDateOnly(row.plannedCollectionCallDate),
+    collectionFollowUp1: isoDateOnly(row.collectionFollowUp1),
+    collectionFollowUp2: isoDateOnly(row.collectionFollowUp2),
+    collectionFollowUp3: isoDateOnly(row.collectionFollowUp3),
+  };
+}
+
 /** Set or clear the next planned collection call date for a customer. */
 export async function updatePlannedCollectionCall(
   customerId: string,
   date: string | null,
-): Promise<{ plannedCollectionCallDate: string | null }> {
+): Promise<PlannedCollectionCallResult> {
   if (!customerId) throw new Error("Customer is required");
 
   await assertCollectionCustomerAccess(customerId);
 
-  const plannedCollectionCallDate = parseOptionalDate(date);
+  const nextPlanned = parseOptionalDate(date);
+  const nextPlannedIso = isoDateOnly(nextPlanned);
+
+  const [existing, lastPayment] = await Promise.all([
+    prisma.customer.findUnique({
+      where: { id: customerId },
+      select: {
+        plannedCollectionCallDate: true,
+        collectionFollowUp1: true,
+        collectionFollowUp2: true,
+        collectionFollowUp3: true,
+      },
+    }),
+    prisma.payment.findFirst({
+      where: { customerId },
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      select: { date: true },
+    }),
+  ]);
+  if (!existing) throw new Error("Customer not found");
+
+  const schedule = applyPlannedCollectionCallChange({
+    schedule: {
+      plannedCallDate: isoDateOnly(existing.plannedCollectionCallDate),
+      followUp1: isoDateOnly(existing.collectionFollowUp1),
+      followUp2: isoDateOnly(existing.collectionFollowUp2),
+      followUp3: isoDateOnly(existing.collectionFollowUp3),
+    },
+    nextPlannedCallDate: nextPlannedIso,
+    changedOn: collectionChangeDate(),
+    lastPaymentDate: isoDateOnly(lastPayment?.date),
+  });
 
   const row = await prisma.customer.update({
     where: { id: customerId },
-    data: { plannedCollectionCallDate },
-    select: { plannedCollectionCallDate: true },
+    data: scheduleToDb(schedule),
+    select: {
+      plannedCollectionCallDate: true,
+      collectionFollowUp1: true,
+      collectionFollowUp2: true,
+      collectionFollowUp3: true,
+    },
   });
 
   revalidatePath("/reports/collection");
   revalidatePath("/reports/collection/vendor");
 
-  return {
-    plannedCollectionCallDate: row.plannedCollectionCallDate
-      ? row.plannedCollectionCallDate.toISOString().slice(0, 10)
-      : null,
-  };
+  return scheduleFromRow(row);
 }
 
 /** Set or clear collection follow-up channel (Call / SMS). */

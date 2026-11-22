@@ -333,10 +333,22 @@ model Customer {
   due                       Decimal            @default(0) @db.Decimal(18, 2)
   /// Next planned collection phone call date (calendar day).
   plannedCollectionCallDate DateTime?
+  /// Earlier planned collection dates, oldest first. A date moves here only
+  /// when the planned call is changed on or after that planned day. Dates
+  /// before the customer's last payment are cleared.
+  collectionFollowUp1       DateTime?
+  collectionFollowUp2       DateTime?
+  collectionFollowUp3       DateTime?
   /// How the next collection follow-up will be made.
   collectionThrough         CollectionThrough?
   /// Next planned sales call date (calendar day) — separate from collection.
   plannedSaleCallDate       DateTime?
+  /// Earlier planned sales dates, oldest first. A date moves here only when
+  /// the planned call is changed on or after that planned day. Cleared when
+  /// the customer's order in hand is above 0 MT.
+  saleFollowUp1             DateTime?
+  saleFollowUp2             DateTime?
+  saleFollowUp3             DateTime?
   /// Latest offer price (Rs/MT) noted on Sales Engine.
   offerPrice                Decimal?           @db.Decimal(18, 3)
   /// Latest offer freight (Rs/MT) noted on Sales Engine.

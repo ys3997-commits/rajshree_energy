@@ -5,6 +5,14 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 import { balanceOrder } from "@/lib/domain/computations";
 import {
+  applyPlannedSaleCallChange,
+  clearCollectionCallsBeforePayment,
+  clearSaleCallsForOrderInHand,
+  collectionChangeDate,
+  isoDateOnly,
+  orderInHandClearsSaleCalls,
+} from "@/lib/domain/collectionFollowUps";
+import {
   computeOverdue,
   dispatchedAmount,
   sumSalesSuppliedInCreditWindow,
@@ -35,9 +43,13 @@ export type SalesEngineRow = {
   orderInHand: string | null;
   soldQuantity: string;
   lastDispatchDate: string | null;
+  lastPaymentDate: string | null;
   due: string;
   overdue: string;
   plannedSaleCallDate: string | null;
+  saleFollowUp1: string | null;
+  saleFollowUp2: string | null;
+  saleFollowUp3: string | null;
   offerPrice: string | null;
   offerFreight: string | null;
   smsType: "DELIVERED" | "EX_PORT" | "REQUIREMENT" | null;
@@ -139,6 +151,9 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
       due: true,
       openingDue: true,
       plannedSaleCallDate: true,
+      saleFollowUp1: true,
+      saleFollowUp2: true,
+      saleFollowUp3: true,
       offerPrice: true,
       offerFreight: true,
       smsType: true,
@@ -149,7 +164,7 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
   if (customers.length === 0) return [];
 
   const ids = customers.map((c) => c.id);
-  const [orders, saleDispatches] = await Promise.all([
+  const [orders, saleDispatches, payments] = await Promise.all([
     prisma.order.findMany({
       where: { customerId: { in: ids } },
       select: {
@@ -171,6 +186,11 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
           },
         },
       },
+    }),
+    prisma.payment.findMany({
+      where: { customerId: { in: ids } },
+      select: { customerId: true, date: true, createdAt: true },
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
     }),
   ]);
 
@@ -199,6 +219,14 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     supplyLinesByCustomer.set(customerId, list);
   }
 
+  const lastPaymentByCustomer = new Map<string, Date>();
+  for (const payment of payments) {
+    if (!payment.customerId || lastPaymentByCustomer.has(payment.customerId)) {
+      continue;
+    }
+    lastPaymentByCustomer.set(payment.customerId, payment.date);
+  }
+
   const ordersByCustomer = new Map<string, typeof orders>();
   for (const order of orders) {
     const list = ordersByCustomer.get(order.customerId) ?? [];
@@ -206,7 +234,8 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     ordersByCustomer.set(order.customerId, list);
   }
 
-  return customers.map((customer) => {
+  const clearIds: string[] = [];
+  const rows = customers.map((customer) => {
     const customerOrders = ordersByCustomer.get(customer.id) ?? [];
     const recentSales =
       customer.creditDays == null
@@ -229,7 +258,21 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
     }
 
     const orderInHand = sumOrderInHand(customerOrders);
+    const orderInHandMt = orderInHand?.toString() ?? null;
     const lastDispatch = lastDispatchByCustomer.get(customer.id) ?? null;
+    const lastPayment = lastPaymentByCustomer.get(customer.id) ?? null;
+    const calls = clearCollectionCallsBeforePayment(
+      clearSaleCallsForOrderInHand(
+        {
+          plannedCallDate: isoDateOnly(customer.plannedSaleCallDate),
+          followUp1: isoDateOnly(customer.saleFollowUp1),
+          followUp2: isoDateOnly(customer.saleFollowUp2),
+          followUp3: isoDateOnly(customer.saleFollowUp3),
+        },
+        orderInHandMt,
+      ),
+      isoDateOnly(lastPayment),
+    );
 
     return {
       id: customer.id,
@@ -245,47 +288,142 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
       state: customer.state,
       sector: customer.sector,
       creditDays: customer.creditDays,
-      orderInHand: orderInHand?.toString() ?? null,
+      orderInHand: orderInHandMt,
       soldQuantity: soldQuantity.toString(),
       lastDispatchDate: lastDispatch
         ? lastDispatch.toISOString().slice(0, 10)
         : null,
+      lastPaymentDate: isoDateOnly(lastPayment),
       due: customer.due.toString(),
       overdue: overdue.toString(),
-      plannedSaleCallDate: customer.plannedSaleCallDate
-        ? customer.plannedSaleCallDate.toISOString().slice(0, 10)
-        : null,
+      plannedSaleCallDate: calls.plannedCallDate,
+      saleFollowUp1: calls.followUp1,
+      saleFollowUp2: calls.followUp2,
+      saleFollowUp3: calls.followUp3,
       offerPrice: customer.offerPrice?.toString() ?? null,
       offerFreight: customer.offerFreight?.toString() ?? null,
       smsType: customer.smsType,
     };
   });
+
+  for (const customer of customers) {
+    const orderInHand = sumOrderInHand(ordersByCustomer.get(customer.id) ?? []);
+    const hasStoredCall =
+      customer.plannedSaleCallDate != null ||
+      customer.saleFollowUp1 != null ||
+      customer.saleFollowUp2 != null ||
+      customer.saleFollowUp3 != null;
+    if (orderInHandClearsSaleCalls(orderInHand?.toString() ?? null) && hasStoredCall) {
+      clearIds.push(customer.id);
+    }
+  }
+  if (clearIds.length > 0) {
+    await prisma.customer.updateMany({
+      where: { id: { in: clearIds } },
+      data: {
+        plannedSaleCallDate: null,
+        saleFollowUp1: null,
+        saleFollowUp2: null,
+        saleFollowUp3: null,
+      },
+    });
+  }
+
+  return rows;
+}
+
+export type PlannedSaleCallResult = {
+  plannedSaleCallDate: string | null;
+  saleFollowUp1: string | null;
+  saleFollowUp2: string | null;
+  saleFollowUp3: string | null;
+};
+
+function saleScheduleToDb(schedule: {
+  plannedCallDate: string | null;
+  followUp1: string | null;
+  followUp2: string | null;
+  followUp3: string | null;
+}) {
+  const toDb = (iso: string | null) =>
+    iso ? new Date(`${iso}T00:00:00.000Z`) : null;
+  return {
+    plannedSaleCallDate: toDb(schedule.plannedCallDate),
+    saleFollowUp1: toDb(schedule.followUp1),
+    saleFollowUp2: toDb(schedule.followUp2),
+    saleFollowUp3: toDb(schedule.followUp3),
+  };
 }
 
 /** Set or clear the next planned sales call date for a customer. */
 export async function updatePlannedSaleCall(
   customerId: string,
   date: string | null,
-): Promise<{ plannedSaleCallDate: string | null }> {
+): Promise<PlannedSaleCallResult> {
   if (!customerId) throw new Error("Customer is required");
 
   await assertSalesEngineCustomerAccess(customerId);
 
-  const plannedSaleCallDate = parseOptionalDate(date);
+  const nextPlanned = parseOptionalDate(date);
+  const [existing, orders, lastPayment] = await Promise.all([
+    prisma.customer.findUnique({
+      where: { id: customerId },
+      select: {
+        plannedSaleCallDate: true,
+        saleFollowUp1: true,
+        saleFollowUp2: true,
+        saleFollowUp3: true,
+      },
+    }),
+    prisma.order.findMany({
+      where: { customerId },
+      select: {
+        quantity: true,
+        dispatchedOrder: true,
+        closingQuantity: true,
+      },
+    }),
+    prisma.payment.findFirst({
+      where: { customerId },
+      orderBy: [{ date: "desc" }, { createdAt: "desc" }],
+      select: { date: true },
+    }),
+  ]);
+  if (!existing) throw new Error("Customer not found");
+
+  const orderInHand = sumOrderInHand(orders);
+  const schedule = applyPlannedSaleCallChange({
+    schedule: {
+      plannedCallDate: isoDateOnly(existing.plannedSaleCallDate),
+      followUp1: isoDateOnly(existing.saleFollowUp1),
+      followUp2: isoDateOnly(existing.saleFollowUp2),
+      followUp3: isoDateOnly(existing.saleFollowUp3),
+    },
+    nextPlannedCallDate: isoDateOnly(nextPlanned),
+    changedOn: collectionChangeDate(),
+    orderInHand: orderInHand?.toString() ?? null,
+    lastPaymentDate: isoDateOnly(lastPayment?.date),
+  });
 
   const row = await prisma.customer.update({
     where: { id: customerId },
-    data: { plannedSaleCallDate },
-    select: { plannedSaleCallDate: true },
+    data: saleScheduleToDb(schedule),
+    select: {
+      plannedSaleCallDate: true,
+      saleFollowUp1: true,
+      saleFollowUp2: true,
+      saleFollowUp3: true,
+    },
   });
 
   revalidatePath("/reports/sales");
   revalidatePath("/");
 
   return {
-    plannedSaleCallDate: row.plannedSaleCallDate
-      ? row.plannedSaleCallDate.toISOString().slice(0, 10)
-      : null,
+    plannedSaleCallDate: isoDateOnly(row.plannedSaleCallDate),
+    saleFollowUp1: isoDateOnly(row.saleFollowUp1),
+    saleFollowUp2: isoDateOnly(row.saleFollowUp2),
+    saleFollowUp3: isoDateOnly(row.saleFollowUp3),
   };
 }
 
