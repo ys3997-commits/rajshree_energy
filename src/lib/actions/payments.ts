@@ -229,6 +229,7 @@ function revalidatePaymentPaths(party?: PaymentParty) {
   if (!party || party.kind === "investment") {
     revalidatePath("/investments");
     revalidatePath("/reports/investments");
+    revalidatePath("/reports/investments/ledger");
   }
 }
 

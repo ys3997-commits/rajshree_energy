@@ -1109,6 +1109,7 @@ export type VesselSuppliedListRow = {
   totalQuantity: string;
   industryQuantity: string;
   traderVendorQuantity: string;
+  stockInHand: string;
 };
 
 export async function listVesselSuppliedReport(): Promise<
@@ -1117,6 +1118,14 @@ export async function listVesselSuppliedReport(): Promise<
   const vessels = await prisma.vessel.findMany({
     include: {
       qualityClass: { include: qualityClassInclude },
+      purchaseOrders: {
+        select: {
+          orderType: true,
+          quantity: true,
+          dispatchedOrder: true,
+          closingQuantity: true,
+        },
+      },
       dispatches: {
         select: {
           dispatchedQuantity: true,
@@ -1132,13 +1141,11 @@ export async function listVesselSuppliedReport(): Promise<
   });
 
   return vessels.map((v) => {
-    let total = new Decimal(0);
     let industry = new Decimal(0);
     let traderVendor = new Decimal(0);
 
     for (const d of v.dispatches) {
       const qty = d.dispatchedQuantity;
-      total = total.plus(qty);
       const category = d.order.customer.category;
       if (category === CustomerCategory.INDUSTRY) {
         industry = industry.plus(qty);
@@ -1150,6 +1157,10 @@ export async function listVesselSuppliedReport(): Promise<
       }
     }
 
+    const stockInHand = sumDecimal(v.purchaseOrders.map(displayBalanceValue));
+    // Total is the three parts, so their shares add to 100%.
+    const total = industry.plus(traderVendor).plus(stockInHand);
+
     return {
       id: v.id,
       vesselName: v.vesselName,
@@ -1158,6 +1169,7 @@ export async function listVesselSuppliedReport(): Promise<
       totalQuantity: total.toString(),
       industryQuantity: industry.toString(),
       traderVendorQuantity: traderVendor.toString(),
+      stockInHand: stockInHand.toString(),
     };
   });
 }
@@ -1286,6 +1298,12 @@ export type QualityReportListRow = {
     domestic: boolean;
     qualityOption: { name: string };
   };
+  /** Sum of purchase-order quantity for this quality. */
+  vesselQuantity: string;
+  /** Sum of dispatched quantity on those purchase orders. */
+  dispatchedQuantity: string;
+  /** Sum of closing quantity on those purchase orders. */
+  closingQuantity: string;
   poBalance: string;
   soBalance: string;
   unsoldQuantity: string;
@@ -1297,6 +1315,9 @@ export type QualityReportVesselRow = {
   active: boolean;
   portName: string | null;
   portState: string | null;
+  vesselQuantity: string;
+  dispatchedQuantity: string;
+  closingQuantity: string;
   balanceQuantity: string;
 };
 
@@ -1317,6 +1338,15 @@ export async function listQualityReport(): Promise<QualityReportListRow[]> {
   });
 
   const rows = classes.map((qc) => {
+    const vesselQuantity = sumDecimal(
+      qc.purchaseOrders.map(displayOrderQtyValue),
+    );
+    const dispatchedQuantity = sumDecimal(
+      qc.purchaseOrders.map((o) => o.dispatchedOrder),
+    );
+    const closingQuantity = sumDecimal(
+      qc.purchaseOrders.map((o) => o.closingQuantity),
+    );
     const poBalance = sumDecimal(qc.purchaseOrders.map(displayBalanceValue));
     const soBalance = sumDecimal(qc.orders.map(displayBalanceValue));
     const unsold = poBalance.minus(soBalance);
@@ -1327,6 +1357,9 @@ export async function listQualityReport(): Promise<QualityReportListRow[]> {
         domestic: qc.domestic,
         qualityOption: qc.qualityOption,
       },
+      vesselQuantity: vesselQuantity.toString(),
+      dispatchedQuantity: dispatchedQuantity.toString(),
+      closingQuantity: closingQuantity.toString(),
       poBalance: poBalance.toString(),
       soBalance: soBalance.toString(),
       unsoldQuantity: unsold.toString(),
@@ -1404,6 +1437,15 @@ export async function getQualityReport(qualityClassId: string) {
         active: v.active,
         portName: v.port?.name ?? null,
         portState: v.port?.state ?? null,
+        vesselQuantity: sumDecimal(
+          v.purchaseOrders.map(displayOrderQtyValue),
+        ).toString(),
+        dispatchedQuantity: sumDecimal(
+          v.purchaseOrders.map((o) => o.dispatchedOrder),
+        ).toString(),
+        closingQuantity: sumDecimal(
+          v.purchaseOrders.map((o) => o.closingQuantity),
+        ).toString(),
         balanceQuantity: sumDecimal(
           v.purchaseOrders.map(displayBalanceValue),
         ).toString(),

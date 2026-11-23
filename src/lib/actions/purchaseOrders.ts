@@ -44,6 +44,7 @@ import {
 
 export type PurchaseOrderFilters = {
   status?: PurchaseOrderStatus | "";
+  orderType?: OrderType | "";
   importerId?: string;
   vesselId?: string;
   qualityClassId?: string;
@@ -138,6 +139,7 @@ export async function listPurchaseOrders(filters: PurchaseOrderFilters = {}) {
       purchaseOrderStatusWhere(filters.status, extraRunningIds),
     );
   }
+  if (filters.orderType) where.orderType = filters.orderType;
   if (filters.importerId) where.importerId = filters.importerId;
   if (filters.vesselId) where.vesselId = filters.vesselId;
   if (filters.qualityClassId) where.qualityClassId = filters.qualityClassId;

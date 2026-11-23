@@ -37,6 +37,7 @@ import { normalizeSaleOrderNumber } from "@/lib/domain/orderNumbers";
 
 export type OrderFilters = {
   status?: string;
+  orderType?: OrderType | "";
   customerId?: string;
   portId?: string;
   orderById?: string;
@@ -147,6 +148,7 @@ export async function listOrders(filters: OrderFilters = {}) {
       ? await runningDisplayCompletedOrderIds()
       : [];
   if (status) Object.assign(where, orderStatusWhere(status, extraRunningIds));
+  if (filters.orderType) where.orderType = filters.orderType;
   if (filters.customerId) where.customerId = filters.customerId;
   if (filters.portId) where.portId = filters.portId;
   if (filters.orderById) where.orderById = filters.orderById;

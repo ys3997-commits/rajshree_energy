@@ -268,12 +268,12 @@ export function formatRateBreakdownLine(breakdown: {
   return `${parts.join(" + ")} = ${formatRs(breakdown.final)}`;
 }
 
-/** Order type display: Open | Regular */
+/** Order type display: Open | Committed */
 export function formatOrderType(
   orderType: string | null | undefined,
 ): string {
   if (orderType === "OPEN") return "Open";
-  if (orderType === "REGULAR") return "Regular";
+  if (orderType === "REGULAR") return "Committed";
   return orderType ? String(orderType) : "—";
 }
 

@@ -115,7 +115,8 @@ type PdfDoc = {
   setFontSize: (size: number) => void;
   setFont: (fontName: string, fontStyle: string) => void;
   getTextWidth: (text: string) => number;
-  text: (text: string, x: number, y: number) => void;
+  splitTextToSize: (text: string, maxWidth: number) => string[];
+  text: (text: string | string[], x: number, y: number) => void;
   setDrawColor: (r: number, g: number, b: number) => void;
   setLineWidth: (width: number) => void;
   line: (x1: number, y1: number, x2: number, y2: number) => void;
@@ -336,12 +337,21 @@ export async function buildTablePdfBlob(options: {
 
   const manyColumns = options.columns.filter((c) => !c.divider).length > 12;
   const marginX = manyColumns ? 8 : 16;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const titleMaxWidth = pageWidth - marginX * 2;
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(14);
-  doc.text(options.title, marginX, 28);
+  const titleLines = doc.splitTextToSize(options.title, titleMaxWidth);
+  const titleLineHeight = 16;
+  const titleStartY = 28;
+  doc.text(titleLines, marginX, titleStartY);
   doc.setFont("helvetica", "normal");
-  drawPdfTable(doc, autoTable, options.columns, options.rows, 38, true);
+  const tableStartY =
+    titleStartY +
+    Math.max(titleLines.length - 1, 0) * titleLineHeight +
+    14;
+  drawPdfTable(doc, autoTable, options.columns, options.rows, tableStartY, true);
 
   for (const table of options.extraTables ?? []) {
     const finalY = doc.lastAutoTable?.finalY ?? 38;

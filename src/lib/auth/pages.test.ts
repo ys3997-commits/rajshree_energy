@@ -30,6 +30,12 @@ describe("pageForPath", () => {
       "reports-veg-discount",
     );
     expect(pageForPath("/reports/veg/ledger")?.key).toBe("reports-veg-ledger");
+    expect(pageForPath("/reports/investments")?.key).toBe(
+      "reports-investments",
+    );
+    expect(pageForPath("/reports/investments/ledger")?.key).toBe(
+      "reports-invest-ledger",
+    );
     expect(pageForPath("/reports/bank-statement")?.key).toBe(
       "reports-bank-statement",
     );
@@ -225,6 +231,21 @@ describe("canAccessPath", () => {
       true,
     );
     expect(canAccessPath(["reports-veg-ledger"], "/reports/veg")).toBe(false);
+  });
+
+  it("scopes investment report sub-pages separately", () => {
+    expect(
+      canAccessPath(["reports-investments"], "/reports/investments"),
+    ).toBe(true);
+    expect(
+      canAccessPath(["reports-investments"], "/reports/investments/ledger"),
+    ).toBe(false);
+    expect(
+      canAccessPath(["reports-invest-ledger"], "/reports/investments/ledger"),
+    ).toBe(true);
+    expect(
+      canAccessPath(["reports-invest-ledger"], "/reports/investments"),
+    ).toBe(false);
   });
 });
 

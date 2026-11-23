@@ -145,7 +145,13 @@ const staticReportLinks: ReportItem[] = [
     ],
   },
   { href: "/reports/master-dispatch", label: "Dispatch" },
-  { href: "/reports/investments", label: "Investments" },
+  {
+    label: "Investment",
+    children: [
+      { href: "/reports/investments", label: "Investments" },
+      { href: "/reports/investments/ledger", label: "Invest Ledger" },
+    ],
+  },
   {
     label: "Product",
     children: [

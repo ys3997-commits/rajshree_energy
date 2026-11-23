@@ -21,6 +21,11 @@ function formatSupplyShare(quantity: string, totalQuantity: string): string {
   return `${formatSaleOrderMt(quantity)}\u00A0\u00A0\u00A0|\u00A0\u00A0\u00A0${pct.toFixed(2)}%`;
 }
 
+/** Total quantities is the whole, so its share is always 100%. */
+function formatTotalShare(quantity: string): string {
+  return `${formatSaleOrderMt(quantity)}\u00A0\u00A0\u00A0|\u00A0\u00A0\u00A0100.00%`;
+}
+
 export function VesselSuppliedList({
   vessels,
 }: {
@@ -67,6 +72,11 @@ export function VesselSuppliedList({
       header: "Supplied to trader & vendor",
       align: "right" as const,
     },
+    {
+      key: "stockInHand",
+      header: "Stock in hand",
+      align: "right" as const,
+    },
   ];
 
   const exportRows = useMemo(
@@ -74,12 +84,13 @@ export function VesselSuppliedList({
       filtered.map((v) => ({
         vessel: v.active ? v.vesselName : `${v.vesselName} · Inactive`,
         quality: formatQualityClass(v.qualityClass),
-        total: formatSaleOrderMt(v.totalQuantity),
+        total: formatTotalShare(v.totalQuantity),
         industry: formatSupplyShare(v.industryQuantity, v.totalQuantity),
         traderVendor: formatSupplyShare(
           v.traderVendorQuantity,
           v.totalQuantity,
         ),
+        stockInHand: formatSupplyShare(v.stockInHand, v.totalQuantity),
       })),
     [filtered],
   );
@@ -134,6 +145,7 @@ export function VesselSuppliedList({
                 <th className="cell-num">Total quantities</th>
                 <th className="cell-num">Supplied to industry</th>
                 <th className="cell-num">Supplied to trader &amp; vendor</th>
+                <th className="cell-num">Stock in hand</th>
               </tr>
             </thead>
             <tbody>
@@ -156,7 +168,7 @@ export function VesselSuppliedList({
                     {!v.active ? " · Inactive" : ""}
                   </td>
                   <td>{formatQualityClass(v.qualityClass)}</td>
-                  <td className="cell-num">{formatSaleOrderMt(v.totalQuantity)}</td>
+                  <td className="cell-num">{formatTotalShare(v.totalQuantity)}</td>
                   <td className="cell-num">
                     {formatSupplyShare(v.industryQuantity, v.totalQuantity)}
                   </td>
@@ -165,6 +177,9 @@ export function VesselSuppliedList({
                       v.traderVendorQuantity,
                       v.totalQuantity,
                     )}
+                  </td>
+                  <td className="cell-num">
+                    {formatSupplyShare(v.stockInHand, v.totalQuantity)}
                   </td>
                 </tr>
               ))}

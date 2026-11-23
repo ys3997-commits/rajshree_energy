@@ -19,7 +19,10 @@ import {
   formatSaleOrderMt,
   orderBalanceRowClass,
 } from "@/lib/domain/format";
-import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
+import {
+  resolveOrderListStatusFilter,
+  resolveOrderListTypeFilter,
+} from "@/lib/domain/orderListFilters";
 import { CreatePurchaseOrderButton } from "@/components/CreatePurchaseOrderButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
@@ -27,6 +30,7 @@ import Link from "next/link";
 
 type SearchParams = Promise<{
   status?: string;
+  orderType?: string;
   importerId?: string;
   vesselId?: string;
   qualityClassId?: string;
@@ -40,11 +44,13 @@ export default async function PurchaseOrdersPage({
 }) {
   const sp = await searchParams;
   const statusFilter = resolveOrderListStatusFilter(sp.status);
+  const typeFilter = resolveOrderListTypeFilter(sp.orderType);
 
   const [orders, customers, vessels, ports, qualityClasses, suggestedPo] =
     await Promise.all([
     listPurchaseOrders({
       status: statusFilter,
+      orderType: typeFilter,
       importerId: sp.importerId || "",
       vesselId: sp.vesselId || "",
       qualityClassId: sp.qualityClassId || "",
@@ -122,6 +128,14 @@ export default async function PurchaseOrdersPage({
             <option value="">All</option>
             <option value="RUNNING">Running</option>
             <option value="COMPLETED">Completed</option>
+          </select>
+        </label>
+        <label>
+          Type
+          <select name="orderType" defaultValue={typeFilter}>
+            <option value="">All</option>
+            <option value="REGULAR">Committed</option>
+            <option value="OPEN">Open</option>
           </select>
         </label>
         <label>

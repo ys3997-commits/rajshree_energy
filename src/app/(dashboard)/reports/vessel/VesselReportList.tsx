@@ -9,10 +9,17 @@ import {
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 
+type BalanceFilter = "" | "in-hand" | "out";
+
 function formatPort(name: string | null, state: string | null): string {
   if (!name && !state) return "—";
   if (name && state) return `${name} (${state})`;
   return name || state || "—";
+}
+
+function hasStockInHand(balance: string): boolean {
+  const qty = Number(balance);
+  return Number.isFinite(qty) && qty > 0;
 }
 
 export function VesselReportList({
@@ -21,23 +28,49 @@ export function VesselReportList({
   vessels: VesselReportListRow[];
 }) {
   const [query, setQuery] = useState("");
+  const [portFilter, setPortFilter] = useState("");
+  const [qualityFilter, setQualityFilter] = useState("");
+  const [balanceFilter, setBalanceFilter] = useState<BalanceFilter>("");
+
+  const portOptions = useMemo(() => {
+    const names = new Set<string>();
+    for (const v of vessels) {
+      const port = formatPort(v.portName, v.portState);
+      if (port !== "—") names.add(port);
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [vessels]);
+
+  const qualityOptions = useMemo(() => {
+    const names = new Set<string>();
+    for (const v of vessels) {
+      const quality = formatQualityClass(v.qualityClass);
+      if (quality !== "—") names.add(quality);
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [vessels]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return vessels;
     return vessels.filter((v) => {
-      const haystack = [
-        v.vesselName,
-        v.portName,
-        v.portState,
-        formatQualityClass(v.qualityClass),
-      ]
+      const port = formatPort(v.portName, v.portState);
+      const quality = formatQualityClass(v.qualityClass);
+      if (portFilter && port !== portFilter) return false;
+      if (qualityFilter && quality !== qualityFilter) return false;
+      if (balanceFilter === "in-hand" && !hasStockInHand(v.balanceQuantity)) {
+        return false;
+      }
+      if (balanceFilter === "out" && hasStockInHand(v.balanceQuantity)) {
+        return false;
+      }
+      if (!q) return true;
+      const haystack = [v.vesselName, v.portName, v.portState, quality]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [vessels, query]);
+  }, [vessels, query, portFilter, qualityFilter, balanceFilter]);
 
   const exportColumns = [
     { key: "vessel", header: "Vessel" },
@@ -76,6 +109,45 @@ export function VesselReportList({
             autoComplete="off"
           />
         </label>
+        <label>
+          Port
+          <select
+            value={portFilter}
+            onChange={(e) => setPortFilter(e.target.value)}
+          >
+            <option value="">All</option>
+            {portOptions.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Quality
+          <select
+            value={qualityFilter}
+            onChange={(e) => setQualityFilter(e.target.value)}
+          >
+            <option value="">All</option>
+            {qualityOptions.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Balance
+          <select
+            value={balanceFilter}
+            onChange={(e) => setBalanceFilter(e.target.value as BalanceFilter)}
+          >
+            <option value="">All</option>
+            <option value="in-hand">Stock in Hand</option>
+            <option value="out">Out of Stock</option>
+          </select>
+        </label>
         <TableDownloadButtons
           title="Vessel Report"
           filenameBase="vessel-report"
@@ -85,7 +157,7 @@ export function VesselReportList({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="home-empty">No vessels match your search.</p>
+        <p className="home-empty">No vessels match your filters.</p>
       ) : (
         <div className="table-wrap table-wrap-scroll">
           <div className="table-h-scroll"><table className="data">
@@ -98,7 +170,6 @@ export function VesselReportList({
                 <th className="cell-num">Dispatched</th>
                 <th className="cell-num">Closing</th>
                 <th className="cell-num">Balance</th>
-                <th />
               </tr>
             </thead>
             <tbody>
@@ -126,14 +197,6 @@ export function VesselReportList({
                   <td className="cell-num">{formatSaleOrderMt(v.dispatchedQuantity)}</td>
                   <td className="cell-num">{formatSaleOrderMt(v.closingQuantity)}</td>
                   <td className="cell-num">{formatSaleOrderMt(v.balanceQuantity)}</td>
-                  <td className="cell-num">
-                    <Link
-                      href={`/reports/vessel/${v.id}`}
-                      className="btn-link"
-                    >
-                      Open →
-                    </Link>
-                  </td>
                 </tr>
               ))}
             </tbody>

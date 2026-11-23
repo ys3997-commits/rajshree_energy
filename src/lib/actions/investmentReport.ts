@@ -82,6 +82,7 @@ function formatDay(value: Date): string {
 
 function revalidateInvestmentReport() {
   revalidatePath("/reports/investments");
+  revalidatePath("/reports/investments/ledger");
   revalidatePath("/investments");
 }
 

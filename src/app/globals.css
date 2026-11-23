@@ -3871,6 +3871,20 @@ table.data.transport-engine-table tbody tr:hover td {
   background: var(--warn-soft) !important;
 }
 
+/* Match Collection Engine body rows. Those rows are sized by the
+   follow-up date field: 0.65rem padding, 0.8125rem type, 1px border,
+   inside the standard cell padding. */
+.vessel-report-list table.data tbody tr {
+  height: calc(
+    (0.65rem * 2) + (0.8125rem * 1.5) + 2px + (var(--table-body-padding-y) * 2)
+  );
+}
+
+.vessel-report-list table.data tbody td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
 .vessel-row-inactive td {
   color: var(--muted);
 }

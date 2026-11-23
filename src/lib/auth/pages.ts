@@ -324,6 +324,13 @@ export const REPORT_SUB_PAGES = [
     reportSubPage: true,
   },
   {
+    key: "reports-invest-ledger",
+    href: "/reports/investments/ledger",
+    label: "Invest Ledger",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
     key: "reports-quality",
     href: "/reports/product",
     label: "Quality Report",
@@ -464,6 +471,14 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
     pages: [{ key: "reports-ledger", label: "Ledger" }],
   },
   {
+    id: "investment",
+    label: "Investment",
+    pages: [
+      { key: "reports-investments", label: "Investments" },
+      { key: "reports-invest-ledger", label: "Invest Ledger" },
+    ],
+  },
+  {
     id: "product",
     label: "Product",
     pages: [{ key: "reports-quality", label: "Quality Report" }],
@@ -512,7 +527,6 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
 
 export const REPORT_ACCESS_LEAVES: ReportAccessPage[] = [
   { key: "reports-dispatch", label: "Dispatch" },
-  { key: "reports-investments", label: "Investments" },
   { key: "reports-purchase", label: "Purchase" },
 ];
 

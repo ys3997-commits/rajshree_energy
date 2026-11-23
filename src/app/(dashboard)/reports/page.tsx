@@ -77,6 +77,11 @@ const reports = [
     desc: "Current investment and period-wise profit / loss.",
   },
   {
+    href: "/reports/investments/ledger",
+    title: "Invest Ledger",
+    desc: "Investment company ledger of period returns, funds, and discounts.",
+  },
+  {
     href: "/reports/product",
     title: "Quality Report",
     desc: "Purchase and sale balances by quality class, with unsold stock.",

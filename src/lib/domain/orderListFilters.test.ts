@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_ORDER_LIST_STATUS,
   resolveOrderListStatusFilter,
+  resolveOrderListTypeFilter,
 } from "./orderListFilters";
 
 describe("resolveOrderListStatusFilter", () => {
@@ -21,5 +22,21 @@ describe("resolveOrderListStatusFilter", () => {
 
   it("falls back to Running for unknown values", () => {
     expect(resolveOrderListStatusFilter("OPEN")).toBe("RUNNING");
+  });
+});
+
+describe("resolveOrderListTypeFilter", () => {
+  it("treats a missing or empty type as All", () => {
+    expect(resolveOrderListTypeFilter(undefined)).toBe("");
+    expect(resolveOrderListTypeFilter("")).toBe("");
+  });
+
+  it("keeps Committed (REGULAR) and Open", () => {
+    expect(resolveOrderListTypeFilter("REGULAR")).toBe("REGULAR");
+    expect(resolveOrderListTypeFilter("OPEN")).toBe("OPEN");
+  });
+
+  it("ignores unknown type values", () => {
+    expect(resolveOrderListTypeFilter("COMMITTED")).toBe("");
   });
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import type { QualityReportVesselRow } from "@/lib/actions/reports";
 import {
@@ -28,9 +28,21 @@ type Props = {
   vessels: QualityReportVesselRow[];
 };
 
+type StockFilter = "" | "in-hand" | "out";
+
+function isStockInHand(quantity: string): boolean {
+  const qty = Number(quantity);
+  return Number.isFinite(qty) && qty > 0;
+}
+
+function isOutOfStock(quantity: string): boolean {
+  const qty = Number(quantity);
+  return Number.isFinite(qty) && qty <= 0;
+}
+
 function formatPort(name: string | null, state: string | null): string {
   if (!name && !state) return "—";
-  if (name && state) return `${name} (${state})`;
+  if (name && state) return `${name}, ${state}`;
   return name || state || "—";
 }
 
@@ -40,21 +52,40 @@ export function QualityReportDetail({
   vessels,
 }: Props) {
   const label = formatQualityClass(qualityClass);
+  const [stockFilter, setStockFilter] = useState<StockFilter>("");
+
+  const filtered = useMemo(() => {
+    return vessels.filter((v) => {
+      if (stockFilter === "in-hand" && !isStockInHand(v.balanceQuantity)) {
+        return false;
+      }
+      if (stockFilter === "out" && !isOutOfStock(v.balanceQuantity)) {
+        return false;
+      }
+      return true;
+    });
+  }, [vessels, stockFilter]);
 
   const exportColumns = [
     { key: "vessel", header: "Vessel" },
     { key: "port", header: "Port" },
-    { key: "balance", header: "Balance", align: "right" as const },
+    { key: "vesselQty", header: "Vessel Qty", align: "right" as const },
+    { key: "dispatchedQty", header: "Dispatched Qty", align: "right" as const },
+    { key: "closingQty", header: "Closing Qty", align: "right" as const },
+    { key: "balance", header: "Stock in Hand", align: "right" as const },
   ];
 
   const exportRows = useMemo(
     () =>
-      vessels.map((v) => ({
+      filtered.map((v) => ({
         vessel: v.active ? v.vesselName : `${v.vesselName} · Inactive`,
         port: formatPort(v.portName, v.portState),
+        vesselQty: formatSaleOrderMt(v.vesselQuantity),
+        dispatchedQty: formatSaleOrderMt(v.dispatchedQuantity),
+        closingQty: formatSaleOrderMt(v.closingQuantity),
         balance: formatSaleOrderMt(v.balanceQuantity),
       })),
-    [vessels],
+    [filtered],
   );
 
   return (
@@ -79,7 +110,7 @@ export function QualityReportDetail({
         </div>
         <div className="detail-stat-row">
           <div className="detail-stat">
-            <span className="detail-stat-label">Stock In Hand</span>
+            <span className="detail-stat-label">Stock in Hand</span>
             <span className="detail-stat-value">
               {formatSaleOrderMt(totals.poBalance)}
             </span>
@@ -102,8 +133,19 @@ export function QualityReportDetail({
       <section className="analysis-section">
         <div className="filters">
           <h2 className="analysis-section-title">
-            Vessels ({vessels.length})
+            Vessels ({filtered.length})
           </h2>
+          <label>
+            Stock
+            <select
+              value={stockFilter}
+              onChange={(e) => setStockFilter(e.target.value as StockFilter)}
+            >
+              <option value="">All</option>
+              <option value="in-hand">Stock in Hand</option>
+              <option value="out">Out of Stock</option>
+            </select>
+          </label>
           <TableDownloadButtons
             title={`${label} — vessels`}
             filenameBase="quality-report-vessels"
@@ -111,10 +153,12 @@ export function QualityReportDetail({
             rows={exportRows}
           />
         </div>
-        {vessels.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="table-wrap">
             <div className="table-h-scroll"><p className="empty-state">
-              No vessels linked to this quality class.
+              {vessels.length === 0
+                ? "No vessels linked to this quality class."
+                : "No vessels match your filters."}
             </p></div>
           </div>
         ) : (
@@ -124,11 +168,14 @@ export function QualityReportDetail({
                 <tr>
                   <th>Vessel</th>
                   <th>Port</th>
-                  <th className="cell-num">Balance</th>
+                  <th className="cell-num">Vessel Qty</th>
+                  <th className="cell-num">Dispatched Qty</th>
+                  <th className="cell-num">Closing Qty</th>
+                  <th className="cell-num">Stock in Hand</th>
                 </tr>
               </thead>
               <tbody>
-                {vessels.map((v) => (
+                {filtered.map((v) => (
                   <tr
                     key={v.id}
                     className={
@@ -145,6 +192,15 @@ export function QualityReportDetail({
                       {!v.active ? " · Inactive" : ""}
                     </td>
                     <td>{formatPort(v.portName, v.portState)}</td>
+                    <td className="cell-num">
+                      {formatSaleOrderMt(v.vesselQuantity)}
+                    </td>
+                    <td className="cell-num">
+                      {formatSaleOrderMt(v.dispatchedQuantity)}
+                    </td>
+                    <td className="cell-num">
+                      {formatSaleOrderMt(v.closingQuantity)}
+                    </td>
                     <td className="cell-num">
                       {formatSaleOrderMt(v.balanceQuantity)}
                     </td>

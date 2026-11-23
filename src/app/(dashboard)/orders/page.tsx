@@ -19,7 +19,10 @@ import {
   formatSaleOrderMt,
   orderBalanceRowClass,
 } from "@/lib/domain/format";
-import { resolveOrderListStatusFilter } from "@/lib/domain/orderListFilters";
+import {
+  resolveOrderListStatusFilter,
+  resolveOrderListTypeFilter,
+} from "@/lib/domain/orderListFilters";
 import { CreateOrderButton } from "@/components/CreateOrderButton";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
@@ -28,6 +31,7 @@ import Link from "next/link";
 
 type SearchParams = Promise<{
   status?: string;
+  orderType?: string;
   customerId?: string;
   portId?: string;
   orderById?: string;
@@ -42,12 +46,14 @@ export default async function OrdersPage({
 }) {
   const sp = await searchParams;
   const statusFilter = resolveOrderListStatusFilter(sp.status);
+  const typeFilter = resolveOrderListTypeFilter(sp.orderType);
 
   // Keep concurrency under Prisma/Supabase pool (connection_limit=5).
   const [orders, customers, ports, saleExecutives, qualityClasses] =
     await Promise.all([
       listOrders({
         status: statusFilter,
+        orderType: typeFilter,
         customerId: sp.customerId || "",
         portId: sp.portId || "",
         orderById: sp.orderById || "",
@@ -145,6 +151,14 @@ export default async function OrdersPage({
             <option value="">All</option>
             <option value="RUNNING">Running</option>
             <option value="COMPLETED">Completed</option>
+          </select>
+        </label>
+        <label>
+          Type
+          <select name="orderType" defaultValue={typeFilter}>
+            <option value="">All</option>
+            <option value="REGULAR">Committed</option>
+            <option value="OPEN">Open</option>
           </select>
         </label>
         <label>

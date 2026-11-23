@@ -131,10 +131,28 @@ export function LedgerClient({
     [dispatchRows],
   );
 
+  const purchaseTotal = useMemo(
+    () =>
+      dispatchRows.reduce((sum, row) => {
+        if (row.dispatchType !== "Pur") return sum;
+        return sum + toAmount(row.finalAmount);
+      }, 0),
+    [dispatchRows],
+  );
+
   const saleQuantity = useMemo(
     () =>
       dispatchRows.reduce((sum, row) => {
         if (row.dispatchType !== "Sale") return sum;
+        return sum + toAmount(row.weight);
+      }, 0),
+    [dispatchRows],
+  );
+
+  const purchaseQuantity = useMemo(
+    () =>
+      dispatchRows.reduce((sum, row) => {
+        if (row.dispatchType !== "Pur") return sum;
         return sum + toAmount(row.weight);
       }, 0),
     [dispatchRows],
@@ -178,7 +196,7 @@ export function LedgerClient({
       ...(showTcs
         ? [{ key: "tcs", header: "TCS", align: "right" as const }]
         : []),
-      { key: "finalAmount", header: "Final Amount", align: "right" as const },
+      { key: "finalAmount", header: "Invoice Amount", align: "right" as const },
       {
         key: "divider",
         header: DIVIDER,
@@ -290,7 +308,13 @@ export function LedgerClient({
         {customerId ? (
           <div className="detail-stat-row">
             <div className="detail-stat">
-              <span className="detail-stat-label">Total quantity</span>
+              <span className="detail-stat-label">Purchase Qty</span>
+              <span className="detail-stat-value">
+                {formatDispatchMt(purchaseQuantity)}
+              </span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Sale Qty</span>
               <span className="detail-stat-value">
                 {formatDispatchMt(saleQuantity)}
               </span>
@@ -299,6 +323,12 @@ export function LedgerClient({
               <span className="detail-stat-label">Opening balance</span>
               <span className="detail-stat-value">
                 {formatAmount(openingDue)}
+              </span>
+            </div>
+            <div className="detail-stat">
+              <span className="detail-stat-label">Purchase</span>
+              <span className="detail-stat-value">
+                {formatAmount(purchaseTotal)}
               </span>
             </div>
             <div className="detail-stat">
@@ -360,7 +390,7 @@ export function LedgerClient({
         </label>
         {customerId ? (
           <TableDownloadButtons
-            title={`Ledger — ${customerLabel}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Total quantity ${formatDispatchMt(saleQuantity)} · Opening balance ${formatAmount(openingDue)} · Sale ${formatAmount(saleTotal)} · Fund ${formatAmount(fundTotal)} · Current due ${formatAmount(due)} · Overdue ${formatAmount(overdue)}`}
+            title={`Ledger — ${customerLabel}${dateRangeLabel ? ` · ${dateRangeLabel}` : ""} · Purchase Qty ${formatDispatchMt(purchaseQuantity)} · Sale Qty ${formatDispatchMt(saleQuantity)} · Opening balance ${formatAmount(openingDue)} · Purchase ${formatAmount(purchaseTotal)} · Sale ${formatAmount(saleTotal)} · Fund ${formatAmount(fundTotal)} · Current due ${formatAmount(due)} · Overdue ${formatAmount(overdue)}`}
             filenameBase={filenameBase}
             columns={exportColumns}
             rows={exportRows}
@@ -388,7 +418,7 @@ export function LedgerClient({
                     {showTcs ? (
                       <th className="cell-num">TCS</th>
                     ) : null}
-                    <th className="cell-num">Final Amount</th>
+                    <th className="cell-num">Invoice Amount</th>
                   </tr>
                 </thead>
                 <tbody>

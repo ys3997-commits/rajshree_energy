@@ -66,6 +66,7 @@ export async function createInvestmentCompany(input: InvestmentCompanyInput) {
   revalidatePath("/investments");
   revalidatePath("/investments/open-due");
   revalidatePath("/reports/investments");
+  revalidatePath("/reports/investments/ledger");
 }
 
 export async function updateInvestmentCompany(
@@ -80,6 +81,7 @@ export async function updateInvestmentCompany(
   revalidatePath("/investments");
   revalidatePath("/investments/open-due");
   revalidatePath("/reports/investments");
+  revalidatePath("/reports/investments/ledger");
 }
 
 export async function deleteInvestmentCompany(id: string) {
@@ -103,4 +105,5 @@ export async function deleteInvestmentCompany(id: string) {
   revalidatePath("/investments/open-due");
   revalidatePath("/payments");
   revalidatePath("/reports/investments");
+  revalidatePath("/reports/investments/ledger");
 }
