@@ -39,6 +39,7 @@ const STAFF_PATHS = [
   "/dispatches",
   "/dispatches/reconciliation",
   "/bills",
+  "/corrections",
   "/reports/ledger",
 ] as const;
 const GRANTABLE_KEYS = new Set(GRANTABLE_PAGES.map((page) => page.key));

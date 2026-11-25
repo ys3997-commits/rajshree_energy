@@ -72,6 +72,11 @@ const reports = [
     desc: "Purchase, sale, freight, and basic-rate profit for every dispatch.",
   },
   {
+    href: "/reports/do-in-hand",
+    title: "DO in Hand",
+    desc: "Running purchase orders with vendor funds and Delivery Order tracking.",
+  },
+  {
     href: "/reports/investments",
     title: "Investments",
     desc: "Current investment and period-wise profit / loss.",

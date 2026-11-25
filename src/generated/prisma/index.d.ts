@@ -127,6 +127,11 @@ export type PurchaseOrder = $Result.DefaultSelection<Prisma.$PurchaseOrderPayloa
  */
 export type Dispatch = $Result.DefaultSelection<Prisma.$DispatchPayload>
 /**
+ * Model DispatchCorrection
+ * Request to correct a dispatch / purchase / sale / transport entry.
+ */
+export type DispatchCorrection = $Result.DefaultSelection<Prisma.$DispatchCorrectionPayload>
+/**
  * Model Payment
  * Money received from or sent to a customer, transporter, or investment company.
  */
@@ -280,12 +285,28 @@ export const ReceiptStatus: {
 export type ReceiptStatus = (typeof ReceiptStatus)[keyof typeof ReceiptStatus]
 
 
+export const CorrectionStatus: {
+  PENDING: 'PENDING',
+  DONE: 'DONE'
+};
+
+export type CorrectionStatus = (typeof CorrectionStatus)[keyof typeof CorrectionStatus]
+
+
 export const PaymentDirection: {
   RECEIVED: 'RECEIVED',
   SENT: 'SENT'
 };
 
 export type PaymentDirection = (typeof PaymentDirection)[keyof typeof PaymentDirection]
+
+
+export const DoStatus: {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED'
+};
+
+export type DoStatus = (typeof DoStatus)[keyof typeof DoStatus]
 
 
 export const DiscountStatus: {
@@ -350,9 +371,17 @@ export type ReceiptStatus = $Enums.ReceiptStatus
 
 export const ReceiptStatus: typeof $Enums.ReceiptStatus
 
+export type CorrectionStatus = $Enums.CorrectionStatus
+
+export const CorrectionStatus: typeof $Enums.CorrectionStatus
+
 export type PaymentDirection = $Enums.PaymentDirection
 
 export const PaymentDirection: typeof $Enums.PaymentDirection
+
+export type DoStatus = $Enums.DoStatus
+
+export const DoStatus: typeof $Enums.DoStatus
 
 export type DiscountStatus = $Enums.DiscountStatus
 
@@ -708,6 +737,16 @@ export class PrismaClient<
     * ```
     */
   get dispatch(): Prisma.DispatchDelegate<ExtArgs>;
+
+  /**
+   * `prisma.dispatchCorrection`: Exposes CRUD operations for the **DispatchCorrection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DispatchCorrections
+    * const dispatchCorrections = await prisma.dispatchCorrection.findMany()
+    * ```
+    */
+  get dispatchCorrection(): Prisma.DispatchCorrectionDelegate<ExtArgs>;
 
   /**
    * `prisma.payment`: Exposes CRUD operations for the **Payment** model.
@@ -1321,6 +1360,7 @@ export namespace Prisma {
     Order: 'Order',
     PurchaseOrder: 'PurchaseOrder',
     Dispatch: 'Dispatch',
+    DispatchCorrection: 'DispatchCorrection',
     Payment: 'Payment',
     Discount: 'Discount',
     VegPayment: 'VegPayment',
@@ -1351,7 +1391,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "indirectExpenseOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccountTypeOption" | "bankAccount" | "bankTransfer" | "bookExpense" | "savingAccountTxn"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "indirectExpenseOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "dispatchCorrection" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccountTypeOption" | "bankAccount" | "bankTransfer" | "bookExpense" | "savingAccountTxn"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2895,6 +2935,76 @@ export namespace Prisma {
           }
         }
       }
+      DispatchCorrection: {
+        payload: Prisma.$DispatchCorrectionPayload<ExtArgs>
+        fields: Prisma.DispatchCorrectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DispatchCorrectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DispatchCorrectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>
+          }
+          findFirst: {
+            args: Prisma.DispatchCorrectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DispatchCorrectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>
+          }
+          findMany: {
+            args: Prisma.DispatchCorrectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>[]
+          }
+          create: {
+            args: Prisma.DispatchCorrectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>
+          }
+          createMany: {
+            args: Prisma.DispatchCorrectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DispatchCorrectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>[]
+          }
+          delete: {
+            args: Prisma.DispatchCorrectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>
+          }
+          update: {
+            args: Prisma.DispatchCorrectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.DispatchCorrectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DispatchCorrectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.DispatchCorrectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DispatchCorrectionPayload>
+          }
+          aggregate: {
+            args: Prisma.DispatchCorrectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDispatchCorrection>
+          }
+          groupBy: {
+            args: Prisma.DispatchCorrectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DispatchCorrectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DispatchCorrectionCountArgs<ExtArgs>
+            result: $Utils.Optional<DispatchCorrectionCountAggregateOutputType> | number
+          }
+        }
+      }
       Payment: {
         payload: Prisma.$PaymentPayload<ExtArgs>
         fields: Prisma.PaymentFieldRefs
@@ -4117,6 +4227,7 @@ export namespace Prisma {
     createdBankTransfers: number
     createdBookExpenses: number
     createdSavingAccountTxns: number
+    createdCorrections: number
   }
 
   export type StaffCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4131,6 +4242,7 @@ export namespace Prisma {
     createdBankTransfers?: boolean | StaffCountOutputTypeCountCreatedBankTransfersArgs
     createdBookExpenses?: boolean | StaffCountOutputTypeCountCreatedBookExpensesArgs
     createdSavingAccountTxns?: boolean | StaffCountOutputTypeCountCreatedSavingAccountTxnsArgs
+    createdCorrections?: boolean | StaffCountOutputTypeCountCreatedCorrectionsArgs
   }
 
   // Custom InputTypes
@@ -4219,6 +4331,13 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountCreatedSavingAccountTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SavingAccountTxnWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedCorrectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DispatchCorrectionWhereInput
   }
 
 
@@ -4638,11 +4757,13 @@ export namespace Prisma {
   export type VesselCountOutputType = {
     purchaseOrders: number
     dispatches: number
+    doPayments: number
   }
 
   export type VesselCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     purchaseOrders?: boolean | VesselCountOutputTypeCountPurchaseOrdersArgs
     dispatches?: boolean | VesselCountOutputTypeCountDispatchesArgs
+    doPayments?: boolean | VesselCountOutputTypeCountDoPaymentsArgs
   }
 
   // Custom InputTypes
@@ -4668,6 +4789,13 @@ export namespace Prisma {
    */
   export type VesselCountOutputTypeCountDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DispatchWhereInput
+  }
+
+  /**
+   * VesselCountOutputType without action
+   */
+  export type VesselCountOutputTypeCountDoPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentWhereInput
   }
 
 
@@ -4730,6 +4858,37 @@ export namespace Prisma {
    */
   export type PurchaseOrderCountOutputTypeCountDispatchesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: DispatchWhereInput
+  }
+
+
+  /**
+   * Count Type DispatchCountOutputType
+   */
+
+  export type DispatchCountOutputType = {
+    corrections: number
+  }
+
+  export type DispatchCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    corrections?: boolean | DispatchCountOutputTypeCountCorrectionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * DispatchCountOutputType without action
+   */
+  export type DispatchCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCountOutputType
+     */
+    select?: DispatchCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * DispatchCountOutputType without action
+   */
+  export type DispatchCountOutputTypeCountCorrectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DispatchCorrectionWhereInput
   }
 
 
@@ -5166,6 +5325,7 @@ export namespace Prisma {
     createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     createdBookExpenses?: boolean | Staff$createdBookExpensesArgs<ExtArgs>
     createdSavingAccountTxns?: boolean | Staff$createdSavingAccountTxnsArgs<ExtArgs>
+    createdCorrections?: boolean | Staff$createdCorrectionsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
 
@@ -5213,6 +5373,7 @@ export namespace Prisma {
     createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     createdBookExpenses?: boolean | Staff$createdBookExpensesArgs<ExtArgs>
     createdSavingAccountTxns?: boolean | Staff$createdSavingAccountTxnsArgs<ExtArgs>
+    createdCorrections?: boolean | Staff$createdCorrectionsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StaffIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -5231,6 +5392,7 @@ export namespace Prisma {
       createdBankTransfers: Prisma.$BankTransferPayload<ExtArgs>[]
       createdBookExpenses: Prisma.$BookExpensePayload<ExtArgs>[]
       createdSavingAccountTxns: Prisma.$SavingAccountTxnPayload<ExtArgs>[]
+      createdCorrections: Prisma.$DispatchCorrectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5645,6 +5807,7 @@ export namespace Prisma {
     createdBankTransfers<T extends Staff$createdBankTransfersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBankTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     createdBookExpenses<T extends Staff$createdBookExpensesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBookExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookExpensePayload<ExtArgs>, T, "findMany"> | Null>
     createdSavingAccountTxns<T extends Staff$createdSavingAccountTxnsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdSavingAccountTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavingAccountTxnPayload<ExtArgs>, T, "findMany"> | Null>
+    createdCorrections<T extends Staff$createdCorrectionsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdCorrectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6218,6 +6381,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SavingAccountTxnScalarFieldEnum | SavingAccountTxnScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdCorrections
+   */
+  export type Staff$createdCorrectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    where?: DispatchCorrectionWhereInput
+    orderBy?: DispatchCorrectionOrderByWithRelationInput | DispatchCorrectionOrderByWithRelationInput[]
+    cursor?: DispatchCorrectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DispatchCorrectionScalarFieldEnum | DispatchCorrectionScalarFieldEnum[]
   }
 
   /**
@@ -23188,6 +23371,7 @@ export namespace Prisma {
     port?: boolean | Vessel$portArgs<ExtArgs>
     purchaseOrders?: boolean | Vessel$purchaseOrdersArgs<ExtArgs>
     dispatches?: boolean | Vessel$dispatchesArgs<ExtArgs>
+    doPayments?: boolean | Vessel$doPaymentsArgs<ExtArgs>
     _count?: boolean | VesselCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["vessel"]>
 
@@ -23218,6 +23402,7 @@ export namespace Prisma {
     port?: boolean | Vessel$portArgs<ExtArgs>
     purchaseOrders?: boolean | Vessel$purchaseOrdersArgs<ExtArgs>
     dispatches?: boolean | Vessel$dispatchesArgs<ExtArgs>
+    doPayments?: boolean | Vessel$doPaymentsArgs<ExtArgs>
     _count?: boolean | VesselCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type VesselIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -23232,6 +23417,7 @@ export namespace Prisma {
       port: Prisma.$PortOptionPayload<ExtArgs> | null
       purchaseOrders: Prisma.$PurchaseOrderPayload<ExtArgs>[]
       dispatches: Prisma.$DispatchPayload<ExtArgs>[]
+      doPayments: Prisma.$PaymentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -23609,6 +23795,7 @@ export namespace Prisma {
     port<T extends Vessel$portArgs<ExtArgs> = {}>(args?: Subset<T, Vessel$portArgs<ExtArgs>>): Prisma__PortOptionClient<$Result.GetResult<Prisma.$PortOptionPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     purchaseOrders<T extends Vessel$purchaseOrdersArgs<ExtArgs> = {}>(args?: Subset<T, Vessel$purchaseOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PurchaseOrderPayload<ExtArgs>, T, "findMany"> | Null>
     dispatches<T extends Vessel$dispatchesArgs<ExtArgs> = {}>(args?: Subset<T, Vessel$dispatchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findMany"> | Null>
+    doPayments<T extends Vessel$doPaymentsArgs<ExtArgs> = {}>(args?: Subset<T, Vessel$doPaymentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -24030,6 +24217,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: DispatchScalarFieldEnum | DispatchScalarFieldEnum[]
+  }
+
+  /**
+   * Vessel.doPayments
+   */
+  export type Vessel$doPaymentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Payment
+     */
+    select?: PaymentSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentInclude<ExtArgs> | null
+    where?: PaymentWhereInput
+    orderBy?: PaymentOrderByWithRelationInput | PaymentOrderByWithRelationInput[]
+    cursor?: PaymentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentScalarFieldEnum | PaymentScalarFieldEnum[]
   }
 
   /**
@@ -26907,6 +27114,8 @@ export namespace Prisma {
     transporter?: boolean | Dispatch$transporterArgs<ExtArgs>
     importer?: boolean | Dispatch$importerArgs<ExtArgs>
     createdByStaff?: boolean | Dispatch$createdByStaffArgs<ExtArgs>
+    corrections?: boolean | Dispatch$correctionsArgs<ExtArgs>
+    _count?: boolean | DispatchCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["dispatch"]>
 
   export type DispatchSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -26990,6 +27199,8 @@ export namespace Prisma {
     transporter?: boolean | Dispatch$transporterArgs<ExtArgs>
     importer?: boolean | Dispatch$importerArgs<ExtArgs>
     createdByStaff?: boolean | Dispatch$createdByStaffArgs<ExtArgs>
+    corrections?: boolean | Dispatch$correctionsArgs<ExtArgs>
+    _count?: boolean | DispatchCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type DispatchIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -27009,6 +27220,7 @@ export namespace Prisma {
       transporter: Prisma.$TransporterPayload<ExtArgs> | null
       importer: Prisma.$CustomerPayload<ExtArgs> | null
       createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+      corrections: Prisma.$DispatchCorrectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -27442,6 +27654,7 @@ export namespace Prisma {
     transporter<T extends Dispatch$transporterArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$transporterArgs<ExtArgs>>): Prisma__TransporterClient<$Result.GetResult<Prisma.$TransporterPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     importer<T extends Dispatch$importerArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$importerArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     createdByStaff<T extends Dispatch$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    corrections<T extends Dispatch$correctionsArgs<ExtArgs> = {}>(args?: Subset<T, Dispatch$correctionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -27865,6 +28078,26 @@ export namespace Prisma {
   }
 
   /**
+   * Dispatch.corrections
+   */
+  export type Dispatch$correctionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    where?: DispatchCorrectionWhereInput
+    orderBy?: DispatchCorrectionOrderByWithRelationInput | DispatchCorrectionOrderByWithRelationInput[]
+    cursor?: DispatchCorrectionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DispatchCorrectionScalarFieldEnum | DispatchCorrectionScalarFieldEnum[]
+  }
+
+  /**
    * Dispatch without action
    */
   export type DispatchDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -27876,6 +28109,1007 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: DispatchInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DispatchCorrection
+   */
+
+  export type AggregateDispatchCorrection = {
+    _count: DispatchCorrectionCountAggregateOutputType | null
+    _min: DispatchCorrectionMinAggregateOutputType | null
+    _max: DispatchCorrectionMaxAggregateOutputType | null
+  }
+
+  export type DispatchCorrectionMinAggregateOutputType = {
+    id: string | null
+    dispatchId: string | null
+    message: string | null
+    status: $Enums.CorrectionStatus | null
+    createdByStaffId: string | null
+    resolvedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DispatchCorrectionMaxAggregateOutputType = {
+    id: string | null
+    dispatchId: string | null
+    message: string | null
+    status: $Enums.CorrectionStatus | null
+    createdByStaffId: string | null
+    resolvedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DispatchCorrectionCountAggregateOutputType = {
+    id: number
+    dispatchId: number
+    message: number
+    status: number
+    snapshot: number
+    createdByStaffId: number
+    resolvedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DispatchCorrectionMinAggregateInputType = {
+    id?: true
+    dispatchId?: true
+    message?: true
+    status?: true
+    createdByStaffId?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DispatchCorrectionMaxAggregateInputType = {
+    id?: true
+    dispatchId?: true
+    message?: true
+    status?: true
+    createdByStaffId?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DispatchCorrectionCountAggregateInputType = {
+    id?: true
+    dispatchId?: true
+    message?: true
+    status?: true
+    snapshot?: true
+    createdByStaffId?: true
+    resolvedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DispatchCorrectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DispatchCorrection to aggregate.
+     */
+    where?: DispatchCorrectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchCorrections to fetch.
+     */
+    orderBy?: DispatchCorrectionOrderByWithRelationInput | DispatchCorrectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DispatchCorrectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchCorrections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchCorrections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DispatchCorrections
+    **/
+    _count?: true | DispatchCorrectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DispatchCorrectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DispatchCorrectionMaxAggregateInputType
+  }
+
+  export type GetDispatchCorrectionAggregateType<T extends DispatchCorrectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateDispatchCorrection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDispatchCorrection[P]>
+      : GetScalarType<T[P], AggregateDispatchCorrection[P]>
+  }
+
+
+
+
+  export type DispatchCorrectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DispatchCorrectionWhereInput
+    orderBy?: DispatchCorrectionOrderByWithAggregationInput | DispatchCorrectionOrderByWithAggregationInput[]
+    by: DispatchCorrectionScalarFieldEnum[] | DispatchCorrectionScalarFieldEnum
+    having?: DispatchCorrectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DispatchCorrectionCountAggregateInputType | true
+    _min?: DispatchCorrectionMinAggregateInputType
+    _max?: DispatchCorrectionMaxAggregateInputType
+  }
+
+  export type DispatchCorrectionGroupByOutputType = {
+    id: string
+    dispatchId: string
+    message: string
+    status: $Enums.CorrectionStatus
+    snapshot: JsonValue | null
+    createdByStaffId: string | null
+    resolvedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: DispatchCorrectionCountAggregateOutputType | null
+    _min: DispatchCorrectionMinAggregateOutputType | null
+    _max: DispatchCorrectionMaxAggregateOutputType | null
+  }
+
+  type GetDispatchCorrectionGroupByPayload<T extends DispatchCorrectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DispatchCorrectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DispatchCorrectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DispatchCorrectionGroupByOutputType[P]>
+            : GetScalarType<T[P], DispatchCorrectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DispatchCorrectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    dispatchId?: boolean
+    message?: boolean
+    status?: boolean
+    snapshot?: boolean
+    createdByStaffId?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    dispatch?: boolean | DispatchDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | DispatchCorrection$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["dispatchCorrection"]>
+
+  export type DispatchCorrectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    dispatchId?: boolean
+    message?: boolean
+    status?: boolean
+    snapshot?: boolean
+    createdByStaffId?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    dispatch?: boolean | DispatchDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | DispatchCorrection$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["dispatchCorrection"]>
+
+  export type DispatchCorrectionSelectScalar = {
+    id?: boolean
+    dispatchId?: boolean
+    message?: boolean
+    status?: boolean
+    snapshot?: boolean
+    createdByStaffId?: boolean
+    resolvedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DispatchCorrectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispatch?: boolean | DispatchDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | DispatchCorrection$createdByStaffArgs<ExtArgs>
+  }
+  export type DispatchCorrectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    dispatch?: boolean | DispatchDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | DispatchCorrection$createdByStaffArgs<ExtArgs>
+  }
+
+  export type $DispatchCorrectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DispatchCorrection"
+    objects: {
+      dispatch: Prisma.$DispatchPayload<ExtArgs>
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      dispatchId: string
+      message: string
+      status: $Enums.CorrectionStatus
+      /**
+       * Snapshot of the four section fields at the time the request was filed.
+       */
+      snapshot: Prisma.JsonValue | null
+      createdByStaffId: string | null
+      resolvedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["dispatchCorrection"]>
+    composites: {}
+  }
+
+  type DispatchCorrectionGetPayload<S extends boolean | null | undefined | DispatchCorrectionDefaultArgs> = $Result.GetResult<Prisma.$DispatchCorrectionPayload, S>
+
+  type DispatchCorrectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<DispatchCorrectionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: DispatchCorrectionCountAggregateInputType | true
+    }
+
+  export interface DispatchCorrectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DispatchCorrection'], meta: { name: 'DispatchCorrection' } }
+    /**
+     * Find zero or one DispatchCorrection that matches the filter.
+     * @param {DispatchCorrectionFindUniqueArgs} args - Arguments to find a DispatchCorrection
+     * @example
+     * // Get one DispatchCorrection
+     * const dispatchCorrection = await prisma.dispatchCorrection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DispatchCorrectionFindUniqueArgs>(args: SelectSubset<T, DispatchCorrectionFindUniqueArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one DispatchCorrection that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {DispatchCorrectionFindUniqueOrThrowArgs} args - Arguments to find a DispatchCorrection
+     * @example
+     * // Get one DispatchCorrection
+     * const dispatchCorrection = await prisma.dispatchCorrection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DispatchCorrectionFindUniqueOrThrowArgs>(args: SelectSubset<T, DispatchCorrectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first DispatchCorrection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionFindFirstArgs} args - Arguments to find a DispatchCorrection
+     * @example
+     * // Get one DispatchCorrection
+     * const dispatchCorrection = await prisma.dispatchCorrection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DispatchCorrectionFindFirstArgs>(args?: SelectSubset<T, DispatchCorrectionFindFirstArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first DispatchCorrection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionFindFirstOrThrowArgs} args - Arguments to find a DispatchCorrection
+     * @example
+     * // Get one DispatchCorrection
+     * const dispatchCorrection = await prisma.dispatchCorrection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DispatchCorrectionFindFirstOrThrowArgs>(args?: SelectSubset<T, DispatchCorrectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more DispatchCorrections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DispatchCorrections
+     * const dispatchCorrections = await prisma.dispatchCorrection.findMany()
+     * 
+     * // Get first 10 DispatchCorrections
+     * const dispatchCorrections = await prisma.dispatchCorrection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dispatchCorrectionWithIdOnly = await prisma.dispatchCorrection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DispatchCorrectionFindManyArgs>(args?: SelectSubset<T, DispatchCorrectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a DispatchCorrection.
+     * @param {DispatchCorrectionCreateArgs} args - Arguments to create a DispatchCorrection.
+     * @example
+     * // Create one DispatchCorrection
+     * const DispatchCorrection = await prisma.dispatchCorrection.create({
+     *   data: {
+     *     // ... data to create a DispatchCorrection
+     *   }
+     * })
+     * 
+     */
+    create<T extends DispatchCorrectionCreateArgs>(args: SelectSubset<T, DispatchCorrectionCreateArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many DispatchCorrections.
+     * @param {DispatchCorrectionCreateManyArgs} args - Arguments to create many DispatchCorrections.
+     * @example
+     * // Create many DispatchCorrections
+     * const dispatchCorrection = await prisma.dispatchCorrection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DispatchCorrectionCreateManyArgs>(args?: SelectSubset<T, DispatchCorrectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DispatchCorrections and returns the data saved in the database.
+     * @param {DispatchCorrectionCreateManyAndReturnArgs} args - Arguments to create many DispatchCorrections.
+     * @example
+     * // Create many DispatchCorrections
+     * const dispatchCorrection = await prisma.dispatchCorrection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DispatchCorrections and only return the `id`
+     * const dispatchCorrectionWithIdOnly = await prisma.dispatchCorrection.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DispatchCorrectionCreateManyAndReturnArgs>(args?: SelectSubset<T, DispatchCorrectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a DispatchCorrection.
+     * @param {DispatchCorrectionDeleteArgs} args - Arguments to delete one DispatchCorrection.
+     * @example
+     * // Delete one DispatchCorrection
+     * const DispatchCorrection = await prisma.dispatchCorrection.delete({
+     *   where: {
+     *     // ... filter to delete one DispatchCorrection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DispatchCorrectionDeleteArgs>(args: SelectSubset<T, DispatchCorrectionDeleteArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one DispatchCorrection.
+     * @param {DispatchCorrectionUpdateArgs} args - Arguments to update one DispatchCorrection.
+     * @example
+     * // Update one DispatchCorrection
+     * const dispatchCorrection = await prisma.dispatchCorrection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DispatchCorrectionUpdateArgs>(args: SelectSubset<T, DispatchCorrectionUpdateArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more DispatchCorrections.
+     * @param {DispatchCorrectionDeleteManyArgs} args - Arguments to filter DispatchCorrections to delete.
+     * @example
+     * // Delete a few DispatchCorrections
+     * const { count } = await prisma.dispatchCorrection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DispatchCorrectionDeleteManyArgs>(args?: SelectSubset<T, DispatchCorrectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DispatchCorrections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DispatchCorrections
+     * const dispatchCorrection = await prisma.dispatchCorrection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DispatchCorrectionUpdateManyArgs>(args: SelectSubset<T, DispatchCorrectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one DispatchCorrection.
+     * @param {DispatchCorrectionUpsertArgs} args - Arguments to update or create a DispatchCorrection.
+     * @example
+     * // Update or create a DispatchCorrection
+     * const dispatchCorrection = await prisma.dispatchCorrection.upsert({
+     *   create: {
+     *     // ... data to create a DispatchCorrection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DispatchCorrection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DispatchCorrectionUpsertArgs>(args: SelectSubset<T, DispatchCorrectionUpsertArgs<ExtArgs>>): Prisma__DispatchCorrectionClient<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of DispatchCorrections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionCountArgs} args - Arguments to filter DispatchCorrections to count.
+     * @example
+     * // Count the number of DispatchCorrections
+     * const count = await prisma.dispatchCorrection.count({
+     *   where: {
+     *     // ... the filter for the DispatchCorrections we want to count
+     *   }
+     * })
+    **/
+    count<T extends DispatchCorrectionCountArgs>(
+      args?: Subset<T, DispatchCorrectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DispatchCorrectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DispatchCorrection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DispatchCorrectionAggregateArgs>(args: Subset<T, DispatchCorrectionAggregateArgs>): Prisma.PrismaPromise<GetDispatchCorrectionAggregateType<T>>
+
+    /**
+     * Group by DispatchCorrection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DispatchCorrectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DispatchCorrectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DispatchCorrectionGroupByArgs['orderBy'] }
+        : { orderBy?: DispatchCorrectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DispatchCorrectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDispatchCorrectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DispatchCorrection model
+   */
+  readonly fields: DispatchCorrectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DispatchCorrection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DispatchCorrectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    dispatch<T extends DispatchDefaultArgs<ExtArgs> = {}>(args?: Subset<T, DispatchDefaultArgs<ExtArgs>>): Prisma__DispatchClient<$Result.GetResult<Prisma.$DispatchPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    createdByStaff<T extends DispatchCorrection$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, DispatchCorrection$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DispatchCorrection model
+   */ 
+  interface DispatchCorrectionFieldRefs {
+    readonly id: FieldRef<"DispatchCorrection", 'String'>
+    readonly dispatchId: FieldRef<"DispatchCorrection", 'String'>
+    readonly message: FieldRef<"DispatchCorrection", 'String'>
+    readonly status: FieldRef<"DispatchCorrection", 'CorrectionStatus'>
+    readonly snapshot: FieldRef<"DispatchCorrection", 'Json'>
+    readonly createdByStaffId: FieldRef<"DispatchCorrection", 'String'>
+    readonly resolvedAt: FieldRef<"DispatchCorrection", 'DateTime'>
+    readonly createdAt: FieldRef<"DispatchCorrection", 'DateTime'>
+    readonly updatedAt: FieldRef<"DispatchCorrection", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DispatchCorrection findUnique
+   */
+  export type DispatchCorrectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchCorrection to fetch.
+     */
+    where: DispatchCorrectionWhereUniqueInput
+  }
+
+  /**
+   * DispatchCorrection findUniqueOrThrow
+   */
+  export type DispatchCorrectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchCorrection to fetch.
+     */
+    where: DispatchCorrectionWhereUniqueInput
+  }
+
+  /**
+   * DispatchCorrection findFirst
+   */
+  export type DispatchCorrectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchCorrection to fetch.
+     */
+    where?: DispatchCorrectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchCorrections to fetch.
+     */
+    orderBy?: DispatchCorrectionOrderByWithRelationInput | DispatchCorrectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DispatchCorrections.
+     */
+    cursor?: DispatchCorrectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchCorrections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchCorrections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DispatchCorrections.
+     */
+    distinct?: DispatchCorrectionScalarFieldEnum | DispatchCorrectionScalarFieldEnum[]
+  }
+
+  /**
+   * DispatchCorrection findFirstOrThrow
+   */
+  export type DispatchCorrectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchCorrection to fetch.
+     */
+    where?: DispatchCorrectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchCorrections to fetch.
+     */
+    orderBy?: DispatchCorrectionOrderByWithRelationInput | DispatchCorrectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DispatchCorrections.
+     */
+    cursor?: DispatchCorrectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchCorrections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchCorrections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DispatchCorrections.
+     */
+    distinct?: DispatchCorrectionScalarFieldEnum | DispatchCorrectionScalarFieldEnum[]
+  }
+
+  /**
+   * DispatchCorrection findMany
+   */
+  export type DispatchCorrectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * Filter, which DispatchCorrections to fetch.
+     */
+    where?: DispatchCorrectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DispatchCorrections to fetch.
+     */
+    orderBy?: DispatchCorrectionOrderByWithRelationInput | DispatchCorrectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DispatchCorrections.
+     */
+    cursor?: DispatchCorrectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DispatchCorrections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DispatchCorrections.
+     */
+    skip?: number
+    distinct?: DispatchCorrectionScalarFieldEnum | DispatchCorrectionScalarFieldEnum[]
+  }
+
+  /**
+   * DispatchCorrection create
+   */
+  export type DispatchCorrectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DispatchCorrection.
+     */
+    data: XOR<DispatchCorrectionCreateInput, DispatchCorrectionUncheckedCreateInput>
+  }
+
+  /**
+   * DispatchCorrection createMany
+   */
+  export type DispatchCorrectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DispatchCorrections.
+     */
+    data: DispatchCorrectionCreateManyInput | DispatchCorrectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DispatchCorrection createManyAndReturn
+   */
+  export type DispatchCorrectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many DispatchCorrections.
+     */
+    data: DispatchCorrectionCreateManyInput | DispatchCorrectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DispatchCorrection update
+   */
+  export type DispatchCorrectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DispatchCorrection.
+     */
+    data: XOR<DispatchCorrectionUpdateInput, DispatchCorrectionUncheckedUpdateInput>
+    /**
+     * Choose, which DispatchCorrection to update.
+     */
+    where: DispatchCorrectionWhereUniqueInput
+  }
+
+  /**
+   * DispatchCorrection updateMany
+   */
+  export type DispatchCorrectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DispatchCorrections.
+     */
+    data: XOR<DispatchCorrectionUpdateManyMutationInput, DispatchCorrectionUncheckedUpdateManyInput>
+    /**
+     * Filter which DispatchCorrections to update
+     */
+    where?: DispatchCorrectionWhereInput
+  }
+
+  /**
+   * DispatchCorrection upsert
+   */
+  export type DispatchCorrectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DispatchCorrection to update in case it exists.
+     */
+    where: DispatchCorrectionWhereUniqueInput
+    /**
+     * In case the DispatchCorrection found by the `where` argument doesn't exist, create a new DispatchCorrection with this data.
+     */
+    create: XOR<DispatchCorrectionCreateInput, DispatchCorrectionUncheckedCreateInput>
+    /**
+     * In case the DispatchCorrection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DispatchCorrectionUpdateInput, DispatchCorrectionUncheckedUpdateInput>
+  }
+
+  /**
+   * DispatchCorrection delete
+   */
+  export type DispatchCorrectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
+    /**
+     * Filter which DispatchCorrection to delete.
+     */
+    where: DispatchCorrectionWhereUniqueInput
+  }
+
+  /**
+   * DispatchCorrection deleteMany
+   */
+  export type DispatchCorrectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DispatchCorrections to delete
+     */
+    where?: DispatchCorrectionWhereInput
+  }
+
+  /**
+   * DispatchCorrection.createdByStaff
+   */
+  export type DispatchCorrection$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * DispatchCorrection without action
+   */
+  export type DispatchCorrectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DispatchCorrection
+     */
+    select?: DispatchCorrectionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DispatchCorrectionInclude<ExtArgs> | null
   }
 
 
@@ -27909,6 +29143,8 @@ export namespace Prisma {
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
+    doVesselId: string | null
+    doStatus: $Enums.DoStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -27923,6 +29159,8 @@ export namespace Prisma {
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection | null
     amount: Decimal | null
+    doVesselId: string | null
+    doStatus: $Enums.DoStatus | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -27937,6 +29175,8 @@ export namespace Prisma {
     createdByStaffId: number
     direction: number
     amount: number
+    doVesselId: number
+    doStatus: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -27961,6 +29201,8 @@ export namespace Prisma {
     createdByStaffId?: true
     direction?: true
     amount?: true
+    doVesselId?: true
+    doStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -27975,6 +29217,8 @@ export namespace Prisma {
     createdByStaffId?: true
     direction?: true
     amount?: true
+    doVesselId?: true
+    doStatus?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -27989,6 +29233,8 @@ export namespace Prisma {
     createdByStaffId?: true
     direction?: true
     amount?: true
+    doVesselId?: true
+    doStatus?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -28090,6 +29336,8 @@ export namespace Prisma {
     createdByStaffId: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal
+    doVesselId: string | null
+    doStatus: $Enums.DoStatus
     createdAt: Date
     updatedAt: Date
     _count: PaymentCountAggregateOutputType | null
@@ -28123,6 +29371,8 @@ export namespace Prisma {
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
+    doVesselId?: boolean
+    doStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customer?: boolean | Payment$customerArgs<ExtArgs>
@@ -28130,6 +29380,7 @@ export namespace Prisma {
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
+    doVessel?: boolean | Payment$doVesselArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -28142,6 +29393,8 @@ export namespace Prisma {
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
+    doVesselId?: boolean
+    doStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     customer?: boolean | Payment$customerArgs<ExtArgs>
@@ -28149,6 +29402,7 @@ export namespace Prisma {
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
+    doVessel?: boolean | Payment$doVesselArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectScalar = {
@@ -28161,6 +29415,8 @@ export namespace Prisma {
     createdByStaffId?: boolean
     direction?: boolean
     amount?: boolean
+    doVesselId?: boolean
+    doStatus?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -28171,6 +29427,7 @@ export namespace Prisma {
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
+    doVessel?: boolean | Payment$doVesselArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     customer?: boolean | Payment$customerArgs<ExtArgs>
@@ -28178,6 +29435,7 @@ export namespace Prisma {
     investmentCompany?: boolean | Payment$investmentCompanyArgs<ExtArgs>
     bankAccount?: boolean | Payment$bankAccountArgs<ExtArgs>
     createdByStaff?: boolean | Payment$createdByStaffArgs<ExtArgs>
+    doVessel?: boolean | Payment$doVesselArgs<ExtArgs>
   }
 
   export type $PaymentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -28188,6 +29446,7 @@ export namespace Prisma {
       investmentCompany: Prisma.$InvestmentCompanyPayload<ExtArgs> | null
       bankAccount: Prisma.$BankAccountPayload<ExtArgs> | null
       createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+      doVessel: Prisma.$VesselPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -28199,6 +29458,14 @@ export namespace Prisma {
       createdByStaffId: string | null
       direction: $Enums.PaymentDirection
       amount: Prisma.Decimal
+      /**
+       * Vessel assigned for Delivery Order tracking (Report → DO in Hand).
+       */
+      doVesselId: string | null
+      /**
+       * Pending until DO is marked in hand; then Completed.
+       */
+      doStatus: $Enums.DoStatus
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["payment"]>
@@ -28570,6 +29837,7 @@ export namespace Prisma {
     investmentCompany<T extends Payment$investmentCompanyArgs<ExtArgs> = {}>(args?: Subset<T, Payment$investmentCompanyArgs<ExtArgs>>): Prisma__InvestmentCompanyClient<$Result.GetResult<Prisma.$InvestmentCompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     bankAccount<T extends Payment$bankAccountArgs<ExtArgs> = {}>(args?: Subset<T, Payment$bankAccountArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     createdByStaff<T extends Payment$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, Payment$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    doVessel<T extends Payment$doVesselArgs<ExtArgs> = {}>(args?: Subset<T, Payment$doVesselArgs<ExtArgs>>): Prisma__VesselClient<$Result.GetResult<Prisma.$VesselPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -28608,6 +29876,8 @@ export namespace Prisma {
     readonly createdByStaffId: FieldRef<"Payment", 'String'>
     readonly direction: FieldRef<"Payment", 'PaymentDirection'>
     readonly amount: FieldRef<"Payment", 'Decimal'>
+    readonly doVesselId: FieldRef<"Payment", 'String'>
+    readonly doStatus: FieldRef<"Payment", 'DoStatus'>
     readonly createdAt: FieldRef<"Payment", 'DateTime'>
     readonly updatedAt: FieldRef<"Payment", 'DateTime'>
   }
@@ -29000,6 +30270,21 @@ export namespace Prisma {
      */
     include?: StaffInclude<ExtArgs> | null
     where?: StaffWhereInput
+  }
+
+  /**
+   * Payment.doVessel
+   */
+  export type Payment$doVesselArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Vessel
+     */
+    select?: VesselSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: VesselInclude<ExtArgs> | null
+    where?: VesselWhereInput
   }
 
   /**
@@ -43944,6 +45229,21 @@ export namespace Prisma {
   export type DispatchScalarFieldEnum = (typeof DispatchScalarFieldEnum)[keyof typeof DispatchScalarFieldEnum]
 
 
+  export const DispatchCorrectionScalarFieldEnum: {
+    id: 'id',
+    dispatchId: 'dispatchId',
+    message: 'message',
+    status: 'status',
+    snapshot: 'snapshot',
+    createdByStaffId: 'createdByStaffId',
+    resolvedAt: 'resolvedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DispatchCorrectionScalarFieldEnum = (typeof DispatchCorrectionScalarFieldEnum)[keyof typeof DispatchCorrectionScalarFieldEnum]
+
+
   export const PaymentScalarFieldEnum: {
     id: 'id',
     date: 'date',
@@ -43954,6 +45254,8 @@ export namespace Prisma {
     createdByStaffId: 'createdByStaffId',
     direction: 'direction',
     amount: 'amount',
+    doVesselId: 'doVesselId',
+    doStatus: 'doStatus',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -44167,6 +45469,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -44181,6 +45491,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -44392,6 +45711,27 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'CorrectionStatus'
+   */
+  export type EnumCorrectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CorrectionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'CorrectionStatus[]'
+   */
+  export type ListEnumCorrectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CorrectionStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
    * Reference to a field of type 'PaymentDirection'
    */
   export type EnumPaymentDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentDirection'>
@@ -44402,6 +45742,20 @@ export namespace Prisma {
    * Reference to a field of type 'PaymentDirection[]'
    */
   export type ListEnumPaymentDirectionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentDirection[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DoStatus'
+   */
+  export type EnumDoStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'DoStatus[]'
+   */
+  export type ListEnumDoStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoStatus[]'>
     
 
 
@@ -44492,6 +45846,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferListRelationFilter
     createdBookExpenses?: BookExpenseListRelationFilter
     createdSavingAccountTxns?: SavingAccountTxnListRelationFilter
+    createdCorrections?: DispatchCorrectionListRelationFilter
   }
 
   export type StaffOrderByWithRelationInput = {
@@ -44519,6 +45874,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferOrderByRelationAggregateInput
     createdBookExpenses?: BookExpenseOrderByRelationAggregateInput
     createdSavingAccountTxns?: SavingAccountTxnOrderByRelationAggregateInput
+    createdCorrections?: DispatchCorrectionOrderByRelationAggregateInput
   }
 
   export type StaffWhereUniqueInput = Prisma.AtLeast<{
@@ -44549,6 +45905,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferListRelationFilter
     createdBookExpenses?: BookExpenseListRelationFilter
     createdSavingAccountTxns?: SavingAccountTxnListRelationFilter
+    createdCorrections?: DispatchCorrectionListRelationFilter
   }, "id">
 
   export type StaffOrderByWithAggregationInput = {
@@ -45823,6 +47180,7 @@ export namespace Prisma {
     port?: XOR<PortOptionNullableRelationFilter, PortOptionWhereInput> | null
     purchaseOrders?: PurchaseOrderListRelationFilter
     dispatches?: DispatchListRelationFilter
+    doPayments?: PaymentListRelationFilter
   }
 
   export type VesselOrderByWithRelationInput = {
@@ -45837,6 +47195,7 @@ export namespace Prisma {
     port?: PortOptionOrderByWithRelationInput
     purchaseOrders?: PurchaseOrderOrderByRelationAggregateInput
     dispatches?: DispatchOrderByRelationAggregateInput
+    doPayments?: PaymentOrderByRelationAggregateInput
   }
 
   export type VesselWhereUniqueInput = Prisma.AtLeast<{
@@ -45854,6 +47213,7 @@ export namespace Prisma {
     port?: XOR<PortOptionNullableRelationFilter, PortOptionWhereInput> | null
     purchaseOrders?: PurchaseOrderListRelationFilter
     dispatches?: DispatchListRelationFilter
+    doPayments?: PaymentListRelationFilter
   }, "id" | "vesselName">
 
   export type VesselOrderByWithAggregationInput = {
@@ -46178,6 +47538,7 @@ export namespace Prisma {
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     importer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    corrections?: DispatchCorrectionListRelationFilter
   }
 
   export type DispatchOrderByWithRelationInput = {
@@ -46218,6 +47579,7 @@ export namespace Prisma {
     transporter?: TransporterOrderByWithRelationInput
     importer?: CustomerOrderByWithRelationInput
     createdByStaff?: StaffOrderByWithRelationInput
+    corrections?: DispatchCorrectionOrderByRelationAggregateInput
   }
 
   export type DispatchWhereUniqueInput = Prisma.AtLeast<{
@@ -46261,6 +47623,7 @@ export namespace Prisma {
     transporter?: XOR<TransporterNullableRelationFilter, TransporterWhereInput> | null
     importer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    corrections?: DispatchCorrectionListRelationFilter
   }, "id" | "dispatchNumber">
 
   export type DispatchOrderByWithAggregationInput = {
@@ -46339,6 +47702,84 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Dispatch"> | Date | string
   }
 
+  export type DispatchCorrectionWhereInput = {
+    AND?: DispatchCorrectionWhereInput | DispatchCorrectionWhereInput[]
+    OR?: DispatchCorrectionWhereInput[]
+    NOT?: DispatchCorrectionWhereInput | DispatchCorrectionWhereInput[]
+    id?: StringFilter<"DispatchCorrection"> | string
+    dispatchId?: StringFilter<"DispatchCorrection"> | string
+    message?: StringFilter<"DispatchCorrection"> | string
+    status?: EnumCorrectionStatusFilter<"DispatchCorrection"> | $Enums.CorrectionStatus
+    snapshot?: JsonNullableFilter<"DispatchCorrection">
+    createdByStaffId?: StringNullableFilter<"DispatchCorrection"> | string | null
+    resolvedAt?: DateTimeNullableFilter<"DispatchCorrection"> | Date | string | null
+    createdAt?: DateTimeFilter<"DispatchCorrection"> | Date | string
+    updatedAt?: DateTimeFilter<"DispatchCorrection"> | Date | string
+    dispatch?: XOR<DispatchRelationFilter, DispatchWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type DispatchCorrectionOrderByWithRelationInput = {
+    id?: SortOrder
+    dispatchId?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    snapshot?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    dispatch?: DispatchOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
+  }
+
+  export type DispatchCorrectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: DispatchCorrectionWhereInput | DispatchCorrectionWhereInput[]
+    OR?: DispatchCorrectionWhereInput[]
+    NOT?: DispatchCorrectionWhereInput | DispatchCorrectionWhereInput[]
+    dispatchId?: StringFilter<"DispatchCorrection"> | string
+    message?: StringFilter<"DispatchCorrection"> | string
+    status?: EnumCorrectionStatusFilter<"DispatchCorrection"> | $Enums.CorrectionStatus
+    snapshot?: JsonNullableFilter<"DispatchCorrection">
+    createdByStaffId?: StringNullableFilter<"DispatchCorrection"> | string | null
+    resolvedAt?: DateTimeNullableFilter<"DispatchCorrection"> | Date | string | null
+    createdAt?: DateTimeFilter<"DispatchCorrection"> | Date | string
+    updatedAt?: DateTimeFilter<"DispatchCorrection"> | Date | string
+    dispatch?: XOR<DispatchRelationFilter, DispatchWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type DispatchCorrectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    dispatchId?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    snapshot?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    resolvedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DispatchCorrectionCountOrderByAggregateInput
+    _max?: DispatchCorrectionMaxOrderByAggregateInput
+    _min?: DispatchCorrectionMinOrderByAggregateInput
+  }
+
+  export type DispatchCorrectionScalarWhereWithAggregatesInput = {
+    AND?: DispatchCorrectionScalarWhereWithAggregatesInput | DispatchCorrectionScalarWhereWithAggregatesInput[]
+    OR?: DispatchCorrectionScalarWhereWithAggregatesInput[]
+    NOT?: DispatchCorrectionScalarWhereWithAggregatesInput | DispatchCorrectionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DispatchCorrection"> | string
+    dispatchId?: StringWithAggregatesFilter<"DispatchCorrection"> | string
+    message?: StringWithAggregatesFilter<"DispatchCorrection"> | string
+    status?: EnumCorrectionStatusWithAggregatesFilter<"DispatchCorrection"> | $Enums.CorrectionStatus
+    snapshot?: JsonNullableWithAggregatesFilter<"DispatchCorrection">
+    createdByStaffId?: StringNullableWithAggregatesFilter<"DispatchCorrection"> | string | null
+    resolvedAt?: DateTimeNullableWithAggregatesFilter<"DispatchCorrection"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"DispatchCorrection"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DispatchCorrection"> | Date | string
+  }
+
   export type PaymentWhereInput = {
     AND?: PaymentWhereInput | PaymentWhereInput[]
     OR?: PaymentWhereInput[]
@@ -46352,6 +47793,8 @@ export namespace Prisma {
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
+    doVesselId?: StringNullableFilter<"Payment"> | string | null
+    doStatus?: EnumDoStatusFilter<"Payment"> | $Enums.DoStatus
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
@@ -46359,6 +47802,7 @@ export namespace Prisma {
     investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
     bankAccount?: XOR<BankAccountNullableRelationFilter, BankAccountWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    doVessel?: XOR<VesselNullableRelationFilter, VesselWhereInput> | null
   }
 
   export type PaymentOrderByWithRelationInput = {
@@ -46371,6 +47815,8 @@ export namespace Prisma {
     createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
+    doVesselId?: SortOrderInput | SortOrder
+    doStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     customer?: CustomerOrderByWithRelationInput
@@ -46378,6 +47824,7 @@ export namespace Prisma {
     investmentCompany?: InvestmentCompanyOrderByWithRelationInput
     bankAccount?: BankAccountOrderByWithRelationInput
     createdByStaff?: StaffOrderByWithRelationInput
+    doVessel?: VesselOrderByWithRelationInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -46393,6 +47840,8 @@ export namespace Prisma {
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
+    doVesselId?: StringNullableFilter<"Payment"> | string | null
+    doStatus?: EnumDoStatusFilter<"Payment"> | $Enums.DoStatus
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
     customer?: XOR<CustomerNullableRelationFilter, CustomerWhereInput> | null
@@ -46400,6 +47849,7 @@ export namespace Prisma {
     investmentCompany?: XOR<InvestmentCompanyNullableRelationFilter, InvestmentCompanyWhereInput> | null
     bankAccount?: XOR<BankAccountNullableRelationFilter, BankAccountWhereInput> | null
     createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+    doVessel?: XOR<VesselNullableRelationFilter, VesselWhereInput> | null
   }, "id">
 
   export type PaymentOrderByWithAggregationInput = {
@@ -46412,6 +47862,8 @@ export namespace Prisma {
     createdByStaffId?: SortOrderInput | SortOrder
     direction?: SortOrder
     amount?: SortOrder
+    doVesselId?: SortOrderInput | SortOrder
+    doStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PaymentCountOrderByAggregateInput
@@ -46434,6 +47886,8 @@ export namespace Prisma {
     createdByStaffId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionWithAggregatesFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalWithAggregatesFilter<"Payment"> | Decimal | DecimalJsLike | number | string
+    doVesselId?: StringNullableWithAggregatesFilter<"Payment"> | string | null
+    doStatus?: EnumDoStatusWithAggregatesFilter<"Payment"> | $Enums.DoStatus
     createdAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Payment"> | Date | string
   }
@@ -47541,6 +48995,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateInput = {
@@ -47568,6 +49023,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUpdateInput = {
@@ -47595,6 +49051,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateInput = {
@@ -47622,6 +49079,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateManyInput = {
@@ -49055,6 +50513,7 @@ export namespace Prisma {
     port?: PortOptionCreateNestedOneWithoutVesselsInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutVesselInput
     dispatches?: DispatchCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselUncheckedCreateInput = {
@@ -49067,6 +50526,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
     dispatches?: DispatchUncheckedCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentUncheckedCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselUpdateInput = {
@@ -49079,6 +50539,7 @@ export namespace Prisma {
     port?: PortOptionUpdateOneWithoutVesselsNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutVesselNestedInput
     dispatches?: DispatchUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateInput = {
@@ -49091,6 +50552,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
     dispatches?: DispatchUncheckedUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUncheckedUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselCreateManyInput = {
@@ -49434,6 +50896,7 @@ export namespace Prisma {
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateInput = {
@@ -49468,6 +50931,7 @@ export namespace Prisma {
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUpdateInput = {
@@ -49502,6 +50966,7 @@ export namespace Prisma {
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateInput = {
@@ -49536,6 +51001,7 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchCreateManyInput = {
@@ -49634,11 +51100,94 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DispatchCorrectionCreateInput = {
+    id?: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatch: DispatchCreateNestedOneWithoutCorrectionsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedCorrectionsInput
+  }
+
+  export type DispatchCorrectionUncheckedCreateInput = {
+    id?: string
+    dispatchId: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCorrectionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatch?: DispatchUpdateOneRequiredWithoutCorrectionsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedCorrectionsNestedInput
+  }
+
+  export type DispatchCorrectionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchCorrectionCreateManyInput = {
+    id?: string
+    dispatchId: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCorrectionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchCorrectionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PaymentCreateInput = {
     id?: string
     date: Date | string
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
@@ -49646,6 +51195,7 @@ export namespace Prisma {
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+    doVessel?: VesselCreateNestedOneWithoutDoPaymentsInput
   }
 
   export type PaymentUncheckedCreateInput = {
@@ -49658,6 +51208,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -49667,6 +51219,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
@@ -49674,6 +51227,7 @@ export namespace Prisma {
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+    doVessel?: VesselUpdateOneWithoutDoPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
@@ -49686,6 +51240,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -49700,6 +51256,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -49709,6 +51267,7 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -49723,6 +51282,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -50960,6 +52521,12 @@ export namespace Prisma {
     none?: SavingAccountTxnWhereInput
   }
 
+  export type DispatchCorrectionListRelationFilter = {
+    every?: DispatchCorrectionWhereInput
+    some?: DispatchCorrectionWhereInput
+    none?: DispatchCorrectionWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -51006,6 +52573,10 @@ export namespace Prisma {
   }
 
   export type SavingAccountTxnOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DispatchCorrectionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -52417,11 +53988,121 @@ export namespace Prisma {
     _max?: NestedEnumReceiptStatusFilter<$PrismaModel>
   }
 
+  export type EnumCorrectionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.CorrectionStatus | EnumCorrectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCorrectionStatusFilter<$PrismaModel> | $Enums.CorrectionStatus
+  }
+  export type JsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type DispatchRelationFilter = {
+    is?: DispatchWhereInput
+    isNot?: DispatchWhereInput
+  }
+
+  export type DispatchCorrectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    dispatchId?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    snapshot?: SortOrder
+    createdByStaffId?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DispatchCorrectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    dispatchId?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    createdByStaffId?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DispatchCorrectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    dispatchId?: SortOrder
+    message?: SortOrder
+    status?: SortOrder
+    createdByStaffId?: SortOrder
+    resolvedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumCorrectionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CorrectionStatus | EnumCorrectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCorrectionStatusWithAggregatesFilter<$PrismaModel> | $Enums.CorrectionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCorrectionStatusFilter<$PrismaModel>
+    _max?: NestedEnumCorrectionStatusFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
   export type EnumPaymentDirectionFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentDirection | EnumPaymentDirectionFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentDirection[] | ListEnumPaymentDirectionFieldRefInput<$PrismaModel>
     notIn?: $Enums.PaymentDirection[] | ListEnumPaymentDirectionFieldRefInput<$PrismaModel>
     not?: NestedEnumPaymentDirectionFilter<$PrismaModel> | $Enums.PaymentDirection
+  }
+
+  export type EnumDoStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoStatus | EnumDoStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDoStatusFilter<$PrismaModel> | $Enums.DoStatus
   }
 
   export type InvestmentCompanyNullableRelationFilter = {
@@ -52434,6 +54115,11 @@ export namespace Prisma {
     isNot?: BankAccountWhereInput | null
   }
 
+  export type VesselNullableRelationFilter = {
+    is?: VesselWhereInput | null
+    isNot?: VesselWhereInput | null
+  }
+
   export type PaymentCountOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
@@ -52444,6 +54130,8 @@ export namespace Prisma {
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
+    doVesselId?: SortOrder
+    doStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -52462,6 +54150,8 @@ export namespace Prisma {
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
+    doVesselId?: SortOrder
+    doStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -52476,6 +54166,8 @@ export namespace Prisma {
     createdByStaffId?: SortOrder
     direction?: SortOrder
     amount?: SortOrder
+    doVesselId?: SortOrder
+    doStatus?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -52492,6 +54184,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPaymentDirectionFilter<$PrismaModel>
     _max?: NestedEnumPaymentDirectionFilter<$PrismaModel>
+  }
+
+  export type EnumDoStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoStatus | EnumDoStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDoStatusWithAggregatesFilter<$PrismaModel> | $Enums.DoStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDoStatusFilter<$PrismaModel>
+    _max?: NestedEnumDoStatusFilter<$PrismaModel>
   }
 
   export type EnumDiscountStatusFilter<$PrismaModel = never> = {
@@ -53341,6 +55043,13 @@ export namespace Prisma {
     connect?: SavingAccountTxnWhereUniqueInput | SavingAccountTxnWhereUniqueInput[]
   }
 
+  export type DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput> | DispatchCorrectionCreateWithoutCreatedByStaffInput[] | DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput | DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: DispatchCorrectionCreateManyCreatedByStaffInputEnvelope
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+  }
+
   export type CustomerUncheckedCreateNestedManyWithoutDealByInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -53416,6 +55125,13 @@ export namespace Prisma {
     connectOrCreate?: SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput | SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput[]
     createMany?: SavingAccountTxnCreateManyCreatedByStaffInputEnvelope
     connect?: SavingAccountTxnWhereUniqueInput | SavingAccountTxnWhereUniqueInput[]
+  }
+
+  export type DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput> | DispatchCorrectionCreateWithoutCreatedByStaffInput[] | DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput | DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: DispatchCorrectionCreateManyCreatedByStaffInputEnvelope
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -53619,6 +55335,20 @@ export namespace Prisma {
     deleteMany?: SavingAccountTxnScalarWhereInput | SavingAccountTxnScalarWhereInput[]
   }
 
+  export type DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput> | DispatchCorrectionCreateWithoutCreatedByStaffInput[] | DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput | DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: DispatchCorrectionUpsertWithWhereUniqueWithoutCreatedByStaffInput | DispatchCorrectionUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: DispatchCorrectionCreateManyCreatedByStaffInputEnvelope
+    set?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    disconnect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    delete?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    update?: DispatchCorrectionUpdateWithWhereUniqueWithoutCreatedByStaffInput | DispatchCorrectionUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: DispatchCorrectionUpdateManyWithWhereWithoutCreatedByStaffInput | DispatchCorrectionUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: DispatchCorrectionScalarWhereInput | DispatchCorrectionScalarWhereInput[]
+  }
+
   export type CustomerUncheckedUpdateManyWithoutDealByNestedInput = {
     create?: XOR<CustomerCreateWithoutDealByInput, CustomerUncheckedCreateWithoutDealByInput> | CustomerCreateWithoutDealByInput[] | CustomerUncheckedCreateWithoutDealByInput[]
     connectOrCreate?: CustomerCreateOrConnectWithoutDealByInput | CustomerCreateOrConnectWithoutDealByInput[]
@@ -53771,6 +55501,20 @@ export namespace Prisma {
     update?: SavingAccountTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput | SavingAccountTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
     updateMany?: SavingAccountTxnUpdateManyWithWhereWithoutCreatedByStaffInput | SavingAccountTxnUpdateManyWithWhereWithoutCreatedByStaffInput[]
     deleteMany?: SavingAccountTxnScalarWhereInput | SavingAccountTxnScalarWhereInput[]
+  }
+
+  export type DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput> | DispatchCorrectionCreateWithoutCreatedByStaffInput[] | DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput | DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: DispatchCorrectionUpsertWithWhereUniqueWithoutCreatedByStaffInput | DispatchCorrectionUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: DispatchCorrectionCreateManyCreatedByStaffInputEnvelope
+    set?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    disconnect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    delete?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    update?: DispatchCorrectionUpdateWithWhereUniqueWithoutCreatedByStaffInput | DispatchCorrectionUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: DispatchCorrectionUpdateManyWithWhereWithoutCreatedByStaffInput | DispatchCorrectionUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: DispatchCorrectionScalarWhereInput | DispatchCorrectionScalarWhereInput[]
   }
 
   export type DispatchCreateNestedManyWithoutTransporterInput = {
@@ -54819,6 +56563,13 @@ export namespace Prisma {
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
   }
 
+  export type PaymentCreateNestedManyWithoutDoVesselInput = {
+    create?: XOR<PaymentCreateWithoutDoVesselInput, PaymentUncheckedCreateWithoutDoVesselInput> | PaymentCreateWithoutDoVesselInput[] | PaymentUncheckedCreateWithoutDoVesselInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutDoVesselInput | PaymentCreateOrConnectWithoutDoVesselInput[]
+    createMany?: PaymentCreateManyDoVesselInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+  }
+
   export type PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput = {
     create?: XOR<PurchaseOrderCreateWithoutVesselInput, PurchaseOrderUncheckedCreateWithoutVesselInput> | PurchaseOrderCreateWithoutVesselInput[] | PurchaseOrderUncheckedCreateWithoutVesselInput[]
     connectOrCreate?: PurchaseOrderCreateOrConnectWithoutVesselInput | PurchaseOrderCreateOrConnectWithoutVesselInput[]
@@ -54831,6 +56582,13 @@ export namespace Prisma {
     connectOrCreate?: DispatchCreateOrConnectWithoutVesselInput | DispatchCreateOrConnectWithoutVesselInput[]
     createMany?: DispatchCreateManyVesselInputEnvelope
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
+  }
+
+  export type PaymentUncheckedCreateNestedManyWithoutDoVesselInput = {
+    create?: XOR<PaymentCreateWithoutDoVesselInput, PaymentUncheckedCreateWithoutDoVesselInput> | PaymentCreateWithoutDoVesselInput[] | PaymentUncheckedCreateWithoutDoVesselInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutDoVesselInput | PaymentCreateOrConnectWithoutDoVesselInput[]
+    createMany?: PaymentCreateManyDoVesselInputEnvelope
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
   }
 
   export type QualityClassUpdateOneWithoutVesselsNestedInput = {
@@ -54881,6 +56639,20 @@ export namespace Prisma {
     deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
   }
 
+  export type PaymentUpdateManyWithoutDoVesselNestedInput = {
+    create?: XOR<PaymentCreateWithoutDoVesselInput, PaymentUncheckedCreateWithoutDoVesselInput> | PaymentCreateWithoutDoVesselInput[] | PaymentUncheckedCreateWithoutDoVesselInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutDoVesselInput | PaymentCreateOrConnectWithoutDoVesselInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutDoVesselInput | PaymentUpsertWithWhereUniqueWithoutDoVesselInput[]
+    createMany?: PaymentCreateManyDoVesselInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutDoVesselInput | PaymentUpdateWithWhereUniqueWithoutDoVesselInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutDoVesselInput | PaymentUpdateManyWithWhereWithoutDoVesselInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
+  }
+
   export type PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput = {
     create?: XOR<PurchaseOrderCreateWithoutVesselInput, PurchaseOrderUncheckedCreateWithoutVesselInput> | PurchaseOrderCreateWithoutVesselInput[] | PurchaseOrderUncheckedCreateWithoutVesselInput[]
     connectOrCreate?: PurchaseOrderCreateOrConnectWithoutVesselInput | PurchaseOrderCreateOrConnectWithoutVesselInput[]
@@ -54907,6 +56679,20 @@ export namespace Prisma {
     update?: DispatchUpdateWithWhereUniqueWithoutVesselInput | DispatchUpdateWithWhereUniqueWithoutVesselInput[]
     updateMany?: DispatchUpdateManyWithWhereWithoutVesselInput | DispatchUpdateManyWithWhereWithoutVesselInput[]
     deleteMany?: DispatchScalarWhereInput | DispatchScalarWhereInput[]
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutDoVesselNestedInput = {
+    create?: XOR<PaymentCreateWithoutDoVesselInput, PaymentUncheckedCreateWithoutDoVesselInput> | PaymentCreateWithoutDoVesselInput[] | PaymentUncheckedCreateWithoutDoVesselInput[]
+    connectOrCreate?: PaymentCreateOrConnectWithoutDoVesselInput | PaymentCreateOrConnectWithoutDoVesselInput[]
+    upsert?: PaymentUpsertWithWhereUniqueWithoutDoVesselInput | PaymentUpsertWithWhereUniqueWithoutDoVesselInput[]
+    createMany?: PaymentCreateManyDoVesselInputEnvelope
+    set?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    disconnect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    delete?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
+    update?: PaymentUpdateWithWhereUniqueWithoutDoVesselInput | PaymentUpdateWithWhereUniqueWithoutDoVesselInput[]
+    updateMany?: PaymentUpdateManyWithWhereWithoutDoVesselInput | PaymentUpdateManyWithWhereWithoutDoVesselInput[]
+    deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
   }
 
   export type CustomerCreateNestedOneWithoutOrdersInput = {
@@ -55151,6 +56937,20 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput
   }
 
+  export type DispatchCorrectionCreateNestedManyWithoutDispatchInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutDispatchInput, DispatchCorrectionUncheckedCreateWithoutDispatchInput> | DispatchCorrectionCreateWithoutDispatchInput[] | DispatchCorrectionUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutDispatchInput | DispatchCorrectionCreateOrConnectWithoutDispatchInput[]
+    createMany?: DispatchCorrectionCreateManyDispatchInputEnvelope
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+  }
+
+  export type DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutDispatchInput, DispatchCorrectionUncheckedCreateWithoutDispatchInput> | DispatchCorrectionCreateWithoutDispatchInput[] | DispatchCorrectionUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutDispatchInput | DispatchCorrectionCreateOrConnectWithoutDispatchInput[]
+    createMany?: DispatchCorrectionCreateManyDispatchInputEnvelope
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+  }
+
   export type EnumDispatchTermsFieldUpdateOperationsInput = {
     set?: $Enums.DispatchTerms
   }
@@ -55213,6 +57013,68 @@ export namespace Prisma {
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedDispatchesInput, StaffUpdateWithoutCreatedDispatchesInput>, StaffUncheckedUpdateWithoutCreatedDispatchesInput>
   }
 
+  export type DispatchCorrectionUpdateManyWithoutDispatchNestedInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutDispatchInput, DispatchCorrectionUncheckedCreateWithoutDispatchInput> | DispatchCorrectionCreateWithoutDispatchInput[] | DispatchCorrectionUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutDispatchInput | DispatchCorrectionCreateOrConnectWithoutDispatchInput[]
+    upsert?: DispatchCorrectionUpsertWithWhereUniqueWithoutDispatchInput | DispatchCorrectionUpsertWithWhereUniqueWithoutDispatchInput[]
+    createMany?: DispatchCorrectionCreateManyDispatchInputEnvelope
+    set?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    disconnect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    delete?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    update?: DispatchCorrectionUpdateWithWhereUniqueWithoutDispatchInput | DispatchCorrectionUpdateWithWhereUniqueWithoutDispatchInput[]
+    updateMany?: DispatchCorrectionUpdateManyWithWhereWithoutDispatchInput | DispatchCorrectionUpdateManyWithWhereWithoutDispatchInput[]
+    deleteMany?: DispatchCorrectionScalarWhereInput | DispatchCorrectionScalarWhereInput[]
+  }
+
+  export type DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput = {
+    create?: XOR<DispatchCorrectionCreateWithoutDispatchInput, DispatchCorrectionUncheckedCreateWithoutDispatchInput> | DispatchCorrectionCreateWithoutDispatchInput[] | DispatchCorrectionUncheckedCreateWithoutDispatchInput[]
+    connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutDispatchInput | DispatchCorrectionCreateOrConnectWithoutDispatchInput[]
+    upsert?: DispatchCorrectionUpsertWithWhereUniqueWithoutDispatchInput | DispatchCorrectionUpsertWithWhereUniqueWithoutDispatchInput[]
+    createMany?: DispatchCorrectionCreateManyDispatchInputEnvelope
+    set?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    disconnect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    delete?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    connect?: DispatchCorrectionWhereUniqueInput | DispatchCorrectionWhereUniqueInput[]
+    update?: DispatchCorrectionUpdateWithWhereUniqueWithoutDispatchInput | DispatchCorrectionUpdateWithWhereUniqueWithoutDispatchInput[]
+    updateMany?: DispatchCorrectionUpdateManyWithWhereWithoutDispatchInput | DispatchCorrectionUpdateManyWithWhereWithoutDispatchInput[]
+    deleteMany?: DispatchCorrectionScalarWhereInput | DispatchCorrectionScalarWhereInput[]
+  }
+
+  export type DispatchCreateNestedOneWithoutCorrectionsInput = {
+    create?: XOR<DispatchCreateWithoutCorrectionsInput, DispatchUncheckedCreateWithoutCorrectionsInput>
+    connectOrCreate?: DispatchCreateOrConnectWithoutCorrectionsInput
+    connect?: DispatchWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedCorrectionsInput = {
+    create?: XOR<StaffCreateWithoutCreatedCorrectionsInput, StaffUncheckedCreateWithoutCreatedCorrectionsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedCorrectionsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type EnumCorrectionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.CorrectionStatus
+  }
+
+  export type DispatchUpdateOneRequiredWithoutCorrectionsNestedInput = {
+    create?: XOR<DispatchCreateWithoutCorrectionsInput, DispatchUncheckedCreateWithoutCorrectionsInput>
+    connectOrCreate?: DispatchCreateOrConnectWithoutCorrectionsInput
+    upsert?: DispatchUpsertWithoutCorrectionsInput
+    connect?: DispatchWhereUniqueInput
+    update?: XOR<XOR<DispatchUpdateToOneWithWhereWithoutCorrectionsInput, DispatchUpdateWithoutCorrectionsInput>, DispatchUncheckedUpdateWithoutCorrectionsInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedCorrectionsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedCorrectionsInput, StaffUncheckedCreateWithoutCreatedCorrectionsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedCorrectionsInput
+    upsert?: StaffUpsertWithoutCreatedCorrectionsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedCorrectionsInput, StaffUpdateWithoutCreatedCorrectionsInput>, StaffUncheckedUpdateWithoutCreatedCorrectionsInput>
+  }
+
   export type CustomerCreateNestedOneWithoutPaymentsInput = {
     create?: XOR<CustomerCreateWithoutPaymentsInput, CustomerUncheckedCreateWithoutPaymentsInput>
     connectOrCreate?: CustomerCreateOrConnectWithoutPaymentsInput
@@ -55243,8 +57105,18 @@ export namespace Prisma {
     connect?: StaffWhereUniqueInput
   }
 
+  export type VesselCreateNestedOneWithoutDoPaymentsInput = {
+    create?: XOR<VesselCreateWithoutDoPaymentsInput, VesselUncheckedCreateWithoutDoPaymentsInput>
+    connectOrCreate?: VesselCreateOrConnectWithoutDoPaymentsInput
+    connect?: VesselWhereUniqueInput
+  }
+
   export type EnumPaymentDirectionFieldUpdateOperationsInput = {
     set?: $Enums.PaymentDirection
+  }
+
+  export type EnumDoStatusFieldUpdateOperationsInput = {
+    set?: $Enums.DoStatus
   }
 
   export type CustomerUpdateOneWithoutPaymentsNestedInput = {
@@ -55295,6 +57167,16 @@ export namespace Prisma {
     delete?: StaffWhereInput | boolean
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedPaymentsInput, StaffUpdateWithoutCreatedPaymentsInput>, StaffUncheckedUpdateWithoutCreatedPaymentsInput>
+  }
+
+  export type VesselUpdateOneWithoutDoPaymentsNestedInput = {
+    create?: XOR<VesselCreateWithoutDoPaymentsInput, VesselUncheckedCreateWithoutDoPaymentsInput>
+    connectOrCreate?: VesselCreateOrConnectWithoutDoPaymentsInput
+    upsert?: VesselUpsertWithoutDoPaymentsInput
+    disconnect?: VesselWhereInput | boolean
+    delete?: VesselWhereInput | boolean
+    connect?: VesselWhereUniqueInput
+    update?: XOR<XOR<VesselUpdateToOneWithWhereWithoutDoPaymentsInput, VesselUpdateWithoutDoPaymentsInput>, VesselUncheckedUpdateWithoutDoPaymentsInput>
   }
 
   export type CustomerCreateNestedOneWithoutDiscountsInput = {
@@ -56566,11 +58448,57 @@ export namespace Prisma {
     _max?: NestedEnumReceiptStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumCorrectionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.CorrectionStatus | EnumCorrectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCorrectionStatusFilter<$PrismaModel> | $Enums.CorrectionStatus
+  }
+
+  export type NestedEnumCorrectionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CorrectionStatus | EnumCorrectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CorrectionStatus[] | ListEnumCorrectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCorrectionStatusWithAggregatesFilter<$PrismaModel> | $Enums.CorrectionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCorrectionStatusFilter<$PrismaModel>
+    _max?: NestedEnumCorrectionStatusFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> = 
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type NestedEnumPaymentDirectionFilter<$PrismaModel = never> = {
     equals?: $Enums.PaymentDirection | EnumPaymentDirectionFieldRefInput<$PrismaModel>
     in?: $Enums.PaymentDirection[] | ListEnumPaymentDirectionFieldRefInput<$PrismaModel>
     notIn?: $Enums.PaymentDirection[] | ListEnumPaymentDirectionFieldRefInput<$PrismaModel>
     not?: NestedEnumPaymentDirectionFilter<$PrismaModel> | $Enums.PaymentDirection
+  }
+
+  export type NestedEnumDoStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoStatus | EnumDoStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDoStatusFilter<$PrismaModel> | $Enums.DoStatus
   }
 
   export type NestedEnumPaymentDirectionWithAggregatesFilter<$PrismaModel = never> = {
@@ -56581,6 +58509,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPaymentDirectionFilter<$PrismaModel>
     _max?: NestedEnumPaymentDirectionFilter<$PrismaModel>
+  }
+
+  export type NestedEnumDoStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoStatus | EnumDoStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.DoStatus[] | ListEnumDoStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumDoStatusWithAggregatesFilter<$PrismaModel> | $Enums.DoStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumDoStatusFilter<$PrismaModel>
+    _max?: NestedEnumDoStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumDiscountStatusFilter<$PrismaModel = never> = {
@@ -56874,12 +58812,14 @@ export namespace Prisma {
     date: Date | string
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
+    doVessel?: VesselCreateNestedOneWithoutDoPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutCreatedByStaffInput = {
@@ -56891,6 +58831,8 @@ export namespace Prisma {
     bankAccountId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -56974,6 +58916,7 @@ export namespace Prisma {
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateWithoutCreatedByStaffInput = {
@@ -57007,6 +58950,7 @@ export namespace Prisma {
     reconciliationCompletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchCreateOrConnectWithoutCreatedByStaffInput = {
@@ -57172,6 +59116,38 @@ export namespace Prisma {
 
   export type SavingAccountTxnCreateManyCreatedByStaffInputEnvelope = {
     data: SavingAccountTxnCreateManyCreatedByStaffInput | SavingAccountTxnCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type DispatchCorrectionCreateWithoutCreatedByStaffInput = {
+    id?: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dispatch: DispatchCreateNestedOneWithoutCorrectionsInput
+  }
+
+  export type DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    dispatchId: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput = {
+    where: DispatchCorrectionWhereUniqueInput
+    create: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchCorrectionCreateManyCreatedByStaffInputEnvelope = {
+    data: DispatchCorrectionCreateManyCreatedByStaffInput | DispatchCorrectionCreateManyCreatedByStaffInput[]
     skipDuplicates?: boolean
   }
 
@@ -57345,6 +59321,8 @@ export namespace Prisma {
     createdByStaffId?: StringNullableFilter<"Payment"> | string | null
     direction?: EnumPaymentDirectionFilter<"Payment"> | $Enums.PaymentDirection
     amount?: DecimalFilter<"Payment"> | Decimal | DecimalJsLike | number | string
+    doVesselId?: StringNullableFilter<"Payment"> | string | null
+    doStatus?: EnumDoStatusFilter<"Payment"> | $Enums.DoStatus
     createdAt?: DateTimeFilter<"Payment"> | Date | string
     updatedAt?: DateTimeFilter<"Payment"> | Date | string
   }
@@ -57589,6 +59567,37 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"SavingAccountTxn"> | Date | string
   }
 
+  export type DispatchCorrectionUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: DispatchCorrectionWhereUniqueInput
+    update: XOR<DispatchCorrectionUpdateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchCorrectionUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: DispatchCorrectionWhereUniqueInput
+    data: XOR<DispatchCorrectionUpdateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchCorrectionUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: DispatchCorrectionScalarWhereInput
+    data: XOR<DispatchCorrectionUpdateManyMutationInput, DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type DispatchCorrectionScalarWhereInput = {
+    AND?: DispatchCorrectionScalarWhereInput | DispatchCorrectionScalarWhereInput[]
+    OR?: DispatchCorrectionScalarWhereInput[]
+    NOT?: DispatchCorrectionScalarWhereInput | DispatchCorrectionScalarWhereInput[]
+    id?: StringFilter<"DispatchCorrection"> | string
+    dispatchId?: StringFilter<"DispatchCorrection"> | string
+    message?: StringFilter<"DispatchCorrection"> | string
+    status?: EnumCorrectionStatusFilter<"DispatchCorrection"> | $Enums.CorrectionStatus
+    snapshot?: JsonNullableFilter<"DispatchCorrection">
+    createdByStaffId?: StringNullableFilter<"DispatchCorrection"> | string | null
+    resolvedAt?: DateTimeNullableFilter<"DispatchCorrection"> | Date | string | null
+    createdAt?: DateTimeFilter<"DispatchCorrection"> | Date | string
+    updatedAt?: DateTimeFilter<"DispatchCorrection"> | Date | string
+  }
+
   export type DispatchCreateWithoutTransporterInput = {
     id?: string
     dispatchNumber?: string | null
@@ -57620,6 +59629,7 @@ export namespace Prisma {
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateWithoutTransporterInput = {
@@ -57653,6 +59663,7 @@ export namespace Prisma {
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchCreateOrConnectWithoutTransporterInput = {
@@ -57670,12 +59681,14 @@ export namespace Prisma {
     date: Date | string
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+    doVessel?: VesselCreateNestedOneWithoutDoPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutTransporterInput = {
@@ -57687,6 +59700,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -57904,6 +59919,7 @@ export namespace Prisma {
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutVesselInput
     dispatches?: DispatchCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselUncheckedCreateWithoutPortInput = {
@@ -57915,6 +59931,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
     dispatches?: DispatchUncheckedCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentUncheckedCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselCreateOrConnectWithoutPortInput = {
@@ -58339,6 +60356,7 @@ export namespace Prisma {
     port?: PortOptionCreateNestedOneWithoutVesselsInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutVesselInput
     dispatches?: DispatchCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselUncheckedCreateWithoutQualityClassInput = {
@@ -58350,6 +60368,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
     dispatches?: DispatchUncheckedCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentUncheckedCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselCreateOrConnectWithoutQualityClassInput = {
@@ -58605,6 +60624,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutDealByCustomersInput = {
@@ -58631,6 +60651,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutDealByCustomersInput = {
@@ -58769,6 +60790,7 @@ export namespace Prisma {
     vessel: VesselCreateNestedOneWithoutDispatchesInput
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateWithoutImporterInput = {
@@ -58802,6 +60824,7 @@ export namespace Prisma {
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchCreateOrConnectWithoutImporterInput = {
@@ -58819,12 +60842,14 @@ export namespace Prisma {
     date: Date | string
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+    doVessel?: VesselCreateNestedOneWithoutDoPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutCustomerInput = {
@@ -58836,6 +60861,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -58965,6 +60992,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutDealByCustomersInput = {
@@ -58991,6 +61019,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutCustomerInput = {
@@ -59542,6 +61571,7 @@ export namespace Prisma {
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateWithoutVesselInput = {
@@ -59575,6 +61605,7 @@ export namespace Prisma {
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchCreateOrConnectWithoutVesselInput = {
@@ -59584,6 +61615,46 @@ export namespace Prisma {
 
   export type DispatchCreateManyVesselInputEnvelope = {
     data: DispatchCreateManyVesselInput | DispatchCreateManyVesselInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PaymentCreateWithoutDoVesselInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    customer?: CustomerCreateNestedOneWithoutPaymentsInput
+    transporter?: TransporterCreateNestedOneWithoutPaymentsInput
+    investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
+    bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+  }
+
+  export type PaymentUncheckedCreateWithoutDoVesselInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    investmentCompanyId?: string | null
+    bankAccountId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PaymentCreateOrConnectWithoutDoVesselInput = {
+    where: PaymentWhereUniqueInput
+    create: XOR<PaymentCreateWithoutDoVesselInput, PaymentUncheckedCreateWithoutDoVesselInput>
+  }
+
+  export type PaymentCreateManyDoVesselInputEnvelope = {
+    data: PaymentCreateManyDoVesselInput | PaymentCreateManyDoVesselInput[]
     skipDuplicates?: boolean
   }
 
@@ -59679,6 +61750,22 @@ export namespace Prisma {
   export type DispatchUpdateManyWithWhereWithoutVesselInput = {
     where: DispatchScalarWhereInput
     data: XOR<DispatchUpdateManyMutationInput, DispatchUncheckedUpdateManyWithoutVesselInput>
+  }
+
+  export type PaymentUpsertWithWhereUniqueWithoutDoVesselInput = {
+    where: PaymentWhereUniqueInput
+    update: XOR<PaymentUpdateWithoutDoVesselInput, PaymentUncheckedUpdateWithoutDoVesselInput>
+    create: XOR<PaymentCreateWithoutDoVesselInput, PaymentUncheckedCreateWithoutDoVesselInput>
+  }
+
+  export type PaymentUpdateWithWhereUniqueWithoutDoVesselInput = {
+    where: PaymentWhereUniqueInput
+    data: XOR<PaymentUpdateWithoutDoVesselInput, PaymentUncheckedUpdateWithoutDoVesselInput>
+  }
+
+  export type PaymentUpdateManyWithWhereWithoutDoVesselInput = {
+    where: PaymentScalarWhereInput
+    data: XOR<PaymentUpdateManyMutationInput, PaymentUncheckedUpdateManyWithoutDoVesselInput>
   }
 
   export type CustomerCreateWithoutOrdersInput = {
@@ -59810,6 +61897,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutOrdersInput = {
@@ -59836,6 +61924,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutOrdersInput = {
@@ -59924,6 +62013,7 @@ export namespace Prisma {
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateWithoutOrderInput = {
@@ -59957,6 +62047,7 @@ export namespace Prisma {
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchCreateOrConnectWithoutOrderInput = {
@@ -60115,6 +62206,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutOrdersInput = {
@@ -60141,6 +62233,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type PortOptionUpsertWithoutOrdersInput = {
@@ -60335,6 +62428,7 @@ export namespace Prisma {
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
     port?: PortOptionCreateNestedOneWithoutVesselsInput
     dispatches?: DispatchCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselUncheckedCreateWithoutPurchaseOrdersInput = {
@@ -60346,6 +62440,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     dispatches?: DispatchUncheckedCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentUncheckedCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselCreateOrConnectWithoutPurchaseOrdersInput = {
@@ -60411,6 +62506,7 @@ export namespace Prisma {
     transporter?: TransporterCreateNestedOneWithoutDispatchesInput
     importer?: CustomerCreateNestedOneWithoutDispatchesInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+    corrections?: DispatchCorrectionCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchUncheckedCreateWithoutPurchaseOrderInput = {
@@ -60444,6 +62540,7 @@ export namespace Prisma {
     createdByStaffId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    corrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutDispatchInput
   }
 
   export type DispatchCreateOrConnectWithoutPurchaseOrderInput = {
@@ -60587,6 +62684,7 @@ export namespace Prisma {
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
     port?: PortOptionUpdateOneWithoutVesselsNestedInput
     dispatches?: DispatchUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateWithoutPurchaseOrdersInput = {
@@ -60598,6 +62696,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     dispatches?: DispatchUncheckedUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUncheckedUpdateManyWithoutDoVesselNestedInput
   }
 
   export type QualityClassUpsertWithoutPurchaseOrdersInput = {
@@ -60748,6 +62847,7 @@ export namespace Prisma {
     qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
     port?: PortOptionCreateNestedOneWithoutVesselsInput
     purchaseOrders?: PurchaseOrderCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselUncheckedCreateWithoutDispatchesInput = {
@@ -60759,6 +62859,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
+    doPayments?: PaymentUncheckedCreateNestedManyWithoutDoVesselInput
   }
 
   export type VesselCreateOrConnectWithoutDispatchesInput = {
@@ -60932,6 +63033,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedDispatchesInput = {
@@ -60958,11 +63060,44 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedDispatchesInput = {
     where: StaffWhereUniqueInput
     create: XOR<StaffCreateWithoutCreatedDispatchesInput, StaffUncheckedCreateWithoutCreatedDispatchesInput>
+  }
+
+  export type DispatchCorrectionCreateWithoutDispatchInput = {
+    id?: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedCorrectionsInput
+  }
+
+  export type DispatchCorrectionUncheckedCreateWithoutDispatchInput = {
+    id?: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCorrectionCreateOrConnectWithoutDispatchInput = {
+    where: DispatchCorrectionWhereUniqueInput
+    create: XOR<DispatchCorrectionCreateWithoutDispatchInput, DispatchCorrectionUncheckedCreateWithoutDispatchInput>
+  }
+
+  export type DispatchCorrectionCreateManyDispatchInputEnvelope = {
+    data: DispatchCorrectionCreateManyDispatchInput | DispatchCorrectionCreateManyDispatchInput[]
+    skipDuplicates?: boolean
   }
 
   export type OrderUpsertWithoutDispatchesInput = {
@@ -61087,6 +63222,7 @@ export namespace Prisma {
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
     port?: PortOptionUpdateOneWithoutVesselsNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateWithoutDispatchesInput = {
@@ -61098,6 +63234,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUncheckedUpdateManyWithoutDoVesselNestedInput
   }
 
   export type TransporterUpsertWithoutDispatchesInput = {
@@ -61289,6 +63426,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedDispatchesInput = {
@@ -61310,6 +63448,299 @@ export namespace Prisma {
     bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
     createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type DispatchCorrectionUpsertWithWhereUniqueWithoutDispatchInput = {
+    where: DispatchCorrectionWhereUniqueInput
+    update: XOR<DispatchCorrectionUpdateWithoutDispatchInput, DispatchCorrectionUncheckedUpdateWithoutDispatchInput>
+    create: XOR<DispatchCorrectionCreateWithoutDispatchInput, DispatchCorrectionUncheckedCreateWithoutDispatchInput>
+  }
+
+  export type DispatchCorrectionUpdateWithWhereUniqueWithoutDispatchInput = {
+    where: DispatchCorrectionWhereUniqueInput
+    data: XOR<DispatchCorrectionUpdateWithoutDispatchInput, DispatchCorrectionUncheckedUpdateWithoutDispatchInput>
+  }
+
+  export type DispatchCorrectionUpdateManyWithWhereWithoutDispatchInput = {
+    where: DispatchCorrectionScalarWhereInput
+    data: XOR<DispatchCorrectionUpdateManyMutationInput, DispatchCorrectionUncheckedUpdateManyWithoutDispatchInput>
+  }
+
+  export type DispatchCreateWithoutCorrectionsInput = {
+    id?: string
+    dispatchNumber?: string | null
+    dispatchDate: Date | string
+    dispatchedQuantity: Decimal | DecimalJsLike | number | string
+    lorryNumber?: string | null
+    dispatchTerms?: $Enums.DispatchTerms
+    freight?: Decimal | DecimalJsLike | number | string | null
+    receivingQuantity?: Decimal | DecimalJsLike | number | string | null
+    receiptDate?: Date | string | null
+    receiptStatus?: $Enums.ReceiptStatus
+    softCopyStatus?: boolean
+    entryInTally?: boolean
+    reconciled?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
+    saleInvoiceNumber?: string | null
+    purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutDispatchesInput
+    purchaseOrder: PurchaseOrderCreateNestedOneWithoutDispatchesInput
+    vessel: VesselCreateNestedOneWithoutDispatchesInput
+    transporter?: TransporterCreateNestedOneWithoutDispatchesInput
+    importer?: CustomerCreateNestedOneWithoutDispatchesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedDispatchesInput
+  }
+
+  export type DispatchUncheckedCreateWithoutCorrectionsInput = {
+    id?: string
+    dispatchNumber?: string | null
+    poNumber: string
+    purchasePoNumber: string
+    vesselId: string
+    dispatchDate: Date | string
+    dispatchedQuantity: Decimal | DecimalJsLike | number | string
+    lorryNumber?: string | null
+    dispatchTerms?: $Enums.DispatchTerms
+    freight?: Decimal | DecimalJsLike | number | string | null
+    transporterId?: string | null
+    importerId?: string | null
+    receivingQuantity?: Decimal | DecimalJsLike | number | string | null
+    receiptDate?: Date | string | null
+    receiptStatus?: $Enums.ReceiptStatus
+    softCopyStatus?: boolean
+    entryInTally?: boolean
+    reconciled?: boolean
+    biltyHardCopy?: boolean
+    transportInvoiceNo?: string | null
+    invoiceHardCopy?: boolean
+    transportEntryInTally?: boolean
+    saleInvoiceNumber?: string | null
+    purchaseInvoiceNumber?: string | null
+    purchaseChecklistCompletedAt?: Date | string | null
+    saleChecklistCompletedAt?: Date | string | null
+    transportChecklistCompletedAt?: Date | string | null
+    reconciliationCompletedAt?: Date | string | null
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCreateOrConnectWithoutCorrectionsInput = {
+    where: DispatchWhereUniqueInput
+    create: XOR<DispatchCreateWithoutCorrectionsInput, DispatchUncheckedCreateWithoutCorrectionsInput>
+  }
+
+  export type StaffCreateWithoutCreatedCorrectionsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
+    createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedCorrectionsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedCorrectionsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedCorrectionsInput, StaffUncheckedCreateWithoutCreatedCorrectionsInput>
+  }
+
+  export type DispatchUpsertWithoutCorrectionsInput = {
+    update: XOR<DispatchUpdateWithoutCorrectionsInput, DispatchUncheckedUpdateWithoutCorrectionsInput>
+    create: XOR<DispatchCreateWithoutCorrectionsInput, DispatchUncheckedCreateWithoutCorrectionsInput>
+    where?: DispatchWhereInput
+  }
+
+  export type DispatchUpdateToOneWithWhereWithoutCorrectionsInput = {
+    where?: DispatchWhereInput
+    data: XOR<DispatchUpdateWithoutCorrectionsInput, DispatchUncheckedUpdateWithoutCorrectionsInput>
+  }
+
+  export type DispatchUpdateWithoutCorrectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchTerms?: EnumDispatchTermsFieldUpdateOperationsInput | $Enums.DispatchTerms
+    freight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receivingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receiptDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
+    softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
+    entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
+    saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutDispatchesNestedInput
+    purchaseOrder?: PurchaseOrderUpdateOneRequiredWithoutDispatchesNestedInput
+    vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
+    transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
+    importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+  }
+
+  export type DispatchUncheckedUpdateWithoutCorrectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    poNumber?: StringFieldUpdateOperationsInput | string
+    purchasePoNumber?: StringFieldUpdateOperationsInput | string
+    vesselId?: StringFieldUpdateOperationsInput | string
+    dispatchDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatchedQuantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lorryNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    dispatchTerms?: EnumDispatchTermsFieldUpdateOperationsInput | $Enums.DispatchTerms
+    freight?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    importerId?: NullableStringFieldUpdateOperationsInput | string | null
+    receivingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    receiptDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    receiptStatus?: EnumReceiptStatusFieldUpdateOperationsInput | $Enums.ReceiptStatus
+    softCopyStatus?: BoolFieldUpdateOperationsInput | boolean
+    entryInTally?: BoolFieldUpdateOperationsInput | boolean
+    reconciled?: BoolFieldUpdateOperationsInput | boolean
+    biltyHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportInvoiceNo?: NullableStringFieldUpdateOperationsInput | string | null
+    invoiceHardCopy?: BoolFieldUpdateOperationsInput | boolean
+    transportEntryInTally?: BoolFieldUpdateOperationsInput | boolean
+    saleInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseInvoiceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    purchaseChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    saleChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StaffUpsertWithoutCreatedCorrectionsInput = {
+    update: XOR<StaffUpdateWithoutCreatedCorrectionsInput, StaffUncheckedUpdateWithoutCreatedCorrectionsInput>
+    create: XOR<StaffCreateWithoutCreatedCorrectionsInput, StaffUncheckedCreateWithoutCreatedCorrectionsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedCorrectionsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedCorrectionsInput, StaffUncheckedUpdateWithoutCreatedCorrectionsInput>
+  }
+
+  export type StaffUpdateWithoutCreatedCorrectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
+    createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedCorrectionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -61545,6 +63976,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedPaymentsInput = {
@@ -61571,11 +64003,41 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedPaymentsInput = {
     where: StaffWhereUniqueInput
     create: XOR<StaffCreateWithoutCreatedPaymentsInput, StaffUncheckedCreateWithoutCreatedPaymentsInput>
+  }
+
+  export type VesselCreateWithoutDoPaymentsInput = {
+    id?: string
+    vesselName: string
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    qualityClass?: QualityClassCreateNestedOneWithoutVesselsInput
+    port?: PortOptionCreateNestedOneWithoutVesselsInput
+    purchaseOrders?: PurchaseOrderCreateNestedManyWithoutVesselInput
+    dispatches?: DispatchCreateNestedManyWithoutVesselInput
+  }
+
+  export type VesselUncheckedCreateWithoutDoPaymentsInput = {
+    id?: string
+    vesselName: string
+    qualityClassId?: string | null
+    portId?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    purchaseOrders?: PurchaseOrderUncheckedCreateNestedManyWithoutVesselInput
+    dispatches?: DispatchUncheckedCreateNestedManyWithoutVesselInput
+  }
+
+  export type VesselCreateOrConnectWithoutDoPaymentsInput = {
+    where: VesselWhereUniqueInput
+    create: XOR<VesselCreateWithoutDoPaymentsInput, VesselUncheckedCreateWithoutDoPaymentsInput>
   }
 
   export type CustomerUpsertWithoutPaymentsInput = {
@@ -61841,6 +64303,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedPaymentsInput = {
@@ -61867,6 +64330,42 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type VesselUpsertWithoutDoPaymentsInput = {
+    update: XOR<VesselUpdateWithoutDoPaymentsInput, VesselUncheckedUpdateWithoutDoPaymentsInput>
+    create: XOR<VesselCreateWithoutDoPaymentsInput, VesselUncheckedCreateWithoutDoPaymentsInput>
+    where?: VesselWhereInput
+  }
+
+  export type VesselUpdateToOneWithWhereWithoutDoPaymentsInput = {
+    where?: VesselWhereInput
+    data: XOR<VesselUpdateWithoutDoPaymentsInput, VesselUncheckedUpdateWithoutDoPaymentsInput>
+  }
+
+  export type VesselUpdateWithoutDoPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    vesselName?: StringFieldUpdateOperationsInput | string
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
+    port?: PortOptionUpdateOneWithoutVesselsNestedInput
+    purchaseOrders?: PurchaseOrderUpdateManyWithoutVesselNestedInput
+    dispatches?: DispatchUpdateManyWithoutVesselNestedInput
+  }
+
+  export type VesselUncheckedUpdateWithoutDoPaymentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    vesselName?: StringFieldUpdateOperationsInput | string
+    qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
+    portId?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
+    dispatches?: DispatchUncheckedUpdateManyWithoutVesselNestedInput
   }
 
   export type CustomerCreateWithoutDiscountsInput = {
@@ -62064,6 +64563,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedDiscountsInput = {
@@ -62090,6 +64590,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedDiscountsInput = {
@@ -62321,6 +64822,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedDiscountsInput = {
@@ -62347,6 +64849,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type VegCreateWithoutPaymentsInput = {
@@ -62410,6 +64913,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedVegPaymentsInput = {
@@ -62436,6 +64940,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedVegPaymentsInput = {
@@ -62521,6 +65026,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedVegPaymentsInput = {
@@ -62547,6 +65053,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type VegCreateWithoutDiscountsInput = {
@@ -62610,6 +65117,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedVegDiscountsInput = {
@@ -62636,6 +65144,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedVegDiscountsInput = {
@@ -62721,6 +65230,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedVegDiscountsInput = {
@@ -62747,6 +65257,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffCreateWithoutBillsInput = {
@@ -62773,6 +65284,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutBillsInput = {
@@ -62799,6 +65311,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutBillsInput = {
@@ -62869,6 +65382,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutBillsInput = {
@@ -62895,6 +65409,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type BillFileUpsertWithWhereUniqueWithoutBillInput = {
@@ -63043,12 +65558,14 @@ export namespace Prisma {
     date: Date | string
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     bankAccount?: BankAccountCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+    doVessel?: VesselCreateNestedOneWithoutDoPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutInvestmentCompanyInput = {
@@ -63060,6 +65577,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -63549,12 +66068,14 @@ export namespace Prisma {
     date: Date | string
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
     customer?: CustomerCreateNestedOneWithoutPaymentsInput
     transporter?: TransporterCreateNestedOneWithoutPaymentsInput
     investmentCompany?: InvestmentCompanyCreateNestedOneWithoutPaymentsInput
     createdByStaff?: StaffCreateNestedOneWithoutCreatedPaymentsInput
+    doVessel?: VesselCreateNestedOneWithoutDoPaymentsInput
   }
 
   export type PaymentUncheckedCreateWithoutBankAccountInput = {
@@ -63566,6 +66087,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -63901,6 +66424,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedBankTransfersInput = {
@@ -63927,6 +66451,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedBankTransfersInput = {
@@ -64047,6 +66572,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedBankTransfersInput = {
@@ -64073,6 +66599,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type BankAccountCreateWithoutBookExpensesInput = {
@@ -64151,6 +66678,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedBookExpensesInput = {
@@ -64177,6 +66705,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedBookExpensesInput = {
@@ -64283,6 +66812,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedBookExpensesInput = {
@@ -64309,6 +66839,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type BankAccountCreateWithoutSavingAccountTxnsInput = {
@@ -64368,6 +66899,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedSavingAccountTxnsInput = {
@@ -64394,6 +66926,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedSavingAccountTxnsInput = {
@@ -64475,6 +67008,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedSavingAccountTxnsInput = {
@@ -64501,6 +67035,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type CustomerCreateManyDealByInput = {
@@ -64593,6 +67128,8 @@ export namespace Prisma {
     bankAccountId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -64693,6 +67230,17 @@ export namespace Prisma {
     direction: $Enums.PaymentDirection
     savingAccountName: string
     amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCorrectionCreateManyCreatedByStaffInput = {
+    id?: string
+    dispatchId: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -64961,12 +67509,14 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
+    doVessel?: VesselUpdateOneWithoutDoPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutCreatedByStaffInput = {
@@ -64978,6 +67528,8 @@ export namespace Prisma {
     bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -64991,6 +67543,8 @@ export namespace Prisma {
     bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -65068,6 +67622,7 @@ export namespace Prisma {
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutCreatedByStaffInput = {
@@ -65101,6 +67656,7 @@ export namespace Prisma {
     reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateManyWithoutCreatedByStaffInput = {
@@ -65295,6 +67851,39 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DispatchCorrectionUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dispatch?: DispatchUpdateOneRequiredWithoutCorrectionsNestedInput
+  }
+
+  export type DispatchCorrectionUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    dispatchId?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type DispatchCreateManyTransporterInput = {
     id?: string
     dispatchNumber?: string | null
@@ -65337,6 +67926,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -65386,6 +67977,7 @@ export namespace Prisma {
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutTransporterInput = {
@@ -65419,6 +68011,7 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateManyWithoutTransporterInput = {
@@ -65459,12 +68052,14 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+    doVessel?: VesselUpdateOneWithoutDoPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutTransporterInput = {
@@ -65476,6 +68071,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -65489,6 +68086,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -65650,6 +68249,7 @@ export namespace Prisma {
     qualityClass?: QualityClassUpdateOneWithoutVesselsNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutVesselNestedInput
     dispatches?: DispatchUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateWithoutPortInput = {
@@ -65661,6 +68261,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
     dispatches?: DispatchUncheckedUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUncheckedUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateManyWithoutPortInput = {
@@ -65937,6 +68538,7 @@ export namespace Prisma {
     port?: PortOptionUpdateOneWithoutVesselsNestedInput
     purchaseOrders?: PurchaseOrderUpdateManyWithoutVesselNestedInput
     dispatches?: DispatchUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateWithoutQualityClassInput = {
@@ -65948,6 +68550,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     purchaseOrders?: PurchaseOrderUncheckedUpdateManyWithoutVesselNestedInput
     dispatches?: DispatchUncheckedUpdateManyWithoutVesselNestedInput
+    doPayments?: PaymentUncheckedUpdateManyWithoutDoVesselNestedInput
   }
 
   export type VesselUncheckedUpdateManyWithoutQualityClassInput = {
@@ -66157,6 +68760,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -66338,6 +68943,7 @@ export namespace Prisma {
     vessel?: VesselUpdateOneRequiredWithoutDispatchesNestedInput
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutImporterInput = {
@@ -66371,6 +68977,7 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateManyWithoutImporterInput = {
@@ -66411,12 +69018,14 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+    doVessel?: VesselUpdateOneWithoutDoPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutCustomerInput = {
@@ -66428,6 +69037,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -66441,6 +69052,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -66663,6 +69276,21 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PaymentCreateManyDoVesselInput = {
+    id?: string
+    date: Date | string
+    customerId?: string | null
+    transporterId?: string | null
+    investmentCompanyId?: string | null
+    bankAccountId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    doStatus?: $Enums.DoStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type PurchaseOrderUpdateWithoutVesselInput = {
     id?: StringFieldUpdateOperationsInput | string
     poNumber?: StringFieldUpdateOperationsInput | string
@@ -66747,6 +69375,7 @@ export namespace Prisma {
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutVesselInput = {
@@ -66780,6 +69409,7 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateManyWithoutVesselInput = {
@@ -66811,6 +69441,51 @@ export namespace Prisma {
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUpdateWithoutDoVesselInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    customer?: CustomerUpdateOneWithoutPaymentsNestedInput
+    transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
+    investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
+    bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+  }
+
+  export type PaymentUncheckedUpdateWithoutDoVesselInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentUncheckedUpdateManyWithoutDoVesselInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    customerId?: NullableStringFieldUpdateOperationsInput | string | null
+    transporterId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentCompanyId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -66879,6 +69554,7 @@ export namespace Prisma {
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutOrderInput = {
@@ -66912,6 +69588,7 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateManyWithoutOrderInput = {
@@ -67011,6 +69688,7 @@ export namespace Prisma {
     transporter?: TransporterUpdateOneWithoutDispatchesNestedInput
     importer?: CustomerUpdateOneWithoutDispatchesNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedDispatchesNestedInput
+    corrections?: DispatchCorrectionUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateWithoutPurchaseOrderInput = {
@@ -67044,6 +69722,7 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    corrections?: DispatchCorrectionUncheckedUpdateManyWithoutDispatchNestedInput
   }
 
   export type DispatchUncheckedUpdateManyWithoutPurchaseOrderInput = {
@@ -67075,6 +69754,50 @@ export namespace Prisma {
     transportChecklistCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     reconciliationCompletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchCorrectionCreateManyDispatchInput = {
+    id?: string
+    message: string
+    status?: $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: string | null
+    resolvedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DispatchCorrectionUpdateWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaff?: StaffUpdateOneWithoutCreatedCorrectionsNestedInput
+  }
+
+  export type DispatchCorrectionUncheckedUpdateWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DispatchCorrectionUncheckedUpdateManyWithoutDispatchInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    message?: StringFieldUpdateOperationsInput | string
+    status?: EnumCorrectionStatusFieldUpdateOperationsInput | $Enums.CorrectionStatus
+    snapshot?: NullableJsonNullValueInput | InputJsonValue
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    resolvedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -67133,6 +69856,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -67192,12 +69917,14 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     bankAccount?: BankAccountUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+    doVessel?: VesselUpdateOneWithoutDoPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutInvestmentCompanyInput = {
@@ -67209,6 +69936,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -67222,6 +69951,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -67386,6 +70117,8 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
+    doVesselId?: string | null
+    doStatus?: $Enums.DoStatus
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -67438,12 +70171,14 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     customer?: CustomerUpdateOneWithoutPaymentsNestedInput
     transporter?: TransporterUpdateOneWithoutPaymentsNestedInput
     investmentCompany?: InvestmentCompanyUpdateOneWithoutPaymentsNestedInput
     createdByStaff?: StaffUpdateOneWithoutCreatedPaymentsNestedInput
+    doVessel?: VesselUpdateOneWithoutDoPaymentsNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutBankAccountInput = {
@@ -67455,6 +70190,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -67468,6 +70205,8 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    doVesselId?: NullableStringFieldUpdateOperationsInput | string | null
+    doStatus?: EnumDoStatusFieldUpdateOperationsInput | $Enums.DoStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -67663,6 +70402,10 @@ export namespace Prisma {
      */
     export type PurchaseOrderCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = PurchaseOrderCountOutputTypeDefaultArgs<ExtArgs>
     /**
+     * @deprecated Use DispatchCountOutputTypeDefaultArgs instead
+     */
+    export type DispatchCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DispatchCountOutputTypeDefaultArgs<ExtArgs>
+    /**
      * @deprecated Use BillCountOutputTypeDefaultArgs instead
      */
     export type BillCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BillCountOutputTypeDefaultArgs<ExtArgs>
@@ -67770,6 +70513,10 @@ export namespace Prisma {
      * @deprecated Use DispatchDefaultArgs instead
      */
     export type DispatchArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DispatchDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use DispatchCorrectionDefaultArgs instead
+     */
+    export type DispatchCorrectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = DispatchCorrectionDefaultArgs<ExtArgs>
     /**
      * @deprecated Use PaymentDefaultArgs instead
      */

@@ -49,6 +49,12 @@ enum PaymentDirection {
   SENT
 }
 
+/// Delivery Order tracking on vendor fund rows (Report → DO in Hand).
+enum DoStatus {
+  PENDING
+  COMPLETED
+}
+
 enum DiscountStatus {
   RECEIVED
   PAID
@@ -63,6 +69,12 @@ enum BillStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+/// Correction request for a dispatch entry (Correction page).
+enum CorrectionStatus {
+  PENDING
+  DONE
 }
 
 enum CollectionThrough {
@@ -105,17 +117,18 @@ model Staff {
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
 
-  dealByCustomers          Customer[]         @relation("DealBy")
+  dealByCustomers          Customer[]           @relation("DealBy")
   orders                   Order[]
   bills                    Bill[]
-  createdPayments          Payment[]          @relation("PaymentCreatedBy")
-  createdDiscounts         Discount[]         @relation("DiscountCreatedBy")
-  createdDispatches        Dispatch[]         @relation("DispatchCreatedBy")
-  createdVegPayments       VegPayment[]       @relation("VegPaymentCreatedBy")
-  createdVegDiscounts      VegDiscount[]      @relation("VegDiscountCreatedBy")
-  createdBankTransfers     BankTransfer[]     @relation("BankTransferCreatedBy")
-  createdBookExpenses      BookExpense[]      @relation("BookExpenseCreatedBy")
-  createdSavingAccountTxns SavingAccountTxn[] @relation("SavingAccountTxnCreatedBy")
+  createdPayments          Payment[]            @relation("PaymentCreatedBy")
+  createdDiscounts         Discount[]           @relation("DiscountCreatedBy")
+  createdDispatches        Dispatch[]           @relation("DispatchCreatedBy")
+  createdVegPayments       VegPayment[]         @relation("VegPaymentCreatedBy")
+  createdVegDiscounts      VegDiscount[]        @relation("VegDiscountCreatedBy")
+  createdBankTransfers     BankTransfer[]       @relation("BankTransferCreatedBy")
+  createdBookExpenses      BookExpense[]        @relation("BookExpenseCreatedBy")
+  createdSavingAccountTxns SavingAccountTxn[]   @relation("SavingAccountTxnCreatedBy")
+  createdCorrections       DispatchCorrection[] @relation("CorrectionCreatedBy")
 }
 
 model Transporter {
@@ -412,6 +425,7 @@ model Vessel {
   port           PortOption?     @relation(fields: [portId], references: [id])
   purchaseOrders PurchaseOrder[]
   dispatches     Dispatch[]
+  doPayments     Payment[]
 }
 
 /// Sale order (customer PO / selling side).
@@ -532,12 +546,13 @@ model Dispatch {
   createdAt                     DateTime      @default(now())
   updatedAt                     DateTime      @updatedAt
 
-  order          Order         @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
-  purchaseOrder  PurchaseOrder @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
-  vessel         Vessel        @relation(fields: [vesselId], references: [id])
-  transporter    Transporter?  @relation(fields: [transporterId], references: [id])
-  importer       Customer?     @relation("DispatchImporter", fields: [importerId], references: [id])
-  createdByStaff Staff?        @relation("DispatchCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+  order          Order                @relation(fields: [poNumber], references: [poNumber], onUpdate: Cascade)
+  purchaseOrder  PurchaseOrder        @relation(fields: [purchasePoNumber], references: [poNumber], onUpdate: Cascade)
+  vessel         Vessel               @relation(fields: [vesselId], references: [id])
+  transporter    Transporter?         @relation(fields: [transporterId], references: [id])
+  importer       Customer?            @relation("DispatchImporter", fields: [importerId], references: [id])
+  createdByStaff Staff?               @relation("DispatchCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+  corrections    DispatchCorrection[]
 
   @@index([receiptStatus])
   @@index([vesselId])
@@ -547,6 +562,28 @@ model Dispatch {
   @@index([poNumber])
   @@index([transporterId])
   @@index([importerId])
+}
+
+/// Request to correct a dispatch / purchase / sale / transport entry.
+model DispatchCorrection {
+  id               String           @id @default(cuid())
+  dispatchId       String
+  message          String
+  status           CorrectionStatus @default(PENDING)
+  /// Snapshot of the four section fields at the time the request was filed.
+  snapshot         Json?
+  createdByStaffId String?
+  resolvedAt       DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  dispatch       Dispatch @relation(fields: [dispatchId], references: [id], onDelete: Cascade)
+  createdByStaff Staff?   @relation("CorrectionCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([dispatchId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([createdByStaffId])
 }
 
 /// Money received from or sent to a customer, transporter, or investment company.
@@ -560,6 +597,10 @@ model Payment {
   createdByStaffId    String?
   direction           PaymentDirection
   amount              Decimal          @db.Decimal(18, 2)
+  /// Vessel assigned for Delivery Order tracking (Report → DO in Hand).
+  doVesselId          String?
+  /// Pending until DO is marked in hand; then Completed.
+  doStatus            DoStatus         @default(PENDING)
   createdAt           DateTime         @default(now())
   updatedAt           DateTime         @updatedAt
 
@@ -568,12 +609,15 @@ model Payment {
   investmentCompany InvestmentCompany? @relation(fields: [investmentCompanyId], references: [id])
   bankAccount       BankAccount?       @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
   createdByStaff    Staff?             @relation("PaymentCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+  doVessel          Vessel?            @relation(fields: [doVesselId], references: [id], onDelete: SetNull)
 
   @@index([customerId])
   @@index([transporterId])
   @@index([investmentCompanyId])
   @@index([bankAccountId])
   @@index([createdByStaffId])
+  @@index([doVesselId])
+  @@index([doStatus])
   @@index([date])
   @@index([direction, date])
 }

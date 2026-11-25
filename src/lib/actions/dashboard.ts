@@ -24,7 +24,10 @@ import {
   type DueOrigin,
 } from "@/lib/domain/ageing";
 import { cache } from "react";
-import { listQualityReport } from "@/lib/actions/reports";
+import {
+  listQualityReport,
+  listVesselSuppliedReport,
+} from "@/lib/actions/reports";
 
 function startOfLocalDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -996,6 +999,59 @@ export async function getHomeQualityStockLists(): Promise<{
         stockInHand,
         orderInHand,
         unsoldQty,
+      }));
+  }
+
+  return {
+    domestic: toList(true),
+    imported: toList(false),
+  };
+}
+
+export type HomeVesselStockRow = {
+  id: string;
+  vesselName: string;
+  origin: string;
+  quality: string;
+  stockInHand: string;
+};
+
+/**
+ * Vessel stock lists for home: domestic / imported.
+ * Hides vessels with zero stock in hand.
+ */
+export async function getHomeVesselStockLists(): Promise<{
+  domestic: HomeVesselStockRow[];
+  imported: HomeVesselStockRow[];
+}> {
+  const rows = await listVesselSuppliedReport();
+
+  const mapped = rows
+    .filter((row) => row.qualityClass != null)
+    .map((row) => {
+      const stock = Number(row.stockInHand) || 0;
+      const qc = row.qualityClass!;
+      return {
+        id: row.id,
+        vesselName: row.vesselName,
+        domestic: qc.domestic === true,
+        origin: qc.origin.name,
+        quality: qc.qualityOption.name,
+        stockInHand: row.stockInHand,
+        zero: stock === 0,
+      };
+    })
+    .filter((row) => !row.zero);
+
+  function toList(domestic: boolean): HomeVesselStockRow[] {
+    return mapped
+      .filter((row) => row.domestic === domestic)
+      .map(({ id, vesselName, origin, quality, stockInHand }) => ({
+        id,
+        vesselName,
+        origin,
+        quality,
+        stockInHand,
       }));
   }
 

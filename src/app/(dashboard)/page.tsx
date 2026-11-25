@@ -4,6 +4,7 @@ import {
   getHomeFundCharts,
   getHomeOverdueCharts,
   getHomeQualityStockLists,
+  getHomeVesselStockLists,
   getHomeLatestActivity,
   getHomePendingBillsByOwner,
   getHomeTodayKpis,
@@ -68,6 +69,7 @@ export default async function HomePage() {
     overdueCharts,
     dispatchCharts,
     qualityStockLists,
+    vesselStockLists,
     debtorDueByCoal,
     todayKpis,
   ] = await Promise.all([
@@ -75,6 +77,7 @@ export default async function HomePage() {
     getHomeOverdueCharts(),
     getHomeDispatchCharts(),
     getHomeQualityStockLists(),
+    getHomeVesselStockLists(),
     getHomeDebtorDueByCoal(),
     getHomeTodayKpis(),
   ]);
@@ -129,6 +132,8 @@ export default async function HomePage() {
   const topImportedCustomers = topCustomersByCoal.last30.imported;
   const domesticQualityStock = qualityStockLists.domestic;
   const importedQualityStock = qualityStockLists.imported;
+  const domesticVesselStock = vesselStockLists.domestic;
+  const importedVesselStock = vesselStockLists.imported;
 
   const maxDomestic = Math.max(
     ...topDomesticCustomers.map((c) => Number(c.volume) || 0),
@@ -275,6 +280,7 @@ export default async function HomePage() {
           valueKind="rupees"
           totalMode="left"
           hideTotals
+          barTone="fund"
           seriesLabels={{ left: "Received", total: "Total" }}
           ariaLabel="Day-wise fund received totals for the last 15 days"
         />
@@ -288,12 +294,215 @@ export default async function HomePage() {
           valueKind="rupees"
           totalMode="left"
           hideTotals
+          barTone="overdue"
           seriesLabels={{ left: "Overdue", total: "Total" }}
           ariaLabel="Day-wise overdue totals for the last 15 days"
         />
       </div>
 
       <div className="home-grid">
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <h2 className="home-panel-title">Domestic Coal Stock</h2>
+            </div>
+            <Link href="/reports/product" className="home-panel-link">
+              Quality report
+            </Link>
+          </div>
+
+          {domesticQualityStock.length === 0 ? (
+            <p className="home-empty">No domestic quality stock to show.</p>
+          ) : (
+            <ul className="home-quality-list">
+              {domesticQualityStock.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/reports/product/${row.id}`}
+                    className="home-quality-row"
+                  >
+                    <div className="home-quality-name">
+                      <span className="home-quality-origin">
+                        {row.origin} - {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-quality-metrics">
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.stockInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Stock in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.orderInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Order in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.unsoldQty)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Unsold qty
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <h2 className="home-panel-title">Imported Coal Stock</h2>
+            </div>
+            <Link href="/reports/product" className="home-panel-link">
+              Quality report
+            </Link>
+          </div>
+
+          {importedQualityStock.length === 0 ? (
+            <p className="home-empty">No imported quality stock to show.</p>
+          ) : (
+            <ul className="home-quality-list">
+              {importedQualityStock.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/reports/product/${row.id}`}
+                    className="home-quality-row"
+                  >
+                    <div className="home-quality-name">
+                      <span className="home-quality-origin">
+                        {row.origin} - {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-quality-metrics">
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.stockInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Stock in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.orderInHand)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Order in hand
+                        </span>
+                      </div>
+                      <div className="home-quality-metric">
+                        <span className="home-quality-metric-value">
+                          {formatQty(row.unsoldQty)}
+                        </span>
+                        <span className="home-quality-metric-label">
+                          Unsold qty
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <h2 className="home-panel-title">Domestic Coal</h2>
+            </div>
+            <Link href="/reports/vessel/supplied" className="home-panel-link">
+              Vessel supplied
+            </Link>
+          </div>
+
+          {domesticVesselStock.length === 0 ? (
+            <p className="home-empty">No domestic vessel stock to show.</p>
+          ) : (
+            <ul className="home-vessel-list">
+              {domesticVesselStock.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/reports/vessel/supplied/${row.id}`}
+                    className="home-vessel-row"
+                  >
+                    <div className="home-vessel-main">
+                      <span className="home-vessel-name">{row.vesselName}</span>
+                      <span className="home-vessel-quality">
+                        {row.origin} · {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-vessel-metric">
+                      <span className="home-vessel-metric-value">
+                        {formatQty(row.stockInHand)}
+                      </span>
+                      <span className="home-vessel-metric-label">
+                        Stock in hand
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <h2 className="home-panel-title">Imported Coal</h2>
+            </div>
+            <Link href="/reports/vessel/supplied" className="home-panel-link">
+              Vessel supplied
+            </Link>
+          </div>
+
+          {importedVesselStock.length === 0 ? (
+            <p className="home-empty">No imported vessel stock to show.</p>
+          ) : (
+            <ul className="home-vessel-list">
+              {importedVesselStock.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href={`/reports/vessel/supplied/${row.id}`}
+                    className="home-vessel-row"
+                  >
+                    <div className="home-vessel-main">
+                      <span className="home-vessel-name">{row.vesselName}</span>
+                      <span className="home-vessel-quality">
+                        {row.origin} · {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-vessel-metric">
+                      <span className="home-vessel-metric-value">
+                        {formatQty(row.stockInHand)}
+                      </span>
+                      <span className="home-vessel-metric-label">
+                        Stock in hand
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
         <section className="home-panel">
           <div className="home-panel-head">
             <div>
@@ -376,126 +585,6 @@ export default async function HomePage() {
                   </li>
                 );
               })}
-            </ul>
-          )}
-        </section>
-      </div>
-
-      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
-        <section className="home-panel">
-          <div className="home-panel-head">
-            <div>
-              <p className="home-eyebrow">PO − SO balances</p>
-              <h2 className="home-panel-title">Domestic Coal Stock</h2>
-            </div>
-            <Link href="/reports/product" className="home-panel-link">
-              Quality report
-            </Link>
-          </div>
-
-          {domesticQualityStock.length === 0 ? (
-            <p className="home-empty">No domestic quality stock to show.</p>
-          ) : (
-            <ul className="home-quality-list">
-              {domesticQualityStock.map((row) => (
-                <li key={row.id}>
-                  <Link
-                    href={`/reports/product/${row.id}`}
-                    className="home-quality-row"
-                  >
-                    <div className="home-quality-name">
-                      <span className="home-quality-origin">
-                        {row.origin} - {row.quality}
-                      </span>
-                    </div>
-                    <div className="home-quality-metrics">
-                      <div className="home-quality-metric">
-                        <span className="home-quality-metric-value">
-                          {formatQty(row.stockInHand)}
-                        </span>
-                        <span className="home-quality-metric-label">
-                          Stock in hand
-                        </span>
-                      </div>
-                      <div className="home-quality-metric">
-                        <span className="home-quality-metric-value">
-                          {formatQty(row.orderInHand)}
-                        </span>
-                        <span className="home-quality-metric-label">
-                          Order in hand
-                        </span>
-                      </div>
-                      <div className="home-quality-metric">
-                        <span className="home-quality-metric-value">
-                          {formatQty(row.unsoldQty)}
-                        </span>
-                        <span className="home-quality-metric-label">
-                          Unsold qty
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section className="home-panel">
-          <div className="home-panel-head">
-            <div>
-              <p className="home-eyebrow">PO − SO balances</p>
-              <h2 className="home-panel-title">Imported Coal Stock</h2>
-            </div>
-            <Link href="/reports/product" className="home-panel-link">
-              Quality report
-            </Link>
-          </div>
-
-          {importedQualityStock.length === 0 ? (
-            <p className="home-empty">No imported quality stock to show.</p>
-          ) : (
-            <ul className="home-quality-list">
-              {importedQualityStock.map((row) => (
-                <li key={row.id}>
-                  <Link
-                    href={`/reports/product/${row.id}`}
-                    className="home-quality-row"
-                  >
-                    <div className="home-quality-name">
-                      <span className="home-quality-origin">
-                        {row.origin} - {row.quality}
-                      </span>
-                    </div>
-                    <div className="home-quality-metrics">
-                      <div className="home-quality-metric">
-                        <span className="home-quality-metric-value">
-                          {formatQty(row.stockInHand)}
-                        </span>
-                        <span className="home-quality-metric-label">
-                          Stock in hand
-                        </span>
-                      </div>
-                      <div className="home-quality-metric">
-                        <span className="home-quality-metric-value">
-                          {formatQty(row.orderInHand)}
-                        </span>
-                        <span className="home-quality-metric-label">
-                          Order in hand
-                        </span>
-                      </div>
-                      <div className="home-quality-metric">
-                        <span className="home-quality-metric-value">
-                          {formatQty(row.unsoldQty)}
-                        </span>
-                        <span className="home-quality-metric-label">
-                          Unsold qty
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              ))}
             </ul>
           )}
         </section>

@@ -145,6 +145,7 @@ const staticReportLinks: ReportItem[] = [
     ],
   },
   { href: "/reports/master-dispatch", label: "Dispatch" },
+  { href: "/reports/do-in-hand", label: "DO in Hand" },
   {
     label: "Investment",
     children: [
@@ -393,10 +394,12 @@ export function AppNav({
   access,
   documentGroups,
   bankAccounts = [],
+  pendingCorrections = 0,
 }: {
   access: Exclude<Access, { kind: "none" }>;
   documentGroups: DocumentGroup[];
   bankAccounts?: BankAccountNavItem[];
+  pendingCorrections?: number;
 }) {
   const pathname = usePathname();
   const documentsLinks = documentsNavGroups(documentGroups);
@@ -1132,6 +1135,20 @@ export function AppNav({
                 Team Members
               </LockedLink>
             )}
+            <LockedLink
+              href="/corrections"
+              allowed={allowed("/corrections")}
+              className={
+                pathname === "/corrections" ||
+                pathname.startsWith("/corrections/")
+                  ? "active"
+                  : undefined
+              }
+            >
+              {pendingCorrections > 0
+                ? `Correction (${pendingCorrections})`
+                : "Correction"}
+            </LockedLink>
           </nav>
         <div className="app-header-user">
           <span className="app-header-who">{access.name}</span>

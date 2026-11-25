@@ -12,6 +12,8 @@ type SeriesLabels = {
   total?: string;
 };
 
+export type HomeBarTone = "default" | "fund" | "overdue";
+
 type Props = {
   eyebrow: string;
   title: string;
@@ -39,6 +41,11 @@ type Props = {
   statsBuckets?: DispatchSplitBucket[];
   /** Header discount split when `statsBuckets` is set (profit charts). */
   statsDiscountSplit?: ProfitDiscountSplit;
+  /**
+   * Single-series bar colour. Defaults to domestic teal.
+   * Use "fund" / "overdue" for the dedicated money charts.
+   */
+  barTone?: HomeBarTone;
 };
 
 const DEFAULT_SERIES: SeriesLabels = {
@@ -171,6 +178,12 @@ function ProfitStatTable({
   );
 }
 
+function fillToneClass(barTone: HomeBarTone): string {
+  if (barTone === "fund") return "is-fund";
+  if (barTone === "overdue") return "is-overdue";
+  return "is-domestic";
+}
+
 export function HomeDispatchSplitChart({
   eyebrow,
   title,
@@ -183,6 +196,7 @@ export function HomeDispatchSplitChart({
   discountSplit,
   statsBuckets,
   statsDiscountSplit,
+  barTone = "default",
 }: Props) {
   const labels: SeriesLabels = {
     ...DEFAULT_SERIES,
@@ -191,6 +205,9 @@ export function HomeDispatchSplitChart({
   const singleSeries =
     seriesLabels != null &&
     (seriesLabels.right == null || seriesLabels.right === "");
+  const leftFillClass = singleSeries
+    ? fillToneClass(barTone)
+    : "is-domestic";
 
   const totalsBuckets = statsBuckets ?? buckets;
   const leftTotal = sumField(totalsBuckets, "domestic");
@@ -218,7 +235,11 @@ export function HomeDispatchSplitChart({
   const importedDiscount = Number(activeDiscount?.imported) || 0;
 
   return (
-    <section className="home-panel home-panel-dispatch">
+    <section
+      className={`home-panel home-panel-dispatch${
+        valueKind === "mt" ? " is-qty" : ""
+      }`}
+    >
       <div
         className={`home-panel-head home-dispatch-head${
           discountSplit && !hideTotals ? " is-profit-table" : ""
@@ -280,7 +301,9 @@ export function HomeDispatchSplitChart({
       ) : null}
 
       <div
-        className={`home-split-bars${singleSeries ? " is-single" : ""}`}
+        className={`home-split-bars${singleSeries ? " is-single" : ""}${
+          barTone !== "default" ? ` tone-${barTone}` : ""
+        }`}
         style={{ ["--bar-count" as string]: buckets.length }}
         role="img"
         aria-label={ariaLabel}
@@ -315,7 +338,7 @@ export function HomeDispatchSplitChart({
                   </div>
                   <div className="home-split-track">
                     <div
-                      className={`home-split-fill is-domestic${valueKind === "rupees" && left < 0 ? " is-negative" : ""}`}
+                      className={`home-split-fill ${leftFillClass}${valueKind === "rupees" && left < 0 ? " is-negative" : ""}`}
                       style={{ height: `${barHeight(left, maxValue)}%` }}
                       title={`${labels.left}: ${formatStat(left, valueKind)}`}
                     />

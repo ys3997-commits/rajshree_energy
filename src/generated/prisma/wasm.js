@@ -407,6 +407,18 @@ exports.Prisma.DispatchScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DispatchCorrectionScalarFieldEnum = {
+  id: 'id',
+  dispatchId: 'dispatchId',
+  message: 'message',
+  status: 'status',
+  snapshot: 'snapshot',
+  createdByStaffId: 'createdByStaffId',
+  resolvedAt: 'resolvedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.PaymentScalarFieldEnum = {
   id: 'id',
   date: 'date',
@@ -417,6 +429,8 @@ exports.Prisma.PaymentScalarFieldEnum = {
   createdByStaffId: 'createdByStaffId',
   direction: 'direction',
   amount: 'amount',
+  doVesselId: 'doVesselId',
+  doStatus: 'doStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -582,6 +596,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -590,6 +609,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.CustomerCategory = exports.$Enums.CustomerCategory = {
   SUPPLIER: 'SUPPLIER',
@@ -638,9 +663,19 @@ exports.ReceiptStatus = exports.$Enums.ReceiptStatus = {
   RECEIVED: 'RECEIVED'
 };
 
+exports.CorrectionStatus = exports.$Enums.CorrectionStatus = {
+  PENDING: 'PENDING',
+  DONE: 'DONE'
+};
+
 exports.PaymentDirection = exports.$Enums.PaymentDirection = {
   RECEIVED: 'RECEIVED',
   SENT: 'SENT'
+};
+
+exports.DoStatus = exports.$Enums.DoStatus = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED'
 };
 
 exports.DiscountStatus = exports.$Enums.DiscountStatus = {
@@ -682,6 +717,7 @@ exports.Prisma.ModelName = {
   Order: 'Order',
   PurchaseOrder: 'PurchaseOrder',
   Dispatch: 'Dispatch',
+  DispatchCorrection: 'DispatchCorrection',
   Payment: 'Payment',
   Discount: 'Discount',
   VegPayment: 'VegPayment',

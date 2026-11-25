@@ -317,6 +317,13 @@ export const REPORT_SUB_PAGES = [
     reportSubPage: true,
   },
   {
+    key: "reports-do-in-hand",
+    href: "/reports/do-in-hand",
+    label: "DO in Hand",
+    group: "Reports" as const,
+    reportSubPage: true,
+  },
+  {
     key: "reports-investments",
     href: "/reports/investments",
     label: "Investments",
@@ -527,6 +534,7 @@ export const REPORT_ACCESS_GROUPS: ReportAccessGroup[] = [
 
 export const REPORT_ACCESS_LEAVES: ReportAccessPage[] = [
   { key: "reports-dispatch", label: "Dispatch" },
+  { key: "reports-do-in-hand", label: "DO in Hand" },
   { key: "reports-purchase", label: "Purchase" },
 ];
 
@@ -570,6 +578,7 @@ export const APP_PAGES: AppPage[] = [
   ...UPDATE_SUB_PAGES,
   ...BANK_SUB_PAGES,
   { key: "bills", href: "/bills", label: "Approvals", group: "Pages" },
+  { key: "corrections", href: "/corrections", label: "Correction", group: "Pages" },
   ...MASTER_SUB_PAGES,
   ...MASTER_OPTIONS_SUB_PAGES,
   { key: "options", href: "/options", label: "Options", group: "Pages", ownerOnly: true },
@@ -595,6 +604,7 @@ export const PAGES_TEAM_ACCESS_ORDER = [
   "orders",
   "purchase-orders",
   "bills",
+  "corrections",
 ] as const;
 
 export function orderedPagesTeamAccess(): AppPage[] {

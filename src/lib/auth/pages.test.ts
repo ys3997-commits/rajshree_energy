@@ -67,6 +67,8 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["payments"], "/payments/discount")).toBe(true);
     expect(canAccessPath(["bills"], "/bills")).toBe(true);
     expect(canAccessPath(["payments"], "/bills")).toBe(false);
+    expect(canAccessPath(["corrections"], "/corrections")).toBe(true);
+    expect(canAccessPath(["payments"], "/corrections")).toBe(false);
     expect(canAccessPath(["payments"], "/")).toBe(false);
   });
 
