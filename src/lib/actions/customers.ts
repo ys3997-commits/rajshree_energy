@@ -96,14 +96,22 @@ export type CustomerListResult = {
   pageSize: number;
   totalPages: number;
   customerId: string;
+  saleExecutive: string;
+  city: string;
+  state: string;
   category: string;
+  sector: string;
 };
 
 export async function listCustomersPage(options?: {
   page?: number;
   pageSize?: number;
   customerId?: string;
+  saleExecutive?: string;
+  city?: string;
+  state?: string;
   category?: string;
+  sector?: string;
 }): Promise<CustomerListResult> {
   const pageSize = Math.max(
     1,
@@ -111,13 +119,25 @@ export async function listCustomersPage(options?: {
   );
   const requestedPage = Math.max(1, Math.floor(options?.page ?? 1));
   const customerId = (options?.customerId ?? "").trim();
+  const saleExecutive = (options?.saleExecutive ?? "").trim();
+  const city = (options?.city ?? "").trim();
+  const state = (options?.state ?? "").trim();
   const category = (options?.category ?? "").trim();
+  const sector = (options?.sector ?? "").trim();
 
   const where: {
     id?: string;
+    saleExecutive?: string;
+    city?: string;
+    state?: string;
     category?: CustomerCategory;
+    sector?: string;
   } = {};
   if (customerId) where.id = customerId;
+  if (saleExecutive) where.saleExecutive = saleExecutive;
+  if (city) where.city = city;
+  if (state) where.state = state;
+  if (sector) where.sector = sector;
   if (
     category === CustomerCategory.SUPPLIER ||
     category === CustomerCategory.TRADER ||
@@ -126,7 +146,14 @@ export async function listCustomersPage(options?: {
     where.category = category;
   }
 
-  const hasFilter = Boolean(where.id || where.category);
+  const hasFilter = Boolean(
+    where.id ||
+      where.saleExecutive ||
+      where.city ||
+      where.state ||
+      where.category ||
+      where.sector,
+  );
   const total = await prisma.customer.count({
     where: hasFilter ? where : undefined,
   });
@@ -179,12 +206,16 @@ export async function listCustomersPage(options?: {
     pageSize,
     totalPages,
     customerId,
+    saleExecutive,
+    city,
+    state,
     category:
       category === CustomerCategory.SUPPLIER ||
       category === CustomerCategory.TRADER ||
       category === CustomerCategory.INDUSTRY
         ? category
         : "",
+    sector,
   };
 }
 

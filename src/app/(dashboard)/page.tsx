@@ -11,6 +11,7 @@ import {
   getHomeDebtorDueByCoal,
   getTopCustomersByCoalOrigin,
 } from "@/lib/actions/dashboard";
+import { getHomeDoInHandLists } from "@/lib/actions/doInHand";
 import { listOrdersWithBalance } from "@/lib/actions/orders";
 import {
   listPurchaseOrdersWithBalance,
@@ -87,6 +88,7 @@ export default async function HomePage() {
     fundCharts,
     topCustomersByCoal,
     pendingBillsByOwner,
+    doInHandLists,
     customers,
     ports,
     vessels,
@@ -102,6 +104,7 @@ export default async function HomePage() {
     getHomeFundCharts(),
     getTopCustomersByCoalOrigin(7),
     getHomePendingBillsByOwner(),
+    getHomeDoInHandLists(),
     listCustomers({ activeOnly: true }),
     listPortOptions(),
     listVessels({ activeOnly: true }),
@@ -134,6 +137,8 @@ export default async function HomePage() {
   const importedQualityStock = qualityStockLists.imported;
   const domesticVesselStock = vesselStockLists.domestic;
   const importedVesselStock = vesselStockLists.imported;
+  const domesticDoInHand = doInHandLists.domestic;
+  const importedDoInHand = doInHandLists.imported;
 
   const maxDomestic = Math.max(
     ...topDomesticCustomers.map((c) => Number(c.volume) || 0),
@@ -202,6 +207,7 @@ export default async function HomePage() {
             vessels: canOpen("/vessels"),
             qualities: canOpen("/qualities"),
             transporters: canOpen("/transporters"),
+            doInHand: canOpen("/reports/do-in-hand"),
           }}
           customers={customerOpts}
           importers={importerOpts}
@@ -492,6 +498,90 @@ export default async function HomePage() {
                       </span>
                       <span className="home-vessel-metric-label">
                         Stock in hand
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </div>
+
+      <div className="home-grid" style={{ marginTop: "1.25rem" }}>
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <h2 className="home-panel-title">DO in Hand — Domestic Coal</h2>
+            </div>
+            <Link href="/reports/do-in-hand" className="home-panel-link">
+              DO in Hand
+            </Link>
+          </div>
+
+          {domesticDoInHand.length === 0 ? (
+            <p className="home-empty">No domestic DO in hand to show.</p>
+          ) : (
+            <ul className="home-vessel-list">
+              {domesticDoInHand.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href="/reports/do-in-hand"
+                    className="home-vessel-row"
+                  >
+                    <div className="home-vessel-main">
+                      <span className="home-vessel-name">{row.vesselName}</span>
+                      <span className="home-vessel-quality">
+                        {row.origin} · {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-vessel-metric">
+                      <span className="home-vessel-metric-value">
+                        {formatQty(row.doInHand)}
+                      </span>
+                      <span className="home-vessel-metric-label">
+                        DO in hand
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="home-panel">
+          <div className="home-panel-head">
+            <div>
+              <h2 className="home-panel-title">DO in Hand — Imported Coal</h2>
+            </div>
+            <Link href="/reports/do-in-hand" className="home-panel-link">
+              DO in Hand
+            </Link>
+          </div>
+
+          {importedDoInHand.length === 0 ? (
+            <p className="home-empty">No imported DO in hand to show.</p>
+          ) : (
+            <ul className="home-vessel-list">
+              {importedDoInHand.map((row) => (
+                <li key={row.id}>
+                  <Link
+                    href="/reports/do-in-hand"
+                    className="home-vessel-row"
+                  >
+                    <div className="home-vessel-main">
+                      <span className="home-vessel-name">{row.vesselName}</span>
+                      <span className="home-vessel-quality">
+                        {row.origin} · {row.quality}
+                      </span>
+                    </div>
+                    <div className="home-vessel-metric">
+                      <span className="home-vessel-metric-value">
+                        {formatQty(row.doInHand)}
+                      </span>
+                      <span className="home-vessel-metric-label">
+                        DO in hand
                       </span>
                     </div>
                   </Link>

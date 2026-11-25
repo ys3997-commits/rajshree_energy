@@ -74,6 +74,7 @@ export function HomeQuickActions({
     vessels: boolean;
     qualities: boolean;
     transporters: boolean;
+    doInHand: boolean;
   };
 }) {
   return (
@@ -136,6 +137,13 @@ export function HomeQuickActions({
         className="btn btn-secondary"
       >
         New transporter
+      </LockedLink>
+      <LockedLink
+        href="/reports/do-in-hand"
+        allowed={allowed.doInHand}
+        className="btn btn-secondary"
+      >
+        DO in Hand
       </LockedLink>
     </div>
   );

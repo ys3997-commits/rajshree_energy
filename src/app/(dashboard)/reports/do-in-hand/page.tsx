@@ -5,6 +5,8 @@ import {
 } from "@/lib/actions/doInHand";
 import { DoInHandClient } from "./DoInHandClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function DoInHandReportPage() {
   const [purchaseOrders, funds] = await Promise.all([
     listDoInHandRunningPurchaseOrders(),

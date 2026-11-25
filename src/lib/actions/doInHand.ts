@@ -1,6 +1,6 @@
 "use server";
 
-import { DoStatus } from "@/generated/prisma";
+import { PaymentDirection } from "@/generated/prisma";
 import { requirePage } from "@/lib/auth/access";
 import {
   displayOrderBalance,
@@ -12,7 +12,7 @@ import {
   formatRs,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
-import { withPurchaseOrderComputed } from "@/lib/domain/computations";
+import { toDecimal, withPurchaseOrderComputed } from "@/lib/domain/computations";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -23,15 +23,22 @@ export type DoInHandPurchaseOrderRow = {
   id: string;
   poNumber: string;
   date: string;
+  dateIso: string;
   vendor: string;
   vessel: string;
   qualityClass: string;
   quantity: string;
   dispatched: string;
-  closing: string;
   balance: string;
   basicRate: string;
   finalRate: string;
+  /** Sum of Fund Paid (SENT) for this vendor + vessel. */
+  fundPaid: string;
+  /**
+   * (Fund Paid ÷ final rate) − lifted (dispatched) quantity.
+   * Remaining Delivery Order in hand for this vendor + vessel.
+   */
+  deliveryOrder: string;
 };
 
 export type DoInHandVesselOption = {
@@ -76,27 +83,148 @@ async function openBalancePurchaseOrders() {
     .filter((row) => formatOrderStatusForDisplay(row) === "Running");
 }
 
+function vendorVesselKey(vendorId: string, vesselId: string): string {
+  return `${vendorId}::${vesselId}`;
+}
+
+/**
+ * Fund Paid total per vendor + assigned DO vessel (SENT payments only).
+ */
+async function fundPaidByVendorVessel(
+  vendorIds: string[],
+): Promise<Map<string, ReturnType<typeof toDecimal>>> {
+  const totals = new Map<string, ReturnType<typeof toDecimal>>();
+  if (vendorIds.length === 0) return totals;
+
+  const payments = await prisma.payment.findMany({
+    where: {
+      customerId: { in: vendorIds },
+      transporterId: null,
+      investmentCompanyId: null,
+      direction: PaymentDirection.SENT,
+      doVesselId: { not: null },
+    },
+    select: {
+      customerId: true,
+      doVesselId: true,
+      amount: true,
+    },
+  });
+
+  for (const payment of payments) {
+    if (!payment.customerId || !payment.doVesselId) continue;
+    const key = vendorVesselKey(payment.customerId, payment.doVesselId);
+    const prev = totals.get(key) ?? toDecimal(0);
+    totals.set(key, prev.plus(toDecimal(payment.amount)));
+  }
+
+  return totals;
+}
+
 export async function listDoInHandRunningPurchaseOrders(): Promise<
   DoInHandPurchaseOrderRow[]
 > {
   await requirePage(PAGE_KEY);
 
   const rows = await openBalancePurchaseOrders();
+  const vendorIds = [...new Set(rows.map((row) => row.importerId))];
+  const fundPaidMap = await fundPaidByVendorVessel(vendorIds);
 
-  return rows.map((row) => ({
-    id: row.id,
-    poNumber: row.poNumber,
-    date: formatDateDdMmYyyy(row.orderDate?.toISOString() ?? null),
-    vendor: row.importer.name,
-    vessel: row.vessel.vesselName,
-    qualityClass: formatQualityClass(row.qualityClass),
-    quantity: formatSaleOrderMt(displayOrderQuantity(row)),
-    dispatched: formatSaleOrderMt(row.dispatchedOrder),
-    closing: formatSaleOrderMt(row.closingQuantity),
-    balance: formatSaleOrderMt(displayOrderBalance(row)),
-    basicRate: formatRs(row.rate),
-    finalRate: formatRs(row.finalRate),
-  }));
+  return rows.map((row) => {
+    const key = vendorVesselKey(row.importerId, row.vesselId);
+    const fundPaid = fundPaidMap.get(key) ?? toDecimal(0);
+    const finalRate = row.finalRate != null ? toDecimal(row.finalRate) : null;
+    const lifted = toDecimal(row.dispatchedOrder);
+
+    let deliveryOrderDisplay = "—";
+    if (finalRate != null && finalRate.gt(0)) {
+      // DO in hand = (fund paid ÷ final rate) − lifted quantity
+      const deliveryOrder = fundPaid.div(finalRate).minus(lifted);
+      deliveryOrderDisplay = formatSaleOrderMt(deliveryOrder);
+    }
+
+    const orderDateIso = row.orderDate?.toISOString() ?? null;
+    return {
+      id: row.id,
+      poNumber: row.poNumber,
+      date: formatDateDdMmYyyy(orderDateIso),
+      dateIso: orderDateIso?.slice(0, 10) ?? "",
+      vendor: row.importer.name,
+      vessel: row.vessel.vesselName,
+      qualityClass: formatQualityClass(row.qualityClass),
+      quantity: formatSaleOrderMt(displayOrderQuantity(row)),
+      dispatched: formatSaleOrderMt(row.dispatchedOrder),
+      balance: formatSaleOrderMt(displayOrderBalance(row)),
+      basicRate: formatRs(row.rate),
+      finalRate: formatRs(row.finalRate),
+      fundPaid: formatBankAmount(fundPaid),
+      deliveryOrder: deliveryOrderDisplay,
+    };
+  });
+}
+
+export type HomeDoInHandRow = {
+  id: string;
+  vesselName: string;
+  origin: string;
+  quality: string;
+  doInHand: string;
+};
+
+/**
+ * Home DO in Hand lists: domestic / imported, one row per running PO vessel.
+ * Hides rows with zero or uncomputable delivery order.
+ */
+export async function getHomeDoInHandLists(): Promise<{
+  domestic: HomeDoInHandRow[];
+  imported: HomeDoInHandRow[];
+}> {
+  const rows = await openBalancePurchaseOrders();
+  const vendorIds = [...new Set(rows.map((row) => row.importerId))];
+  const fundPaidMap = await fundPaidByVendorVessel(vendorIds);
+
+  const mapped = rows
+    .filter((row) => row.qualityClass != null)
+    .map((row) => {
+      const key = vendorVesselKey(row.importerId, row.vesselId);
+      const fundPaid = fundPaidMap.get(key) ?? toDecimal(0);
+      const finalRate = row.finalRate != null ? toDecimal(row.finalRate) : null;
+      const lifted = toDecimal(row.dispatchedOrder);
+      const qc = row.qualityClass!;
+
+      let doInHand: string | null = null;
+      if (finalRate != null && finalRate.gt(0)) {
+        doInHand = fundPaid.div(finalRate).minus(lifted).toString();
+      }
+
+      return {
+        id: row.id,
+        vesselName: row.vessel.vesselName,
+        domestic: qc.domestic === true,
+        origin: qc.origin.name,
+        quality: qc.qualityOption.name,
+        doInHand,
+        zero: doInHand == null || Number(doInHand) === 0,
+      };
+    })
+    .filter((row) => !row.zero);
+
+  function toList(domestic: boolean): HomeDoInHandRow[] {
+    return mapped
+      .filter((row) => row.domestic === domestic)
+      .map(({ id, vesselName, origin, quality, doInHand }) => ({
+        id,
+        vesselName,
+        origin,
+        quality,
+        doInHand: doInHand!,
+      }));
+  }
+
+  return {
+    domestic: toList(true),
+    imported: toList(false),
+  };
 }
 
 export async function listDoInHandFunds(): Promise<DoInHandFundRow[]> {
@@ -193,7 +321,7 @@ export async function updateDoInHandVessel(input: {
 
   const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
-    select: { id: true, customerId: true, doStatus: true },
+    select: { id: true, customerId: true },
   });
   if (!payment?.customerId) throw new Error("Payment not found");
 
@@ -209,14 +337,10 @@ export async function updateDoInHandVessel(input: {
     }
   }
 
+  // Null vessel = Non-Vessel Adjustment (amount adjusted, not tied to a vessel).
   await prisma.payment.update({
     where: { id: paymentId },
-    data: {
-      doVesselId: vesselId,
-      ...(vesselId == null && payment.doStatus === DoStatus.COMPLETED
-        ? { doStatus: DoStatus.PENDING }
-        : {}),
-    },
+    data: { doVesselId: vesselId },
   });
 
   revalidatePath(PAGE_PATH);
@@ -240,12 +364,10 @@ export async function updateDoInHandStatus(input: {
 
   const payment = await prisma.payment.findUnique({
     where: { id: paymentId },
-    select: { id: true, doVesselId: true },
+    select: { id: true },
   });
   if (!payment) throw new Error("Payment not found");
-  if (input.status === "COMPLETED" && !payment.doVesselId) {
-    throw new Error("Select a vessel before marking DO");
-  }
+  // COMPLETED with no vessel is allowed for Non-Vessel Adjustment.
 
   await prisma.payment.update({
     where: { id: paymentId },

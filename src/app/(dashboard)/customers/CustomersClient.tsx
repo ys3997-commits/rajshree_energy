@@ -74,15 +74,25 @@ type FormState = {
   dealingCompany: string;
 };
 
-function customersHref(
-  page: number,
-  customerId: string,
-  category: string,
-): string {
+type CustomerFilters = {
+  customerId: string;
+  saleExecutive: string;
+  city: string;
+  state: string;
+  category: string;
+  sector: string;
+};
+
+function customersHref(page: number, filters: CustomerFilters): string {
   const params = new URLSearchParams();
   if (page > 1) params.set("page", String(page));
-  if (customerId) params.set("customerId", customerId);
-  if (category) params.set("category", category);
+  if (filters.customerId) params.set("customerId", filters.customerId);
+  if (filters.saleExecutive)
+    params.set("saleExecutive", filters.saleExecutive);
+  if (filters.city) params.set("city", filters.city);
+  if (filters.state) params.set("state", filters.state);
+  if (filters.category) params.set("category", filters.category);
+  if (filters.sector) params.set("sector", filters.sector);
   const qs = params.toString();
   return qs ? `/customers?${qs}` : "/customers";
 }
@@ -183,6 +193,7 @@ export function CustomersClient({
   initial,
   customerOptions,
   cityOptions,
+  stateOptions,
   sectors,
   saleExecutives,
   dealingCompanies,
@@ -190,6 +201,7 @@ export function CustomersClient({
   initial: CustomerListResult;
   customerOptions: CustomerOpt[];
   cityOptions: CityOpt[];
+  stateOptions: string[];
   sectors: string[];
   saleExecutives: string[];
   dealingCompanies: string[];
@@ -202,8 +214,23 @@ export function CustomersClient({
     pageSize,
     totalPages,
     customerId,
+    saleExecutive,
+    city,
+    state,
     category,
+    sector,
   } = initial;
+  const filters: CustomerFilters = {
+    customerId,
+    saleExecutive,
+    city,
+    state,
+    category,
+    sector,
+  };
+  const hasActiveFilters = Boolean(
+    customerId || saleExecutive || city || state || category || sector,
+  );
   const [addForm, setAddForm] = useState<FormState>(() => emptyForm());
   const [editForm, setEditForm] = useState<FormState>(() => emptyForm());
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -259,8 +286,8 @@ export function CustomersClient({
     apply({ city, state: stateForCity(cityOptions, city) });
   }
 
-  function applyFilters(nextCustomerId: string, nextCategory: string) {
-    router.push(customersHref(1, nextCustomerId, nextCategory));
+  function applyFilters(patch: Partial<CustomerFilters>) {
+    router.push(customersHref(1, { ...filters, ...patch }));
   }
 
   function payloadFrom(form: FormState, includeActive: boolean) {
@@ -688,7 +715,7 @@ export function CustomersClient({
             className="field-input"
             aria-label="Customer"
             value={customerId}
-            onChange={(e) => applyFilters(e.target.value, category)}
+            onChange={(e) => applyFilters({ customerId: e.target.value })}
           >
             <option value="">All</option>
             {customerOptions.map((c) => (
@@ -700,17 +727,81 @@ export function CustomersClient({
           </select>
         </label>
         <label className="customers-filter-field">
+          Sales Executive
+          <select
+            className="field-input"
+            aria-label="Sales Executive"
+            value={saleExecutive}
+            onChange={(e) => applyFilters({ saleExecutive: e.target.value })}
+          >
+            <option value="">All</option>
+            {saleExecutives.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="customers-filter-field">
+          City
+          <select
+            className="field-input"
+            aria-label="City"
+            value={city}
+            onChange={(e) => applyFilters({ city: e.target.value })}
+          >
+            <option value="">All</option>
+            {cityNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="customers-filter-field">
+          State
+          <select
+            className="field-input"
+            aria-label="State"
+            value={state}
+            onChange={(e) => applyFilters({ state: e.target.value })}
+          >
+            <option value="">All</option>
+            {stateOptions.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="customers-filter-field">
           Category
           <select
             className="field-input"
             aria-label="Category"
             value={category}
-            onChange={(e) => applyFilters(customerId, e.target.value)}
+            onChange={(e) => applyFilters({ category: e.target.value })}
           >
             <option value="">All</option>
             {CATEGORY_FILTERS.map((value) => (
               <option key={value} value={value}>
                 {formatCustomerCategory(value)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="customers-filter-field">
+          Sector
+          <select
+            className="field-input"
+            aria-label="Sector"
+            value={sector}
+            onChange={(e) => applyFilters({ sector: e.target.value })}
+          >
+            <option value="">All</option>
+            {sectors.map((name) => (
+              <option key={name} value={name}>
+                {name}
               </option>
             ))}
           </select>
@@ -1202,7 +1293,7 @@ export function CustomersClient({
             {rows.length === 0 && (
               <tr>
                 <td colSpan={14}>
-                  {customerId || category
+                  {hasActiveFilters
                     ? "No customers match these filters."
                     : "No customers yet."}
                 </td>
@@ -1220,7 +1311,7 @@ export function CustomersClient({
           <div className="payments-pagination-actions">
             {page > 1 && (
               <Link
-                href={customersHref(page - 1, customerId, category)}
+                href={customersHref(page - 1, filters)}
                 className="btn btn-secondary btn-sm"
                 prefetch={false}
               >
@@ -1232,7 +1323,7 @@ export function CustomersClient({
             </span>
             {page < totalPages && (
               <Link
-                href={customersHref(page + 1, customerId, category)}
+                href={customersHref(page + 1, filters)}
                 className="btn btn-secondary btn-sm"
                 prefetch={false}
               >
