@@ -159,7 +159,12 @@ export async function listDoInHandRunningPurchaseOrders(): Promise<
     let deliveryOrderDisplay = "—";
     let totalAmountDisplay = "—";
     let balanceAmountToPayDisplay = "—";
-    const orderQty = toDecimal(displayOrderQuantity(row) ?? 0);
+    const orderQtyRaw = displayOrderQuantity(row);
+    const orderQty = toDecimal(
+      orderQtyRaw == null || orderQtyRaw === ""
+        ? 0
+        : orderQtyRaw.toString(),
+    );
     if (finalRate != null && finalRate.gt(0)) {
       // Total amount = PO quantity × final rate
       const totalAmount = orderQty.times(finalRate);
