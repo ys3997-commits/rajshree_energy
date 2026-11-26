@@ -55,6 +55,14 @@ enum DoStatus {
   COMPLETED
 }
 
+/// How DO rate is derived from the purchase basic / final rate.
+enum DoCalculationAsPer {
+  /// Basic Price − (Handling Charge + 18% GST on handling)
+  BASIC_MINUS_HANDLING
+  BASIC_PRICE
+  FINAL_PRICE
+}
+
 enum DiscountStatus {
   RECEIVED
   PAID
@@ -482,6 +490,14 @@ model PurchaseOrder {
   rate           Decimal?    @db.Decimal(18, 3)
   /// All-in cost: rate + GST(18%) + TCS(2% of rate+GST).
   finalRate      Decimal?    @db.Decimal(18, 3)
+  /// How DO rate is calculated from basic / final / handling.
+  doCalculationAsPer DoCalculationAsPer?
+  /// Handling charge (Rs) — used when doCalculationAsPer is BASIC_MINUS_HANDLING.
+  handlingCharge     Decimal?    @db.Decimal(18, 3)
+  /// Resolved DO rate after applying doCalculationAsPer.
+  doRate             Decimal?    @db.Decimal(18, 3)
+  /// Block / advance amount; required for BASIC_MINUS_HANDLING and BASIC_PRICE.
+  blockAmount        Decimal?    @db.Decimal(18, 3)
   /// Null for open purchase orders until completed.
   quantity       Decimal?    @db.Decimal(18, 3)
   /// Accumulated by dispatch transactions only — never write from forms.

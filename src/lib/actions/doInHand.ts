@@ -5,11 +5,11 @@ import { requirePage } from "@/lib/auth/access";
 import {
   displayOrderBalance,
   displayOrderQuantity,
+  formatAmount,
   formatBankAmount,
   formatDateDdMmYyyy,
   formatOrderStatusForDisplay,
   formatQualityClass,
-  formatRs,
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 import { toDecimal, withPurchaseOrderComputed } from "@/lib/domain/computations";
@@ -30,13 +30,16 @@ export type DoInHandPurchaseOrderRow = {
   quantity: string;
   dispatched: string;
   balance: string;
-  basicRate: string;
-  finalRate: string;
+  /** PO quantity × final rate. */
+  totalAmount: string;
   /** Sum of Fund Paid (SENT) for this vendor + vessel. */
   fundPaid: string;
+  /** Block amount stored on the purchase order. */
+  blockAmount: string;
+  /** PO quantity × final rate − fund paid. */
+  balanceAmountToPay: string;
   /**
-   * (Fund Paid ÷ final rate) − lifted (dispatched) quantity.
-   * Remaining Delivery Order in hand for this vendor + vessel.
+   * ((Fund Paid − Block Amount) ÷ DO Rate) − Dispatched.
    */
   deliveryOrder: string;
 };
@@ -88,6 +91,21 @@ function vendorVesselKey(vendorId: string, vesselId: string): string {
 }
 
 /**
+ * Delivery Order MT = ((fund paid − block amount) ÷ DO rate) − dispatched.
+ * Returns null when DO rate is missing or not positive.
+ */
+function computeDeliveryOrderMt(
+  fundPaid: ReturnType<typeof toDecimal>,
+  blockAmount: ReturnType<typeof toDecimal> | null | undefined,
+  doRate: ReturnType<typeof toDecimal> | null | undefined,
+  dispatched: ReturnType<typeof toDecimal>,
+): ReturnType<typeof toDecimal> | null {
+  if (doRate == null || !doRate.gt(0)) return null;
+  const block = blockAmount != null ? blockAmount : toDecimal(0);
+  return fundPaid.minus(block).div(doRate).minus(dispatched);
+}
+
+/**
  * Fund Paid total per vendor + assigned DO vessel (SENT payments only).
  */
 async function fundPaidByVendorVessel(
@@ -134,12 +152,30 @@ export async function listDoInHandRunningPurchaseOrders(): Promise<
     const key = vendorVesselKey(row.importerId, row.vesselId);
     const fundPaid = fundPaidMap.get(key) ?? toDecimal(0);
     const finalRate = row.finalRate != null ? toDecimal(row.finalRate) : null;
-    const lifted = toDecimal(row.dispatchedOrder);
+    const doRate = row.doRate != null ? toDecimal(row.doRate) : null;
+    const blockAmount =
+      row.blockAmount != null ? toDecimal(row.blockAmount) : null;
 
     let deliveryOrderDisplay = "—";
+    let totalAmountDisplay = "—";
+    let balanceAmountToPayDisplay = "—";
+    const orderQty = toDecimal(displayOrderQuantity(row) ?? 0);
     if (finalRate != null && finalRate.gt(0)) {
-      // DO in hand = (fund paid ÷ final rate) − lifted quantity
-      const deliveryOrder = fundPaid.div(finalRate).minus(lifted);
+      // Total amount = PO quantity × final rate
+      const totalAmount = orderQty.times(finalRate);
+      totalAmountDisplay = formatAmount(totalAmount);
+      // Balance amount to pay = PO quantity × final rate − fund paid
+      balanceAmountToPayDisplay = formatAmount(totalAmount.minus(fundPaid));
+    }
+
+    const dispatched = toDecimal(row.dispatchedOrder);
+    const deliveryOrder = computeDeliveryOrderMt(
+      fundPaid,
+      blockAmount,
+      doRate,
+      dispatched,
+    );
+    if (deliveryOrder != null) {
       deliveryOrderDisplay = formatSaleOrderMt(deliveryOrder);
     }
 
@@ -155,9 +191,11 @@ export async function listDoInHandRunningPurchaseOrders(): Promise<
       quantity: formatSaleOrderMt(displayOrderQuantity(row)),
       dispatched: formatSaleOrderMt(row.dispatchedOrder),
       balance: formatSaleOrderMt(displayOrderBalance(row)),
-      basicRate: formatRs(row.rate),
-      finalRate: formatRs(row.finalRate),
-      fundPaid: formatBankAmount(fundPaid),
+      totalAmount: totalAmountDisplay,
+      fundPaid: formatAmount(fundPaid),
+      blockAmount:
+        row.blockAmount != null ? formatAmount(row.blockAmount) : "—",
+      balanceAmountToPay: balanceAmountToPayDisplay,
       deliveryOrder: deliveryOrderDisplay,
     };
   });
@@ -165,6 +203,7 @@ export async function listDoInHandRunningPurchaseOrders(): Promise<
 
 export type HomeDoInHandRow = {
   id: string;
+  vendorName: string;
   vesselName: string;
   origin: string;
   quality: string;
@@ -172,8 +211,8 @@ export type HomeDoInHandRow = {
 };
 
 /**
- * Home DO in Hand lists: domestic / imported, one row per running PO vessel.
- * Hides rows with zero or uncomputable delivery order.
+ * Home DO in Hand lists: domestic / imported, one row per running PO.
+ * Includes computable DO (including 0 MT). Hides uncomputable rows.
  */
 export async function getHomeDoInHandLists(): Promise<{
   domestic: HomeDoInHandRow[];
@@ -188,32 +227,38 @@ export async function getHomeDoInHandLists(): Promise<{
     .map((row) => {
       const key = vendorVesselKey(row.importerId, row.vesselId);
       const fundPaid = fundPaidMap.get(key) ?? toDecimal(0);
-      const finalRate = row.finalRate != null ? toDecimal(row.finalRate) : null;
-      const lifted = toDecimal(row.dispatchedOrder);
+      const doRate = row.doRate != null ? toDecimal(row.doRate) : null;
+      const blockAmount =
+        row.blockAmount != null ? toDecimal(row.blockAmount) : null;
       const qc = row.qualityClass!;
 
-      let doInHand: string | null = null;
-      if (finalRate != null && finalRate.gt(0)) {
-        doInHand = fundPaid.div(finalRate).minus(lifted).toString();
-      }
+      const dispatched = toDecimal(row.dispatchedOrder);
+      const deliveryOrder = computeDeliveryOrderMt(
+        fundPaid,
+        blockAmount,
+        doRate,
+        dispatched,
+      );
 
       return {
         id: row.id,
+        vendorName: row.importer.name,
         vesselName: row.vessel.vesselName,
         domestic: qc.domestic === true,
         origin: qc.origin.name,
         quality: qc.qualityOption.name,
-        doInHand,
-        zero: doInHand == null || Number(doInHand) === 0,
+        doInHand: deliveryOrder?.toString() ?? null,
       };
     })
-    .filter((row) => !row.zero);
+    // Running POs only (from openBalancePurchaseOrders). Show 0 MT rows too.
+    .filter((row) => row.doInHand != null);
 
   function toList(domestic: boolean): HomeDoInHandRow[] {
     return mapped
       .filter((row) => row.domestic === domestic)
-      .map(({ id, vesselName, origin, quality, doInHand }) => ({
+      .map(({ id, vendorName, vesselName, origin, quality, doInHand }) => ({
         id,
+        vendorName,
         vesselName,
         origin,
         quality,

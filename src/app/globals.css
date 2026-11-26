@@ -2658,6 +2658,71 @@ table.data tr.month-divider:hover td {
   margin-bottom: 1.25rem;
 }
 
+.option-cards-stack {
+  grid-template-columns: 1fr;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.field-required {
+  color: var(--danger, #b42318);
+  font-weight: 600;
+}
+
+/* Hide spinner arrows on all amount / quantity number inputs */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.do-calc-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #f7faf9 0%, #f3f6f5 100%);
+}
+
+.do-calc-preview-formula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.do-calc-op {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.do-calc-paren {
+  color: var(--ink-soft);
+}
+
+.do-calc-result {
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.do-calc-preview-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
 .option-card {
   display: flex;
   flex-direction: column;

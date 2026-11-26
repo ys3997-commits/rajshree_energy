@@ -55,6 +55,14 @@ enum DoStatus {
   COMPLETED
 }
 
+/// How DO rate is derived from the purchase basic / final rate.
+enum DoCalculationAsPer {
+  /// Basic Price − (Handling Charge + 18% GST on handling)
+  BASIC_MINUS_HANDLING
+  BASIC_PRICE
+  FINAL_PRICE
+}
+
 enum DiscountStatus {
   RECEIVED
   PAID
@@ -471,26 +479,34 @@ model Order {
 
 /// Purchase order (vendor / costing side). Linked to a vessel.
 model PurchaseOrder {
-  id              String              @id @default(cuid())
-  poNumber        String              @unique
-  orderType       OrderType           @default(REGULAR)
-  importerId      String
-  vesselId        String
-  orderDate       DateTime?
-  qualityClassId  String?
+  id                 String              @id @default(cuid())
+  poNumber           String              @unique
+  orderType          OrderType           @default(REGULAR)
+  importerId         String
+  vesselId           String
+  orderDate          DateTime?
+  qualityClassId     String?
   /// Base cost rate entered by user (Rs/MT), before GST/TCS.
-  rate            Decimal?            @db.Decimal(18, 3)
+  rate               Decimal?            @db.Decimal(18, 3)
   /// All-in cost: rate + GST(18%) + TCS(2% of rate+GST).
-  finalRate       Decimal?            @db.Decimal(18, 3)
+  finalRate          Decimal?            @db.Decimal(18, 3)
+  /// How DO rate is calculated from basic / final / handling.
+  doCalculationAsPer DoCalculationAsPer?
+  /// Handling charge (Rs) — used when doCalculationAsPer is BASIC_MINUS_HANDLING.
+  handlingCharge     Decimal?            @db.Decimal(18, 3)
+  /// Resolved DO rate after applying doCalculationAsPer.
+  doRate             Decimal?            @db.Decimal(18, 3)
+  /// Block / advance amount; required for BASIC_MINUS_HANDLING and BASIC_PRICE.
+  blockAmount        Decimal?            @db.Decimal(18, 3)
   /// Null for open purchase orders until completed.
-  quantity        Decimal?            @db.Decimal(18, 3)
+  quantity           Decimal?            @db.Decimal(18, 3)
   /// Accumulated by dispatch transactions only — never write from forms.
-  dispatchedOrder Decimal             @default(0) @db.Decimal(18, 3)
+  dispatchedOrder    Decimal             @default(0) @db.Decimal(18, 3)
   /// Undispatchable remainder written off via "close quantity"; zeros balance.
-  closingQuantity Decimal?            @db.Decimal(18, 3)
-  orderStatus     PurchaseOrderStatus @default(RUNNING)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
+  closingQuantity    Decimal?            @db.Decimal(18, 3)
+  orderStatus        PurchaseOrderStatus @default(RUNNING)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   importer     Customer      @relation(fields: [importerId], references: [id])
   vessel       Vessel        @relation(fields: [vesselId], references: [id])

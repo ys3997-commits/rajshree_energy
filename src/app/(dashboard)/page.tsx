@@ -531,6 +531,7 @@ export default async function HomePage() {
                   >
                     <div className="home-vessel-main">
                       <span className="home-vessel-name">{row.vesselName}</span>
+                      <span className="home-vessel-quality">{row.vendorName}</span>
                       <span className="home-vessel-quality">
                         {row.origin} · {row.quality}
                       </span>
@@ -572,6 +573,7 @@ export default async function HomePage() {
                   >
                     <div className="home-vessel-main">
                       <span className="home-vessel-name">{row.vesselName}</span>
+                      <span className="home-vessel-quality">{row.vendorName}</span>
                       <span className="home-vessel-quality">
                         {row.origin} · {row.quality}
                       </span>

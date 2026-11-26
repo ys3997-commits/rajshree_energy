@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  DoCalculationAsPer,
   OrderType,
   PurchaseOrderStatus,
   type Prisma,
@@ -41,6 +42,12 @@ import {
   nextPurchaseOrderNumber,
   normalizePurchaseOrderNumber,
 } from "@/lib/domain/orderNumbers";
+import {
+  isBlockAmountRequired,
+  isDoCalculationAsPer,
+  resolveDoRate,
+  type DoCalculationAsPer as DoCalculationAsPerValue,
+} from "@/lib/domain/purchaseRate";
 
 export type PurchaseOrderFilters = {
   status?: PurchaseOrderStatus | "";
@@ -289,7 +296,81 @@ export type CreateRegularPurchaseOrderInput = {
   qualityClassId?: string | null;
   rate?: DecimalLike | null;
   quantity: DecimalLike;
+  doCalculationAsPer: DoCalculationAsPerValue;
+  handlingCharge?: DecimalLike | null;
+  blockAmount?: DecimalLike | null;
 };
+
+function parseOptionalNonNegativeDecimal(
+  value: DecimalLike | null | undefined,
+  label: string,
+): ReturnType<typeof toDecimal> | null {
+  if (value === undefined || value === null || value === "") return null;
+  const amount = toDecimal(value);
+  if (amount.lt(0)) throw new Error(`${label} must be non-negative`);
+  return amount;
+}
+
+function resolveDoFields(input: {
+  rate: ReturnType<typeof toDecimal> | null;
+  doCalculationAsPer: string;
+  handlingCharge?: DecimalLike | null;
+  blockAmount?: DecimalLike | null;
+}) {
+  if (!isDoCalculationAsPer(input.doCalculationAsPer)) {
+    throw new Error("Select DO Calculation as per");
+  }
+  const doCalculationAsPer = input.doCalculationAsPer;
+
+  const handlingCharge =
+    doCalculationAsPer === "BASIC_MINUS_HANDLING"
+      ? parseOptionalNonNegativeDecimal(
+          input.handlingCharge,
+          "Handling charge",
+        )
+      : null;
+  if (
+    doCalculationAsPer === "BASIC_MINUS_HANDLING" &&
+    handlingCharge == null
+  ) {
+    throw new Error("Handling charge is required for this DO calculation");
+  }
+
+  const blockAmount = parseOptionalNonNegativeDecimal(
+    input.blockAmount,
+    "Block Amount",
+  );
+  if (isBlockAmountRequired(doCalculationAsPer) && blockAmount == null) {
+    throw new Error("Block Amount is required for this DO calculation");
+  }
+
+  if (
+    doCalculationAsPer === "BASIC_MINUS_HANDLING" &&
+    input.rate == null
+  ) {
+    throw new Error("Basic rate is required for this DO calculation");
+  }
+
+  const doRateRaw = resolveDoRate(
+    doCalculationAsPer,
+    input.rate?.toString() ?? null,
+    handlingCharge?.toString() ?? null,
+  );
+  let doRate: ReturnType<typeof toDecimal> | null = null;
+  if (doRateRaw != null) {
+    doRate = toDecimal(doRateRaw);
+    if (doRate.lt(0)) {
+      throw new Error("DO rate cannot be negative — check handling charge");
+    }
+  }
+
+  return {
+    doCalculationAsPer: doCalculationAsPer as DoCalculationAsPer,
+    handlingCharge,
+    blockAmount,
+    doRate,
+  };
+}
 
 export async function createRegularPurchaseOrder(
   input: CreateRegularPurchaseOrderInput,
@@ -321,6 +402,12 @@ async function createRegularPurchaseOrderInner(
       ? null
       : toDecimal(input.rate);
   const finalRate = computePurchaseFinalRate(rate);
+  const doFields = resolveDoFields({
+    rate,
+    doCalculationAsPer: input.doCalculationAsPer,
+    handlingCharge: input.handlingCharge,
+    blockAmount: input.blockAmount,
+  });
 
   const orderStatus = computePurchaseOrderStatus({
     quantity,
@@ -342,6 +429,10 @@ async function createRegularPurchaseOrderInner(
         qualityClassId,
         rate,
         finalRate,
+        doCalculationAsPer: doFields.doCalculationAsPer,
+        handlingCharge: doFields.handlingCharge,
+        doRate: doFields.doRate,
+        blockAmount: doFields.blockAmount,
         quantity,
         orderStatus,
       },
@@ -426,6 +517,9 @@ async function updatePurchaseOrderFieldsInner(
     rate?: DecimalLike | null;
     qualityClassId?: string | null;
     closingQuantity?: DecimalLike | null;
+    doCalculationAsPer?: DoCalculationAsPerValue | null;
+    handlingCharge?: DecimalLike | null;
+    blockAmount?: DecimalLike | null;
   },
 ) {
   await requireOwner();
@@ -485,6 +579,35 @@ async function updatePurchaseOrderFieldsInner(
   const finalRate =
     data.rate !== undefined ? computePurchaseFinalRate(rate) : existing.finalRate;
 
+  const doFields =
+    data.doCalculationAsPer !== undefined && data.doCalculationAsPer !== null
+      ? resolveDoFields({
+          rate,
+          doCalculationAsPer: data.doCalculationAsPer,
+          handlingCharge:
+            data.handlingCharge !== undefined
+              ? data.handlingCharge
+              : existing.handlingCharge,
+          blockAmount:
+            data.blockAmount !== undefined
+              ? data.blockAmount
+              : existing.blockAmount,
+        })
+      : data.rate !== undefined && existing.doCalculationAsPer
+        ? resolveDoFields({
+            rate,
+            doCalculationAsPer: existing.doCalculationAsPer,
+            handlingCharge:
+              data.handlingCharge !== undefined
+                ? data.handlingCharge
+                : existing.handlingCharge,
+            blockAmount:
+              data.blockAmount !== undefined
+                ? data.blockAmount
+                : existing.blockAmount,
+          })
+        : null;
+
   const orderStatus = computePurchaseOrderStatus({
     quantity,
     dispatchedOrder: existing.dispatchedOrder,
@@ -501,20 +624,27 @@ async function updatePurchaseOrderFieldsInner(
       where: { id },
       data: {
         poNumber,
-        importerId,
+        importer: { connect: { id: importerId } },
         quantity,
         rate,
         ...(data.rate !== undefined ? { finalRate } : {}),
-        qualityClassId:
-          data.qualityClassId === undefined ? undefined : data.qualityClassId,
-        closingQuantity:
-          data.closingQuantity === undefined ? undefined : closingQuantity,
-        orderDate:
-          data.orderDate === undefined
-            ? undefined
-            : data.orderDate
-              ? new Date(data.orderDate)
-              : null,
+        ...(doFields
+          ? {
+              doCalculationAsPer: doFields.doCalculationAsPer,
+              handlingCharge: doFields.handlingCharge,
+              doRate: doFields.doRate,
+              blockAmount: doFields.blockAmount,
+            }
+          : {}),
+        ...(data.qualityClassId !== undefined
+          ? data.qualityClassId
+            ? { qualityClass: { connect: { id: data.qualityClassId } } }
+            : { qualityClass: { disconnect: true } }
+          : {}),
+        ...(data.closingQuantity !== undefined ? { closingQuantity } : {}),
+        ...(data.orderDate !== undefined
+          ? { orderDate: data.orderDate ? new Date(data.orderDate) : null }
+          : {}),
         orderStatus,
       },
     });

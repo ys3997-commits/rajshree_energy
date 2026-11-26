@@ -269,6 +269,15 @@ export const OrderStatus: {
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 
 
+export const DoCalculationAsPer: {
+  BASIC_MINUS_HANDLING: 'BASIC_MINUS_HANDLING',
+  BASIC_PRICE: 'BASIC_PRICE',
+  FINAL_PRICE: 'FINAL_PRICE'
+};
+
+export type DoCalculationAsPer = (typeof DoCalculationAsPer)[keyof typeof DoCalculationAsPer]
+
+
 export const PurchaseOrderStatus: {
   RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
@@ -362,6 +371,10 @@ export const DispatchTerms: typeof $Enums.DispatchTerms
 export type OrderStatus = $Enums.OrderStatus
 
 export const OrderStatus: typeof $Enums.OrderStatus
+
+export type DoCalculationAsPer = $Enums.DoCalculationAsPer
+
+export const DoCalculationAsPer: typeof $Enums.DoCalculationAsPer
 
 export type PurchaseOrderStatus = $Enums.PurchaseOrderStatus
 
@@ -25538,6 +25551,9 @@ export namespace Prisma {
   export type PurchaseOrderAvgAggregateOutputType = {
     rate: Decimal | null
     finalRate: Decimal | null
+    handlingCharge: Decimal | null
+    doRate: Decimal | null
+    blockAmount: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
     closingQuantity: Decimal | null
@@ -25546,6 +25562,9 @@ export namespace Prisma {
   export type PurchaseOrderSumAggregateOutputType = {
     rate: Decimal | null
     finalRate: Decimal | null
+    handlingCharge: Decimal | null
+    doRate: Decimal | null
+    blockAmount: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
     closingQuantity: Decimal | null
@@ -25561,6 +25580,10 @@ export namespace Prisma {
     qualityClassId: string | null
     rate: Decimal | null
     finalRate: Decimal | null
+    doCalculationAsPer: $Enums.DoCalculationAsPer | null
+    handlingCharge: Decimal | null
+    doRate: Decimal | null
+    blockAmount: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
     closingQuantity: Decimal | null
@@ -25579,6 +25602,10 @@ export namespace Prisma {
     qualityClassId: string | null
     rate: Decimal | null
     finalRate: Decimal | null
+    doCalculationAsPer: $Enums.DoCalculationAsPer | null
+    handlingCharge: Decimal | null
+    doRate: Decimal | null
+    blockAmount: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal | null
     closingQuantity: Decimal | null
@@ -25597,6 +25624,10 @@ export namespace Prisma {
     qualityClassId: number
     rate: number
     finalRate: number
+    doCalculationAsPer: number
+    handlingCharge: number
+    doRate: number
+    blockAmount: number
     quantity: number
     dispatchedOrder: number
     closingQuantity: number
@@ -25610,6 +25641,9 @@ export namespace Prisma {
   export type PurchaseOrderAvgAggregateInputType = {
     rate?: true
     finalRate?: true
+    handlingCharge?: true
+    doRate?: true
+    blockAmount?: true
     quantity?: true
     dispatchedOrder?: true
     closingQuantity?: true
@@ -25618,6 +25652,9 @@ export namespace Prisma {
   export type PurchaseOrderSumAggregateInputType = {
     rate?: true
     finalRate?: true
+    handlingCharge?: true
+    doRate?: true
+    blockAmount?: true
     quantity?: true
     dispatchedOrder?: true
     closingQuantity?: true
@@ -25633,6 +25670,10 @@ export namespace Prisma {
     qualityClassId?: true
     rate?: true
     finalRate?: true
+    doCalculationAsPer?: true
+    handlingCharge?: true
+    doRate?: true
+    blockAmount?: true
     quantity?: true
     dispatchedOrder?: true
     closingQuantity?: true
@@ -25651,6 +25692,10 @@ export namespace Prisma {
     qualityClassId?: true
     rate?: true
     finalRate?: true
+    doCalculationAsPer?: true
+    handlingCharge?: true
+    doRate?: true
+    blockAmount?: true
     quantity?: true
     dispatchedOrder?: true
     closingQuantity?: true
@@ -25669,6 +25714,10 @@ export namespace Prisma {
     qualityClassId?: true
     rate?: true
     finalRate?: true
+    doCalculationAsPer?: true
+    handlingCharge?: true
+    doRate?: true
+    blockAmount?: true
     quantity?: true
     dispatchedOrder?: true
     closingQuantity?: true
@@ -25774,6 +25823,10 @@ export namespace Prisma {
     qualityClassId: string | null
     rate: Decimal | null
     finalRate: Decimal | null
+    doCalculationAsPer: $Enums.DoCalculationAsPer | null
+    handlingCharge: Decimal | null
+    doRate: Decimal | null
+    blockAmount: Decimal | null
     quantity: Decimal | null
     dispatchedOrder: Decimal
     closingQuantity: Decimal | null
@@ -25811,6 +25864,10 @@ export namespace Prisma {
     qualityClassId?: boolean
     rate?: boolean
     finalRate?: boolean
+    doCalculationAsPer?: boolean
+    handlingCharge?: boolean
+    doRate?: boolean
+    blockAmount?: boolean
     quantity?: boolean
     dispatchedOrder?: boolean
     closingQuantity?: boolean
@@ -25834,6 +25891,10 @@ export namespace Prisma {
     qualityClassId?: boolean
     rate?: boolean
     finalRate?: boolean
+    doCalculationAsPer?: boolean
+    handlingCharge?: boolean
+    doRate?: boolean
+    blockAmount?: boolean
     quantity?: boolean
     dispatchedOrder?: boolean
     closingQuantity?: boolean
@@ -25855,6 +25916,10 @@ export namespace Prisma {
     qualityClassId?: boolean
     rate?: boolean
     finalRate?: boolean
+    doCalculationAsPer?: boolean
+    handlingCharge?: boolean
+    doRate?: boolean
+    blockAmount?: boolean
     quantity?: boolean
     dispatchedOrder?: boolean
     closingQuantity?: boolean
@@ -25900,6 +25965,22 @@ export namespace Prisma {
        * All-in cost: rate + GST(18%) + TCS(2% of rate+GST).
        */
       finalRate: Prisma.Decimal | null
+      /**
+       * How DO rate is calculated from basic / final / handling.
+       */
+      doCalculationAsPer: $Enums.DoCalculationAsPer | null
+      /**
+       * Handling charge (Rs) — used when doCalculationAsPer is BASIC_MINUS_HANDLING.
+       */
+      handlingCharge: Prisma.Decimal | null
+      /**
+       * Resolved DO rate after applying doCalculationAsPer.
+       */
+      doRate: Prisma.Decimal | null
+      /**
+       * Block / advance amount; required for BASIC_MINUS_HANDLING and BASIC_PRICE.
+       */
+      blockAmount: Prisma.Decimal | null
       /**
        * Null for open purchase orders until completed.
        */
@@ -26321,6 +26402,10 @@ export namespace Prisma {
     readonly qualityClassId: FieldRef<"PurchaseOrder", 'String'>
     readonly rate: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly finalRate: FieldRef<"PurchaseOrder", 'Decimal'>
+    readonly doCalculationAsPer: FieldRef<"PurchaseOrder", 'DoCalculationAsPer'>
+    readonly handlingCharge: FieldRef<"PurchaseOrder", 'Decimal'>
+    readonly doRate: FieldRef<"PurchaseOrder", 'Decimal'>
+    readonly blockAmount: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly quantity: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly dispatchedOrder: FieldRef<"PurchaseOrder", 'Decimal'>
     readonly closingQuantity: FieldRef<"PurchaseOrder", 'Decimal'>
@@ -45181,6 +45266,10 @@ export namespace Prisma {
     qualityClassId: 'qualityClassId',
     rate: 'rate',
     finalRate: 'finalRate',
+    doCalculationAsPer: 'doCalculationAsPer',
+    handlingCharge: 'handlingCharge',
+    doRate: 'doRate',
+    blockAmount: 'blockAmount',
     quantity: 'quantity',
     dispatchedOrder: 'dispatchedOrder',
     closingQuantity: 'closingQuantity',
@@ -45679,6 +45768,20 @@ export namespace Prisma {
    * Reference to a field of type 'OrderStatus[]'
    */
   export type ListEnumOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DoCalculationAsPer'
+   */
+  export type EnumDoCalculationAsPerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoCalculationAsPer'>
+    
+
+
+  /**
+   * Reference to a field of type 'DoCalculationAsPer[]'
+   */
+  export type ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DoCalculationAsPer[]'>
     
 
 
@@ -47394,6 +47497,10 @@ export namespace Prisma {
     qualityClassId?: StringNullableFilter<"PurchaseOrder"> | string | null
     rate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: EnumDoCalculationAsPerNullableFilter<"PurchaseOrder"> | $Enums.DoCalculationAsPer | null
+    handlingCharge?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
     closingQuantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
@@ -47416,6 +47523,10 @@ export namespace Prisma {
     qualityClassId?: SortOrderInput | SortOrder
     rate?: SortOrderInput | SortOrder
     finalRate?: SortOrderInput | SortOrder
+    doCalculationAsPer?: SortOrderInput | SortOrder
+    handlingCharge?: SortOrderInput | SortOrder
+    doRate?: SortOrderInput | SortOrder
+    blockAmount?: SortOrderInput | SortOrder
     quantity?: SortOrderInput | SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrderInput | SortOrder
@@ -47441,6 +47552,10 @@ export namespace Prisma {
     qualityClassId?: StringNullableFilter<"PurchaseOrder"> | string | null
     rate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: EnumDoCalculationAsPerNullableFilter<"PurchaseOrder"> | $Enums.DoCalculationAsPer | null
+    handlingCharge?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
     closingQuantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
@@ -47463,6 +47578,10 @@ export namespace Prisma {
     qualityClassId?: SortOrderInput | SortOrder
     rate?: SortOrderInput | SortOrder
     finalRate?: SortOrderInput | SortOrder
+    doCalculationAsPer?: SortOrderInput | SortOrder
+    handlingCharge?: SortOrderInput | SortOrder
+    doRate?: SortOrderInput | SortOrder
+    blockAmount?: SortOrderInput | SortOrder
     quantity?: SortOrderInput | SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrderInput | SortOrder
@@ -47489,6 +47608,10 @@ export namespace Prisma {
     qualityClassId?: StringNullableWithAggregatesFilter<"PurchaseOrder"> | string | null
     rate?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: EnumDoCalculationAsPerNullableWithAggregatesFilter<"PurchaseOrder"> | $Enums.DoCalculationAsPer | null
+    handlingCharge?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doRate?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
     closingQuantity?: DecimalNullableWithAggregatesFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
@@ -50744,6 +50867,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -50766,6 +50893,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -50782,6 +50913,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50804,6 +50939,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50823,6 +50962,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -50838,6 +50981,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -50856,6 +51003,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -53728,6 +53879,13 @@ export namespace Prisma {
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
+  export type EnumDoCalculationAsPerNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoCalculationAsPer | EnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel> | $Enums.DoCalculationAsPer | null
+  }
+
   export type EnumPurchaseOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.PurchaseOrderStatus | EnumPurchaseOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.PurchaseOrderStatus[] | ListEnumPurchaseOrderStatusFieldRefInput<$PrismaModel>
@@ -53750,6 +53908,10 @@ export namespace Prisma {
     qualityClassId?: SortOrder
     rate?: SortOrder
     finalRate?: SortOrder
+    doCalculationAsPer?: SortOrder
+    handlingCharge?: SortOrder
+    doRate?: SortOrder
+    blockAmount?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrder
@@ -53761,6 +53923,9 @@ export namespace Prisma {
   export type PurchaseOrderAvgOrderByAggregateInput = {
     rate?: SortOrder
     finalRate?: SortOrder
+    handlingCharge?: SortOrder
+    doRate?: SortOrder
+    blockAmount?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrder
@@ -53776,6 +53941,10 @@ export namespace Prisma {
     qualityClassId?: SortOrder
     rate?: SortOrder
     finalRate?: SortOrder
+    doCalculationAsPer?: SortOrder
+    handlingCharge?: SortOrder
+    doRate?: SortOrder
+    blockAmount?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrder
@@ -53794,6 +53963,10 @@ export namespace Prisma {
     qualityClassId?: SortOrder
     rate?: SortOrder
     finalRate?: SortOrder
+    doCalculationAsPer?: SortOrder
+    handlingCharge?: SortOrder
+    doRate?: SortOrder
+    blockAmount?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrder
@@ -53805,9 +53978,22 @@ export namespace Prisma {
   export type PurchaseOrderSumOrderByAggregateInput = {
     rate?: SortOrder
     finalRate?: SortOrder
+    handlingCharge?: SortOrder
+    doRate?: SortOrder
+    blockAmount?: SortOrder
     quantity?: SortOrder
     dispatchedOrder?: SortOrder
     closingQuantity?: SortOrder
+  }
+
+  export type EnumDoCalculationAsPerNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoCalculationAsPer | EnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDoCalculationAsPerNullableWithAggregatesFilter<$PrismaModel> | $Enums.DoCalculationAsPer | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel>
+    _max?: NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel>
   }
 
   export type EnumPurchaseOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -56843,6 +57029,10 @@ export namespace Prisma {
     connect?: DispatchWhereUniqueInput | DispatchWhereUniqueInput[]
   }
 
+  export type NullableEnumDoCalculationAsPerFieldUpdateOperationsInput = {
+    set?: $Enums.DoCalculationAsPer | null
+  }
+
   export type EnumPurchaseOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.PurchaseOrderStatus
   }
@@ -58397,11 +58587,28 @@ export namespace Prisma {
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoCalculationAsPer | EnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel> | $Enums.DoCalculationAsPer | null
+  }
+
   export type NestedEnumPurchaseOrderStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.PurchaseOrderStatus | EnumPurchaseOrderStatusFieldRefInput<$PrismaModel>
     in?: $Enums.PurchaseOrderStatus[] | ListEnumPurchaseOrderStatusFieldRefInput<$PrismaModel>
     notIn?: $Enums.PurchaseOrderStatus[] | ListEnumPurchaseOrderStatusFieldRefInput<$PrismaModel>
     not?: NestedEnumPurchaseOrderStatusFilter<$PrismaModel> | $Enums.PurchaseOrderStatus
+  }
+
+  export type NestedEnumDoCalculationAsPerNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.DoCalculationAsPer | EnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    in?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.DoCalculationAsPer[] | ListEnumDoCalculationAsPerFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumDoCalculationAsPerNullableWithAggregatesFilter<$PrismaModel> | $Enums.DoCalculationAsPer | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel>
+    _max?: NestedEnumDoCalculationAsPerNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumPurchaseOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -60442,6 +60649,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -60462,6 +60673,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -60592,6 +60807,10 @@ export namespace Prisma {
     qualityClassId?: StringNullableFilter<"PurchaseOrder"> | string | null
     rate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     finalRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: EnumDoCalculationAsPerNullableFilter<"PurchaseOrder"> | $Enums.DoCalculationAsPer | null
+    handlingCharge?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    doRate?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     quantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string
     closingQuantity?: DecimalNullableFilter<"PurchaseOrder"> | Decimal | DecimalJsLike | number | string | null
@@ -60720,6 +60939,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -60740,6 +60963,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -61501,6 +61728,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -61521,6 +61752,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -62804,6 +63039,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -62825,6 +63064,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -63173,6 +63416,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -63194,6 +63441,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -68521,6 +68772,10 @@ export namespace Prisma {
     orderDate?: Date | string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -68634,6 +68889,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -68654,6 +68913,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -68672,6 +68935,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -68710,6 +68977,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -68866,6 +69137,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -68886,6 +69161,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -68904,6 +69183,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -69235,6 +69518,10 @@ export namespace Prisma {
     qualityClassId?: string | null
     rate?: Decimal | DecimalJsLike | number | string | null
     finalRate?: Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: $Enums.DoCalculationAsPer | null
+    handlingCharge?: Decimal | DecimalJsLike | number | string | null
+    doRate?: Decimal | DecimalJsLike | number | string | null
+    blockAmount?: Decimal | DecimalJsLike | number | string | null
     quantity?: Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: Decimal | DecimalJsLike | number | string
     closingQuantity?: Decimal | DecimalJsLike | number | string | null
@@ -69298,6 +69585,10 @@ export namespace Prisma {
     orderDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -69318,6 +69609,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -69336,6 +69631,10 @@ export namespace Prisma {
     qualityClassId?: NullableStringFieldUpdateOperationsInput | string | null
     rate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     finalRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doCalculationAsPer?: NullableEnumDoCalculationAsPerFieldUpdateOperationsInput | $Enums.DoCalculationAsPer | null
+    handlingCharge?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    doRate?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    blockAmount?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     quantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     dispatchedOrder?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     closingQuantity?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null

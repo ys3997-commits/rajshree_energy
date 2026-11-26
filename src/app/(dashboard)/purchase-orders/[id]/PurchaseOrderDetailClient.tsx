@@ -9,7 +9,15 @@ import {
 } from "@/lib/actions/purchaseOrders";
 import { throwIfActionError } from "@/lib/auth/errors";
 import { CloseQuantityButton } from "@/components/CloseQuantityButton";
-import { computePurchaseRateBreakdown } from "@/lib/domain/purchaseRate";
+import {
+  computeDoRateMinusHandling,
+  computePurchaseRateBreakdown,
+  DO_CALCULATION_OPTIONS,
+  isBlockAmountRequired,
+  isDoCalculationAsPer,
+  resolveDoRate,
+  type DoCalculationAsPer,
+} from "@/lib/domain/purchaseRate";
 import {
   formatOrderStatusForDisplay,
   formatOrderType,
@@ -62,6 +70,10 @@ type PurchaseOrderData = {
   balanceOrder: string | null;
   rate: string | null;
   finalRate: string | null;
+  doCalculationAsPer: DoCalculationAsPer | null;
+  handlingCharge: string | null;
+  doRate: string | null;
+  blockAmount: string | null;
   qualityClassId: string | null;
   importerId: string;
   importer: { name: string };
@@ -91,6 +103,17 @@ export function PurchaseOrderDetailClient({
   const [importerId, setImporterId] = useState(order.importerId);
   const [quantity, setQuantity] = useState(order.quantity ?? "");
   const [rate, setRate] = useState(order.rate ?? "");
+  const [doCalculationAsPer, setDoCalculationAsPer] = useState<
+    DoCalculationAsPer | ""
+  >(
+    order.doCalculationAsPer && isDoCalculationAsPer(order.doCalculationAsPer)
+      ? order.doCalculationAsPer
+      : "",
+  );
+  const [handlingCharge, setHandlingCharge] = useState(
+    order.handlingCharge ?? "",
+  );
+  const [blockAmount, setBlockAmount] = useState(order.blockAmount ?? "");
   const [qualityClassId, setQualityClassId] = useState(
     order.qualityClassId ?? "",
   );
@@ -103,11 +126,46 @@ export function PurchaseOrderDetailClient({
     return computePurchaseRateBreakdown(rate);
   }, [rate]);
 
+  const needsHandling = doCalculationAsPer === "BASIC_MINUS_HANDLING";
+  const blockRequired = isBlockAmountRequired(doCalculationAsPer || null);
+  const handlingBreakdown = useMemo(() => {
+    if (!needsHandling) return null;
+    return computeDoRateMinusHandling(rate, handlingCharge);
+  }, [needsHandling, rate, handlingCharge]);
+  const previewDoRate = useMemo(() => {
+    if (!doCalculationAsPer) return null;
+    return resolveDoRate(
+      doCalculationAsPer,
+      rate,
+      needsHandling ? handlingCharge : null,
+    );
+  }, [doCalculationAsPer, rate, needsHandling, handlingCharge]);
+
   async function onSave(e: FormEvent) {
     e.preventDefault();
     if (!canEdit) return;
     setError(null);
     setMessage(null);
+
+    if (!doCalculationAsPer) {
+      setError("Select DO Calculation as per");
+      return;
+    }
+    if (needsHandling && handlingCharge === "") {
+      setError("Handling charge is required for this DO calculation");
+      return;
+    }
+    if (blockRequired && blockAmount === "") {
+      setError("Block Amount is required for this DO calculation");
+      return;
+    }
+
+    const doPayload = {
+      doCalculationAsPer,
+      handlingCharge: needsHandling ? handlingCharge : null,
+      blockAmount: blockAmount === "" ? null : blockAmount,
+    };
+
     try {
       if (order.orderType === OrderType.OPEN && !order.quantity) {
         await completeOpenPurchaseOrder(order.id, {
@@ -120,6 +178,7 @@ export function PurchaseOrderDetailClient({
           orderDate: orderDate || null,
           importerId,
           closingQuantity: closingQuantity === "" ? null : closingQuantity,
+          ...doPayload,
         }));
       } else {
         throwIfActionError(await updatePurchaseOrderFields(order.id, {
@@ -130,6 +189,7 @@ export function PurchaseOrderDetailClient({
           rate: rate === "" ? null : rate,
           qualityClassId: qualityClassId || null,
           closingQuantity: closingQuantity === "" ? null : closingQuantity,
+          ...doPayload,
         }));
       }
       setMessage("Purchase order updated.");
@@ -264,6 +324,114 @@ export function PurchaseOrderDetailClient({
             <div className="text-sm text-neutral-600">—</div>
           </>
         )}
+
+        <label>DO Calculation as per</label>
+        <select
+          required={canEdit}
+          value={doCalculationAsPer}
+          onChange={(e) =>
+            setDoCalculationAsPer(
+              (e.target.value || "") as DoCalculationAsPer | "",
+            )
+          }
+          disabled={!canEdit}
+        >
+          <option value="">Select</option>
+          {DO_CALCULATION_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.title}
+            </option>
+          ))}
+        </select>
+
+        {needsHandling && (
+          <>
+            <label>
+              Handling Charge
+              {canEdit && <span className="field-required"> *</span>}
+            </label>
+            <div className="field-with-unit field-with-prefix">
+              <span className="field-unit">Rs</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                required={canEdit}
+                value={handlingCharge}
+                onChange={(e) => setHandlingCharge(e.target.value)}
+                placeholder="e.g. 350"
+                disabled={!canEdit}
+              />
+            </div>
+          </>
+        )}
+
+        {doCalculationAsPer && (
+          <>
+            <label>DO Rate</label>
+            <div className="do-calc-preview">
+              {needsHandling ? (
+                handlingBreakdown ? (
+                  <>
+                    <div className="do-calc-preview-formula">
+                      <span>{handlingBreakdown.basic}</span>
+                      <span className="do-calc-op">−</span>
+                      <span className="do-calc-paren">
+                        ({handlingBreakdown.handling}
+                        <span className="do-calc-op">+</span>
+                        {handlingBreakdown.handlingGst})
+                      </span>
+                      <span className="do-calc-op">=</span>
+                      <strong className="do-calc-result">
+                        {handlingBreakdown.doRate}
+                      </strong>
+                    </div>
+                    <p className="do-calc-preview-hint">
+                      Handling GST @ 18% = {handlingBreakdown.handlingGst}
+                    </p>
+                  </>
+                ) : (
+                  <p className="do-calc-preview-hint">
+                    {order.doRate
+                      ? `Saved DO rate: ${order.doRate}`
+                      : "Enter basic rate and handling charge to preview DO rate"}
+                  </p>
+                )
+              ) : previewDoRate != null ? (
+                <div className="do-calc-preview-formula">
+                  <strong className="do-calc-result">{previewDoRate}</strong>
+                </div>
+              ) : (
+                <p className="do-calc-preview-hint">
+                  {order.doRate
+                    ? `Saved DO rate: ${order.doRate}`
+                    : "Enter basic rate to preview DO rate"}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
+        <label>
+          Block Amount
+          {canEdit && blockRequired && (
+            <span className="field-required"> *</span>
+          )}
+        </label>
+        <div className="field-with-unit field-with-prefix">
+          <span className="field-unit">Rs</span>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            required={canEdit && blockRequired}
+            value={blockAmount}
+            onChange={(e) => setBlockAmount(e.target.value)}
+            placeholder={blockRequired ? "Required" : "Optional"}
+            disabled={!canEdit}
+          />
+        </div>
+
         <label>Quality Class</label>
         <QualityClassSelect
           value={qualityClassId}

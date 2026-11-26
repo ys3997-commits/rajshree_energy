@@ -365,6 +365,10 @@ exports.Prisma.PurchaseOrderScalarFieldEnum = {
   qualityClassId: 'qualityClassId',
   rate: 'rate',
   finalRate: 'finalRate',
+  doCalculationAsPer: 'doCalculationAsPer',
+  handlingCharge: 'handlingCharge',
+  doRate: 'doRate',
+  blockAmount: 'blockAmount',
   quantity: 'quantity',
   dispatchedOrder: 'dispatchedOrder',
   closingQuantity: 'closingQuantity',
@@ -651,6 +655,12 @@ exports.DispatchTerms = exports.$Enums.DispatchTerms = {
 exports.OrderStatus = exports.$Enums.OrderStatus = {
   RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED'
+};
+
+exports.DoCalculationAsPer = exports.$Enums.DoCalculationAsPer = {
+  BASIC_MINUS_HANDLING: 'BASIC_MINUS_HANDLING',
+  BASIC_PRICE: 'BASIC_PRICE',
+  FINAL_PRICE: 'FINAL_PRICE'
 };
 
 exports.PurchaseOrderStatus = exports.$Enums.PurchaseOrderStatus = {

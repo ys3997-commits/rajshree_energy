@@ -34,9 +34,10 @@ type PoSortKey =
   | "quantity"
   | "dispatched"
   | "balance"
-  | "basicRate"
-  | "finalRate"
+  | "totalAmount"
   | "fundPaid"
+  | "blockAmount"
+  | "balanceAmountToPay"
   | "deliveryOrder";
 
 type SortDir = "asc" | "desc";
@@ -46,9 +47,10 @@ const PO_AMOUNT_KEYS = new Set<PoSortKey>([
   "quantity",
   "dispatched",
   "balance",
-  "basicRate",
-  "finalRate",
+  "totalAmount",
   "fundPaid",
+  "blockAmount",
+  "balanceAmountToPay",
   "deliveryOrder",
 ]);
 
@@ -167,9 +169,14 @@ export function DoInHandClient({ purchaseOrders, funds }: Props) {
     { key: "quantity", header: "Quantity", align: "right" as const },
     { key: "dispatched", header: "Dispatched", align: "right" as const },
     { key: "balance", header: "Balance", align: "right" as const },
-    { key: "basicRate", header: "Basic rate", align: "right" as const },
-    { key: "finalRate", header: "Final rate", align: "right" as const },
+    { key: "totalAmount", header: "Total Amount", align: "right" as const },
     { key: "fundPaid", header: "Fund Paid", align: "right" as const },
+    { key: "blockAmount", header: "Block Amount", align: "right" as const },
+    {
+      key: "balanceAmountToPay",
+      header: "Bal Amt to pay",
+      align: "right" as const,
+    },
     { key: "deliveryOrder", header: "Delivery Order", align: "right" as const },
   ];
 
@@ -391,20 +398,10 @@ export function DoInHandClient({ purchaseOrders, funds }: Props) {
                   <button
                     type="button"
                     className="th-sort"
-                    onClick={() => togglePoSort("basicRate")}
+                    onClick={() => togglePoSort("totalAmount")}
                   >
-                    Basic rate
-                    {sortIndicator(poSortKey === "basicRate", poSortDir)}
-                  </button>
-                </th>
-                <th className="num">
-                  <button
-                    type="button"
-                    className="th-sort"
-                    onClick={() => togglePoSort("finalRate")}
-                  >
-                    Final rate
-                    {sortIndicator(poSortKey === "finalRate", poSortDir)}
+                    Total Amount
+                    {sortIndicator(poSortKey === "totalAmount", poSortDir)}
                   </button>
                 </th>
                 <th className="num">
@@ -415,6 +412,29 @@ export function DoInHandClient({ purchaseOrders, funds }: Props) {
                   >
                     Fund Paid
                     {sortIndicator(poSortKey === "fundPaid", poSortDir)}
+                  </button>
+                </th>
+                <th className="num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => togglePoSort("blockAmount")}
+                  >
+                    Block Amount
+                    {sortIndicator(poSortKey === "blockAmount", poSortDir)}
+                  </button>
+                </th>
+                <th className="num">
+                  <button
+                    type="button"
+                    className="th-sort"
+                    onClick={() => togglePoSort("balanceAmountToPay")}
+                  >
+                    Bal Amt to pay
+                    {sortIndicator(
+                      poSortKey === "balanceAmountToPay",
+                      poSortDir,
+                    )}
                   </button>
                 </th>
                 <th className="num">
@@ -432,7 +452,7 @@ export function DoInHandClient({ purchaseOrders, funds }: Props) {
             <tbody>
               {sortedPurchaseOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={11}>No purchase orders with balance.</td>
+                  <td colSpan={12}>No purchase orders with balance.</td>
                 </tr>
               ) : (
                 sortedPurchaseOrders.map((row) => (
@@ -444,9 +464,10 @@ export function DoInHandClient({ purchaseOrders, funds }: Props) {
                     <td className="num">{row.quantity}</td>
                     <td className="num">{row.dispatched}</td>
                     <td className="num">{row.balance}</td>
-                    <td className="num">{row.basicRate}</td>
-                    <td className="num">{row.finalRate}</td>
+                    <td className="num">{row.totalAmount}</td>
                     <td className="num">{row.fundPaid}</td>
+                    <td className="num">{row.blockAmount}</td>
+                    <td className="num">{row.balanceAmountToPay}</td>
                     <td className="num">{row.deliveryOrder}</td>
                   </tr>
                 ))
