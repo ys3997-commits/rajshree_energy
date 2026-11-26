@@ -6,7 +6,8 @@ export type BankStatementMovementKind =
   | "payment"
   | "transfer"
   | "expense"
-  | "saving";
+  | "saving"
+  | "unallocated";
 
 export type BankStatementMovement = {
   id: string;

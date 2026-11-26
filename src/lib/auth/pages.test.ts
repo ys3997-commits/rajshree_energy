@@ -133,6 +133,10 @@ describe("canAccessPath", () => {
     );
     expect(canAccessPath(["txn-saving-account"], "/payments")).toBe(false);
     expect(
+      canAccessPath(["unallocated-receipt"], "/payments/unallocated-receipt"),
+    ).toBe(true);
+    expect(canAccessPath(["unallocated-receipt"], "/payments")).toBe(false);
+    expect(
       canAccessPath(["payments-transactions"], "/payments/book-expenses"),
     ).toBe(false);
     expect(canAccessPath(["payments"], "/payments")).toBe(true);
@@ -141,6 +145,9 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["payments"], "/payments/transaction")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/book-expenses")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/txn-saving")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/unallocated-receipt")).toBe(
+      true,
+    );
   });
 
   it("scopes master options sub-pages separately", () => {

@@ -96,14 +96,21 @@ export const BANK_SUB_PAGES = [
   {
     key: "bank-transfer",
     href: "/payments/transaction",
-    label: "Transaction with our current a/c",
+    label: "Transaction with Current A/c",
     group: "Pages" as const,
     bankSubPage: true,
   },
   {
     key: "txn-saving-account",
     href: "/payments/txn-saving",
-    label: "Transaction with our saving a/c",
+    label: "Transaction with Saving A/c",
+    group: "Pages" as const,
+    bankSubPage: true,
+  },
+  {
+    key: "unallocated-receipt",
+    href: "/payments/unallocated-receipt",
+    label: "Unallocated Receipt A/c",
     group: "Pages" as const,
     bankSubPage: true,
   },
@@ -882,6 +889,12 @@ function bankSubPageKeyForPath(pathname: string): string | null {
     path.startsWith("/payments/txn-saving/")
   ) {
     return "txn-saving-account";
+  }
+  if (
+    path === "/payments/unallocated-receipt" ||
+    path.startsWith("/payments/unallocated-receipt/")
+  ) {
+    return "unallocated-receipt";
   }
   if (path === "/payments" || path.startsWith("/payments/")) {
     return "payments-transactions";

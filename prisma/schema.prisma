@@ -136,6 +136,7 @@ model Staff {
   createdBankTransfers     BankTransfer[]     @relation("BankTransferCreatedBy")
   createdBookExpenses      BookExpense[]      @relation("BookExpenseCreatedBy")
   createdSavingAccountTxns SavingAccountTxn[] @relation("SavingAccountTxnCreatedBy")
+  createdUnallocatedReceiptTxns UnallocatedReceiptTxn[] @relation("UnallocatedReceiptTxnCreatedBy")
   createdCorrections       DispatchCorrection[] @relation("CorrectionCreatedBy")
 }
 
@@ -841,15 +842,16 @@ model BankAccount {
   payments            Payment[]
   transfersPaid       BankTransfer[] @relation("TransferPaid")
   transfersReceived   BankTransfer[] @relation("TransferReceived")
-  bookExpenses        BookExpense[]
-  savingAccountTxns   SavingAccountTxn[]
+  bookExpenses              BookExpense[]
+  savingAccountTxns         SavingAccountTxn[]
+  unallocatedReceiptTxns    UnallocatedReceiptTxn[]
 
   @@unique([accountName, bankName])
   @@index([bankName])
   @@index([accountTypeId])
 }
 
-/// Money moved from one bank account to another (Bank → Transaction with Our Current a/c).
+/// Money moved from one bank account to another (Bank → Transaction with Current A/c).
 model BankTransfer {
   id                String   @id @default(cuid())
   date              DateTime
@@ -893,7 +895,7 @@ model BookExpense {
   @@index([createdByStaffId])
 }
 
-/// Fund flow against a saving bank account (Bank → Transaction with Our saving a/c).
+/// Fund flow against a saving bank account (Bank → Transaction with Saving A/c).
 model SavingAccountTxn {
   id                String           @id @default(cuid())
   date              DateTime
@@ -907,6 +909,26 @@ model SavingAccountTxn {
 
   bankAccount    BankAccount? @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
   createdByStaff Staff?       @relation("SavingAccountTxnCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
+
+  @@index([bankAccountId])
+  @@index([createdByStaffId])
+  @@index([date])
+}
+
+/// Unallocated bank receipts (Bank → Unallocated Receipt A/c). Same shape as SavingAccountTxn.
+model UnallocatedReceiptTxn {
+  id                String           @id @default(cuid())
+  date              DateTime
+  bankAccountId     String?
+  createdByStaffId  String?
+  direction         PaymentDirection
+  receiptName       String
+  amount            Decimal          @db.Decimal(18, 2)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  bankAccount    BankAccount? @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
+  createdByStaff Staff?       @relation("UnallocatedReceiptTxnCreatedBy", fields: [createdByStaffId], references: [id], onDelete: SetNull)
 
   @@index([bankAccountId])
   @@index([createdByStaffId])

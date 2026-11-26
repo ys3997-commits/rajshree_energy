@@ -16,6 +16,7 @@ import { createBankTransfer } from "@/lib/actions/bankTransfers";
 import { createBookExpense } from "@/lib/actions/bookExpenses";
 import { createPayment } from "@/lib/actions/payments";
 import { createSavingAccountTxn } from "@/lib/actions/savingAccountTxns";
+import { createUnallocatedReceiptTxn } from "@/lib/actions/unallocatedReceiptTxns";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { canAccessPath } from "@/lib/auth/pages";
 import {
@@ -32,7 +33,12 @@ import {
   partyOptionLabel,
 } from "@/lib/domain/paymentParty";
 
-export type BankCategory = "others" | "current" | "saving" | "expenses";
+export type BankCategory =
+  | "others"
+  | "current"
+  | "saving"
+  | "unallocated"
+  | "expenses";
 
 export type BankEntryParty = {
   id: string;
@@ -48,17 +54,22 @@ const CATEGORIES: { id: BankCategory; href: string; label: string }[] = [
   {
     id: "current",
     href: "/payments/transaction",
-    label: "Transaction with Our Current A/c",
+    label: "Transaction with Current A/c",
   },
   {
     id: "saving",
     href: "/payments/txn-saving",
-    label: "Transaction with Our Saving A/c",
+    label: "Transaction with Saving A/c",
+  },
+  {
+    id: "unallocated",
+    href: "/payments/unallocated-receipt",
+    label: "Unallocated Receipt A/c",
   },
   { id: "expenses", href: "/payments/book-expenses", label: "Expenses" },
 ];
 
-type SlotKind = "bank" | "party" | "saving" | "wait" | "none";
+type SlotKind = "bank" | "party" | "saving" | "unallocated" | "wait" | "none";
 
 type FormState = {
   date: string;
@@ -67,6 +78,7 @@ type FormState = {
   bankAccountId: string;
   partyId: string;
   savingName: string;
+  receiptName: string;
   paidAccountId: string;
   receivedAccountId: string;
   amount: string;
@@ -96,6 +108,7 @@ function emptyForm(): FormState {
     bankAccountId: "",
     partyId: "",
     savingName: "",
+    receiptName: "",
     paidAccountId: "",
     receivedAccountId: "",
     amount: "",
@@ -106,6 +119,7 @@ function emptyForm(): FormState {
 function categoryFromPath(pathname: string): BankCategory {
   if (pathname.startsWith("/payments/transaction")) return "current";
   if (pathname.startsWith("/payments/txn-saving")) return "saving";
+  if (pathname.startsWith("/payments/unallocated-receipt")) return "unallocated";
   if (pathname.startsWith("/payments/book-expenses")) return "expenses";
   return "others";
 }
@@ -143,7 +157,12 @@ function slotsFor(category: BankCategory, type: string): {
   if (type !== "RECEIVED" && type !== "SENT") {
     return { paid: "wait", received: "wait" };
   }
-  const other: SlotKind = category === "saving" ? "saving" : "party";
+  const other: SlotKind =
+    category === "saving"
+      ? "saving"
+      : category === "unallocated"
+        ? "unallocated"
+        : "party";
   if (type === "SENT") return { paid: "bank", received: other };
   return { paid: other, received: "bank" };
 }
@@ -264,6 +283,13 @@ export function BankEntryProvider({
       if (!current.bankAccountId) return "Select an account";
       if (!current.savingName.trim()) return "Saving Account Name is required";
     }
+    if (category === "unallocated") {
+      if (current.type !== "RECEIVED" && current.type !== "SENT") {
+        return "Select Fund Received or Fund Paid";
+      }
+      if (!current.bankAccountId) return "Select an account";
+      if (!current.receiptName.trim()) return "Receipt name is required";
+    }
     if (category === "expenses") {
       if (current.type !== "RECEIVED" && current.type !== "SENT") {
         return "Select Fund Received or Fund Paid";
@@ -277,7 +303,11 @@ export function BankEntryProvider({
 
   function keptAfterSave(current: FormState): FormState {
     const next = { ...emptyForm(), date: current.date };
-    if (category === "others" || category === "saving") {
+    if (
+      category === "others" ||
+      category === "saving" ||
+      category === "unallocated"
+    ) {
       next.type = current.type;
       next.bankAccountId = current.bankAccountId;
     }
@@ -324,6 +354,14 @@ export function BankEntryProvider({
             bankAccountId: snapshot.bankAccountId,
             direction: snapshot.type,
             savingAccountName: snapshot.savingName,
+            amount: snapshot.amount,
+          });
+        } else if (category === "unallocated") {
+          await createUnallocatedReceiptTxn({
+            date: snapshot.date,
+            bankAccountId: snapshot.bankAccountId,
+            direction: snapshot.type,
+            receiptName: snapshot.receiptName,
             amount: snapshot.amount,
           });
         } else {
@@ -514,23 +552,42 @@ function BankEntryBar({
         </Field>
       );
     }
-    if (kind === "saving") {
+    if (kind === "saving" || kind === "unallocated") {
+      const isSaving = kind === "saving";
+      const value = isSaving ? form.savingName : form.receiptName;
+      const placeholder = isSaving
+        ? "Saving account name"
+        : "Unallocated receipt name";
       return (
         <Field label={label}>
           <input
             type="text"
             className="field-input"
             aria-label={label}
-            placeholder="Saving account name"
-            value={form.savingName}
+            placeholder={placeholder}
+            value={value}
             onChange={(e) =>
-              setForm((current) => ({ ...current, savingName: e.target.value }))
+              setForm((current) =>
+                isSaving
+                  ? { ...current, savingName: e.target.value }
+                  : { ...current, receiptName: e.target.value },
+              )
             }
             onBlur={() =>
-              setForm((current) => ({
-                ...current,
-                savingName: capitalizeName(current.savingName) ?? current.savingName,
-              }))
+              setForm((current) =>
+                isSaving
+                  ? {
+                      ...current,
+                      savingName:
+                        capitalizeName(current.savingName) ?? current.savingName,
+                    }
+                  : {
+                      ...current,
+                      receiptName:
+                        capitalizeName(current.receiptName) ??
+                        current.receiptName,
+                    },
+              )
             }
           />
         </Field>
@@ -575,7 +632,10 @@ function BankEntryBar({
     pending ||
     (category === "current" && accounts.length < 2) ||
     (category === "expenses" && (accounts.length < 1 || expenses.length < 1)) ||
-    ((category === "others" || category === "saving") && accounts.length < 1);
+    ((category === "others" ||
+      category === "saving" ||
+      category === "unallocated") &&
+      accounts.length < 1);
 
   return (
     <form className="bank-entry" onSubmit={onSubmit} noValidate>

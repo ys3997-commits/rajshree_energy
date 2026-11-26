@@ -12,6 +12,11 @@ import {
   deleteSavingAccountTxn,
   updateSavingAccountTxn,
 } from "@/lib/actions/savingAccountTxns";
+import {
+  createUnallocatedReceiptTxn,
+  deleteUnallocatedReceiptTxn,
+  updateUnallocatedReceiptTxn,
+} from "@/lib/actions/unallocatedReceiptTxns";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
@@ -38,8 +43,9 @@ const EDIT_LOCK_HINT =
 
 const KIND_LABEL: Record<BankRegisterKind, string> = {
   others: "Transaction with Coal",
-  current: "Transaction with Our Current A/c",
-  saving: "Transaction with Our Saving A/c",
+  current: "Transaction with Current A/c",
+  saving: "Transaction with Saving A/c",
+  unallocated: "Unallocated Receipt A/c",
   expenses: "Expenses",
 };
 
@@ -63,6 +69,7 @@ type EditState = {
   receivedAccountId: string;
   partyId: string;
   savingName: string;
+  receiptName: string;
   particular: string;
 };
 
@@ -80,6 +87,7 @@ function editFromRow(row: BankRegisterRow): EditState {
     receivedAccountId: row.receivedAccountId,
     partyId: row.partyId,
     savingName: row.savingName,
+    receiptName: row.receiptName,
     particular: row.particular,
   };
 }
@@ -119,6 +127,7 @@ function withCategory(current: EditState, nextKind: BankRegisterKind): EditState
     receivedAccountId: nextKind === "current" ? current.receivedAccountId : "",
     partyId: nextKind === "others" ? current.partyId : "",
     savingName: nextKind === "saving" ? current.savingName : "",
+    receiptName: nextKind === "unallocated" ? current.receiptName : "",
     expenseId: nextKind === "expenses" ? current.expenseId : "",
     particular: nextKind === "expenses" ? current.particular : "",
   };
@@ -128,6 +137,7 @@ async function deleteEditedEntry(kind: BankRegisterKind, id: string) {
   if (kind === "others") await deletePayment(id);
   else if (kind === "current") await deleteBankTransfer(id);
   else if (kind === "saving") await deleteSavingAccountTxn(id);
+  else if (kind === "unallocated") await deleteUnallocatedReceiptTxn(id);
   else await deleteBookExpense(id);
 }
 
@@ -160,6 +170,16 @@ async function createEditedEntry(form: EditState) {
       bankAccountId: form.bankAccountId,
       direction: form.direction,
       savingAccountName: form.savingName,
+      amount: form.amount,
+    });
+    return;
+  }
+  if (form.kind === "unallocated") {
+    await createUnallocatedReceiptTxn({
+      date: form.date,
+      bankAccountId: form.bankAccountId,
+      direction: form.direction,
+      receiptName: form.receiptName,
       amount: form.amount,
     });
     return;
@@ -296,6 +316,13 @@ export function BankRegisterClient({
       if (!form.bankAccountId) return "Select an account";
       if (!form.savingName.trim()) return "Saving Account Name is required";
     }
+    if (form.kind === "unallocated") {
+      if (form.direction !== "RECEIVED" && form.direction !== "SENT") {
+        return "Select Fund Received or Fund Paid";
+      }
+      if (!form.bankAccountId) return "Select an account";
+      if (!form.receiptName.trim()) return "Receipt name is required";
+    }
     if (form.kind === "expenses") {
       if (form.direction !== "RECEIVED" && form.direction !== "SENT") {
         return "Select Fund Received or Fund Paid";
@@ -347,6 +374,14 @@ export function BankRegisterClient({
             savingAccountName: form.savingName,
             amount: form.amount,
           });
+        } else if (form.kind === "unallocated") {
+          await updateUnallocatedReceiptTxn(form.id, {
+            date: form.date,
+            bankAccountId: form.bankAccountId,
+            direction: form.direction,
+            receiptName: form.receiptName,
+            amount: form.amount,
+          });
         } else {
           await updateBookExpense(form.id, {
             date: form.date,
@@ -375,7 +410,9 @@ export function BankRegisterClient({
         if (row.kind === "others") await deletePayment(row.id);
         else if (row.kind === "current") await deleteBankTransfer(row.id);
         else if (row.kind === "saving") await deleteSavingAccountTxn(row.id);
-        else await deleteBookExpense(row.id);
+        else if (row.kind === "unallocated") {
+          await deleteUnallocatedReceiptTxn(row.id);
+        } else await deleteBookExpense(row.id);
         if (editing?.id === row.id && editing.originalKind === row.kind) setEditing(null);
         router.refresh();
       } catch (err) {
@@ -906,17 +943,39 @@ function EditFields({
         <>
           <label>
             <span>Fund paid account</span>
-            {editing.direction === "RECEIVED" && editing.kind === "saving" ? (
+            {editing.direction === "RECEIVED" &&
+            (editing.kind === "saving" || editing.kind === "unallocated") ? (
               <input
                 type="text"
                 className="field-input"
-                value={editing.savingName}
-                onChange={(event) => onChange({ ...editing, savingName: event.target.value })}
+                value={
+                  editing.kind === "saving"
+                    ? editing.savingName
+                    : editing.receiptName
+                }
+                onChange={(event) =>
+                  onChange(
+                    editing.kind === "saving"
+                      ? { ...editing, savingName: event.target.value }
+                      : { ...editing, receiptName: event.target.value },
+                  )
+                }
                 onBlur={() =>
-                  onChange({
-                    ...editing,
-                    savingName: capitalizeName(editing.savingName) ?? editing.savingName,
-                  })
+                  onChange(
+                    editing.kind === "saving"
+                      ? {
+                          ...editing,
+                          savingName:
+                            capitalizeName(editing.savingName) ??
+                            editing.savingName,
+                        }
+                      : {
+                          ...editing,
+                          receiptName:
+                            capitalizeName(editing.receiptName) ??
+                            editing.receiptName,
+                        },
+                  )
                 }
               />
             ) : editing.direction === "RECEIVED" ? (
@@ -949,19 +1008,39 @@ function EditFields({
           </label>
           <label>
               <span>Fund received account</span>
-              {editing.direction === "SENT" && editing.kind === "saving" ? (
+              {editing.direction === "SENT" &&
+              (editing.kind === "saving" || editing.kind === "unallocated") ? (
                 <input
                   type="text"
                   className="field-input"
-                  value={editing.savingName}
+                  value={
+                    editing.kind === "saving"
+                      ? editing.savingName
+                      : editing.receiptName
+                  }
                   onChange={(event) =>
-                    onChange({ ...editing, savingName: event.target.value })
+                    onChange(
+                      editing.kind === "saving"
+                        ? { ...editing, savingName: event.target.value }
+                        : { ...editing, receiptName: event.target.value },
+                    )
                   }
                   onBlur={() =>
-                    onChange({
-                      ...editing,
-                      savingName: capitalizeName(editing.savingName) ?? editing.savingName,
-                    })
+                    onChange(
+                      editing.kind === "saving"
+                        ? {
+                            ...editing,
+                            savingName:
+                              capitalizeName(editing.savingName) ??
+                              editing.savingName,
+                          }
+                        : {
+                            ...editing,
+                            receiptName:
+                              capitalizeName(editing.receiptName) ??
+                              editing.receiptName,
+                          },
+                    )
                   }
                 />
               ) : editing.direction === "SENT" ? (

@@ -56,6 +56,7 @@ export async function getBankStatement(
     transfersReceived,
     bookExpenses,
     savingTxns,
+    unallocatedTxns,
   ] = await Promise.all([
     prisma.payment.findMany({
       where: { bankAccountId: id },
@@ -115,6 +116,18 @@ export async function getBankStatement(
         direction: true,
         amount: true,
         savingAccountName: true,
+      },
+      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+    }),
+    prisma.unallocatedReceiptTxn.findMany({
+      where: { bankAccountId: id },
+      select: {
+        id: true,
+        date: true,
+        createdAt: true,
+        direction: true,
+        amount: true,
+        receiptName: true,
       },
       orderBy: [{ date: "asc" }, { createdAt: "asc" }],
     }),
@@ -197,6 +210,22 @@ export async function getBankStatement(
       particular: received
         ? `Saving A/c received — ${name}`
         : `Saving A/c paid — ${name}`,
+      debit: received ? 0 : txn.amount.toString(),
+      credit: received ? txn.amount.toString() : 0,
+    });
+  }
+
+  for (const txn of unallocatedTxns) {
+    const received = txn.direction === PaymentDirection.RECEIVED;
+    const name = txn.receiptName.trim() || "—";
+    movements.push({
+      id: `unallocated:${txn.id}`,
+      date: isoDate(txn.date),
+      createdAt: txn.createdAt.toISOString(),
+      kind: "unallocated",
+      particular: received
+        ? `Unallocated receipt — ${name}`
+        : `Unallocated paid — ${name}`,
       debit: received ? 0 : txn.amount.toString(),
       credit: received ? txn.amount.toString() : 0,
     });

@@ -595,6 +595,18 @@ exports.Prisma.SavingAccountTxnScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.UnallocatedReceiptTxnScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  bankAccountId: 'bankAccountId',
+  createdByStaffId: 'createdByStaffId',
+  direction: 'direction',
+  receiptName: 'receiptName',
+  amount: 'amount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -742,7 +754,8 @@ exports.Prisma.ModelName = {
   BankAccount: 'BankAccount',
   BankTransfer: 'BankTransfer',
   BookExpense: 'BookExpense',
-  SavingAccountTxn: 'SavingAccountTxn'
+  SavingAccountTxn: 'SavingAccountTxn',
+  UnallocatedReceiptTxn: 'UnallocatedReceiptTxn'
 };
 
 /**

@@ -249,9 +249,9 @@ export function TxnSavingClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Transaction with our saving a/c</h1>
+        <h1 className="page-title">Transaction with Saving A/c</h1>
         <TableDownloadButtons
-          title="Transaction with our saving a/c"
+          title="Transaction with Saving A/c"
           filenameBase="txn-saving-account"
           columns={downloadColumns}
           rows={downloadRows}

@@ -31,8 +31,9 @@ const ordersLinks: NavLeaf[] = [
 
 const bankLinks: NavLeaf[] = [
   { href: "/payments", label: "Transaction with Coal" },
-  { href: "/payments/transaction", label: "Transaction with our current a/c" },
-  { href: "/payments/txn-saving", label: "Transaction with our saving a/c" },
+  { href: "/payments/transaction", label: "Transaction with Current A/c" },
+  { href: "/payments/txn-saving", label: "Transaction with Saving A/c" },
+  { href: "/payments/unallocated-receipt", label: "Unallocated Receipt A/c" },
   { href: "/payments/book-expenses", label: "Expenses" },
 ];
 

@@ -193,7 +193,7 @@ export type BankAccountTypeOption = $Result.DefaultSelection<Prisma.$BankAccount
 export type BankAccount = $Result.DefaultSelection<Prisma.$BankAccountPayload>
 /**
  * Model BankTransfer
- * Money moved from one bank account to another (Bank → Transaction with Our Current a/c).
+ * Money moved from one bank account to another (Bank → Transaction with Current A/c).
  */
 export type BankTransfer = $Result.DefaultSelection<Prisma.$BankTransferPayload>
 /**
@@ -203,9 +203,14 @@ export type BankTransfer = $Result.DefaultSelection<Prisma.$BankTransferPayload>
 export type BookExpense = $Result.DefaultSelection<Prisma.$BookExpensePayload>
 /**
  * Model SavingAccountTxn
- * Fund flow against a saving bank account (Bank → Transaction with Our saving a/c).
+ * Fund flow against a saving bank account (Bank → Transaction with Saving A/c).
  */
 export type SavingAccountTxn = $Result.DefaultSelection<Prisma.$SavingAccountTxnPayload>
+/**
+ * Model UnallocatedReceiptTxn
+ * Unallocated bank receipts (Bank → Unallocated Receipt A/c). Same shape as SavingAccountTxn.
+ */
+export type UnallocatedReceiptTxn = $Result.DefaultSelection<Prisma.$UnallocatedReceiptTxnPayload>
 
 /**
  * Enums
@@ -910,6 +915,16 @@ export class PrismaClient<
     * ```
     */
   get savingAccountTxn(): Prisma.SavingAccountTxnDelegate<ExtArgs>;
+
+  /**
+   * `prisma.unallocatedReceiptTxn`: Exposes CRUD operations for the **UnallocatedReceiptTxn** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UnallocatedReceiptTxns
+    * const unallocatedReceiptTxns = await prisma.unallocatedReceiptTxn.findMany()
+    * ```
+    */
+  get unallocatedReceiptTxn(): Prisma.UnallocatedReceiptTxnDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -1388,7 +1403,8 @@ export namespace Prisma {
     BankAccount: 'BankAccount',
     BankTransfer: 'BankTransfer',
     BookExpense: 'BookExpense',
-    SavingAccountTxn: 'SavingAccountTxn'
+    SavingAccountTxn: 'SavingAccountTxn',
+    UnallocatedReceiptTxn: 'UnallocatedReceiptTxn'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1404,7 +1420,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "indirectExpenseOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "dispatchCorrection" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccountTypeOption" | "bankAccount" | "bankTransfer" | "bookExpense" | "savingAccountTxn"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "indirectExpenseOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "dispatchCorrection" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccountTypeOption" | "bankAccount" | "bankTransfer" | "bookExpense" | "savingAccountTxn" | "unallocatedReceiptTxn"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4068,6 +4084,76 @@ export namespace Prisma {
           }
         }
       }
+      UnallocatedReceiptTxn: {
+        payload: Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>
+        fields: Prisma.UnallocatedReceiptTxnFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UnallocatedReceiptTxnFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UnallocatedReceiptTxnFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>
+          }
+          findFirst: {
+            args: Prisma.UnallocatedReceiptTxnFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UnallocatedReceiptTxnFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>
+          }
+          findMany: {
+            args: Prisma.UnallocatedReceiptTxnFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>[]
+          }
+          create: {
+            args: Prisma.UnallocatedReceiptTxnCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>
+          }
+          createMany: {
+            args: Prisma.UnallocatedReceiptTxnCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UnallocatedReceiptTxnCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>[]
+          }
+          delete: {
+            args: Prisma.UnallocatedReceiptTxnDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>
+          }
+          update: {
+            args: Prisma.UnallocatedReceiptTxnUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>
+          }
+          deleteMany: {
+            args: Prisma.UnallocatedReceiptTxnDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UnallocatedReceiptTxnUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.UnallocatedReceiptTxnUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UnallocatedReceiptTxnPayload>
+          }
+          aggregate: {
+            args: Prisma.UnallocatedReceiptTxnAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUnallocatedReceiptTxn>
+          }
+          groupBy: {
+            args: Prisma.UnallocatedReceiptTxnGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UnallocatedReceiptTxnGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UnallocatedReceiptTxnCountArgs<ExtArgs>
+            result: $Utils.Optional<UnallocatedReceiptTxnCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -4240,6 +4326,7 @@ export namespace Prisma {
     createdBankTransfers: number
     createdBookExpenses: number
     createdSavingAccountTxns: number
+    createdUnallocatedReceiptTxns: number
     createdCorrections: number
   }
 
@@ -4255,6 +4342,7 @@ export namespace Prisma {
     createdBankTransfers?: boolean | StaffCountOutputTypeCountCreatedBankTransfersArgs
     createdBookExpenses?: boolean | StaffCountOutputTypeCountCreatedBookExpensesArgs
     createdSavingAccountTxns?: boolean | StaffCountOutputTypeCountCreatedSavingAccountTxnsArgs
+    createdUnallocatedReceiptTxns?: boolean | StaffCountOutputTypeCountCreatedUnallocatedReceiptTxnsArgs
     createdCorrections?: boolean | StaffCountOutputTypeCountCreatedCorrectionsArgs
   }
 
@@ -4344,6 +4432,13 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountCreatedSavingAccountTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SavingAccountTxnWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedUnallocatedReceiptTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UnallocatedReceiptTxnWhereInput
   }
 
   /**
@@ -5066,6 +5161,7 @@ export namespace Prisma {
     transfersReceived: number
     bookExpenses: number
     savingAccountTxns: number
+    unallocatedReceiptTxns: number
   }
 
   export type BankAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5074,6 +5170,7 @@ export namespace Prisma {
     transfersReceived?: boolean | BankAccountCountOutputTypeCountTransfersReceivedArgs
     bookExpenses?: boolean | BankAccountCountOutputTypeCountBookExpensesArgs
     savingAccountTxns?: boolean | BankAccountCountOutputTypeCountSavingAccountTxnsArgs
+    unallocatedReceiptTxns?: boolean | BankAccountCountOutputTypeCountUnallocatedReceiptTxnsArgs
   }
 
   // Custom InputTypes
@@ -5120,6 +5217,13 @@ export namespace Prisma {
    */
   export type BankAccountCountOutputTypeCountSavingAccountTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SavingAccountTxnWhereInput
+  }
+
+  /**
+   * BankAccountCountOutputType without action
+   */
+  export type BankAccountCountOutputTypeCountUnallocatedReceiptTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UnallocatedReceiptTxnWhereInput
   }
 
 
@@ -5338,6 +5442,7 @@ export namespace Prisma {
     createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     createdBookExpenses?: boolean | Staff$createdBookExpensesArgs<ExtArgs>
     createdSavingAccountTxns?: boolean | Staff$createdSavingAccountTxnsArgs<ExtArgs>
+    createdUnallocatedReceiptTxns?: boolean | Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs>
     createdCorrections?: boolean | Staff$createdCorrectionsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["staff"]>
@@ -5386,6 +5491,7 @@ export namespace Prisma {
     createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     createdBookExpenses?: boolean | Staff$createdBookExpensesArgs<ExtArgs>
     createdSavingAccountTxns?: boolean | Staff$createdSavingAccountTxnsArgs<ExtArgs>
+    createdUnallocatedReceiptTxns?: boolean | Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs>
     createdCorrections?: boolean | Staff$createdCorrectionsArgs<ExtArgs>
     _count?: boolean | StaffCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5405,6 +5511,7 @@ export namespace Prisma {
       createdBankTransfers: Prisma.$BankTransferPayload<ExtArgs>[]
       createdBookExpenses: Prisma.$BookExpensePayload<ExtArgs>[]
       createdSavingAccountTxns: Prisma.$SavingAccountTxnPayload<ExtArgs>[]
+      createdUnallocatedReceiptTxns: Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>[]
       createdCorrections: Prisma.$DispatchCorrectionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -5820,6 +5927,7 @@ export namespace Prisma {
     createdBankTransfers<T extends Staff$createdBankTransfersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBankTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     createdBookExpenses<T extends Staff$createdBookExpensesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBookExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookExpensePayload<ExtArgs>, T, "findMany"> | Null>
     createdSavingAccountTxns<T extends Staff$createdSavingAccountTxnsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdSavingAccountTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavingAccountTxnPayload<ExtArgs>, T, "findMany"> | Null>
+    createdUnallocatedReceiptTxns<T extends Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findMany"> | Null>
     createdCorrections<T extends Staff$createdCorrectionsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdCorrectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6394,6 +6502,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SavingAccountTxnScalarFieldEnum | SavingAccountTxnScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdUnallocatedReceiptTxns
+   */
+  export type Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    where?: UnallocatedReceiptTxnWhereInput
+    orderBy?: UnallocatedReceiptTxnOrderByWithRelationInput | UnallocatedReceiptTxnOrderByWithRelationInput[]
+    cursor?: UnallocatedReceiptTxnWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UnallocatedReceiptTxnScalarFieldEnum | UnallocatedReceiptTxnScalarFieldEnum[]
   }
 
   /**
@@ -40906,6 +41034,7 @@ export namespace Prisma {
     transfersReceived?: boolean | BankAccount$transfersReceivedArgs<ExtArgs>
     bookExpenses?: boolean | BankAccount$bookExpensesArgs<ExtArgs>
     savingAccountTxns?: boolean | BankAccount$savingAccountTxnsArgs<ExtArgs>
+    unallocatedReceiptTxns?: boolean | BankAccount$unallocatedReceiptTxnsArgs<ExtArgs>
     _count?: boolean | BankAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bankAccount"]>
 
@@ -40937,6 +41066,7 @@ export namespace Prisma {
     transfersReceived?: boolean | BankAccount$transfersReceivedArgs<ExtArgs>
     bookExpenses?: boolean | BankAccount$bookExpensesArgs<ExtArgs>
     savingAccountTxns?: boolean | BankAccount$savingAccountTxnsArgs<ExtArgs>
+    unallocatedReceiptTxns?: boolean | BankAccount$unallocatedReceiptTxnsArgs<ExtArgs>
     _count?: boolean | BankAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BankAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -40952,6 +41082,7 @@ export namespace Prisma {
       transfersReceived: Prisma.$BankTransferPayload<ExtArgs>[]
       bookExpenses: Prisma.$BookExpensePayload<ExtArgs>[]
       savingAccountTxns: Prisma.$SavingAccountTxnPayload<ExtArgs>[]
+      unallocatedReceiptTxns: Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -41331,6 +41462,7 @@ export namespace Prisma {
     transfersReceived<T extends BankAccount$transfersReceivedArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$transfersReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     bookExpenses<T extends BankAccount$bookExpensesArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$bookExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookExpensePayload<ExtArgs>, T, "findMany"> | Null>
     savingAccountTxns<T extends BankAccount$savingAccountTxnsArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$savingAccountTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavingAccountTxnPayload<ExtArgs>, T, "findMany"> | Null>
+    unallocatedReceiptTxns<T extends BankAccount$unallocatedReceiptTxnsArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$unallocatedReceiptTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -41797,6 +41929,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SavingAccountTxnScalarFieldEnum | SavingAccountTxnScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount.unallocatedReceiptTxns
+   */
+  export type BankAccount$unallocatedReceiptTxnsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    where?: UnallocatedReceiptTxnWhereInput
+    orderBy?: UnallocatedReceiptTxnOrderByWithRelationInput | UnallocatedReceiptTxnOrderByWithRelationInput[]
+    cursor?: UnallocatedReceiptTxnWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UnallocatedReceiptTxnScalarFieldEnum | UnallocatedReceiptTxnScalarFieldEnum[]
   }
 
   /**
@@ -44950,6 +45102,1057 @@ export namespace Prisma {
 
 
   /**
+   * Model UnallocatedReceiptTxn
+   */
+
+  export type AggregateUnallocatedReceiptTxn = {
+    _count: UnallocatedReceiptTxnCountAggregateOutputType | null
+    _avg: UnallocatedReceiptTxnAvgAggregateOutputType | null
+    _sum: UnallocatedReceiptTxnSumAggregateOutputType | null
+    _min: UnallocatedReceiptTxnMinAggregateOutputType | null
+    _max: UnallocatedReceiptTxnMaxAggregateOutputType | null
+  }
+
+  export type UnallocatedReceiptTxnAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type UnallocatedReceiptTxnSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type UnallocatedReceiptTxnMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    bankAccountId: string | null
+    createdByStaffId: string | null
+    direction: $Enums.PaymentDirection | null
+    receiptName: string | null
+    amount: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UnallocatedReceiptTxnMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    bankAccountId: string | null
+    createdByStaffId: string | null
+    direction: $Enums.PaymentDirection | null
+    receiptName: string | null
+    amount: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type UnallocatedReceiptTxnCountAggregateOutputType = {
+    id: number
+    date: number
+    bankAccountId: number
+    createdByStaffId: number
+    direction: number
+    receiptName: number
+    amount: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type UnallocatedReceiptTxnAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type UnallocatedReceiptTxnSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type UnallocatedReceiptTxnMinAggregateInputType = {
+    id?: true
+    date?: true
+    bankAccountId?: true
+    createdByStaffId?: true
+    direction?: true
+    receiptName?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UnallocatedReceiptTxnMaxAggregateInputType = {
+    id?: true
+    date?: true
+    bankAccountId?: true
+    createdByStaffId?: true
+    direction?: true
+    receiptName?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type UnallocatedReceiptTxnCountAggregateInputType = {
+    id?: true
+    date?: true
+    bankAccountId?: true
+    createdByStaffId?: true
+    direction?: true
+    receiptName?: true
+    amount?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type UnallocatedReceiptTxnAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UnallocatedReceiptTxn to aggregate.
+     */
+    where?: UnallocatedReceiptTxnWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UnallocatedReceiptTxns to fetch.
+     */
+    orderBy?: UnallocatedReceiptTxnOrderByWithRelationInput | UnallocatedReceiptTxnOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UnallocatedReceiptTxnWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UnallocatedReceiptTxns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UnallocatedReceiptTxns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UnallocatedReceiptTxns
+    **/
+    _count?: true | UnallocatedReceiptTxnCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UnallocatedReceiptTxnAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UnallocatedReceiptTxnSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UnallocatedReceiptTxnMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UnallocatedReceiptTxnMaxAggregateInputType
+  }
+
+  export type GetUnallocatedReceiptTxnAggregateType<T extends UnallocatedReceiptTxnAggregateArgs> = {
+        [P in keyof T & keyof AggregateUnallocatedReceiptTxn]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUnallocatedReceiptTxn[P]>
+      : GetScalarType<T[P], AggregateUnallocatedReceiptTxn[P]>
+  }
+
+
+
+
+  export type UnallocatedReceiptTxnGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UnallocatedReceiptTxnWhereInput
+    orderBy?: UnallocatedReceiptTxnOrderByWithAggregationInput | UnallocatedReceiptTxnOrderByWithAggregationInput[]
+    by: UnallocatedReceiptTxnScalarFieldEnum[] | UnallocatedReceiptTxnScalarFieldEnum
+    having?: UnallocatedReceiptTxnScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UnallocatedReceiptTxnCountAggregateInputType | true
+    _avg?: UnallocatedReceiptTxnAvgAggregateInputType
+    _sum?: UnallocatedReceiptTxnSumAggregateInputType
+    _min?: UnallocatedReceiptTxnMinAggregateInputType
+    _max?: UnallocatedReceiptTxnMaxAggregateInputType
+  }
+
+  export type UnallocatedReceiptTxnGroupByOutputType = {
+    id: string
+    date: Date
+    bankAccountId: string | null
+    createdByStaffId: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal
+    createdAt: Date
+    updatedAt: Date
+    _count: UnallocatedReceiptTxnCountAggregateOutputType | null
+    _avg: UnallocatedReceiptTxnAvgAggregateOutputType | null
+    _sum: UnallocatedReceiptTxnSumAggregateOutputType | null
+    _min: UnallocatedReceiptTxnMinAggregateOutputType | null
+    _max: UnallocatedReceiptTxnMaxAggregateOutputType | null
+  }
+
+  type GetUnallocatedReceiptTxnGroupByPayload<T extends UnallocatedReceiptTxnGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UnallocatedReceiptTxnGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UnallocatedReceiptTxnGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UnallocatedReceiptTxnGroupByOutputType[P]>
+            : GetScalarType<T[P], UnallocatedReceiptTxnGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UnallocatedReceiptTxnSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    bankAccountId?: boolean
+    createdByStaffId?: boolean
+    direction?: boolean
+    receiptName?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bankAccount?: boolean | UnallocatedReceiptTxn$bankAccountArgs<ExtArgs>
+    createdByStaff?: boolean | UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["unallocatedReceiptTxn"]>
+
+  export type UnallocatedReceiptTxnSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    bankAccountId?: boolean
+    createdByStaffId?: boolean
+    direction?: boolean
+    receiptName?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    bankAccount?: boolean | UnallocatedReceiptTxn$bankAccountArgs<ExtArgs>
+    createdByStaff?: boolean | UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["unallocatedReceiptTxn"]>
+
+  export type UnallocatedReceiptTxnSelectScalar = {
+    id?: boolean
+    date?: boolean
+    bankAccountId?: boolean
+    createdByStaffId?: boolean
+    direction?: boolean
+    receiptName?: boolean
+    amount?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type UnallocatedReceiptTxnInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bankAccount?: boolean | UnallocatedReceiptTxn$bankAccountArgs<ExtArgs>
+    createdByStaff?: boolean | UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs>
+  }
+  export type UnallocatedReceiptTxnIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    bankAccount?: boolean | UnallocatedReceiptTxn$bankAccountArgs<ExtArgs>
+    createdByStaff?: boolean | UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs>
+  }
+
+  export type $UnallocatedReceiptTxnPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UnallocatedReceiptTxn"
+    objects: {
+      bankAccount: Prisma.$BankAccountPayload<ExtArgs> | null
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      bankAccountId: string | null
+      createdByStaffId: string | null
+      direction: $Enums.PaymentDirection
+      receiptName: string
+      amount: Prisma.Decimal
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["unallocatedReceiptTxn"]>
+    composites: {}
+  }
+
+  type UnallocatedReceiptTxnGetPayload<S extends boolean | null | undefined | UnallocatedReceiptTxnDefaultArgs> = $Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload, S>
+
+  type UnallocatedReceiptTxnCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<UnallocatedReceiptTxnFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: UnallocatedReceiptTxnCountAggregateInputType | true
+    }
+
+  export interface UnallocatedReceiptTxnDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UnallocatedReceiptTxn'], meta: { name: 'UnallocatedReceiptTxn' } }
+    /**
+     * Find zero or one UnallocatedReceiptTxn that matches the filter.
+     * @param {UnallocatedReceiptTxnFindUniqueArgs} args - Arguments to find a UnallocatedReceiptTxn
+     * @example
+     * // Get one UnallocatedReceiptTxn
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UnallocatedReceiptTxnFindUniqueArgs>(args: SelectSubset<T, UnallocatedReceiptTxnFindUniqueArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one UnallocatedReceiptTxn that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {UnallocatedReceiptTxnFindUniqueOrThrowArgs} args - Arguments to find a UnallocatedReceiptTxn
+     * @example
+     * // Get one UnallocatedReceiptTxn
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UnallocatedReceiptTxnFindUniqueOrThrowArgs>(args: SelectSubset<T, UnallocatedReceiptTxnFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first UnallocatedReceiptTxn that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnFindFirstArgs} args - Arguments to find a UnallocatedReceiptTxn
+     * @example
+     * // Get one UnallocatedReceiptTxn
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UnallocatedReceiptTxnFindFirstArgs>(args?: SelectSubset<T, UnallocatedReceiptTxnFindFirstArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first UnallocatedReceiptTxn that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnFindFirstOrThrowArgs} args - Arguments to find a UnallocatedReceiptTxn
+     * @example
+     * // Get one UnallocatedReceiptTxn
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UnallocatedReceiptTxnFindFirstOrThrowArgs>(args?: SelectSubset<T, UnallocatedReceiptTxnFindFirstOrThrowArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more UnallocatedReceiptTxns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UnallocatedReceiptTxns
+     * const unallocatedReceiptTxns = await prisma.unallocatedReceiptTxn.findMany()
+     * 
+     * // Get first 10 UnallocatedReceiptTxns
+     * const unallocatedReceiptTxns = await prisma.unallocatedReceiptTxn.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const unallocatedReceiptTxnWithIdOnly = await prisma.unallocatedReceiptTxn.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UnallocatedReceiptTxnFindManyArgs>(args?: SelectSubset<T, UnallocatedReceiptTxnFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a UnallocatedReceiptTxn.
+     * @param {UnallocatedReceiptTxnCreateArgs} args - Arguments to create a UnallocatedReceiptTxn.
+     * @example
+     * // Create one UnallocatedReceiptTxn
+     * const UnallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.create({
+     *   data: {
+     *     // ... data to create a UnallocatedReceiptTxn
+     *   }
+     * })
+     * 
+     */
+    create<T extends UnallocatedReceiptTxnCreateArgs>(args: SelectSubset<T, UnallocatedReceiptTxnCreateArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many UnallocatedReceiptTxns.
+     * @param {UnallocatedReceiptTxnCreateManyArgs} args - Arguments to create many UnallocatedReceiptTxns.
+     * @example
+     * // Create many UnallocatedReceiptTxns
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UnallocatedReceiptTxnCreateManyArgs>(args?: SelectSubset<T, UnallocatedReceiptTxnCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UnallocatedReceiptTxns and returns the data saved in the database.
+     * @param {UnallocatedReceiptTxnCreateManyAndReturnArgs} args - Arguments to create many UnallocatedReceiptTxns.
+     * @example
+     * // Create many UnallocatedReceiptTxns
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UnallocatedReceiptTxns and only return the `id`
+     * const unallocatedReceiptTxnWithIdOnly = await prisma.unallocatedReceiptTxn.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UnallocatedReceiptTxnCreateManyAndReturnArgs>(args?: SelectSubset<T, UnallocatedReceiptTxnCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a UnallocatedReceiptTxn.
+     * @param {UnallocatedReceiptTxnDeleteArgs} args - Arguments to delete one UnallocatedReceiptTxn.
+     * @example
+     * // Delete one UnallocatedReceiptTxn
+     * const UnallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.delete({
+     *   where: {
+     *     // ... filter to delete one UnallocatedReceiptTxn
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UnallocatedReceiptTxnDeleteArgs>(args: SelectSubset<T, UnallocatedReceiptTxnDeleteArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one UnallocatedReceiptTxn.
+     * @param {UnallocatedReceiptTxnUpdateArgs} args - Arguments to update one UnallocatedReceiptTxn.
+     * @example
+     * // Update one UnallocatedReceiptTxn
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UnallocatedReceiptTxnUpdateArgs>(args: SelectSubset<T, UnallocatedReceiptTxnUpdateArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more UnallocatedReceiptTxns.
+     * @param {UnallocatedReceiptTxnDeleteManyArgs} args - Arguments to filter UnallocatedReceiptTxns to delete.
+     * @example
+     * // Delete a few UnallocatedReceiptTxns
+     * const { count } = await prisma.unallocatedReceiptTxn.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UnallocatedReceiptTxnDeleteManyArgs>(args?: SelectSubset<T, UnallocatedReceiptTxnDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UnallocatedReceiptTxns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UnallocatedReceiptTxns
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UnallocatedReceiptTxnUpdateManyArgs>(args: SelectSubset<T, UnallocatedReceiptTxnUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one UnallocatedReceiptTxn.
+     * @param {UnallocatedReceiptTxnUpsertArgs} args - Arguments to update or create a UnallocatedReceiptTxn.
+     * @example
+     * // Update or create a UnallocatedReceiptTxn
+     * const unallocatedReceiptTxn = await prisma.unallocatedReceiptTxn.upsert({
+     *   create: {
+     *     // ... data to create a UnallocatedReceiptTxn
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UnallocatedReceiptTxn we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UnallocatedReceiptTxnUpsertArgs>(args: SelectSubset<T, UnallocatedReceiptTxnUpsertArgs<ExtArgs>>): Prisma__UnallocatedReceiptTxnClient<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of UnallocatedReceiptTxns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnCountArgs} args - Arguments to filter UnallocatedReceiptTxns to count.
+     * @example
+     * // Count the number of UnallocatedReceiptTxns
+     * const count = await prisma.unallocatedReceiptTxn.count({
+     *   where: {
+     *     // ... the filter for the UnallocatedReceiptTxns we want to count
+     *   }
+     * })
+    **/
+    count<T extends UnallocatedReceiptTxnCountArgs>(
+      args?: Subset<T, UnallocatedReceiptTxnCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UnallocatedReceiptTxnCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UnallocatedReceiptTxn.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UnallocatedReceiptTxnAggregateArgs>(args: Subset<T, UnallocatedReceiptTxnAggregateArgs>): Prisma.PrismaPromise<GetUnallocatedReceiptTxnAggregateType<T>>
+
+    /**
+     * Group by UnallocatedReceiptTxn.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UnallocatedReceiptTxnGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UnallocatedReceiptTxnGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UnallocatedReceiptTxnGroupByArgs['orderBy'] }
+        : { orderBy?: UnallocatedReceiptTxnGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UnallocatedReceiptTxnGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUnallocatedReceiptTxnGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UnallocatedReceiptTxn model
+   */
+  readonly fields: UnallocatedReceiptTxnFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UnallocatedReceiptTxn.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UnallocatedReceiptTxnClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    bankAccount<T extends UnallocatedReceiptTxn$bankAccountArgs<ExtArgs> = {}>(args?: Subset<T, UnallocatedReceiptTxn$bankAccountArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    createdByStaff<T extends UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UnallocatedReceiptTxn model
+   */ 
+  interface UnallocatedReceiptTxnFieldRefs {
+    readonly id: FieldRef<"UnallocatedReceiptTxn", 'String'>
+    readonly date: FieldRef<"UnallocatedReceiptTxn", 'DateTime'>
+    readonly bankAccountId: FieldRef<"UnallocatedReceiptTxn", 'String'>
+    readonly createdByStaffId: FieldRef<"UnallocatedReceiptTxn", 'String'>
+    readonly direction: FieldRef<"UnallocatedReceiptTxn", 'PaymentDirection'>
+    readonly receiptName: FieldRef<"UnallocatedReceiptTxn", 'String'>
+    readonly amount: FieldRef<"UnallocatedReceiptTxn", 'Decimal'>
+    readonly createdAt: FieldRef<"UnallocatedReceiptTxn", 'DateTime'>
+    readonly updatedAt: FieldRef<"UnallocatedReceiptTxn", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UnallocatedReceiptTxn findUnique
+   */
+  export type UnallocatedReceiptTxnFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * Filter, which UnallocatedReceiptTxn to fetch.
+     */
+    where: UnallocatedReceiptTxnWhereUniqueInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn findUniqueOrThrow
+   */
+  export type UnallocatedReceiptTxnFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * Filter, which UnallocatedReceiptTxn to fetch.
+     */
+    where: UnallocatedReceiptTxnWhereUniqueInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn findFirst
+   */
+  export type UnallocatedReceiptTxnFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * Filter, which UnallocatedReceiptTxn to fetch.
+     */
+    where?: UnallocatedReceiptTxnWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UnallocatedReceiptTxns to fetch.
+     */
+    orderBy?: UnallocatedReceiptTxnOrderByWithRelationInput | UnallocatedReceiptTxnOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UnallocatedReceiptTxns.
+     */
+    cursor?: UnallocatedReceiptTxnWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UnallocatedReceiptTxns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UnallocatedReceiptTxns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UnallocatedReceiptTxns.
+     */
+    distinct?: UnallocatedReceiptTxnScalarFieldEnum | UnallocatedReceiptTxnScalarFieldEnum[]
+  }
+
+  /**
+   * UnallocatedReceiptTxn findFirstOrThrow
+   */
+  export type UnallocatedReceiptTxnFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * Filter, which UnallocatedReceiptTxn to fetch.
+     */
+    where?: UnallocatedReceiptTxnWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UnallocatedReceiptTxns to fetch.
+     */
+    orderBy?: UnallocatedReceiptTxnOrderByWithRelationInput | UnallocatedReceiptTxnOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UnallocatedReceiptTxns.
+     */
+    cursor?: UnallocatedReceiptTxnWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UnallocatedReceiptTxns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UnallocatedReceiptTxns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UnallocatedReceiptTxns.
+     */
+    distinct?: UnallocatedReceiptTxnScalarFieldEnum | UnallocatedReceiptTxnScalarFieldEnum[]
+  }
+
+  /**
+   * UnallocatedReceiptTxn findMany
+   */
+  export type UnallocatedReceiptTxnFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * Filter, which UnallocatedReceiptTxns to fetch.
+     */
+    where?: UnallocatedReceiptTxnWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UnallocatedReceiptTxns to fetch.
+     */
+    orderBy?: UnallocatedReceiptTxnOrderByWithRelationInput | UnallocatedReceiptTxnOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UnallocatedReceiptTxns.
+     */
+    cursor?: UnallocatedReceiptTxnWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UnallocatedReceiptTxns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UnallocatedReceiptTxns.
+     */
+    skip?: number
+    distinct?: UnallocatedReceiptTxnScalarFieldEnum | UnallocatedReceiptTxnScalarFieldEnum[]
+  }
+
+  /**
+   * UnallocatedReceiptTxn create
+   */
+  export type UnallocatedReceiptTxnCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UnallocatedReceiptTxn.
+     */
+    data: XOR<UnallocatedReceiptTxnCreateInput, UnallocatedReceiptTxnUncheckedCreateInput>
+  }
+
+  /**
+   * UnallocatedReceiptTxn createMany
+   */
+  export type UnallocatedReceiptTxnCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UnallocatedReceiptTxns.
+     */
+    data: UnallocatedReceiptTxnCreateManyInput | UnallocatedReceiptTxnCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UnallocatedReceiptTxn createManyAndReturn
+   */
+  export type UnallocatedReceiptTxnCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many UnallocatedReceiptTxns.
+     */
+    data: UnallocatedReceiptTxnCreateManyInput | UnallocatedReceiptTxnCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UnallocatedReceiptTxn update
+   */
+  export type UnallocatedReceiptTxnUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UnallocatedReceiptTxn.
+     */
+    data: XOR<UnallocatedReceiptTxnUpdateInput, UnallocatedReceiptTxnUncheckedUpdateInput>
+    /**
+     * Choose, which UnallocatedReceiptTxn to update.
+     */
+    where: UnallocatedReceiptTxnWhereUniqueInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn updateMany
+   */
+  export type UnallocatedReceiptTxnUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UnallocatedReceiptTxns.
+     */
+    data: XOR<UnallocatedReceiptTxnUpdateManyMutationInput, UnallocatedReceiptTxnUncheckedUpdateManyInput>
+    /**
+     * Filter which UnallocatedReceiptTxns to update
+     */
+    where?: UnallocatedReceiptTxnWhereInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn upsert
+   */
+  export type UnallocatedReceiptTxnUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UnallocatedReceiptTxn to update in case it exists.
+     */
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    /**
+     * In case the UnallocatedReceiptTxn found by the `where` argument doesn't exist, create a new UnallocatedReceiptTxn with this data.
+     */
+    create: XOR<UnallocatedReceiptTxnCreateInput, UnallocatedReceiptTxnUncheckedCreateInput>
+    /**
+     * In case the UnallocatedReceiptTxn was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UnallocatedReceiptTxnUpdateInput, UnallocatedReceiptTxnUncheckedUpdateInput>
+  }
+
+  /**
+   * UnallocatedReceiptTxn delete
+   */
+  export type UnallocatedReceiptTxnDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+    /**
+     * Filter which UnallocatedReceiptTxn to delete.
+     */
+    where: UnallocatedReceiptTxnWhereUniqueInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn deleteMany
+   */
+  export type UnallocatedReceiptTxnDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UnallocatedReceiptTxns to delete
+     */
+    where?: UnallocatedReceiptTxnWhereInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn.bankAccount
+   */
+  export type UnallocatedReceiptTxn$bankAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BankAccount
+     */
+    select?: BankAccountSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BankAccountInclude<ExtArgs> | null
+    where?: BankAccountWhereInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn.createdByStaff
+   */
+  export type UnallocatedReceiptTxn$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * UnallocatedReceiptTxn without action
+   */
+  export type UnallocatedReceiptTxnDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UnallocatedReceiptTxn
+     */
+    select?: UnallocatedReceiptTxnSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UnallocatedReceiptTxnInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -45550,6 +46753,21 @@ export namespace Prisma {
   export type SavingAccountTxnScalarFieldEnum = (typeof SavingAccountTxnScalarFieldEnum)[keyof typeof SavingAccountTxnScalarFieldEnum]
 
 
+  export const UnallocatedReceiptTxnScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    bankAccountId: 'bankAccountId',
+    createdByStaffId: 'createdByStaffId',
+    direction: 'direction',
+    receiptName: 'receiptName',
+    amount: 'amount',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type UnallocatedReceiptTxnScalarFieldEnum = (typeof UnallocatedReceiptTxnScalarFieldEnum)[keyof typeof UnallocatedReceiptTxnScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -45949,6 +47167,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferListRelationFilter
     createdBookExpenses?: BookExpenseListRelationFilter
     createdSavingAccountTxns?: SavingAccountTxnListRelationFilter
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
     createdCorrections?: DispatchCorrectionListRelationFilter
   }
 
@@ -45977,6 +47196,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferOrderByRelationAggregateInput
     createdBookExpenses?: BookExpenseOrderByRelationAggregateInput
     createdSavingAccountTxns?: SavingAccountTxnOrderByRelationAggregateInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnOrderByRelationAggregateInput
     createdCorrections?: DispatchCorrectionOrderByRelationAggregateInput
   }
 
@@ -46008,6 +47228,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferListRelationFilter
     createdBookExpenses?: BookExpenseListRelationFilter
     createdSavingAccountTxns?: SavingAccountTxnListRelationFilter
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
     createdCorrections?: DispatchCorrectionListRelationFilter
   }, "id">
 
@@ -48781,6 +50002,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferListRelationFilter
     bookExpenses?: BookExpenseListRelationFilter
     savingAccountTxns?: SavingAccountTxnListRelationFilter
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
   }
 
   export type BankAccountOrderByWithRelationInput = {
@@ -48797,6 +50019,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferOrderByRelationAggregateInput
     bookExpenses?: BookExpenseOrderByRelationAggregateInput
     savingAccountTxns?: SavingAccountTxnOrderByRelationAggregateInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnOrderByRelationAggregateInput
   }
 
   export type BankAccountWhereUniqueInput = Prisma.AtLeast<{
@@ -48817,6 +50040,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferListRelationFilter
     bookExpenses?: BookExpenseListRelationFilter
     savingAccountTxns?: SavingAccountTxnListRelationFilter
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
   }, "id" | "accountName_bankName">
 
   export type BankAccountOrderByWithAggregationInput = {
@@ -49093,6 +50317,86 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"SavingAccountTxn"> | Date | string
   }
 
+  export type UnallocatedReceiptTxnWhereInput = {
+    AND?: UnallocatedReceiptTxnWhereInput | UnallocatedReceiptTxnWhereInput[]
+    OR?: UnallocatedReceiptTxnWhereInput[]
+    NOT?: UnallocatedReceiptTxnWhereInput | UnallocatedReceiptTxnWhereInput[]
+    id?: StringFilter<"UnallocatedReceiptTxn"> | string
+    date?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    bankAccountId?: StringNullableFilter<"UnallocatedReceiptTxn"> | string | null
+    createdByStaffId?: StringNullableFilter<"UnallocatedReceiptTxn"> | string | null
+    direction?: EnumPaymentDirectionFilter<"UnallocatedReceiptTxn"> | $Enums.PaymentDirection
+    receiptName?: StringFilter<"UnallocatedReceiptTxn"> | string
+    amount?: DecimalFilter<"UnallocatedReceiptTxn"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    updatedAt?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    bankAccount?: XOR<BankAccountNullableRelationFilter, BankAccountWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type UnallocatedReceiptTxnOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    bankAccountId?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    direction?: SortOrder
+    receiptName?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    bankAccount?: BankAccountOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
+  }
+
+  export type UnallocatedReceiptTxnWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: UnallocatedReceiptTxnWhereInput | UnallocatedReceiptTxnWhereInput[]
+    OR?: UnallocatedReceiptTxnWhereInput[]
+    NOT?: UnallocatedReceiptTxnWhereInput | UnallocatedReceiptTxnWhereInput[]
+    date?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    bankAccountId?: StringNullableFilter<"UnallocatedReceiptTxn"> | string | null
+    createdByStaffId?: StringNullableFilter<"UnallocatedReceiptTxn"> | string | null
+    direction?: EnumPaymentDirectionFilter<"UnallocatedReceiptTxn"> | $Enums.PaymentDirection
+    receiptName?: StringFilter<"UnallocatedReceiptTxn"> | string
+    amount?: DecimalFilter<"UnallocatedReceiptTxn"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    updatedAt?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    bankAccount?: XOR<BankAccountNullableRelationFilter, BankAccountWhereInput> | null
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type UnallocatedReceiptTxnOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    bankAccountId?: SortOrderInput | SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    direction?: SortOrder
+    receiptName?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: UnallocatedReceiptTxnCountOrderByAggregateInput
+    _avg?: UnallocatedReceiptTxnAvgOrderByAggregateInput
+    _max?: UnallocatedReceiptTxnMaxOrderByAggregateInput
+    _min?: UnallocatedReceiptTxnMinOrderByAggregateInput
+    _sum?: UnallocatedReceiptTxnSumOrderByAggregateInput
+  }
+
+  export type UnallocatedReceiptTxnScalarWhereWithAggregatesInput = {
+    AND?: UnallocatedReceiptTxnScalarWhereWithAggregatesInput | UnallocatedReceiptTxnScalarWhereWithAggregatesInput[]
+    OR?: UnallocatedReceiptTxnScalarWhereWithAggregatesInput[]
+    NOT?: UnallocatedReceiptTxnScalarWhereWithAggregatesInput | UnallocatedReceiptTxnScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UnallocatedReceiptTxn"> | string
+    date?: DateTimeWithAggregatesFilter<"UnallocatedReceiptTxn"> | Date | string
+    bankAccountId?: StringNullableWithAggregatesFilter<"UnallocatedReceiptTxn"> | string | null
+    createdByStaffId?: StringNullableWithAggregatesFilter<"UnallocatedReceiptTxn"> | string | null
+    direction?: EnumPaymentDirectionWithAggregatesFilter<"UnallocatedReceiptTxn"> | $Enums.PaymentDirection
+    receiptName?: StringWithAggregatesFilter<"UnallocatedReceiptTxn"> | string
+    amount?: DecimalWithAggregatesFilter<"UnallocatedReceiptTxn"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeWithAggregatesFilter<"UnallocatedReceiptTxn"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"UnallocatedReceiptTxn"> | Date | string
+  }
+
   export type StaffCreateInput = {
     id?: string
     name: string
@@ -49118,6 +50422,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -49146,6 +50451,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -49174,6 +50480,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -49202,6 +50509,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -52237,6 +53545,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateInput = {
@@ -52252,6 +53561,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUpdateInput = {
@@ -52267,6 +53577,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateInput = {
@@ -52282,6 +53593,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountCreateManyInput = {
@@ -52557,6 +53869,88 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UnallocatedReceiptTxnCreateInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bankAccount?: BankAccountCreateNestedOneWithoutUnallocatedReceiptTxnsInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedUnallocatedReceiptTxnsInput
+  }
+
+  export type UnallocatedReceiptTxnUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    bankAccountId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UnallocatedReceiptTxnUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bankAccount?: BankAccountUpdateOneWithoutUnallocatedReceiptTxnsNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedUnallocatedReceiptTxnsNestedInput
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UnallocatedReceiptTxnCreateManyInput = {
+    id?: string
+    date: Date | string
+    bankAccountId?: string | null
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UnallocatedReceiptTxnUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -52672,6 +54066,12 @@ export namespace Prisma {
     none?: SavingAccountTxnWhereInput
   }
 
+  export type UnallocatedReceiptTxnListRelationFilter = {
+    every?: UnallocatedReceiptTxnWhereInput
+    some?: UnallocatedReceiptTxnWhereInput
+    none?: UnallocatedReceiptTxnWhereInput
+  }
+
   export type DispatchCorrectionListRelationFilter = {
     every?: DispatchCorrectionWhereInput
     some?: DispatchCorrectionWhereInput
@@ -52724,6 +54124,10 @@ export namespace Prisma {
   }
 
   export type SavingAccountTxnOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UnallocatedReceiptTxnOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -55124,6 +56528,50 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type UnallocatedReceiptTxnCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    bankAccountId?: SortOrder
+    createdByStaffId?: SortOrder
+    direction?: SortOrder
+    receiptName?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UnallocatedReceiptTxnAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type UnallocatedReceiptTxnMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    bankAccountId?: SortOrder
+    createdByStaffId?: SortOrder
+    direction?: SortOrder
+    receiptName?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UnallocatedReceiptTxnMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    bankAccountId?: SortOrder
+    createdByStaffId?: SortOrder
+    direction?: SortOrder
+    receiptName?: SortOrder
+    amount?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UnallocatedReceiptTxnSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type StaffCreatepageKeysInput = {
     set: string[]
   }
@@ -55229,6 +56677,13 @@ export namespace Prisma {
     connect?: SavingAccountTxnWhereUniqueInput | SavingAccountTxnWhereUniqueInput[]
   }
 
+  export type UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput> | UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput | UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyCreatedByStaffInputEnvelope
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+  }
+
   export type DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput = {
     create?: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput> | DispatchCorrectionCreateWithoutCreatedByStaffInput[] | DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput[]
     connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput | DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput[]
@@ -55311,6 +56766,13 @@ export namespace Prisma {
     connectOrCreate?: SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput | SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput[]
     createMany?: SavingAccountTxnCreateManyCreatedByStaffInputEnvelope
     connect?: SavingAccountTxnWhereUniqueInput | SavingAccountTxnWhereUniqueInput[]
+  }
+
+  export type UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput> | UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput | UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyCreatedByStaffInputEnvelope
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
   }
 
   export type DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
@@ -55521,6 +56983,20 @@ export namespace Prisma {
     deleteMany?: SavingAccountTxnScalarWhereInput | SavingAccountTxnScalarWhereInput[]
   }
 
+  export type UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput> | UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput | UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutCreatedByStaffInput | UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyCreatedByStaffInputEnvelope
+    set?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    disconnect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    delete?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    update?: UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput | UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: UnallocatedReceiptTxnUpdateManyWithWhereWithoutCreatedByStaffInput | UnallocatedReceiptTxnUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: UnallocatedReceiptTxnScalarWhereInput | UnallocatedReceiptTxnScalarWhereInput[]
+  }
+
   export type DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput = {
     create?: XOR<DispatchCorrectionCreateWithoutCreatedByStaffInput, DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput> | DispatchCorrectionCreateWithoutCreatedByStaffInput[] | DispatchCorrectionUncheckedCreateWithoutCreatedByStaffInput[]
     connectOrCreate?: DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput | DispatchCorrectionCreateOrConnectWithoutCreatedByStaffInput[]
@@ -55687,6 +57163,20 @@ export namespace Prisma {
     update?: SavingAccountTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput | SavingAccountTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
     updateMany?: SavingAccountTxnUpdateManyWithWhereWithoutCreatedByStaffInput | SavingAccountTxnUpdateManyWithWhereWithoutCreatedByStaffInput[]
     deleteMany?: SavingAccountTxnScalarWhereInput | SavingAccountTxnScalarWhereInput[]
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput> | UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput | UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutCreatedByStaffInput | UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyCreatedByStaffInputEnvelope
+    set?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    disconnect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    delete?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    update?: UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput | UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: UnallocatedReceiptTxnUpdateManyWithWhereWithoutCreatedByStaffInput | UnallocatedReceiptTxnUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: UnallocatedReceiptTxnScalarWhereInput | UnallocatedReceiptTxnScalarWhereInput[]
   }
 
   export type DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
@@ -57918,6 +59408,13 @@ export namespace Prisma {
     connect?: SavingAccountTxnWhereUniqueInput | SavingAccountTxnWhereUniqueInput[]
   }
 
+  export type UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput> | UnallocatedReceiptTxnCreateWithoutBankAccountInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput | UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyBankAccountInputEnvelope
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+  }
+
   export type PaymentUncheckedCreateNestedManyWithoutBankAccountInput = {
     create?: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput> | PaymentCreateWithoutBankAccountInput[] | PaymentUncheckedCreateWithoutBankAccountInput[]
     connectOrCreate?: PaymentCreateOrConnectWithoutBankAccountInput | PaymentCreateOrConnectWithoutBankAccountInput[]
@@ -57951,6 +59448,13 @@ export namespace Prisma {
     connectOrCreate?: SavingAccountTxnCreateOrConnectWithoutBankAccountInput | SavingAccountTxnCreateOrConnectWithoutBankAccountInput[]
     createMany?: SavingAccountTxnCreateManyBankAccountInputEnvelope
     connect?: SavingAccountTxnWhereUniqueInput | SavingAccountTxnWhereUniqueInput[]
+  }
+
+  export type UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput> | UnallocatedReceiptTxnCreateWithoutBankAccountInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput | UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyBankAccountInputEnvelope
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
   }
 
   export type BankAccountTypeOptionUpdateOneWithoutBankAccountsNestedInput = {
@@ -58033,6 +59537,20 @@ export namespace Prisma {
     deleteMany?: SavingAccountTxnScalarWhereInput | SavingAccountTxnScalarWhereInput[]
   }
 
+  export type UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput> | UnallocatedReceiptTxnCreateWithoutBankAccountInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput | UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput[]
+    upsert?: UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutBankAccountInput | UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutBankAccountInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyBankAccountInputEnvelope
+    set?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    disconnect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    delete?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    update?: UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutBankAccountInput | UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutBankAccountInput[]
+    updateMany?: UnallocatedReceiptTxnUpdateManyWithWhereWithoutBankAccountInput | UnallocatedReceiptTxnUpdateManyWithWhereWithoutBankAccountInput[]
+    deleteMany?: UnallocatedReceiptTxnScalarWhereInput | UnallocatedReceiptTxnScalarWhereInput[]
+  }
+
   export type PaymentUncheckedUpdateManyWithoutBankAccountNestedInput = {
     create?: XOR<PaymentCreateWithoutBankAccountInput, PaymentUncheckedCreateWithoutBankAccountInput> | PaymentCreateWithoutBankAccountInput[] | PaymentUncheckedCreateWithoutBankAccountInput[]
     connectOrCreate?: PaymentCreateOrConnectWithoutBankAccountInput | PaymentCreateOrConnectWithoutBankAccountInput[]
@@ -58101,6 +59619,20 @@ export namespace Prisma {
     update?: SavingAccountTxnUpdateWithWhereUniqueWithoutBankAccountInput | SavingAccountTxnUpdateWithWhereUniqueWithoutBankAccountInput[]
     updateMany?: SavingAccountTxnUpdateManyWithWhereWithoutBankAccountInput | SavingAccountTxnUpdateManyWithWhereWithoutBankAccountInput[]
     deleteMany?: SavingAccountTxnScalarWhereInput | SavingAccountTxnScalarWhereInput[]
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput = {
+    create?: XOR<UnallocatedReceiptTxnCreateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput> | UnallocatedReceiptTxnCreateWithoutBankAccountInput[] | UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput[]
+    connectOrCreate?: UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput | UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput[]
+    upsert?: UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutBankAccountInput | UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutBankAccountInput[]
+    createMany?: UnallocatedReceiptTxnCreateManyBankAccountInputEnvelope
+    set?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    disconnect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    delete?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    connect?: UnallocatedReceiptTxnWhereUniqueInput | UnallocatedReceiptTxnWhereUniqueInput[]
+    update?: UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutBankAccountInput | UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutBankAccountInput[]
+    updateMany?: UnallocatedReceiptTxnUpdateManyWithWhereWithoutBankAccountInput | UnallocatedReceiptTxnUpdateManyWithWhereWithoutBankAccountInput[]
+    deleteMany?: UnallocatedReceiptTxnScalarWhereInput | UnallocatedReceiptTxnScalarWhereInput[]
   }
 
   export type BankAccountCreateNestedOneWithoutTransfersPaidInput = {
@@ -58221,6 +59753,38 @@ export namespace Prisma {
     delete?: StaffWhereInput | boolean
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedSavingAccountTxnsInput, StaffUpdateWithoutCreatedSavingAccountTxnsInput>, StaffUncheckedUpdateWithoutCreatedSavingAccountTxnsInput>
+  }
+
+  export type BankAccountCreateNestedOneWithoutUnallocatedReceiptTxnsInput = {
+    create?: XOR<BankAccountCreateWithoutUnallocatedReceiptTxnsInput, BankAccountUncheckedCreateWithoutUnallocatedReceiptTxnsInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutUnallocatedReceiptTxnsInput
+    connect?: BankAccountWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedUnallocatedReceiptTxnsInput = {
+    create?: XOR<StaffCreateWithoutCreatedUnallocatedReceiptTxnsInput, StaffUncheckedCreateWithoutCreatedUnallocatedReceiptTxnsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedUnallocatedReceiptTxnsInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type BankAccountUpdateOneWithoutUnallocatedReceiptTxnsNestedInput = {
+    create?: XOR<BankAccountCreateWithoutUnallocatedReceiptTxnsInput, BankAccountUncheckedCreateWithoutUnallocatedReceiptTxnsInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutUnallocatedReceiptTxnsInput
+    upsert?: BankAccountUpsertWithoutUnallocatedReceiptTxnsInput
+    disconnect?: BankAccountWhereInput | boolean
+    delete?: BankAccountWhereInput | boolean
+    connect?: BankAccountWhereUniqueInput
+    update?: XOR<XOR<BankAccountUpdateToOneWithWhereWithoutUnallocatedReceiptTxnsInput, BankAccountUpdateWithoutUnallocatedReceiptTxnsInput>, BankAccountUncheckedUpdateWithoutUnallocatedReceiptTxnsInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedUnallocatedReceiptTxnsNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedUnallocatedReceiptTxnsInput, StaffUncheckedCreateWithoutCreatedUnallocatedReceiptTxnsInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedUnallocatedReceiptTxnsInput
+    upsert?: StaffUpsertWithoutCreatedUnallocatedReceiptTxnsInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedUnallocatedReceiptTxnsInput, StaffUpdateWithoutCreatedUnallocatedReceiptTxnsInput>, StaffUncheckedUpdateWithoutCreatedUnallocatedReceiptTxnsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -59326,6 +60890,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    bankAccount?: BankAccountCreateNestedOneWithoutUnallocatedReceiptTxnsInput
+  }
+
+  export type UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    bankAccountId?: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UnallocatedReceiptTxnCreateOrConnectWithoutCreatedByStaffInput = {
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    create: XOR<UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type UnallocatedReceiptTxnCreateManyCreatedByStaffInputEnvelope = {
+    data: UnallocatedReceiptTxnCreateManyCreatedByStaffInput | UnallocatedReceiptTxnCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
   export type DispatchCorrectionCreateWithoutCreatedByStaffInput = {
     id?: string
     message: string
@@ -59772,6 +61368,37 @@ export namespace Prisma {
     amount?: DecimalFilter<"SavingAccountTxn"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"SavingAccountTxn"> | Date | string
     updatedAt?: DateTimeFilter<"SavingAccountTxn"> | Date | string
+  }
+
+  export type UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    update: XOR<UnallocatedReceiptTxnUpdateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<UnallocatedReceiptTxnCreateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    data: XOR<UnallocatedReceiptTxnUpdateWithoutCreatedByStaffInput, UnallocatedReceiptTxnUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type UnallocatedReceiptTxnUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: UnallocatedReceiptTxnScalarWhereInput
+    data: XOR<UnallocatedReceiptTxnUpdateManyMutationInput, UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type UnallocatedReceiptTxnScalarWhereInput = {
+    AND?: UnallocatedReceiptTxnScalarWhereInput | UnallocatedReceiptTxnScalarWhereInput[]
+    OR?: UnallocatedReceiptTxnScalarWhereInput[]
+    NOT?: UnallocatedReceiptTxnScalarWhereInput | UnallocatedReceiptTxnScalarWhereInput[]
+    id?: StringFilter<"UnallocatedReceiptTxn"> | string
+    date?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    bankAccountId?: StringNullableFilter<"UnallocatedReceiptTxn"> | string | null
+    createdByStaffId?: StringNullableFilter<"UnallocatedReceiptTxn"> | string | null
+    direction?: EnumPaymentDirectionFilter<"UnallocatedReceiptTxn"> | $Enums.PaymentDirection
+    receiptName?: StringFilter<"UnallocatedReceiptTxn"> | string
+    amount?: DecimalFilter<"UnallocatedReceiptTxn"> | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
+    updatedAt?: DateTimeFilter<"UnallocatedReceiptTxn"> | Date | string
   }
 
   export type DispatchCorrectionUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
@@ -60843,6 +62470,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -60870,6 +62498,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -61219,6 +62848,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -61246,6 +62876,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -62132,6 +63763,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -62159,6 +63791,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -62441,6 +64074,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -62468,6 +64102,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -63276,6 +64911,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -63303,6 +64939,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -63677,6 +65314,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -63704,6 +65342,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -63821,6 +65460,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffUncheckedCreateWithoutCreatedCorrectionsInput = {
@@ -63848,6 +65488,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
   export type StaffCreateOrConnectWithoutCreatedCorrectionsInput = {
@@ -63970,6 +65611,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type StaffUncheckedUpdateWithoutCreatedCorrectionsInput = {
@@ -63997,6 +65639,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
   export type CustomerCreateWithoutPaymentsInput = {
@@ -64182,6 +65825,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateWithoutPaymentsInput = {
@@ -64196,6 +65840,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountCreateOrConnectWithoutPaymentsInput = {
@@ -64227,6 +65872,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -64254,6 +65900,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -64503,6 +66150,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateWithoutPaymentsInput = {
@@ -64517,6 +66165,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type StaffUpsertWithoutCreatedPaymentsInput = {
@@ -64554,6 +66203,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -64581,6 +66231,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -64814,6 +66465,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -64841,6 +66493,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65073,6 +66726,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65100,6 +66754,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65164,6 +66819,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65191,6 +66847,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65277,6 +66934,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65304,6 +66962,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65368,6 +67027,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65395,6 +67055,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65481,6 +67142,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65508,6 +67170,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65535,6 +67198,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65562,6 +67226,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -65633,6 +67298,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -65660,6 +67326,7 @@ export namespace Prisma {
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -66240,6 +67907,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateWithoutAccountTypeInput = {
@@ -66254,6 +67922,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountCreateOrConnectWithoutAccountTypeInput = {
@@ -66480,6 +68149,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UnallocatedReceiptTxnCreateWithoutBankAccountInput = {
+    id?: string
+    date: Date | string
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedUnallocatedReceiptTxnsInput
+  }
+
+  export type UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput = {
+    id?: string
+    date: Date | string
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UnallocatedReceiptTxnCreateOrConnectWithoutBankAccountInput = {
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    create: XOR<UnallocatedReceiptTxnCreateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput>
+  }
+
+  export type UnallocatedReceiptTxnCreateManyBankAccountInputEnvelope = {
+    data: UnallocatedReceiptTxnCreateManyBankAccountInput | UnallocatedReceiptTxnCreateManyBankAccountInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BankAccountTypeOptionUpsertWithoutBankAccountsInput = {
     update: XOR<BankAccountTypeOptionUpdateWithoutBankAccountsInput, BankAccountTypeOptionUncheckedUpdateWithoutBankAccountsInput>
     create: XOR<BankAccountTypeOptionCreateWithoutBankAccountsInput, BankAccountTypeOptionUncheckedCreateWithoutBankAccountsInput>
@@ -66585,6 +68286,22 @@ export namespace Prisma {
     data: XOR<SavingAccountTxnUpdateManyMutationInput, SavingAccountTxnUncheckedUpdateManyWithoutBankAccountInput>
   }
 
+  export type UnallocatedReceiptTxnUpsertWithWhereUniqueWithoutBankAccountInput = {
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    update: XOR<UnallocatedReceiptTxnUpdateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedUpdateWithoutBankAccountInput>
+    create: XOR<UnallocatedReceiptTxnCreateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedCreateWithoutBankAccountInput>
+  }
+
+  export type UnallocatedReceiptTxnUpdateWithWhereUniqueWithoutBankAccountInput = {
+    where: UnallocatedReceiptTxnWhereUniqueInput
+    data: XOR<UnallocatedReceiptTxnUpdateWithoutBankAccountInput, UnallocatedReceiptTxnUncheckedUpdateWithoutBankAccountInput>
+  }
+
+  export type UnallocatedReceiptTxnUpdateManyWithWhereWithoutBankAccountInput = {
+    where: UnallocatedReceiptTxnScalarWhereInput
+    data: XOR<UnallocatedReceiptTxnUpdateManyMutationInput, UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountInput>
+  }
+
   export type BankAccountCreateWithoutTransfersPaidInput = {
     id?: string
     accountName: string
@@ -66597,6 +68314,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateWithoutTransfersPaidInput = {
@@ -66611,6 +68329,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountCreateOrConnectWithoutTransfersPaidInput = {
@@ -66630,6 +68349,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateWithoutTransfersReceivedInput = {
@@ -66644,6 +68364,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountCreateOrConnectWithoutTransfersReceivedInput = {
@@ -66675,6 +68396,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -66702,6 +68424,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -66733,6 +68456,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateWithoutTransfersPaidInput = {
@@ -66747,6 +68471,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUpsertWithoutTransfersReceivedInput = {
@@ -66772,6 +68497,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateWithoutTransfersReceivedInput = {
@@ -66786,6 +68512,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type StaffUpsertWithoutCreatedBankTransfersInput = {
@@ -66823,6 +68550,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -66850,6 +68578,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -66865,6 +68594,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateWithoutBookExpensesInput = {
@@ -66879,6 +68609,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountCreateOrConnectWithoutBookExpensesInput = {
@@ -66929,6 +68660,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -66956,6 +68688,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -66987,6 +68720,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateWithoutBookExpensesInput = {
@@ -67001,6 +68735,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type IndirectExpenseOptionUpsertWithoutBookExpensesInput = {
@@ -67063,6 +68798,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -67090,6 +68826,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -67105,6 +68842,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountUncheckedCreateWithoutSavingAccountTxnsInput = {
@@ -67119,6 +68857,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
   export type BankAccountCreateOrConnectWithoutSavingAccountTxnsInput = {
@@ -67150,6 +68889,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -67177,6 +68917,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
 
@@ -67208,6 +68949,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateWithoutSavingAccountTxnsInput = {
@@ -67222,6 +68964,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type StaffUpsertWithoutCreatedSavingAccountTxnsInput = {
@@ -67259,6 +69002,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -67286,6 +69030,211 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type BankAccountCreateWithoutUnallocatedReceiptTxnsInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountType?: BankAccountTypeOptionCreateNestedOneWithoutBankAccountsInput
+    payments?: PaymentCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
+    bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+  }
+
+  export type BankAccountUncheckedCreateWithoutUnallocatedReceiptTxnsInput = {
+    id?: string
+    accountName: string
+    accountTypeId?: string | null
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
+    bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+  }
+
+  export type BankAccountCreateOrConnectWithoutUnallocatedReceiptTxnsInput = {
+    where: BankAccountWhereUniqueInput
+    create: XOR<BankAccountCreateWithoutUnallocatedReceiptTxnsInput, BankAccountUncheckedCreateWithoutUnallocatedReceiptTxnsInput>
+  }
+
+  export type StaffCreateWithoutCreatedUnallocatedReceiptTxnsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
+    createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedUnallocatedReceiptTxnsInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedUnallocatedReceiptTxnsInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedUnallocatedReceiptTxnsInput, StaffUncheckedCreateWithoutCreatedUnallocatedReceiptTxnsInput>
+  }
+
+  export type BankAccountUpsertWithoutUnallocatedReceiptTxnsInput = {
+    update: XOR<BankAccountUpdateWithoutUnallocatedReceiptTxnsInput, BankAccountUncheckedUpdateWithoutUnallocatedReceiptTxnsInput>
+    create: XOR<BankAccountCreateWithoutUnallocatedReceiptTxnsInput, BankAccountUncheckedCreateWithoutUnallocatedReceiptTxnsInput>
+    where?: BankAccountWhereInput
+  }
+
+  export type BankAccountUpdateToOneWithWhereWithoutUnallocatedReceiptTxnsInput = {
+    where?: BankAccountWhereInput
+    data: XOR<BankAccountUpdateWithoutUnallocatedReceiptTxnsInput, BankAccountUncheckedUpdateWithoutUnallocatedReceiptTxnsInput>
+  }
+
+  export type BankAccountUpdateWithoutUnallocatedReceiptTxnsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountType?: BankAccountTypeOptionUpdateOneWithoutBankAccountsNestedInput
+    payments?: PaymentUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
+    bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+  }
+
+  export type BankAccountUncheckedUpdateWithoutUnallocatedReceiptTxnsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    accountTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
+    bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+  }
+
+  export type StaffUpsertWithoutCreatedUnallocatedReceiptTxnsInput = {
+    update: XOR<StaffUpdateWithoutCreatedUnallocatedReceiptTxnsInput, StaffUncheckedUpdateWithoutCreatedUnallocatedReceiptTxnsInput>
+    create: XOR<StaffCreateWithoutCreatedUnallocatedReceiptTxnsInput, StaffUncheckedCreateWithoutCreatedUnallocatedReceiptTxnsInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedUnallocatedReceiptTxnsInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedUnallocatedReceiptTxnsInput, StaffUncheckedUpdateWithoutCreatedUnallocatedReceiptTxnsInput>
+  }
+
+  export type StaffUpdateWithoutCreatedUnallocatedReceiptTxnsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
+    createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedUnallocatedReceiptTxnsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
 
@@ -67480,6 +69429,17 @@ export namespace Prisma {
     bankAccountId?: string | null
     direction: $Enums.PaymentDirection
     savingAccountName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UnallocatedReceiptTxnCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    bankAccountId?: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -68097,6 +70057,39 @@ export namespace Prisma {
     bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     savingAccountName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UnallocatedReceiptTxnUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    bankAccount?: BankAccountUpdateOneWithoutUnallocatedReceiptTxnsNestedInput
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    bankAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70382,6 +72375,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateWithoutAccountTypeInput = {
@@ -70396,6 +72390,7 @@ export namespace Prisma {
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
   export type BankAccountUncheckedUpdateManyWithoutAccountTypeInput = {
@@ -70460,6 +72455,17 @@ export namespace Prisma {
     createdByStaffId?: string | null
     direction: $Enums.PaymentDirection
     savingAccountName: string
+    amount: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UnallocatedReceiptTxnCreateManyBankAccountInput = {
+    id?: string
+    date: Date | string
+    createdByStaffId?: string | null
+    direction: $Enums.PaymentDirection
+    receiptName: string
     amount: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -70634,6 +72640,39 @@ export namespace Prisma {
     createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     savingAccountName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UnallocatedReceiptTxnUpdateWithoutBankAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaff?: StaffUpdateOneWithoutCreatedUnallocatedReceiptTxnsNestedInput
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateWithoutBankAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    receiptName?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70876,6 +72915,10 @@ export namespace Prisma {
      * @deprecated Use SavingAccountTxnDefaultArgs instead
      */
     export type SavingAccountTxnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SavingAccountTxnDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use UnallocatedReceiptTxnDefaultArgs instead
+     */
+    export type UnallocatedReceiptTxnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = UnallocatedReceiptTxnDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

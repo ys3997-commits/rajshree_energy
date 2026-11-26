@@ -243,7 +243,7 @@ export function TransactionClient({
 
   return (
     <div>
-      <h1 className="page-title">Transaction with our current a/c</h1>
+      <h1 className="page-title">Transaction with Current A/c</h1>
       {error && <div className="error-box">{error}</div>}
 
       <section className="extra-information" aria-label="Extra information">

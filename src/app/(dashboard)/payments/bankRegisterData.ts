@@ -2,11 +2,17 @@ import { listBankTransfers } from "@/lib/actions/bankTransfers";
 import { listBookExpenses } from "@/lib/actions/bookExpenses";
 import { listPayments } from "@/lib/actions/payments";
 import { listSavingAccountTxns } from "@/lib/actions/savingAccountTxns";
+import { listUnallocatedReceiptTxns } from "@/lib/actions/unallocatedReceiptTxns";
 import { getCurrentAccess } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
 import { partyKey } from "@/lib/domain/paymentParty";
 
-export type BankRegisterKind = "others" | "current" | "saving" | "expenses";
+export type BankRegisterKind =
+  | "others"
+  | "current"
+  | "saving"
+  | "unallocated"
+  | "expenses";
 
 export type BankRegisterRow = {
   kind: BankRegisterKind;
@@ -26,12 +32,14 @@ export type BankRegisterRow = {
   receivedAccountId: string;
   partyId: string;
   savingName: string;
+  receiptName: string;
 };
 
 const KIND_ORDER: BankRegisterKind[] = [
   "others",
   "current",
   "saving",
+  "unallocated",
   "expenses",
 ];
 
@@ -39,6 +47,7 @@ const KIND_PATH: Record<BankRegisterKind, string> = {
   others: "/payments",
   current: "/payments/transaction",
   saving: "/payments/txn-saving",
+  unallocated: "/payments/unallocated-receipt",
   expenses: "/payments/book-expenses",
 };
 
@@ -119,6 +128,7 @@ export async function loadBankRegister(): Promise<{
             receivedAccountId: "",
             partyId: partyIdOf(row),
             savingName: "",
+            receiptName: "",
           };
         });
       }
@@ -142,6 +152,7 @@ export async function loadBankRegister(): Promise<{
           receivedAccountId: row.receivedAccountId,
           partyId: "",
           savingName: "",
+          receiptName: "",
         }));
       }
       if (kind === "saving") {
@@ -167,6 +178,34 @@ export async function loadBankRegister(): Promise<{
             receivedAccountId: "",
             partyId: "",
             savingName: row.savingAccountName,
+            receiptName: "",
+          };
+        });
+      }
+      if (kind === "unallocated") {
+        const list = await listUnallocatedReceiptTxns({ all: true });
+        return list.rows.map((row) => {
+          const account = accountText(row.accountName, row.bankName);
+          const received = row.direction === "RECEIVED";
+          return {
+            kind,
+            id: row.id,
+            date: row.date,
+            amount: row.amount,
+            canEdit: row.canEdit,
+            canDelete: row.canDelete,
+            typeLabel: received ? "Fund Received" : "Fund Paid",
+            fundPaid: received ? row.receiptName : account,
+            fundReceived: received ? account : row.receiptName,
+            particular: "",
+            direction: row.direction,
+            expenseId: "",
+            bankAccountId: row.bankAccountId ?? "",
+            paidAccountId: "",
+            receivedAccountId: "",
+            partyId: "",
+            savingName: "",
+            receiptName: row.receiptName,
           };
         });
       }
@@ -193,6 +232,7 @@ export async function loadBankRegister(): Promise<{
           receivedAccountId: "",
           partyId: "",
           savingName: "",
+          receiptName: "",
         };
       });
     }),
