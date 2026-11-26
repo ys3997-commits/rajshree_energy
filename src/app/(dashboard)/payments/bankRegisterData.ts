@@ -2,6 +2,7 @@ import { listBankTransfers } from "@/lib/actions/bankTransfers";
 import { listBookExpenses } from "@/lib/actions/bookExpenses";
 import { listPayments } from "@/lib/actions/payments";
 import { listSavingAccountTxns } from "@/lib/actions/savingAccountTxns";
+import { listTaxExpenses } from "@/lib/actions/taxExpenses";
 import { listUnallocatedReceiptTxns } from "@/lib/actions/unallocatedReceiptTxns";
 import { getCurrentAccess } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
@@ -12,7 +13,8 @@ export type BankRegisterKind =
   | "current"
   | "saving"
   | "unallocated"
-  | "expenses";
+  | "expenses"
+  | "taxes";
 
 export type BankRegisterRow = {
   kind: BankRegisterKind;
@@ -41,6 +43,7 @@ const KIND_ORDER: BankRegisterKind[] = [
   "saving",
   "unallocated",
   "expenses",
+  "taxes",
 ];
 
 const KIND_PATH: Record<BankRegisterKind, string> = {
@@ -49,6 +52,7 @@ const KIND_PATH: Record<BankRegisterKind, string> = {
   saving: "/payments/txn-saving",
   unallocated: "/payments/unallocated-receipt",
   expenses: "/payments/book-expenses",
+  taxes: "/payments/taxes",
 };
 
 function accountText(name: string | null | undefined, bank?: string | null) {
@@ -209,32 +213,63 @@ export async function loadBankRegister(): Promise<{
           };
         });
       }
-      const rows = await listBookExpenses();
-      return rows.map((row) => {
-        const received = row.direction === "RECEIVED";
-        const account = row.paidAccountName;
-        const expense = row.indirectExpenseName;
-        return {
-          kind,
-          id: row.id,
-          date: row.date,
-          amount: row.amount,
-          canEdit: row.canEdit,
-          canDelete: row.canDelete,
-          typeLabel: received ? "Fund Received" : "Fund Paid",
-          fundPaid: received ? expense : account,
-          fundReceived: received ? account : expense,
-          particular: row.particular,
-          direction: row.direction,
-          expenseId: row.indirectExpenseId,
-          bankAccountId: row.paidAccountId,
-          paidAccountId: row.paidAccountId,
-          receivedAccountId: "",
-          partyId: "",
-          savingName: "",
-          receiptName: "",
-        };
-      });
+      if (kind === "expenses") {
+        const rows = await listBookExpenses();
+        return rows.map((row) => {
+          const received = row.direction === "RECEIVED";
+          const account = row.paidAccountName;
+          const expense = row.indirectExpenseName;
+          return {
+            kind,
+            id: row.id,
+            date: row.date,
+            amount: row.amount,
+            canEdit: row.canEdit,
+            canDelete: row.canDelete,
+            typeLabel: received ? "Fund Received" : "Fund Paid",
+            fundPaid: received ? expense : account,
+            fundReceived: received ? account : expense,
+            particular: row.particular,
+            direction: row.direction,
+            expenseId: row.indirectExpenseId,
+            bankAccountId: row.paidAccountId,
+            paidAccountId: row.paidAccountId,
+            receivedAccountId: "",
+            partyId: "",
+            savingName: "",
+            receiptName: "",
+          };
+        });
+      }
+      if (kind === "taxes") {
+        const rows = await listTaxExpenses();
+        return rows.map((row) => {
+          const received = row.direction === "RECEIVED";
+          const account = row.paidAccountName;
+          const tax = row.governmentTaxName;
+          return {
+            kind,
+            id: row.id,
+            date: row.date,
+            amount: row.amount,
+            canEdit: row.canEdit,
+            canDelete: row.canDelete,
+            typeLabel: received ? "Fund Received" : "Fund Paid",
+            fundPaid: received ? tax : account,
+            fundReceived: received ? account : tax,
+            particular: row.particular,
+            direction: row.direction,
+            expenseId: row.governmentTaxId,
+            bankAccountId: row.paidAccountId,
+            paidAccountId: row.paidAccountId,
+            receivedAccountId: "",
+            partyId: "",
+            savingName: "",
+            receiptName: "",
+          };
+        });
+      }
+      return [];
     }),
   );
 

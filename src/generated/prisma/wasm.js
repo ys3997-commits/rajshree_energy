@@ -217,6 +217,13 @@ exports.Prisma.IndirectExpenseOptionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.GovernmentTaxOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.DocumentOptionScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -583,6 +590,19 @@ exports.Prisma.BookExpenseScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.TaxExpenseScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  paidAccountId: 'paidAccountId',
+  governmentTaxId: 'governmentTaxId',
+  direction: 'direction',
+  amount: 'amount',
+  particular: 'particular',
+  createdByStaffId: 'createdByStaffId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SavingAccountTxnScalarFieldEnum = {
   id: 'id',
   date: 'date',
@@ -728,6 +748,7 @@ exports.Prisma.ModelName = {
   SectorOption: 'SectorOption',
   DealingCompanyOption: 'DealingCompanyOption',
   IndirectExpenseOption: 'IndirectExpenseOption',
+  GovernmentTaxOption: 'GovernmentTaxOption',
   DocumentOption: 'DocumentOption',
   DocumentEntry: 'DocumentEntry',
   MemberDocument: 'MemberDocument',
@@ -754,6 +775,7 @@ exports.Prisma.ModelName = {
   BankAccount: 'BankAccount',
   BankTransfer: 'BankTransfer',
   BookExpense: 'BookExpense',
+  TaxExpense: 'TaxExpense',
   SavingAccountTxn: 'SavingAccountTxn',
   UnallocatedReceiptTxn: 'UnallocatedReceiptTxn'
 };

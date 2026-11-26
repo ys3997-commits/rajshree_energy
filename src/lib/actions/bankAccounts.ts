@@ -122,6 +122,7 @@ export async function listBankAccountBalances(): Promise<BankAccountBalanceRow[]
     paidTransfers,
     receivedTransfers,
     bookExpenses,
+    taxExpenses,
     savingTxns,
     unallocatedTxns,
   ] = await Promise.all([
@@ -150,6 +151,10 @@ export async function listBankAccountBalances(): Promise<BankAccountBalanceRow[]
       _sum: { amount: true },
     }),
     prisma.bookExpense.groupBy({
+      by: ["paidAccountId", "direction"],
+      _sum: { amount: true },
+    }),
+    prisma.taxExpense.groupBy({
       by: ["paidAccountId", "direction"],
       _sum: { amount: true },
     }),
@@ -188,6 +193,16 @@ export async function listBankAccountBalances(): Promise<BankAccountBalanceRow[]
     totals.set(group.receivedAccountId, current);
   }
   for (const group of bookExpenses) {
+    const current = movementFor(totals, group.paidAccountId);
+    const sum = toDecimal(group._sum.amount ?? 0);
+    if (group.direction === PaymentDirection.RECEIVED) {
+      current.received = current.received.plus(sum);
+    } else {
+      current.paid = current.paid.plus(sum);
+    }
+    totals.set(group.paidAccountId, current);
+  }
+  for (const group of taxExpenses) {
     const current = movementFor(totals, group.paidAccountId);
     const sum = toDecimal(group._sum.amount ?? 0);
     if (group.direction === PaymentDirection.RECEIVED) {
@@ -253,6 +268,7 @@ export async function createBankAccount(input: BankAccountInput) {
   revalidatePath("/payments/book-expenses");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments/unallocated-receipt");
+  revalidatePath("/payments/taxes");
   revalidatePath("/reports/bank-statement");
   revalidatePath("/reports/bank-balances");
 }
@@ -274,6 +290,7 @@ export async function updateBankAccount(id: string, input: BankAccountInput) {
   revalidatePath("/payments/book-expenses");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments/unallocated-receipt");
+  revalidatePath("/payments/taxes");
   revalidatePath("/reports/bank-statement");
   revalidatePath("/reports/bank-balances");
 }
@@ -297,6 +314,7 @@ export async function deleteBankAccount(id: string) {
   revalidatePath("/payments/book-expenses");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments/unallocated-receipt");
+  revalidatePath("/payments/taxes");
   revalidatePath("/reports/bank-statement");
   revalidatePath("/reports/bank-balances");
 }

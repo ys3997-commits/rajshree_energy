@@ -162,6 +162,7 @@ async function assertBankAccountExists(id: string) {
 
 function revalidatePaths() {
   revalidatePath("/payments/unallocated-receipt");
+  revalidatePath("/payments/taxes");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");

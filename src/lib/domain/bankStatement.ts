@@ -6,6 +6,7 @@ export type BankStatementMovementKind =
   | "payment"
   | "transfer"
   | "expense"
+  | "tax"
   | "saving"
   | "unallocated";
 

@@ -13,6 +13,11 @@ import {
   updateSavingAccountTxn,
 } from "@/lib/actions/savingAccountTxns";
 import {
+  createTaxExpense,
+  deleteTaxExpense,
+  updateTaxExpense,
+} from "@/lib/actions/taxExpenses";
+import {
   createUnallocatedReceiptTxn,
   deleteUnallocatedReceiptTxn,
   updateUnallocatedReceiptTxn,
@@ -47,6 +52,7 @@ const KIND_LABEL: Record<BankRegisterKind, string> = {
   saving: "Transaction with Saving A/c",
   unallocated: "Unallocated Receipt A/c",
   expenses: "Expenses",
+  taxes: "Taxes",
 };
 
 type Party = {
@@ -128,8 +134,12 @@ function withCategory(current: EditState, nextKind: BankRegisterKind): EditState
     partyId: nextKind === "others" ? current.partyId : "",
     savingName: nextKind === "saving" ? current.savingName : "",
     receiptName: nextKind === "unallocated" ? current.receiptName : "",
-    expenseId: nextKind === "expenses" ? current.expenseId : "",
-    particular: nextKind === "expenses" ? current.particular : "",
+    expenseId:
+      nextKind === "expenses" || nextKind === "taxes" ? current.expenseId : "",
+    particular:
+      nextKind === "expenses" || nextKind === "taxes"
+        ? current.particular
+        : "",
   };
 }
 
@@ -138,6 +148,7 @@ async function deleteEditedEntry(kind: BankRegisterKind, id: string) {
   else if (kind === "current") await deleteBankTransfer(id);
   else if (kind === "saving") await deleteSavingAccountTxn(id);
   else if (kind === "unallocated") await deleteUnallocatedReceiptTxn(id);
+  else if (kind === "taxes") await deleteTaxExpense(id);
   else await deleteBookExpense(id);
 }
 
@@ -184,6 +195,17 @@ async function createEditedEntry(form: EditState) {
     });
     return;
   }
+  if (form.kind === "taxes") {
+    await createTaxExpense({
+      date: form.date,
+      paidAccountId: form.bankAccountId,
+      governmentTaxId: form.expenseId,
+      direction: form.direction,
+      amount: form.amount,
+      particular: form.particular,
+    });
+    return;
+  }
   await createBookExpense({
     date: form.date,
     paidAccountId: form.bankAccountId,
@@ -200,12 +222,14 @@ export function BankRegisterClient({
   accounts,
   parties,
   expenses,
+  taxes,
 }: {
   rows: BankRegisterRow[];
   kinds: BankRegisterKind[];
   accounts: BankAccountBalanceRow[];
   parties: Party[];
   expenses: { id: string; name: string }[];
+  taxes: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const entry = useBankAccountPicker();
@@ -323,12 +347,16 @@ export function BankRegisterClient({
       if (!form.bankAccountId) return "Select an account";
       if (!form.receiptName.trim()) return "Receipt name is required";
     }
-    if (form.kind === "expenses") {
+    if (form.kind === "expenses" || form.kind === "taxes") {
       if (form.direction !== "RECEIVED" && form.direction !== "SENT") {
         return "Select Fund Received or Fund Paid";
       }
       if (!form.bankAccountId) return "Select a fund paid account";
-      if (!form.expenseId) return "Select an indirect expense";
+      if (!form.expenseId) {
+        return form.kind === "taxes"
+          ? "Select a government tax"
+          : "Select an indirect expense";
+      }
       if (!form.particular.trim()) return "Particular is required";
     }
     return null;
@@ -382,6 +410,15 @@ export function BankRegisterClient({
             receiptName: form.receiptName,
             amount: form.amount,
           });
+        } else if (form.kind === "taxes") {
+          await updateTaxExpense(form.id, {
+            date: form.date,
+            paidAccountId: form.bankAccountId,
+            governmentTaxId: form.expenseId,
+            direction: form.direction,
+            amount: form.amount,
+            particular: form.particular,
+          });
         } else {
           await updateBookExpense(form.id, {
             date: form.date,
@@ -412,7 +449,8 @@ export function BankRegisterClient({
         else if (row.kind === "saving") await deleteSavingAccountTxn(row.id);
         else if (row.kind === "unallocated") {
           await deleteUnallocatedReceiptTxn(row.id);
-        } else await deleteBookExpense(row.id);
+        } else if (row.kind === "taxes") await deleteTaxExpense(row.id);
+        else await deleteBookExpense(row.id);
         if (editing?.id === row.id && editing.originalKind === row.kind) setEditing(null);
         router.refresh();
       } catch (err) {
@@ -619,6 +657,7 @@ export function BankRegisterClient({
                     pending={pending}
                     accounts={accounts}
                     expenses={expenses}
+                    taxes={taxes}
                     partyOptions={partyOptions}
                     amountDisplay={isEditing ? amountDisplay : ""}
                     onAmount={onAmount}
@@ -693,6 +732,7 @@ function RegisterRows({
   pending,
   accounts,
   expenses,
+  taxes,
   partyOptions,
   amountDisplay,
   onAmount,
@@ -710,6 +750,7 @@ function RegisterRows({
   pending: boolean;
   accounts: BankAccountBalanceRow[];
   expenses: { id: string; name: string }[];
+  taxes: { id: string; name: string }[];
   partyOptions: { value: string; label: string; group: string }[];
   amountDisplay: string;
   onAmount: (value: string) => void;
@@ -763,6 +804,7 @@ function RegisterRows({
               editing={editing}
               accounts={accounts}
               expenses={expenses}
+              taxes={taxes}
               partyOptions={partyOptions}
               amountDisplay={amountDisplay}
               pending={pending}
@@ -783,6 +825,7 @@ function EditFields({
   editing,
   accounts,
   expenses,
+  taxes,
   partyOptions,
   amountDisplay,
   pending,
@@ -795,6 +838,7 @@ function EditFields({
   editing: EditState;
   accounts: BankAccountBalanceRow[];
   expenses: { id: string; name: string }[];
+  taxes: { id: string; name: string }[];
   partyOptions: { value: string; label: string; group: string }[];
   amountDisplay: string;
   pending: boolean;
@@ -900,7 +944,7 @@ function EditFields({
             </select>
           </label>
         </>
-      ) : editing.kind === "expenses" ? (
+      ) : editing.kind === "expenses" || editing.kind === "taxes" ? (
         <>
           <label>
             <span>Fund paid account</span>
@@ -922,7 +966,9 @@ function EditFields({
             </select>
           </label>
           <label>
-            <span>Expenses</span>
+            <span>
+              {editing.kind === "taxes" ? "Government Taxes" : "Expenses"}
+            </span>
             <select
               className="field-input"
               value={editing.expenseId}
@@ -930,8 +976,10 @@ function EditFields({
                 onChange({ ...editing, expenseId: event.target.value })
               }
             >
-              <option value="">Select expense</option>
-              {expenses.map((expense) => (
+              <option value="">
+                {editing.kind === "taxes" ? "Select tax" : "Select expense"}
+              </option>
+              {(editing.kind === "taxes" ? taxes : expenses).map((expense) => (
                 <option key={expense.id} value={expense.id}>
                   {expense.name}
                 </option>
@@ -1083,7 +1131,7 @@ function EditFields({
           onChange={(event) => onAmount(event.target.value)}
         />
       </label>
-      {editing.kind === "expenses" ? (
+      {editing.kind === "expenses" || editing.kind === "taxes" ? (
         <label>
           <span>Particular</span>
           <input

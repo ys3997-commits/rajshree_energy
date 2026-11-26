@@ -16,6 +16,7 @@ import { createBankTransfer } from "@/lib/actions/bankTransfers";
 import { createBookExpense } from "@/lib/actions/bookExpenses";
 import { createPayment } from "@/lib/actions/payments";
 import { createSavingAccountTxn } from "@/lib/actions/savingAccountTxns";
+import { createTaxExpense } from "@/lib/actions/taxExpenses";
 import { createUnallocatedReceiptTxn } from "@/lib/actions/unallocatedReceiptTxns";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { canAccessPath } from "@/lib/auth/pages";
@@ -38,7 +39,8 @@ export type BankCategory =
   | "current"
   | "saving"
   | "unallocated"
-  | "expenses";
+  | "expenses"
+  | "taxes";
 
 export type BankEntryParty = {
   id: string;
@@ -67,6 +69,7 @@ const CATEGORIES: { id: BankCategory; href: string; label: string }[] = [
     label: "Unallocated Receipt A/c",
   },
   { id: "expenses", href: "/payments/book-expenses", label: "Expenses" },
+  { id: "taxes", href: "/payments/taxes", label: "Taxes" },
 ];
 
 type SlotKind = "bank" | "party" | "saving" | "unallocated" | "wait" | "none";
@@ -121,6 +124,7 @@ function categoryFromPath(pathname: string): BankCategory {
   if (pathname.startsWith("/payments/txn-saving")) return "saving";
   if (pathname.startsWith("/payments/unallocated-receipt")) return "unallocated";
   if (pathname.startsWith("/payments/book-expenses")) return "expenses";
+  if (pathname.startsWith("/payments/taxes")) return "taxes";
   return "others";
 }
 
@@ -153,7 +157,9 @@ function slotsFor(category: BankCategory, type: string): {
   received: SlotKind;
 } {
   if (category === "current") return { paid: "bank", received: "bank" };
-  if (category === "expenses") return { paid: "bank", received: "none" };
+  if (category === "expenses" || category === "taxes") {
+    return { paid: "bank", received: "none" };
+  }
   if (type !== "RECEIVED" && type !== "SENT") {
     return { paid: "wait", received: "wait" };
   }
@@ -190,12 +196,14 @@ export function BankEntryProvider({
   accounts,
   parties,
   expenses,
+  taxes,
   children,
 }: {
   pageKeys: string[] | "all";
   accounts: BankAccountBalanceRow[];
   parties: BankEntryParty[];
   expenses: BankEntryExpense[];
+  taxes: BankEntryExpense[];
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -290,12 +298,16 @@ export function BankEntryProvider({
       if (!current.bankAccountId) return "Select an account";
       if (!current.receiptName.trim()) return "Receipt name is required";
     }
-    if (category === "expenses") {
+    if (category === "expenses" || category === "taxes") {
       if (current.type !== "RECEIVED" && current.type !== "SENT") {
         return "Select Fund Received or Fund Paid";
       }
       if (!current.bankAccountId) return "Select a fund paid account";
-      if (!current.expenseId) return "Select an indirect expense";
+      if (!current.expenseId) {
+        return category === "taxes"
+          ? "Select a government tax"
+          : "Select an indirect expense";
+      }
       if (!current.particular.trim()) return "Particular is required";
     }
     return null;
@@ -311,7 +323,7 @@ export function BankEntryProvider({
       next.type = current.type;
       next.bankAccountId = current.bankAccountId;
     }
-    if (category === "expenses") {
+    if (category === "expenses" || category === "taxes") {
       next.type = current.type;
       next.expenseId = current.expenseId;
       next.bankAccountId = current.bankAccountId;
@@ -364,6 +376,15 @@ export function BankEntryProvider({
             receiptName: snapshot.receiptName,
             amount: snapshot.amount,
           });
+        } else if (category === "taxes") {
+          await createTaxExpense({
+            date: snapshot.date,
+            paidAccountId: snapshot.bankAccountId,
+            governmentTaxId: snapshot.expenseId,
+            direction: snapshot.type,
+            amount: snapshot.amount,
+            particular: snapshot.particular,
+          });
         } else {
           await createBookExpense({
             date: snapshot.date,
@@ -392,6 +413,7 @@ export function BankEntryProvider({
         accounts={accounts}
         parties={parties}
         expenses={expenses}
+        taxes={taxes}
         form={form}
         setForm={setForm}
         error={error}
@@ -433,6 +455,7 @@ function BankEntryBar({
   accounts,
   parties,
   expenses,
+  taxes,
   form,
   setForm,
   error,
@@ -445,6 +468,7 @@ function BankEntryBar({
   accounts: BankAccountBalanceRow[];
   parties: BankEntryParty[];
   expenses: BankEntryExpense[];
+  taxes: BankEntryExpense[];
   form: FormState;
   setForm: (next: FormState | ((prev: FormState) => FormState)) => void;
   error: string | null;
@@ -476,7 +500,7 @@ function BankEntryBar({
   );
   const slots = slotsFor(category, form.type);
   const showType = category !== "current";
-  const showParticular = category === "expenses";
+  const showParticular = category === "expenses" || category === "taxes";
 
   function onAmount(value: string) {
     const raw = parseAmountInput(value).replace(/[^\d.]/g, "");
@@ -631,7 +655,9 @@ function BankEntryBar({
   const addDisabled =
     pending ||
     (category === "current" && accounts.length < 2) ||
-    (category === "expenses" && (accounts.length < 1 || expenses.length < 1)) ||
+    (category === "expenses" &&
+      (accounts.length < 1 || expenses.length < 1)) ||
+    (category === "taxes" && (accounts.length < 1 || taxes.length < 1)) ||
     ((category === "others" ||
       category === "saving" ||
       category === "unallocated") &&
@@ -683,18 +709,22 @@ function BankEntryBar({
         ) : null}
         {renderSlot("paid", slots.paid)}
         {renderSlot("received", slots.received)}
-        {category === "expenses" ? (
-          <Field label="Expenses">
+        {category === "expenses" || category === "taxes" ? (
+          <Field label={category === "taxes" ? "Government Taxes" : "Expenses"}>
             <select
               className="field-input"
-              aria-label="Expenses"
+              aria-label={
+                category === "taxes" ? "Government Taxes" : "Expenses"
+              }
               value={form.expenseId}
               onChange={(e) =>
                 setForm((current) => ({ ...current, expenseId: e.target.value }))
               }
             >
-              <option value="">Select expense</option>
-              {expenses.map((expense) => (
+              <option value="">
+                {category === "taxes" ? "Select tax" : "Select expense"}
+              </option>
+              {(category === "taxes" ? taxes : expenses).map((expense) => (
                 <option key={expense.id} value={expense.id}>
                   {expense.name}
                 </option>

@@ -153,6 +153,7 @@ async function assertRefs(paidAccountId: string, indirectExpenseId: string) {
 
 function revalidateExpensePaths() {
   revalidatePath("/payments/book-expenses");
+  revalidatePath("/payments/taxes");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments/unallocated-receipt");
   revalidatePath("/payments/transaction");

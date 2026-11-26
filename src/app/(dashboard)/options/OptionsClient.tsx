@@ -4,18 +4,21 @@ import { FormEvent, useMemo, useState, useTransition } from "react";
 import {
   createCityOption,
   createDealingCompanyOption,
+  createGovernmentTaxOption,
   createIndirectExpenseOption,
   createOwnerOption,
   createSaleExecutiveOption,
   createSectorOption,
   deleteCityOption,
   deleteDealingCompanyOption,
+  deleteGovernmentTaxOption,
   deleteIndirectExpenseOption,
   deleteOwnerOption,
   deleteSaleExecutiveOption,
   deleteSectorOption,
   updateCityOption,
   updateDealingCompanyOption,
+  updateGovernmentTaxOption,
   updateIndirectExpenseOption,
   updateOwnerOption,
   updateSaleExecutiveOption,
@@ -60,6 +63,7 @@ type ItemMap = {
   owners: Opt[];
   dealingCompanies: Opt[];
   indirectExpenses: Opt[];
+  governmentTaxes: Opt[];
 };
 
 export function OptionsClient({
@@ -74,6 +78,7 @@ export function OptionsClient({
   owners,
   dealingCompanies,
   indirectExpenses,
+  governmentTaxes,
   documentGroups,
 }: {
   categoryId: CategoryId;
@@ -87,6 +92,7 @@ export function OptionsClient({
   owners: Opt[];
   dealingCompanies: Opt[];
   indirectExpenses: Opt[];
+  governmentTaxes: Opt[];
   documentGroups: DocumentGroup[];
 }) {
   const [items, setItems] = useState<ItemMap>({
@@ -99,6 +105,7 @@ export function OptionsClient({
     owners,
     dealingCompanies,
     indirectExpenses,
+    governmentTaxes,
   });
   const [peopleItems, setPeopleItems] = useState(people);
   const activeId = categoryId;
@@ -193,6 +200,8 @@ export function OptionsClient({
         return createDealingCompanyOption(name);
       case "indirectExpenses":
         return createIndirectExpenseOption(name);
+      case "governmentTaxes":
+        return createGovernmentTaxOption(name);
       case "people":
         throw new Error("Use Add person");
     }
@@ -220,6 +229,8 @@ export function OptionsClient({
         return updateDealingCompanyOption(id, name);
       case "indirectExpenses":
         return updateIndirectExpenseOption(id, name);
+      case "governmentTaxes":
+        return updateGovernmentTaxOption(id, name);
       case "people":
         throw new Error("Use Edit on the person row");
     }
@@ -245,6 +256,8 @@ export function OptionsClient({
         return deleteDealingCompanyOption(id);
       case "indirectExpenses":
         return deleteIndirectExpenseOption(id);
+      case "governmentTaxes":
+        return deleteGovernmentTaxOption(id);
       case "people":
         throw new Error("Use Delete on the person row");
     }

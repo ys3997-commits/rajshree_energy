@@ -128,6 +128,8 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["bank-transfer"], "/payments")).toBe(false);
     expect(canAccessPath(["book-expenses"], "/payments/book-expenses")).toBe(true);
     expect(canAccessPath(["book-expenses"], "/payments")).toBe(false);
+    expect(canAccessPath(["taxes"], "/payments/taxes")).toBe(true);
+    expect(canAccessPath(["taxes"], "/payments")).toBe(false);
     expect(canAccessPath(["txn-saving-account"], "/payments/txn-saving")).toBe(
       true,
     );
@@ -144,6 +146,7 @@ describe("canAccessPath", () => {
     expect(canAccessPath(["payments"], "/reports/bank/discount")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/transaction")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/book-expenses")).toBe(true);
+    expect(canAccessPath(["payments"], "/payments/taxes")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/txn-saving")).toBe(true);
     expect(canAccessPath(["payments"], "/payments/unallocated-receipt")).toBe(
       true,

@@ -55,6 +55,7 @@ export async function getBankStatement(
     transfersPaid,
     transfersReceived,
     bookExpenses,
+    taxExpenses,
     savingTxns,
     unallocatedTxns,
   ] = await Promise.all([
@@ -104,6 +105,19 @@ export async function getBankStatement(
         particular: true,
         direction: true,
         indirectExpense: { select: { name: true } },
+      },
+      orderBy: [{ date: "asc" }, { createdAt: "asc" }],
+    }),
+    prisma.taxExpense.findMany({
+      where: { paidAccountId: id },
+      select: {
+        id: true,
+        date: true,
+        createdAt: true,
+        amount: true,
+        particular: true,
+        direction: true,
+        governmentTax: { select: { name: true } },
       },
       orderBy: [{ date: "asc" }, { createdAt: "asc" }],
     }),
@@ -192,6 +206,22 @@ export async function getBankStatement(
       kind: "expense",
       particular: bookExpenseParticular(
         expense.indirectExpense.name,
+        expense.particular,
+      ),
+      debit: received ? 0 : expense.amount.toString(),
+      credit: received ? expense.amount.toString() : 0,
+    });
+  }
+
+  for (const expense of taxExpenses) {
+    const received = expense.direction === PaymentDirection.RECEIVED;
+    movements.push({
+      id: `tax:${expense.id}`,
+      date: isoDate(expense.date),
+      createdAt: expense.createdAt.toISOString(),
+      kind: "tax",
+      particular: bookExpenseParticular(
+        expense.governmentTax.name,
         expense.particular,
       ),
       debit: received ? 0 : expense.amount.toString(),

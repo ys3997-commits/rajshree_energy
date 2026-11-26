@@ -65,9 +65,14 @@ export type SectorOption = $Result.DefaultSelection<Prisma.$SectorOptionPayload>
 export type DealingCompanyOption = $Result.DefaultSelection<Prisma.$DealingCompanyOptionPayload>
 /**
  * Model IndirectExpenseOption
- * Managed list of indirect expense types (Masters → Options).
+ * Managed list of indirect expense types (Masters → Bank → Indirect Expenses).
  */
 export type IndirectExpenseOption = $Result.DefaultSelection<Prisma.$IndirectExpenseOptionPayload>
+/**
+ * Model GovernmentTaxOption
+ * Managed list of government tax types (Masters → Bank → Government Taxes).
+ */
+export type GovernmentTaxOption = $Result.DefaultSelection<Prisma.$GovernmentTaxOptionPayload>
 /**
  * Model DocumentOption
  * Company or individual member (Masters → Documents → Members).
@@ -201,6 +206,11 @@ export type BankTransfer = $Result.DefaultSelection<Prisma.$BankTransferPayload>
  * Bank expense booked against an indirect expense type (Bank → Expenses).
  */
 export type BookExpense = $Result.DefaultSelection<Prisma.$BookExpensePayload>
+/**
+ * Model TaxExpense
+ * Tax payment booked against a government tax type (Bank → Taxes).
+ */
+export type TaxExpense = $Result.DefaultSelection<Prisma.$TaxExpensePayload>
 /**
  * Model SavingAccountTxn
  * Fund flow against a saving bank account (Bank → Transaction with Saving A/c).
@@ -647,6 +657,16 @@ export class PrismaClient<
   get indirectExpenseOption(): Prisma.IndirectExpenseOptionDelegate<ExtArgs>;
 
   /**
+   * `prisma.governmentTaxOption`: Exposes CRUD operations for the **GovernmentTaxOption** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GovernmentTaxOptions
+    * const governmentTaxOptions = await prisma.governmentTaxOption.findMany()
+    * ```
+    */
+  get governmentTaxOption(): Prisma.GovernmentTaxOptionDelegate<ExtArgs>;
+
+  /**
    * `prisma.documentOption`: Exposes CRUD operations for the **DocumentOption** model.
     * Example usage:
     * ```ts
@@ -905,6 +925,16 @@ export class PrismaClient<
     * ```
     */
   get bookExpense(): Prisma.BookExpenseDelegate<ExtArgs>;
+
+  /**
+   * `prisma.taxExpense`: Exposes CRUD operations for the **TaxExpense** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TaxExpenses
+    * const taxExpenses = await prisma.taxExpense.findMany()
+    * ```
+    */
+  get taxExpense(): Prisma.TaxExpenseDelegate<ExtArgs>;
 
   /**
    * `prisma.savingAccountTxn`: Exposes CRUD operations for the **SavingAccountTxn** model.
@@ -1377,6 +1407,7 @@ export namespace Prisma {
     SectorOption: 'SectorOption',
     DealingCompanyOption: 'DealingCompanyOption',
     IndirectExpenseOption: 'IndirectExpenseOption',
+    GovernmentTaxOption: 'GovernmentTaxOption',
     DocumentOption: 'DocumentOption',
     DocumentEntry: 'DocumentEntry',
     MemberDocument: 'MemberDocument',
@@ -1403,6 +1434,7 @@ export namespace Prisma {
     BankAccount: 'BankAccount',
     BankTransfer: 'BankTransfer',
     BookExpense: 'BookExpense',
+    TaxExpense: 'TaxExpense',
     SavingAccountTxn: 'SavingAccountTxn',
     UnallocatedReceiptTxn: 'UnallocatedReceiptTxn'
   };
@@ -1420,7 +1452,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "indirectExpenseOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "dispatchCorrection" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccountTypeOption" | "bankAccount" | "bankTransfer" | "bookExpense" | "savingAccountTxn" | "unallocatedReceiptTxn"
+      modelProps: "staff" | "transporter" | "originOption" | "qualityOption" | "portOption" | "saleExecutiveOption" | "cityOption" | "stateOption" | "sectorOption" | "dealingCompanyOption" | "indirectExpenseOption" | "governmentTaxOption" | "documentOption" | "documentEntry" | "memberDocument" | "ownerOption" | "qualityClass" | "customer" | "veg" | "vessel" | "order" | "purchaseOrder" | "dispatch" | "dispatchCorrection" | "payment" | "discount" | "vegPayment" | "vegDiscount" | "bill" | "billFile" | "investmentCompany" | "investmentOpenDue" | "investmentPeriod" | "investmentPeriodValue" | "bankAccountTypeOption" | "bankAccount" | "bankTransfer" | "bookExpense" | "taxExpense" | "savingAccountTxn" | "unallocatedReceiptTxn"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2191,6 +2223,76 @@ export namespace Prisma {
           count: {
             args: Prisma.IndirectExpenseOptionCountArgs<ExtArgs>
             result: $Utils.Optional<IndirectExpenseOptionCountAggregateOutputType> | number
+          }
+        }
+      }
+      GovernmentTaxOption: {
+        payload: Prisma.$GovernmentTaxOptionPayload<ExtArgs>
+        fields: Prisma.GovernmentTaxOptionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GovernmentTaxOptionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GovernmentTaxOptionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>
+          }
+          findFirst: {
+            args: Prisma.GovernmentTaxOptionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GovernmentTaxOptionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>
+          }
+          findMany: {
+            args: Prisma.GovernmentTaxOptionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>[]
+          }
+          create: {
+            args: Prisma.GovernmentTaxOptionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>
+          }
+          createMany: {
+            args: Prisma.GovernmentTaxOptionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GovernmentTaxOptionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>[]
+          }
+          delete: {
+            args: Prisma.GovernmentTaxOptionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>
+          }
+          update: {
+            args: Prisma.GovernmentTaxOptionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>
+          }
+          deleteMany: {
+            args: Prisma.GovernmentTaxOptionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GovernmentTaxOptionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.GovernmentTaxOptionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GovernmentTaxOptionPayload>
+          }
+          aggregate: {
+            args: Prisma.GovernmentTaxOptionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGovernmentTaxOption>
+          }
+          groupBy: {
+            args: Prisma.GovernmentTaxOptionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GovernmentTaxOptionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GovernmentTaxOptionCountArgs<ExtArgs>
+            result: $Utils.Optional<GovernmentTaxOptionCountAggregateOutputType> | number
           }
         }
       }
@@ -4014,6 +4116,76 @@ export namespace Prisma {
           }
         }
       }
+      TaxExpense: {
+        payload: Prisma.$TaxExpensePayload<ExtArgs>
+        fields: Prisma.TaxExpenseFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TaxExpenseFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TaxExpenseFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>
+          }
+          findFirst: {
+            args: Prisma.TaxExpenseFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TaxExpenseFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>
+          }
+          findMany: {
+            args: Prisma.TaxExpenseFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>[]
+          }
+          create: {
+            args: Prisma.TaxExpenseCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>
+          }
+          createMany: {
+            args: Prisma.TaxExpenseCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TaxExpenseCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>[]
+          }
+          delete: {
+            args: Prisma.TaxExpenseDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>
+          }
+          update: {
+            args: Prisma.TaxExpenseUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>
+          }
+          deleteMany: {
+            args: Prisma.TaxExpenseDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TaxExpenseUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TaxExpenseUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TaxExpensePayload>
+          }
+          aggregate: {
+            args: Prisma.TaxExpenseAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTaxExpense>
+          }
+          groupBy: {
+            args: Prisma.TaxExpenseGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TaxExpenseGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TaxExpenseCountArgs<ExtArgs>
+            result: $Utils.Optional<TaxExpenseCountAggregateOutputType> | number
+          }
+        }
+      }
       SavingAccountTxn: {
         payload: Prisma.$SavingAccountTxnPayload<ExtArgs>
         fields: Prisma.SavingAccountTxnFieldRefs
@@ -4325,6 +4497,7 @@ export namespace Prisma {
     createdVegDiscounts: number
     createdBankTransfers: number
     createdBookExpenses: number
+    createdTaxExpenses: number
     createdSavingAccountTxns: number
     createdUnallocatedReceiptTxns: number
     createdCorrections: number
@@ -4341,6 +4514,7 @@ export namespace Prisma {
     createdVegDiscounts?: boolean | StaffCountOutputTypeCountCreatedVegDiscountsArgs
     createdBankTransfers?: boolean | StaffCountOutputTypeCountCreatedBankTransfersArgs
     createdBookExpenses?: boolean | StaffCountOutputTypeCountCreatedBookExpensesArgs
+    createdTaxExpenses?: boolean | StaffCountOutputTypeCountCreatedTaxExpensesArgs
     createdSavingAccountTxns?: boolean | StaffCountOutputTypeCountCreatedSavingAccountTxnsArgs
     createdUnallocatedReceiptTxns?: boolean | StaffCountOutputTypeCountCreatedUnallocatedReceiptTxnsArgs
     createdCorrections?: boolean | StaffCountOutputTypeCountCreatedCorrectionsArgs
@@ -4425,6 +4599,13 @@ export namespace Prisma {
    */
   export type StaffCountOutputTypeCountCreatedBookExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BookExpenseWhereInput
+  }
+
+  /**
+   * StaffCountOutputType without action
+   */
+  export type StaffCountOutputTypeCountCreatedTaxExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaxExpenseWhereInput
   }
 
   /**
@@ -4628,6 +4809,37 @@ export namespace Prisma {
    */
   export type IndirectExpenseOptionCountOutputTypeCountBookExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BookExpenseWhereInput
+  }
+
+
+  /**
+   * Count Type GovernmentTaxOptionCountOutputType
+   */
+
+  export type GovernmentTaxOptionCountOutputType = {
+    taxExpenses: number
+  }
+
+  export type GovernmentTaxOptionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    taxExpenses?: boolean | GovernmentTaxOptionCountOutputTypeCountTaxExpensesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GovernmentTaxOptionCountOutputType without action
+   */
+  export type GovernmentTaxOptionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOptionCountOutputType
+     */
+    select?: GovernmentTaxOptionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GovernmentTaxOptionCountOutputType without action
+   */
+  export type GovernmentTaxOptionCountOutputTypeCountTaxExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaxExpenseWhereInput
   }
 
 
@@ -5160,6 +5372,7 @@ export namespace Prisma {
     transfersPaid: number
     transfersReceived: number
     bookExpenses: number
+    taxExpenses: number
     savingAccountTxns: number
     unallocatedReceiptTxns: number
   }
@@ -5169,6 +5382,7 @@ export namespace Prisma {
     transfersPaid?: boolean | BankAccountCountOutputTypeCountTransfersPaidArgs
     transfersReceived?: boolean | BankAccountCountOutputTypeCountTransfersReceivedArgs
     bookExpenses?: boolean | BankAccountCountOutputTypeCountBookExpensesArgs
+    taxExpenses?: boolean | BankAccountCountOutputTypeCountTaxExpensesArgs
     savingAccountTxns?: boolean | BankAccountCountOutputTypeCountSavingAccountTxnsArgs
     unallocatedReceiptTxns?: boolean | BankAccountCountOutputTypeCountUnallocatedReceiptTxnsArgs
   }
@@ -5210,6 +5424,13 @@ export namespace Prisma {
    */
   export type BankAccountCountOutputTypeCountBookExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BookExpenseWhereInput
+  }
+
+  /**
+   * BankAccountCountOutputType without action
+   */
+  export type BankAccountCountOutputTypeCountTaxExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaxExpenseWhereInput
   }
 
   /**
@@ -5441,6 +5662,7 @@ export namespace Prisma {
     createdVegDiscounts?: boolean | Staff$createdVegDiscountsArgs<ExtArgs>
     createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     createdBookExpenses?: boolean | Staff$createdBookExpensesArgs<ExtArgs>
+    createdTaxExpenses?: boolean | Staff$createdTaxExpensesArgs<ExtArgs>
     createdSavingAccountTxns?: boolean | Staff$createdSavingAccountTxnsArgs<ExtArgs>
     createdUnallocatedReceiptTxns?: boolean | Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs>
     createdCorrections?: boolean | Staff$createdCorrectionsArgs<ExtArgs>
@@ -5490,6 +5712,7 @@ export namespace Prisma {
     createdVegDiscounts?: boolean | Staff$createdVegDiscountsArgs<ExtArgs>
     createdBankTransfers?: boolean | Staff$createdBankTransfersArgs<ExtArgs>
     createdBookExpenses?: boolean | Staff$createdBookExpensesArgs<ExtArgs>
+    createdTaxExpenses?: boolean | Staff$createdTaxExpensesArgs<ExtArgs>
     createdSavingAccountTxns?: boolean | Staff$createdSavingAccountTxnsArgs<ExtArgs>
     createdUnallocatedReceiptTxns?: boolean | Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs>
     createdCorrections?: boolean | Staff$createdCorrectionsArgs<ExtArgs>
@@ -5510,6 +5733,7 @@ export namespace Prisma {
       createdVegDiscounts: Prisma.$VegDiscountPayload<ExtArgs>[]
       createdBankTransfers: Prisma.$BankTransferPayload<ExtArgs>[]
       createdBookExpenses: Prisma.$BookExpensePayload<ExtArgs>[]
+      createdTaxExpenses: Prisma.$TaxExpensePayload<ExtArgs>[]
       createdSavingAccountTxns: Prisma.$SavingAccountTxnPayload<ExtArgs>[]
       createdUnallocatedReceiptTxns: Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>[]
       createdCorrections: Prisma.$DispatchCorrectionPayload<ExtArgs>[]
@@ -5926,6 +6150,7 @@ export namespace Prisma {
     createdVegDiscounts<T extends Staff$createdVegDiscountsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdVegDiscountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VegDiscountPayload<ExtArgs>, T, "findMany"> | Null>
     createdBankTransfers<T extends Staff$createdBankTransfersArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBankTransfersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     createdBookExpenses<T extends Staff$createdBookExpensesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdBookExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookExpensePayload<ExtArgs>, T, "findMany"> | Null>
+    createdTaxExpenses<T extends Staff$createdTaxExpensesArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdTaxExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findMany"> | Null>
     createdSavingAccountTxns<T extends Staff$createdSavingAccountTxnsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdSavingAccountTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavingAccountTxnPayload<ExtArgs>, T, "findMany"> | Null>
     createdUnallocatedReceiptTxns<T extends Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdUnallocatedReceiptTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findMany"> | Null>
     createdCorrections<T extends Staff$createdCorrectionsArgs<ExtArgs> = {}>(args?: Subset<T, Staff$createdCorrectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DispatchCorrectionPayload<ExtArgs>, T, "findMany"> | Null>
@@ -6482,6 +6707,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BookExpenseScalarFieldEnum | BookExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * Staff.createdTaxExpenses
+   */
+  export type Staff$createdTaxExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    where?: TaxExpenseWhereInput
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    cursor?: TaxExpenseWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaxExpenseScalarFieldEnum | TaxExpenseScalarFieldEnum[]
   }
 
   /**
@@ -15789,6 +16034,942 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: IndirectExpenseOptionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model GovernmentTaxOption
+   */
+
+  export type AggregateGovernmentTaxOption = {
+    _count: GovernmentTaxOptionCountAggregateOutputType | null
+    _min: GovernmentTaxOptionMinAggregateOutputType | null
+    _max: GovernmentTaxOptionMaxAggregateOutputType | null
+  }
+
+  export type GovernmentTaxOptionMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GovernmentTaxOptionMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GovernmentTaxOptionCountAggregateOutputType = {
+    id: number
+    name: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GovernmentTaxOptionMinAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GovernmentTaxOptionMaxAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GovernmentTaxOptionCountAggregateInputType = {
+    id?: true
+    name?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GovernmentTaxOptionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GovernmentTaxOption to aggregate.
+     */
+    where?: GovernmentTaxOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GovernmentTaxOptions to fetch.
+     */
+    orderBy?: GovernmentTaxOptionOrderByWithRelationInput | GovernmentTaxOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GovernmentTaxOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GovernmentTaxOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GovernmentTaxOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GovernmentTaxOptions
+    **/
+    _count?: true | GovernmentTaxOptionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GovernmentTaxOptionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GovernmentTaxOptionMaxAggregateInputType
+  }
+
+  export type GetGovernmentTaxOptionAggregateType<T extends GovernmentTaxOptionAggregateArgs> = {
+        [P in keyof T & keyof AggregateGovernmentTaxOption]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGovernmentTaxOption[P]>
+      : GetScalarType<T[P], AggregateGovernmentTaxOption[P]>
+  }
+
+
+
+
+  export type GovernmentTaxOptionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GovernmentTaxOptionWhereInput
+    orderBy?: GovernmentTaxOptionOrderByWithAggregationInput | GovernmentTaxOptionOrderByWithAggregationInput[]
+    by: GovernmentTaxOptionScalarFieldEnum[] | GovernmentTaxOptionScalarFieldEnum
+    having?: GovernmentTaxOptionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GovernmentTaxOptionCountAggregateInputType | true
+    _min?: GovernmentTaxOptionMinAggregateInputType
+    _max?: GovernmentTaxOptionMaxAggregateInputType
+  }
+
+  export type GovernmentTaxOptionGroupByOutputType = {
+    id: string
+    name: string
+    createdAt: Date
+    updatedAt: Date
+    _count: GovernmentTaxOptionCountAggregateOutputType | null
+    _min: GovernmentTaxOptionMinAggregateOutputType | null
+    _max: GovernmentTaxOptionMaxAggregateOutputType | null
+  }
+
+  type GetGovernmentTaxOptionGroupByPayload<T extends GovernmentTaxOptionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GovernmentTaxOptionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GovernmentTaxOptionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GovernmentTaxOptionGroupByOutputType[P]>
+            : GetScalarType<T[P], GovernmentTaxOptionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GovernmentTaxOptionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    taxExpenses?: boolean | GovernmentTaxOption$taxExpensesArgs<ExtArgs>
+    _count?: boolean | GovernmentTaxOptionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["governmentTaxOption"]>
+
+  export type GovernmentTaxOptionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["governmentTaxOption"]>
+
+  export type GovernmentTaxOptionSelectScalar = {
+    id?: boolean
+    name?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GovernmentTaxOptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    taxExpenses?: boolean | GovernmentTaxOption$taxExpensesArgs<ExtArgs>
+    _count?: boolean | GovernmentTaxOptionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type GovernmentTaxOptionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $GovernmentTaxOptionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GovernmentTaxOption"
+    objects: {
+      taxExpenses: Prisma.$TaxExpensePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["governmentTaxOption"]>
+    composites: {}
+  }
+
+  type GovernmentTaxOptionGetPayload<S extends boolean | null | undefined | GovernmentTaxOptionDefaultArgs> = $Result.GetResult<Prisma.$GovernmentTaxOptionPayload, S>
+
+  type GovernmentTaxOptionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<GovernmentTaxOptionFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: GovernmentTaxOptionCountAggregateInputType | true
+    }
+
+  export interface GovernmentTaxOptionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GovernmentTaxOption'], meta: { name: 'GovernmentTaxOption' } }
+    /**
+     * Find zero or one GovernmentTaxOption that matches the filter.
+     * @param {GovernmentTaxOptionFindUniqueArgs} args - Arguments to find a GovernmentTaxOption
+     * @example
+     * // Get one GovernmentTaxOption
+     * const governmentTaxOption = await prisma.governmentTaxOption.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GovernmentTaxOptionFindUniqueArgs>(args: SelectSubset<T, GovernmentTaxOptionFindUniqueArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one GovernmentTaxOption that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {GovernmentTaxOptionFindUniqueOrThrowArgs} args - Arguments to find a GovernmentTaxOption
+     * @example
+     * // Get one GovernmentTaxOption
+     * const governmentTaxOption = await prisma.governmentTaxOption.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GovernmentTaxOptionFindUniqueOrThrowArgs>(args: SelectSubset<T, GovernmentTaxOptionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first GovernmentTaxOption that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionFindFirstArgs} args - Arguments to find a GovernmentTaxOption
+     * @example
+     * // Get one GovernmentTaxOption
+     * const governmentTaxOption = await prisma.governmentTaxOption.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GovernmentTaxOptionFindFirstArgs>(args?: SelectSubset<T, GovernmentTaxOptionFindFirstArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first GovernmentTaxOption that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionFindFirstOrThrowArgs} args - Arguments to find a GovernmentTaxOption
+     * @example
+     * // Get one GovernmentTaxOption
+     * const governmentTaxOption = await prisma.governmentTaxOption.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GovernmentTaxOptionFindFirstOrThrowArgs>(args?: SelectSubset<T, GovernmentTaxOptionFindFirstOrThrowArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more GovernmentTaxOptions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GovernmentTaxOptions
+     * const governmentTaxOptions = await prisma.governmentTaxOption.findMany()
+     * 
+     * // Get first 10 GovernmentTaxOptions
+     * const governmentTaxOptions = await prisma.governmentTaxOption.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const governmentTaxOptionWithIdOnly = await prisma.governmentTaxOption.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GovernmentTaxOptionFindManyArgs>(args?: SelectSubset<T, GovernmentTaxOptionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a GovernmentTaxOption.
+     * @param {GovernmentTaxOptionCreateArgs} args - Arguments to create a GovernmentTaxOption.
+     * @example
+     * // Create one GovernmentTaxOption
+     * const GovernmentTaxOption = await prisma.governmentTaxOption.create({
+     *   data: {
+     *     // ... data to create a GovernmentTaxOption
+     *   }
+     * })
+     * 
+     */
+    create<T extends GovernmentTaxOptionCreateArgs>(args: SelectSubset<T, GovernmentTaxOptionCreateArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many GovernmentTaxOptions.
+     * @param {GovernmentTaxOptionCreateManyArgs} args - Arguments to create many GovernmentTaxOptions.
+     * @example
+     * // Create many GovernmentTaxOptions
+     * const governmentTaxOption = await prisma.governmentTaxOption.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GovernmentTaxOptionCreateManyArgs>(args?: SelectSubset<T, GovernmentTaxOptionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GovernmentTaxOptions and returns the data saved in the database.
+     * @param {GovernmentTaxOptionCreateManyAndReturnArgs} args - Arguments to create many GovernmentTaxOptions.
+     * @example
+     * // Create many GovernmentTaxOptions
+     * const governmentTaxOption = await prisma.governmentTaxOption.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GovernmentTaxOptions and only return the `id`
+     * const governmentTaxOptionWithIdOnly = await prisma.governmentTaxOption.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GovernmentTaxOptionCreateManyAndReturnArgs>(args?: SelectSubset<T, GovernmentTaxOptionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a GovernmentTaxOption.
+     * @param {GovernmentTaxOptionDeleteArgs} args - Arguments to delete one GovernmentTaxOption.
+     * @example
+     * // Delete one GovernmentTaxOption
+     * const GovernmentTaxOption = await prisma.governmentTaxOption.delete({
+     *   where: {
+     *     // ... filter to delete one GovernmentTaxOption
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GovernmentTaxOptionDeleteArgs>(args: SelectSubset<T, GovernmentTaxOptionDeleteArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one GovernmentTaxOption.
+     * @param {GovernmentTaxOptionUpdateArgs} args - Arguments to update one GovernmentTaxOption.
+     * @example
+     * // Update one GovernmentTaxOption
+     * const governmentTaxOption = await prisma.governmentTaxOption.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GovernmentTaxOptionUpdateArgs>(args: SelectSubset<T, GovernmentTaxOptionUpdateArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more GovernmentTaxOptions.
+     * @param {GovernmentTaxOptionDeleteManyArgs} args - Arguments to filter GovernmentTaxOptions to delete.
+     * @example
+     * // Delete a few GovernmentTaxOptions
+     * const { count } = await prisma.governmentTaxOption.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GovernmentTaxOptionDeleteManyArgs>(args?: SelectSubset<T, GovernmentTaxOptionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GovernmentTaxOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GovernmentTaxOptions
+     * const governmentTaxOption = await prisma.governmentTaxOption.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GovernmentTaxOptionUpdateManyArgs>(args: SelectSubset<T, GovernmentTaxOptionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one GovernmentTaxOption.
+     * @param {GovernmentTaxOptionUpsertArgs} args - Arguments to update or create a GovernmentTaxOption.
+     * @example
+     * // Update or create a GovernmentTaxOption
+     * const governmentTaxOption = await prisma.governmentTaxOption.upsert({
+     *   create: {
+     *     // ... data to create a GovernmentTaxOption
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GovernmentTaxOption we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GovernmentTaxOptionUpsertArgs>(args: SelectSubset<T, GovernmentTaxOptionUpsertArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of GovernmentTaxOptions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionCountArgs} args - Arguments to filter GovernmentTaxOptions to count.
+     * @example
+     * // Count the number of GovernmentTaxOptions
+     * const count = await prisma.governmentTaxOption.count({
+     *   where: {
+     *     // ... the filter for the GovernmentTaxOptions we want to count
+     *   }
+     * })
+    **/
+    count<T extends GovernmentTaxOptionCountArgs>(
+      args?: Subset<T, GovernmentTaxOptionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GovernmentTaxOptionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GovernmentTaxOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GovernmentTaxOptionAggregateArgs>(args: Subset<T, GovernmentTaxOptionAggregateArgs>): Prisma.PrismaPromise<GetGovernmentTaxOptionAggregateType<T>>
+
+    /**
+     * Group by GovernmentTaxOption.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GovernmentTaxOptionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GovernmentTaxOptionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GovernmentTaxOptionGroupByArgs['orderBy'] }
+        : { orderBy?: GovernmentTaxOptionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GovernmentTaxOptionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGovernmentTaxOptionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GovernmentTaxOption model
+   */
+  readonly fields: GovernmentTaxOptionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GovernmentTaxOption.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GovernmentTaxOptionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    taxExpenses<T extends GovernmentTaxOption$taxExpensesArgs<ExtArgs> = {}>(args?: Subset<T, GovernmentTaxOption$taxExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findMany"> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GovernmentTaxOption model
+   */ 
+  interface GovernmentTaxOptionFieldRefs {
+    readonly id: FieldRef<"GovernmentTaxOption", 'String'>
+    readonly name: FieldRef<"GovernmentTaxOption", 'String'>
+    readonly createdAt: FieldRef<"GovernmentTaxOption", 'DateTime'>
+    readonly updatedAt: FieldRef<"GovernmentTaxOption", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GovernmentTaxOption findUnique
+   */
+  export type GovernmentTaxOptionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which GovernmentTaxOption to fetch.
+     */
+    where: GovernmentTaxOptionWhereUniqueInput
+  }
+
+  /**
+   * GovernmentTaxOption findUniqueOrThrow
+   */
+  export type GovernmentTaxOptionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which GovernmentTaxOption to fetch.
+     */
+    where: GovernmentTaxOptionWhereUniqueInput
+  }
+
+  /**
+   * GovernmentTaxOption findFirst
+   */
+  export type GovernmentTaxOptionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which GovernmentTaxOption to fetch.
+     */
+    where?: GovernmentTaxOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GovernmentTaxOptions to fetch.
+     */
+    orderBy?: GovernmentTaxOptionOrderByWithRelationInput | GovernmentTaxOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GovernmentTaxOptions.
+     */
+    cursor?: GovernmentTaxOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GovernmentTaxOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GovernmentTaxOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GovernmentTaxOptions.
+     */
+    distinct?: GovernmentTaxOptionScalarFieldEnum | GovernmentTaxOptionScalarFieldEnum[]
+  }
+
+  /**
+   * GovernmentTaxOption findFirstOrThrow
+   */
+  export type GovernmentTaxOptionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which GovernmentTaxOption to fetch.
+     */
+    where?: GovernmentTaxOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GovernmentTaxOptions to fetch.
+     */
+    orderBy?: GovernmentTaxOptionOrderByWithRelationInput | GovernmentTaxOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GovernmentTaxOptions.
+     */
+    cursor?: GovernmentTaxOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GovernmentTaxOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GovernmentTaxOptions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GovernmentTaxOptions.
+     */
+    distinct?: GovernmentTaxOptionScalarFieldEnum | GovernmentTaxOptionScalarFieldEnum[]
+  }
+
+  /**
+   * GovernmentTaxOption findMany
+   */
+  export type GovernmentTaxOptionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * Filter, which GovernmentTaxOptions to fetch.
+     */
+    where?: GovernmentTaxOptionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GovernmentTaxOptions to fetch.
+     */
+    orderBy?: GovernmentTaxOptionOrderByWithRelationInput | GovernmentTaxOptionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GovernmentTaxOptions.
+     */
+    cursor?: GovernmentTaxOptionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GovernmentTaxOptions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GovernmentTaxOptions.
+     */
+    skip?: number
+    distinct?: GovernmentTaxOptionScalarFieldEnum | GovernmentTaxOptionScalarFieldEnum[]
+  }
+
+  /**
+   * GovernmentTaxOption create
+   */
+  export type GovernmentTaxOptionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a GovernmentTaxOption.
+     */
+    data: XOR<GovernmentTaxOptionCreateInput, GovernmentTaxOptionUncheckedCreateInput>
+  }
+
+  /**
+   * GovernmentTaxOption createMany
+   */
+  export type GovernmentTaxOptionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GovernmentTaxOptions.
+     */
+    data: GovernmentTaxOptionCreateManyInput | GovernmentTaxOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GovernmentTaxOption createManyAndReturn
+   */
+  export type GovernmentTaxOptionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many GovernmentTaxOptions.
+     */
+    data: GovernmentTaxOptionCreateManyInput | GovernmentTaxOptionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * GovernmentTaxOption update
+   */
+  export type GovernmentTaxOptionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a GovernmentTaxOption.
+     */
+    data: XOR<GovernmentTaxOptionUpdateInput, GovernmentTaxOptionUncheckedUpdateInput>
+    /**
+     * Choose, which GovernmentTaxOption to update.
+     */
+    where: GovernmentTaxOptionWhereUniqueInput
+  }
+
+  /**
+   * GovernmentTaxOption updateMany
+   */
+  export type GovernmentTaxOptionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GovernmentTaxOptions.
+     */
+    data: XOR<GovernmentTaxOptionUpdateManyMutationInput, GovernmentTaxOptionUncheckedUpdateManyInput>
+    /**
+     * Filter which GovernmentTaxOptions to update
+     */
+    where?: GovernmentTaxOptionWhereInput
+  }
+
+  /**
+   * GovernmentTaxOption upsert
+   */
+  export type GovernmentTaxOptionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the GovernmentTaxOption to update in case it exists.
+     */
+    where: GovernmentTaxOptionWhereUniqueInput
+    /**
+     * In case the GovernmentTaxOption found by the `where` argument doesn't exist, create a new GovernmentTaxOption with this data.
+     */
+    create: XOR<GovernmentTaxOptionCreateInput, GovernmentTaxOptionUncheckedCreateInput>
+    /**
+     * In case the GovernmentTaxOption was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GovernmentTaxOptionUpdateInput, GovernmentTaxOptionUncheckedUpdateInput>
+  }
+
+  /**
+   * GovernmentTaxOption delete
+   */
+  export type GovernmentTaxOptionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
+    /**
+     * Filter which GovernmentTaxOption to delete.
+     */
+    where: GovernmentTaxOptionWhereUniqueInput
+  }
+
+  /**
+   * GovernmentTaxOption deleteMany
+   */
+  export type GovernmentTaxOptionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GovernmentTaxOptions to delete
+     */
+    where?: GovernmentTaxOptionWhereInput
+  }
+
+  /**
+   * GovernmentTaxOption.taxExpenses
+   */
+  export type GovernmentTaxOption$taxExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    where?: TaxExpenseWhereInput
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    cursor?: TaxExpenseWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaxExpenseScalarFieldEnum | TaxExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * GovernmentTaxOption without action
+   */
+  export type GovernmentTaxOptionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GovernmentTaxOption
+     */
+    select?: GovernmentTaxOptionSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GovernmentTaxOptionInclude<ExtArgs> | null
   }
 
 
@@ -41033,6 +42214,7 @@ export namespace Prisma {
     transfersPaid?: boolean | BankAccount$transfersPaidArgs<ExtArgs>
     transfersReceived?: boolean | BankAccount$transfersReceivedArgs<ExtArgs>
     bookExpenses?: boolean | BankAccount$bookExpensesArgs<ExtArgs>
+    taxExpenses?: boolean | BankAccount$taxExpensesArgs<ExtArgs>
     savingAccountTxns?: boolean | BankAccount$savingAccountTxnsArgs<ExtArgs>
     unallocatedReceiptTxns?: boolean | BankAccount$unallocatedReceiptTxnsArgs<ExtArgs>
     _count?: boolean | BankAccountCountOutputTypeDefaultArgs<ExtArgs>
@@ -41065,6 +42247,7 @@ export namespace Prisma {
     transfersPaid?: boolean | BankAccount$transfersPaidArgs<ExtArgs>
     transfersReceived?: boolean | BankAccount$transfersReceivedArgs<ExtArgs>
     bookExpenses?: boolean | BankAccount$bookExpensesArgs<ExtArgs>
+    taxExpenses?: boolean | BankAccount$taxExpensesArgs<ExtArgs>
     savingAccountTxns?: boolean | BankAccount$savingAccountTxnsArgs<ExtArgs>
     unallocatedReceiptTxns?: boolean | BankAccount$unallocatedReceiptTxnsArgs<ExtArgs>
     _count?: boolean | BankAccountCountOutputTypeDefaultArgs<ExtArgs>
@@ -41081,6 +42264,7 @@ export namespace Prisma {
       transfersPaid: Prisma.$BankTransferPayload<ExtArgs>[]
       transfersReceived: Prisma.$BankTransferPayload<ExtArgs>[]
       bookExpenses: Prisma.$BookExpensePayload<ExtArgs>[]
+      taxExpenses: Prisma.$TaxExpensePayload<ExtArgs>[]
       savingAccountTxns: Prisma.$SavingAccountTxnPayload<ExtArgs>[]
       unallocatedReceiptTxns: Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>[]
     }
@@ -41461,6 +42645,7 @@ export namespace Prisma {
     transfersPaid<T extends BankAccount$transfersPaidArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$transfersPaidArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     transfersReceived<T extends BankAccount$transfersReceivedArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$transfersReceivedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BankTransferPayload<ExtArgs>, T, "findMany"> | Null>
     bookExpenses<T extends BankAccount$bookExpensesArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$bookExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookExpensePayload<ExtArgs>, T, "findMany"> | Null>
+    taxExpenses<T extends BankAccount$taxExpensesArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$taxExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findMany"> | Null>
     savingAccountTxns<T extends BankAccount$savingAccountTxnsArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$savingAccountTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavingAccountTxnPayload<ExtArgs>, T, "findMany"> | Null>
     unallocatedReceiptTxns<T extends BankAccount$unallocatedReceiptTxnsArgs<ExtArgs> = {}>(args?: Subset<T, BankAccount$unallocatedReceiptTxnsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UnallocatedReceiptTxnPayload<ExtArgs>, T, "findMany"> | Null>
     /**
@@ -41909,6 +43094,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BookExpenseScalarFieldEnum | BookExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * BankAccount.taxExpenses
+   */
+  export type BankAccount$taxExpensesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    where?: TaxExpenseWhereInput
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    cursor?: TaxExpenseWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TaxExpenseScalarFieldEnum | TaxExpenseScalarFieldEnum[]
   }
 
   /**
@@ -44047,6 +45252,1060 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BookExpenseInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model TaxExpense
+   */
+
+  export type AggregateTaxExpense = {
+    _count: TaxExpenseCountAggregateOutputType | null
+    _avg: TaxExpenseAvgAggregateOutputType | null
+    _sum: TaxExpenseSumAggregateOutputType | null
+    _min: TaxExpenseMinAggregateOutputType | null
+    _max: TaxExpenseMaxAggregateOutputType | null
+  }
+
+  export type TaxExpenseAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type TaxExpenseSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type TaxExpenseMinAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    paidAccountId: string | null
+    governmentTaxId: string | null
+    direction: $Enums.PaymentDirection | null
+    amount: Decimal | null
+    particular: string | null
+    createdByStaffId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TaxExpenseMaxAggregateOutputType = {
+    id: string | null
+    date: Date | null
+    paidAccountId: string | null
+    governmentTaxId: string | null
+    direction: $Enums.PaymentDirection | null
+    amount: Decimal | null
+    particular: string | null
+    createdByStaffId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TaxExpenseCountAggregateOutputType = {
+    id: number
+    date: number
+    paidAccountId: number
+    governmentTaxId: number
+    direction: number
+    amount: number
+    particular: number
+    createdByStaffId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TaxExpenseAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type TaxExpenseSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type TaxExpenseMinAggregateInputType = {
+    id?: true
+    date?: true
+    paidAccountId?: true
+    governmentTaxId?: true
+    direction?: true
+    amount?: true
+    particular?: true
+    createdByStaffId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TaxExpenseMaxAggregateInputType = {
+    id?: true
+    date?: true
+    paidAccountId?: true
+    governmentTaxId?: true
+    direction?: true
+    amount?: true
+    particular?: true
+    createdByStaffId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TaxExpenseCountAggregateInputType = {
+    id?: true
+    date?: true
+    paidAccountId?: true
+    governmentTaxId?: true
+    direction?: true
+    amount?: true
+    particular?: true
+    createdByStaffId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TaxExpenseAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TaxExpense to aggregate.
+     */
+    where?: TaxExpenseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxExpenses to fetch.
+     */
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TaxExpenseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxExpenses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxExpenses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TaxExpenses
+    **/
+    _count?: true | TaxExpenseCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TaxExpenseAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TaxExpenseSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TaxExpenseMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TaxExpenseMaxAggregateInputType
+  }
+
+  export type GetTaxExpenseAggregateType<T extends TaxExpenseAggregateArgs> = {
+        [P in keyof T & keyof AggregateTaxExpense]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTaxExpense[P]>
+      : GetScalarType<T[P], AggregateTaxExpense[P]>
+  }
+
+
+
+
+  export type TaxExpenseGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TaxExpenseWhereInput
+    orderBy?: TaxExpenseOrderByWithAggregationInput | TaxExpenseOrderByWithAggregationInput[]
+    by: TaxExpenseScalarFieldEnum[] | TaxExpenseScalarFieldEnum
+    having?: TaxExpenseScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TaxExpenseCountAggregateInputType | true
+    _avg?: TaxExpenseAvgAggregateInputType
+    _sum?: TaxExpenseSumAggregateInputType
+    _min?: TaxExpenseMinAggregateInputType
+    _max?: TaxExpenseMaxAggregateInputType
+  }
+
+  export type TaxExpenseGroupByOutputType = {
+    id: string
+    date: Date
+    paidAccountId: string
+    governmentTaxId: string
+    direction: $Enums.PaymentDirection
+    amount: Decimal
+    particular: string
+    createdByStaffId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TaxExpenseCountAggregateOutputType | null
+    _avg: TaxExpenseAvgAggregateOutputType | null
+    _sum: TaxExpenseSumAggregateOutputType | null
+    _min: TaxExpenseMinAggregateOutputType | null
+    _max: TaxExpenseMaxAggregateOutputType | null
+  }
+
+  type GetTaxExpenseGroupByPayload<T extends TaxExpenseGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TaxExpenseGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TaxExpenseGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TaxExpenseGroupByOutputType[P]>
+            : GetScalarType<T[P], TaxExpenseGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TaxExpenseSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    paidAccountId?: boolean
+    governmentTaxId?: boolean
+    direction?: boolean
+    amount?: boolean
+    particular?: boolean
+    createdByStaffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    governmentTax?: boolean | GovernmentTaxOptionDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | TaxExpense$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["taxExpense"]>
+
+  export type TaxExpenseSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    paidAccountId?: boolean
+    governmentTaxId?: boolean
+    direction?: boolean
+    amount?: boolean
+    particular?: boolean
+    createdByStaffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    governmentTax?: boolean | GovernmentTaxOptionDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | TaxExpense$createdByStaffArgs<ExtArgs>
+  }, ExtArgs["result"]["taxExpense"]>
+
+  export type TaxExpenseSelectScalar = {
+    id?: boolean
+    date?: boolean
+    paidAccountId?: boolean
+    governmentTaxId?: boolean
+    direction?: boolean
+    amount?: boolean
+    particular?: boolean
+    createdByStaffId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TaxExpenseInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    governmentTax?: boolean | GovernmentTaxOptionDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | TaxExpense$createdByStaffArgs<ExtArgs>
+  }
+  export type TaxExpenseIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    paidAccount?: boolean | BankAccountDefaultArgs<ExtArgs>
+    governmentTax?: boolean | GovernmentTaxOptionDefaultArgs<ExtArgs>
+    createdByStaff?: boolean | TaxExpense$createdByStaffArgs<ExtArgs>
+  }
+
+  export type $TaxExpensePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TaxExpense"
+    objects: {
+      paidAccount: Prisma.$BankAccountPayload<ExtArgs>
+      governmentTax: Prisma.$GovernmentTaxOptionPayload<ExtArgs>
+      createdByStaff: Prisma.$StaffPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      date: Date
+      paidAccountId: string
+      governmentTaxId: string
+      direction: $Enums.PaymentDirection
+      amount: Prisma.Decimal
+      particular: string
+      createdByStaffId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["taxExpense"]>
+    composites: {}
+  }
+
+  type TaxExpenseGetPayload<S extends boolean | null | undefined | TaxExpenseDefaultArgs> = $Result.GetResult<Prisma.$TaxExpensePayload, S>
+
+  type TaxExpenseCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TaxExpenseFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TaxExpenseCountAggregateInputType | true
+    }
+
+  export interface TaxExpenseDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TaxExpense'], meta: { name: 'TaxExpense' } }
+    /**
+     * Find zero or one TaxExpense that matches the filter.
+     * @param {TaxExpenseFindUniqueArgs} args - Arguments to find a TaxExpense
+     * @example
+     * // Get one TaxExpense
+     * const taxExpense = await prisma.taxExpense.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TaxExpenseFindUniqueArgs>(args: SelectSubset<T, TaxExpenseFindUniqueArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TaxExpense that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TaxExpenseFindUniqueOrThrowArgs} args - Arguments to find a TaxExpense
+     * @example
+     * // Get one TaxExpense
+     * const taxExpense = await prisma.taxExpense.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TaxExpenseFindUniqueOrThrowArgs>(args: SelectSubset<T, TaxExpenseFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TaxExpense that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseFindFirstArgs} args - Arguments to find a TaxExpense
+     * @example
+     * // Get one TaxExpense
+     * const taxExpense = await prisma.taxExpense.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TaxExpenseFindFirstArgs>(args?: SelectSubset<T, TaxExpenseFindFirstArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TaxExpense that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseFindFirstOrThrowArgs} args - Arguments to find a TaxExpense
+     * @example
+     * // Get one TaxExpense
+     * const taxExpense = await prisma.taxExpense.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TaxExpenseFindFirstOrThrowArgs>(args?: SelectSubset<T, TaxExpenseFindFirstOrThrowArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TaxExpenses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TaxExpenses
+     * const taxExpenses = await prisma.taxExpense.findMany()
+     * 
+     * // Get first 10 TaxExpenses
+     * const taxExpenses = await prisma.taxExpense.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const taxExpenseWithIdOnly = await prisma.taxExpense.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TaxExpenseFindManyArgs>(args?: SelectSubset<T, TaxExpenseFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TaxExpense.
+     * @param {TaxExpenseCreateArgs} args - Arguments to create a TaxExpense.
+     * @example
+     * // Create one TaxExpense
+     * const TaxExpense = await prisma.taxExpense.create({
+     *   data: {
+     *     // ... data to create a TaxExpense
+     *   }
+     * })
+     * 
+     */
+    create<T extends TaxExpenseCreateArgs>(args: SelectSubset<T, TaxExpenseCreateArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TaxExpenses.
+     * @param {TaxExpenseCreateManyArgs} args - Arguments to create many TaxExpenses.
+     * @example
+     * // Create many TaxExpenses
+     * const taxExpense = await prisma.taxExpense.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TaxExpenseCreateManyArgs>(args?: SelectSubset<T, TaxExpenseCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TaxExpenses and returns the data saved in the database.
+     * @param {TaxExpenseCreateManyAndReturnArgs} args - Arguments to create many TaxExpenses.
+     * @example
+     * // Create many TaxExpenses
+     * const taxExpense = await prisma.taxExpense.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TaxExpenses and only return the `id`
+     * const taxExpenseWithIdOnly = await prisma.taxExpense.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TaxExpenseCreateManyAndReturnArgs>(args?: SelectSubset<T, TaxExpenseCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TaxExpense.
+     * @param {TaxExpenseDeleteArgs} args - Arguments to delete one TaxExpense.
+     * @example
+     * // Delete one TaxExpense
+     * const TaxExpense = await prisma.taxExpense.delete({
+     *   where: {
+     *     // ... filter to delete one TaxExpense
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TaxExpenseDeleteArgs>(args: SelectSubset<T, TaxExpenseDeleteArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TaxExpense.
+     * @param {TaxExpenseUpdateArgs} args - Arguments to update one TaxExpense.
+     * @example
+     * // Update one TaxExpense
+     * const taxExpense = await prisma.taxExpense.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TaxExpenseUpdateArgs>(args: SelectSubset<T, TaxExpenseUpdateArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TaxExpenses.
+     * @param {TaxExpenseDeleteManyArgs} args - Arguments to filter TaxExpenses to delete.
+     * @example
+     * // Delete a few TaxExpenses
+     * const { count } = await prisma.taxExpense.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TaxExpenseDeleteManyArgs>(args?: SelectSubset<T, TaxExpenseDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TaxExpenses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TaxExpenses
+     * const taxExpense = await prisma.taxExpense.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TaxExpenseUpdateManyArgs>(args: SelectSubset<T, TaxExpenseUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TaxExpense.
+     * @param {TaxExpenseUpsertArgs} args - Arguments to update or create a TaxExpense.
+     * @example
+     * // Update or create a TaxExpense
+     * const taxExpense = await prisma.taxExpense.upsert({
+     *   create: {
+     *     // ... data to create a TaxExpense
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TaxExpense we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TaxExpenseUpsertArgs>(args: SelectSubset<T, TaxExpenseUpsertArgs<ExtArgs>>): Prisma__TaxExpenseClient<$Result.GetResult<Prisma.$TaxExpensePayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TaxExpenses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseCountArgs} args - Arguments to filter TaxExpenses to count.
+     * @example
+     * // Count the number of TaxExpenses
+     * const count = await prisma.taxExpense.count({
+     *   where: {
+     *     // ... the filter for the TaxExpenses we want to count
+     *   }
+     * })
+    **/
+    count<T extends TaxExpenseCountArgs>(
+      args?: Subset<T, TaxExpenseCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TaxExpenseCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TaxExpense.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TaxExpenseAggregateArgs>(args: Subset<T, TaxExpenseAggregateArgs>): Prisma.PrismaPromise<GetTaxExpenseAggregateType<T>>
+
+    /**
+     * Group by TaxExpense.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TaxExpenseGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TaxExpenseGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TaxExpenseGroupByArgs['orderBy'] }
+        : { orderBy?: TaxExpenseGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TaxExpenseGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTaxExpenseGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TaxExpense model
+   */
+  readonly fields: TaxExpenseFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TaxExpense.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TaxExpenseClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    paidAccount<T extends BankAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BankAccountDefaultArgs<ExtArgs>>): Prisma__BankAccountClient<$Result.GetResult<Prisma.$BankAccountPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    governmentTax<T extends GovernmentTaxOptionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GovernmentTaxOptionDefaultArgs<ExtArgs>>): Prisma__GovernmentTaxOptionClient<$Result.GetResult<Prisma.$GovernmentTaxOptionPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    createdByStaff<T extends TaxExpense$createdByStaffArgs<ExtArgs> = {}>(args?: Subset<T, TaxExpense$createdByStaffArgs<ExtArgs>>): Prisma__StaffClient<$Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TaxExpense model
+   */ 
+  interface TaxExpenseFieldRefs {
+    readonly id: FieldRef<"TaxExpense", 'String'>
+    readonly date: FieldRef<"TaxExpense", 'DateTime'>
+    readonly paidAccountId: FieldRef<"TaxExpense", 'String'>
+    readonly governmentTaxId: FieldRef<"TaxExpense", 'String'>
+    readonly direction: FieldRef<"TaxExpense", 'PaymentDirection'>
+    readonly amount: FieldRef<"TaxExpense", 'Decimal'>
+    readonly particular: FieldRef<"TaxExpense", 'String'>
+    readonly createdByStaffId: FieldRef<"TaxExpense", 'String'>
+    readonly createdAt: FieldRef<"TaxExpense", 'DateTime'>
+    readonly updatedAt: FieldRef<"TaxExpense", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TaxExpense findUnique
+   */
+  export type TaxExpenseFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxExpense to fetch.
+     */
+    where: TaxExpenseWhereUniqueInput
+  }
+
+  /**
+   * TaxExpense findUniqueOrThrow
+   */
+  export type TaxExpenseFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxExpense to fetch.
+     */
+    where: TaxExpenseWhereUniqueInput
+  }
+
+  /**
+   * TaxExpense findFirst
+   */
+  export type TaxExpenseFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxExpense to fetch.
+     */
+    where?: TaxExpenseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxExpenses to fetch.
+     */
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TaxExpenses.
+     */
+    cursor?: TaxExpenseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxExpenses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxExpenses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TaxExpenses.
+     */
+    distinct?: TaxExpenseScalarFieldEnum | TaxExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * TaxExpense findFirstOrThrow
+   */
+  export type TaxExpenseFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxExpense to fetch.
+     */
+    where?: TaxExpenseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxExpenses to fetch.
+     */
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TaxExpenses.
+     */
+    cursor?: TaxExpenseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxExpenses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxExpenses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TaxExpenses.
+     */
+    distinct?: TaxExpenseScalarFieldEnum | TaxExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * TaxExpense findMany
+   */
+  export type TaxExpenseFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * Filter, which TaxExpenses to fetch.
+     */
+    where?: TaxExpenseWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TaxExpenses to fetch.
+     */
+    orderBy?: TaxExpenseOrderByWithRelationInput | TaxExpenseOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TaxExpenses.
+     */
+    cursor?: TaxExpenseWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TaxExpenses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TaxExpenses.
+     */
+    skip?: number
+    distinct?: TaxExpenseScalarFieldEnum | TaxExpenseScalarFieldEnum[]
+  }
+
+  /**
+   * TaxExpense create
+   */
+  export type TaxExpenseCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TaxExpense.
+     */
+    data: XOR<TaxExpenseCreateInput, TaxExpenseUncheckedCreateInput>
+  }
+
+  /**
+   * TaxExpense createMany
+   */
+  export type TaxExpenseCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TaxExpenses.
+     */
+    data: TaxExpenseCreateManyInput | TaxExpenseCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TaxExpense createManyAndReturn
+   */
+  export type TaxExpenseCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TaxExpenses.
+     */
+    data: TaxExpenseCreateManyInput | TaxExpenseCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TaxExpense update
+   */
+  export type TaxExpenseUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TaxExpense.
+     */
+    data: XOR<TaxExpenseUpdateInput, TaxExpenseUncheckedUpdateInput>
+    /**
+     * Choose, which TaxExpense to update.
+     */
+    where: TaxExpenseWhereUniqueInput
+  }
+
+  /**
+   * TaxExpense updateMany
+   */
+  export type TaxExpenseUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TaxExpenses.
+     */
+    data: XOR<TaxExpenseUpdateManyMutationInput, TaxExpenseUncheckedUpdateManyInput>
+    /**
+     * Filter which TaxExpenses to update
+     */
+    where?: TaxExpenseWhereInput
+  }
+
+  /**
+   * TaxExpense upsert
+   */
+  export type TaxExpenseUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TaxExpense to update in case it exists.
+     */
+    where: TaxExpenseWhereUniqueInput
+    /**
+     * In case the TaxExpense found by the `where` argument doesn't exist, create a new TaxExpense with this data.
+     */
+    create: XOR<TaxExpenseCreateInput, TaxExpenseUncheckedCreateInput>
+    /**
+     * In case the TaxExpense was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TaxExpenseUpdateInput, TaxExpenseUncheckedUpdateInput>
+  }
+
+  /**
+   * TaxExpense delete
+   */
+  export type TaxExpenseDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
+    /**
+     * Filter which TaxExpense to delete.
+     */
+    where: TaxExpenseWhereUniqueInput
+  }
+
+  /**
+   * TaxExpense deleteMany
+   */
+  export type TaxExpenseDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TaxExpenses to delete
+     */
+    where?: TaxExpenseWhereInput
+  }
+
+  /**
+   * TaxExpense.createdByStaff
+   */
+  export type TaxExpense$createdByStaffArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Staff
+     */
+    select?: StaffSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StaffInclude<ExtArgs> | null
+    where?: StaffWhereInput
+  }
+
+  /**
+   * TaxExpense without action
+   */
+  export type TaxExpenseDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TaxExpense
+     */
+    select?: TaxExpenseSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TaxExpenseInclude<ExtArgs> | null
   }
 
 
@@ -46294,6 +48553,16 @@ export namespace Prisma {
   export type IndirectExpenseOptionScalarFieldEnum = (typeof IndirectExpenseOptionScalarFieldEnum)[keyof typeof IndirectExpenseOptionScalarFieldEnum]
 
 
+  export const GovernmentTaxOptionScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GovernmentTaxOptionScalarFieldEnum = (typeof GovernmentTaxOptionScalarFieldEnum)[keyof typeof GovernmentTaxOptionScalarFieldEnum]
+
+
   export const DocumentOptionScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -46738,6 +49007,22 @@ export namespace Prisma {
   export type BookExpenseScalarFieldEnum = (typeof BookExpenseScalarFieldEnum)[keyof typeof BookExpenseScalarFieldEnum]
 
 
+  export const TaxExpenseScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    paidAccountId: 'paidAccountId',
+    governmentTaxId: 'governmentTaxId',
+    direction: 'direction',
+    amount: 'amount',
+    particular: 'particular',
+    createdByStaffId: 'createdByStaffId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TaxExpenseScalarFieldEnum = (typeof TaxExpenseScalarFieldEnum)[keyof typeof TaxExpenseScalarFieldEnum]
+
+
   export const SavingAccountTxnScalarFieldEnum: {
     id: 'id',
     date: 'date',
@@ -47166,6 +49451,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountListRelationFilter
     createdBankTransfers?: BankTransferListRelationFilter
     createdBookExpenses?: BookExpenseListRelationFilter
+    createdTaxExpenses?: TaxExpenseListRelationFilter
     createdSavingAccountTxns?: SavingAccountTxnListRelationFilter
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
     createdCorrections?: DispatchCorrectionListRelationFilter
@@ -47195,6 +49481,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountOrderByRelationAggregateInput
     createdBankTransfers?: BankTransferOrderByRelationAggregateInput
     createdBookExpenses?: BookExpenseOrderByRelationAggregateInput
+    createdTaxExpenses?: TaxExpenseOrderByRelationAggregateInput
     createdSavingAccountTxns?: SavingAccountTxnOrderByRelationAggregateInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnOrderByRelationAggregateInput
     createdCorrections?: DispatchCorrectionOrderByRelationAggregateInput
@@ -47227,6 +49514,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountListRelationFilter
     createdBankTransfers?: BankTransferListRelationFilter
     createdBookExpenses?: BookExpenseListRelationFilter
+    createdTaxExpenses?: TaxExpenseListRelationFilter
     createdSavingAccountTxns?: SavingAccountTxnListRelationFilter
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
     createdCorrections?: DispatchCorrectionListRelationFilter
@@ -47809,6 +50097,56 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"IndirectExpenseOption"> | string
     createdAt?: DateTimeWithAggregatesFilter<"IndirectExpenseOption"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"IndirectExpenseOption"> | Date | string
+  }
+
+  export type GovernmentTaxOptionWhereInput = {
+    AND?: GovernmentTaxOptionWhereInput | GovernmentTaxOptionWhereInput[]
+    OR?: GovernmentTaxOptionWhereInput[]
+    NOT?: GovernmentTaxOptionWhereInput | GovernmentTaxOptionWhereInput[]
+    id?: StringFilter<"GovernmentTaxOption"> | string
+    name?: StringFilter<"GovernmentTaxOption"> | string
+    createdAt?: DateTimeFilter<"GovernmentTaxOption"> | Date | string
+    updatedAt?: DateTimeFilter<"GovernmentTaxOption"> | Date | string
+    taxExpenses?: TaxExpenseListRelationFilter
+  }
+
+  export type GovernmentTaxOptionOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    taxExpenses?: TaxExpenseOrderByRelationAggregateInput
+  }
+
+  export type GovernmentTaxOptionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    name?: string
+    AND?: GovernmentTaxOptionWhereInput | GovernmentTaxOptionWhereInput[]
+    OR?: GovernmentTaxOptionWhereInput[]
+    NOT?: GovernmentTaxOptionWhereInput | GovernmentTaxOptionWhereInput[]
+    createdAt?: DateTimeFilter<"GovernmentTaxOption"> | Date | string
+    updatedAt?: DateTimeFilter<"GovernmentTaxOption"> | Date | string
+    taxExpenses?: TaxExpenseListRelationFilter
+  }, "id" | "name">
+
+  export type GovernmentTaxOptionOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GovernmentTaxOptionCountOrderByAggregateInput
+    _max?: GovernmentTaxOptionMaxOrderByAggregateInput
+    _min?: GovernmentTaxOptionMinOrderByAggregateInput
+  }
+
+  export type GovernmentTaxOptionScalarWhereWithAggregatesInput = {
+    AND?: GovernmentTaxOptionScalarWhereWithAggregatesInput | GovernmentTaxOptionScalarWhereWithAggregatesInput[]
+    OR?: GovernmentTaxOptionScalarWhereWithAggregatesInput[]
+    NOT?: GovernmentTaxOptionScalarWhereWithAggregatesInput | GovernmentTaxOptionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"GovernmentTaxOption"> | string
+    name?: StringWithAggregatesFilter<"GovernmentTaxOption"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"GovernmentTaxOption"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"GovernmentTaxOption"> | Date | string
   }
 
   export type DocumentOptionWhereInput = {
@@ -50001,6 +52339,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferListRelationFilter
     transfersReceived?: BankTransferListRelationFilter
     bookExpenses?: BookExpenseListRelationFilter
+    taxExpenses?: TaxExpenseListRelationFilter
     savingAccountTxns?: SavingAccountTxnListRelationFilter
     unallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
   }
@@ -50018,6 +52357,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferOrderByRelationAggregateInput
     transfersReceived?: BankTransferOrderByRelationAggregateInput
     bookExpenses?: BookExpenseOrderByRelationAggregateInput
+    taxExpenses?: TaxExpenseOrderByRelationAggregateInput
     savingAccountTxns?: SavingAccountTxnOrderByRelationAggregateInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnOrderByRelationAggregateInput
   }
@@ -50039,6 +52379,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferListRelationFilter
     transfersReceived?: BankTransferListRelationFilter
     bookExpenses?: BookExpenseListRelationFilter
+    taxExpenses?: TaxExpenseListRelationFilter
     savingAccountTxns?: SavingAccountTxnListRelationFilter
     unallocatedReceiptTxns?: UnallocatedReceiptTxnListRelationFilter
   }, "id" | "accountName_bankName">
@@ -50237,6 +52578,94 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"BookExpense"> | Date | string
   }
 
+  export type TaxExpenseWhereInput = {
+    AND?: TaxExpenseWhereInput | TaxExpenseWhereInput[]
+    OR?: TaxExpenseWhereInput[]
+    NOT?: TaxExpenseWhereInput | TaxExpenseWhereInput[]
+    id?: StringFilter<"TaxExpense"> | string
+    date?: DateTimeFilter<"TaxExpense"> | Date | string
+    paidAccountId?: StringFilter<"TaxExpense"> | string
+    governmentTaxId?: StringFilter<"TaxExpense"> | string
+    direction?: EnumPaymentDirectionFilter<"TaxExpense"> | $Enums.PaymentDirection
+    amount?: DecimalFilter<"TaxExpense"> | Decimal | DecimalJsLike | number | string
+    particular?: StringFilter<"TaxExpense"> | string
+    createdByStaffId?: StringNullableFilter<"TaxExpense"> | string | null
+    createdAt?: DateTimeFilter<"TaxExpense"> | Date | string
+    updatedAt?: DateTimeFilter<"TaxExpense"> | Date | string
+    paidAccount?: XOR<BankAccountRelationFilter, BankAccountWhereInput>
+    governmentTax?: XOR<GovernmentTaxOptionRelationFilter, GovernmentTaxOptionWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }
+
+  export type TaxExpenseOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    governmentTaxId?: SortOrder
+    direction?: SortOrder
+    amount?: SortOrder
+    particular?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    paidAccount?: BankAccountOrderByWithRelationInput
+    governmentTax?: GovernmentTaxOptionOrderByWithRelationInput
+    createdByStaff?: StaffOrderByWithRelationInput
+  }
+
+  export type TaxExpenseWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TaxExpenseWhereInput | TaxExpenseWhereInput[]
+    OR?: TaxExpenseWhereInput[]
+    NOT?: TaxExpenseWhereInput | TaxExpenseWhereInput[]
+    date?: DateTimeFilter<"TaxExpense"> | Date | string
+    paidAccountId?: StringFilter<"TaxExpense"> | string
+    governmentTaxId?: StringFilter<"TaxExpense"> | string
+    direction?: EnumPaymentDirectionFilter<"TaxExpense"> | $Enums.PaymentDirection
+    amount?: DecimalFilter<"TaxExpense"> | Decimal | DecimalJsLike | number | string
+    particular?: StringFilter<"TaxExpense"> | string
+    createdByStaffId?: StringNullableFilter<"TaxExpense"> | string | null
+    createdAt?: DateTimeFilter<"TaxExpense"> | Date | string
+    updatedAt?: DateTimeFilter<"TaxExpense"> | Date | string
+    paidAccount?: XOR<BankAccountRelationFilter, BankAccountWhereInput>
+    governmentTax?: XOR<GovernmentTaxOptionRelationFilter, GovernmentTaxOptionWhereInput>
+    createdByStaff?: XOR<StaffNullableRelationFilter, StaffWhereInput> | null
+  }, "id">
+
+  export type TaxExpenseOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    governmentTaxId?: SortOrder
+    direction?: SortOrder
+    amount?: SortOrder
+    particular?: SortOrder
+    createdByStaffId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TaxExpenseCountOrderByAggregateInput
+    _avg?: TaxExpenseAvgOrderByAggregateInput
+    _max?: TaxExpenseMaxOrderByAggregateInput
+    _min?: TaxExpenseMinOrderByAggregateInput
+    _sum?: TaxExpenseSumOrderByAggregateInput
+  }
+
+  export type TaxExpenseScalarWhereWithAggregatesInput = {
+    AND?: TaxExpenseScalarWhereWithAggregatesInput | TaxExpenseScalarWhereWithAggregatesInput[]
+    OR?: TaxExpenseScalarWhereWithAggregatesInput[]
+    NOT?: TaxExpenseScalarWhereWithAggregatesInput | TaxExpenseScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TaxExpense"> | string
+    date?: DateTimeWithAggregatesFilter<"TaxExpense"> | Date | string
+    paidAccountId?: StringWithAggregatesFilter<"TaxExpense"> | string
+    governmentTaxId?: StringWithAggregatesFilter<"TaxExpense"> | string
+    direction?: EnumPaymentDirectionWithAggregatesFilter<"TaxExpense"> | $Enums.PaymentDirection
+    amount?: DecimalWithAggregatesFilter<"TaxExpense"> | Decimal | DecimalJsLike | number | string
+    particular?: StringWithAggregatesFilter<"TaxExpense"> | string
+    createdByStaffId?: StringNullableWithAggregatesFilter<"TaxExpense"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TaxExpense"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TaxExpense"> | Date | string
+  }
+
   export type SavingAccountTxnWhereInput = {
     AND?: SavingAccountTxnWhereInput | SavingAccountTxnWhereInput[]
     OR?: SavingAccountTxnWhereInput[]
@@ -50421,6 +52850,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -50450,6 +52880,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -50479,6 +52910,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -50508,6 +52940,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -51140,6 +53573,59 @@ export namespace Prisma {
   }
 
   export type IndirectExpenseOptionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GovernmentTaxOptionCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutGovernmentTaxInput
+  }
+
+  export type GovernmentTaxOptionUncheckedCreateInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutGovernmentTaxInput
+  }
+
+  export type GovernmentTaxOptionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taxExpenses?: TaxExpenseUpdateManyWithoutGovernmentTaxNestedInput
+  }
+
+  export type GovernmentTaxOptionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutGovernmentTaxNestedInput
+  }
+
+  export type GovernmentTaxOptionCreateManyInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GovernmentTaxOptionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GovernmentTaxOptionUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53544,6 +56030,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
@@ -53560,6 +56047,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
@@ -53576,6 +56064,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
@@ -53592,6 +56081,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
@@ -53779,6 +56269,94 @@ export namespace Prisma {
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
     indirectExpenseId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseCreateInput = {
+    id?: string
+    date: Date | string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paidAccount: BankAccountCreateNestedOneWithoutTaxExpensesInput
+    governmentTax: GovernmentTaxOptionCreateNestedOneWithoutTaxExpensesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedTaxExpensesInput
+  }
+
+  export type TaxExpenseUncheckedCreateInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    governmentTaxId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccount?: BankAccountUpdateOneRequiredWithoutTaxExpensesNestedInput
+    governmentTax?: GovernmentTaxOptionUpdateOneRequiredWithoutTaxExpensesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedTaxExpensesNestedInput
+  }
+
+  export type TaxExpenseUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    governmentTaxId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseCreateManyInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    governmentTaxId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    governmentTaxId?: StringFieldUpdateOperationsInput | string
     direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     particular?: StringFieldUpdateOperationsInput | string
@@ -54060,6 +56638,12 @@ export namespace Prisma {
     none?: BookExpenseWhereInput
   }
 
+  export type TaxExpenseListRelationFilter = {
+    every?: TaxExpenseWhereInput
+    some?: TaxExpenseWhereInput
+    none?: TaxExpenseWhereInput
+  }
+
   export type SavingAccountTxnListRelationFilter = {
     every?: SavingAccountTxnWhereInput
     some?: SavingAccountTxnWhereInput
@@ -54120,6 +56704,10 @@ export namespace Prisma {
   }
 
   export type BookExpenseOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TaxExpenseOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -54505,6 +57093,27 @@ export namespace Prisma {
   }
 
   export type IndirectExpenseOptionMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GovernmentTaxOptionCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GovernmentTaxOptionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GovernmentTaxOptionMinOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     createdAt?: SortOrder
@@ -56484,6 +59093,58 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type GovernmentTaxOptionRelationFilter = {
+    is?: GovernmentTaxOptionWhereInput
+    isNot?: GovernmentTaxOptionWhereInput
+  }
+
+  export type TaxExpenseCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    governmentTaxId?: SortOrder
+    direction?: SortOrder
+    amount?: SortOrder
+    particular?: SortOrder
+    createdByStaffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TaxExpenseAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type TaxExpenseMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    governmentTaxId?: SortOrder
+    direction?: SortOrder
+    amount?: SortOrder
+    particular?: SortOrder
+    createdByStaffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TaxExpenseMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    paidAccountId?: SortOrder
+    governmentTaxId?: SortOrder
+    direction?: SortOrder
+    amount?: SortOrder
+    particular?: SortOrder
+    createdByStaffId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TaxExpenseSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type SavingAccountTxnCountOrderByAggregateInput = {
     id?: SortOrder
     date?: SortOrder
@@ -56670,6 +59331,13 @@ export namespace Prisma {
     connect?: BookExpenseWhereUniqueInput | BookExpenseWhereUniqueInput[]
   }
 
+  export type TaxExpenseCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<TaxExpenseCreateWithoutCreatedByStaffInput, TaxExpenseUncheckedCreateWithoutCreatedByStaffInput> | TaxExpenseCreateWithoutCreatedByStaffInput[] | TaxExpenseUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutCreatedByStaffInput | TaxExpenseCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: TaxExpenseCreateManyCreatedByStaffInputEnvelope
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+  }
+
   export type SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput = {
     create?: XOR<SavingAccountTxnCreateWithoutCreatedByStaffInput, SavingAccountTxnUncheckedCreateWithoutCreatedByStaffInput> | SavingAccountTxnCreateWithoutCreatedByStaffInput[] | SavingAccountTxnUncheckedCreateWithoutCreatedByStaffInput[]
     connectOrCreate?: SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput | SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput[]
@@ -56759,6 +59427,13 @@ export namespace Prisma {
     connectOrCreate?: BookExpenseCreateOrConnectWithoutCreatedByStaffInput | BookExpenseCreateOrConnectWithoutCreatedByStaffInput[]
     createMany?: BookExpenseCreateManyCreatedByStaffInputEnvelope
     connect?: BookExpenseWhereUniqueInput | BookExpenseWhereUniqueInput[]
+  }
+
+  export type TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
+    create?: XOR<TaxExpenseCreateWithoutCreatedByStaffInput, TaxExpenseUncheckedCreateWithoutCreatedByStaffInput> | TaxExpenseCreateWithoutCreatedByStaffInput[] | TaxExpenseUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutCreatedByStaffInput | TaxExpenseCreateOrConnectWithoutCreatedByStaffInput[]
+    createMany?: TaxExpenseCreateManyCreatedByStaffInputEnvelope
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
   }
 
   export type SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput = {
@@ -56969,6 +59644,20 @@ export namespace Prisma {
     deleteMany?: BookExpenseScalarWhereInput | BookExpenseScalarWhereInput[]
   }
 
+  export type TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<TaxExpenseCreateWithoutCreatedByStaffInput, TaxExpenseUncheckedCreateWithoutCreatedByStaffInput> | TaxExpenseCreateWithoutCreatedByStaffInput[] | TaxExpenseUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutCreatedByStaffInput | TaxExpenseCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: TaxExpenseUpsertWithWhereUniqueWithoutCreatedByStaffInput | TaxExpenseUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: TaxExpenseCreateManyCreatedByStaffInputEnvelope
+    set?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    disconnect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    delete?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    update?: TaxExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput | TaxExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: TaxExpenseUpdateManyWithWhereWithoutCreatedByStaffInput | TaxExpenseUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
+  }
+
   export type SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput = {
     create?: XOR<SavingAccountTxnCreateWithoutCreatedByStaffInput, SavingAccountTxnUncheckedCreateWithoutCreatedByStaffInput> | SavingAccountTxnCreateWithoutCreatedByStaffInput[] | SavingAccountTxnUncheckedCreateWithoutCreatedByStaffInput[]
     connectOrCreate?: SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput | SavingAccountTxnCreateOrConnectWithoutCreatedByStaffInput[]
@@ -57149,6 +59838,20 @@ export namespace Prisma {
     update?: BookExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput | BookExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
     updateMany?: BookExpenseUpdateManyWithWhereWithoutCreatedByStaffInput | BookExpenseUpdateManyWithWhereWithoutCreatedByStaffInput[]
     deleteMany?: BookExpenseScalarWhereInput | BookExpenseScalarWhereInput[]
+  }
+
+  export type TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
+    create?: XOR<TaxExpenseCreateWithoutCreatedByStaffInput, TaxExpenseUncheckedCreateWithoutCreatedByStaffInput> | TaxExpenseCreateWithoutCreatedByStaffInput[] | TaxExpenseUncheckedCreateWithoutCreatedByStaffInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutCreatedByStaffInput | TaxExpenseCreateOrConnectWithoutCreatedByStaffInput[]
+    upsert?: TaxExpenseUpsertWithWhereUniqueWithoutCreatedByStaffInput | TaxExpenseUpsertWithWhereUniqueWithoutCreatedByStaffInput[]
+    createMany?: TaxExpenseCreateManyCreatedByStaffInputEnvelope
+    set?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    disconnect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    delete?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    update?: TaxExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput | TaxExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput[]
+    updateMany?: TaxExpenseUpdateManyWithWhereWithoutCreatedByStaffInput | TaxExpenseUpdateManyWithWhereWithoutCreatedByStaffInput[]
+    deleteMany?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
   }
 
   export type SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput = {
@@ -57535,6 +60238,48 @@ export namespace Prisma {
     update?: BookExpenseUpdateWithWhereUniqueWithoutIndirectExpenseInput | BookExpenseUpdateWithWhereUniqueWithoutIndirectExpenseInput[]
     updateMany?: BookExpenseUpdateManyWithWhereWithoutIndirectExpenseInput | BookExpenseUpdateManyWithWhereWithoutIndirectExpenseInput[]
     deleteMany?: BookExpenseScalarWhereInput | BookExpenseScalarWhereInput[]
+  }
+
+  export type TaxExpenseCreateNestedManyWithoutGovernmentTaxInput = {
+    create?: XOR<TaxExpenseCreateWithoutGovernmentTaxInput, TaxExpenseUncheckedCreateWithoutGovernmentTaxInput> | TaxExpenseCreateWithoutGovernmentTaxInput[] | TaxExpenseUncheckedCreateWithoutGovernmentTaxInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutGovernmentTaxInput | TaxExpenseCreateOrConnectWithoutGovernmentTaxInput[]
+    createMany?: TaxExpenseCreateManyGovernmentTaxInputEnvelope
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+  }
+
+  export type TaxExpenseUncheckedCreateNestedManyWithoutGovernmentTaxInput = {
+    create?: XOR<TaxExpenseCreateWithoutGovernmentTaxInput, TaxExpenseUncheckedCreateWithoutGovernmentTaxInput> | TaxExpenseCreateWithoutGovernmentTaxInput[] | TaxExpenseUncheckedCreateWithoutGovernmentTaxInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutGovernmentTaxInput | TaxExpenseCreateOrConnectWithoutGovernmentTaxInput[]
+    createMany?: TaxExpenseCreateManyGovernmentTaxInputEnvelope
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+  }
+
+  export type TaxExpenseUpdateManyWithoutGovernmentTaxNestedInput = {
+    create?: XOR<TaxExpenseCreateWithoutGovernmentTaxInput, TaxExpenseUncheckedCreateWithoutGovernmentTaxInput> | TaxExpenseCreateWithoutGovernmentTaxInput[] | TaxExpenseUncheckedCreateWithoutGovernmentTaxInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutGovernmentTaxInput | TaxExpenseCreateOrConnectWithoutGovernmentTaxInput[]
+    upsert?: TaxExpenseUpsertWithWhereUniqueWithoutGovernmentTaxInput | TaxExpenseUpsertWithWhereUniqueWithoutGovernmentTaxInput[]
+    createMany?: TaxExpenseCreateManyGovernmentTaxInputEnvelope
+    set?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    disconnect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    delete?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    update?: TaxExpenseUpdateWithWhereUniqueWithoutGovernmentTaxInput | TaxExpenseUpdateWithWhereUniqueWithoutGovernmentTaxInput[]
+    updateMany?: TaxExpenseUpdateManyWithWhereWithoutGovernmentTaxInput | TaxExpenseUpdateManyWithWhereWithoutGovernmentTaxInput[]
+    deleteMany?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
+  }
+
+  export type TaxExpenseUncheckedUpdateManyWithoutGovernmentTaxNestedInput = {
+    create?: XOR<TaxExpenseCreateWithoutGovernmentTaxInput, TaxExpenseUncheckedCreateWithoutGovernmentTaxInput> | TaxExpenseCreateWithoutGovernmentTaxInput[] | TaxExpenseUncheckedCreateWithoutGovernmentTaxInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutGovernmentTaxInput | TaxExpenseCreateOrConnectWithoutGovernmentTaxInput[]
+    upsert?: TaxExpenseUpsertWithWhereUniqueWithoutGovernmentTaxInput | TaxExpenseUpsertWithWhereUniqueWithoutGovernmentTaxInput[]
+    createMany?: TaxExpenseCreateManyGovernmentTaxInputEnvelope
+    set?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    disconnect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    delete?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    update?: TaxExpenseUpdateWithWhereUniqueWithoutGovernmentTaxInput | TaxExpenseUpdateWithWhereUniqueWithoutGovernmentTaxInput[]
+    updateMany?: TaxExpenseUpdateManyWithWhereWithoutGovernmentTaxInput | TaxExpenseUpdateManyWithWhereWithoutGovernmentTaxInput[]
+    deleteMany?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
   }
 
   export type MemberDocumentCreateNestedManyWithoutMemberInput = {
@@ -59401,6 +62146,13 @@ export namespace Prisma {
     connect?: BookExpenseWhereUniqueInput | BookExpenseWhereUniqueInput[]
   }
 
+  export type TaxExpenseCreateNestedManyWithoutPaidAccountInput = {
+    create?: XOR<TaxExpenseCreateWithoutPaidAccountInput, TaxExpenseUncheckedCreateWithoutPaidAccountInput> | TaxExpenseCreateWithoutPaidAccountInput[] | TaxExpenseUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutPaidAccountInput | TaxExpenseCreateOrConnectWithoutPaidAccountInput[]
+    createMany?: TaxExpenseCreateManyPaidAccountInputEnvelope
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+  }
+
   export type SavingAccountTxnCreateNestedManyWithoutBankAccountInput = {
     create?: XOR<SavingAccountTxnCreateWithoutBankAccountInput, SavingAccountTxnUncheckedCreateWithoutBankAccountInput> | SavingAccountTxnCreateWithoutBankAccountInput[] | SavingAccountTxnUncheckedCreateWithoutBankAccountInput[]
     connectOrCreate?: SavingAccountTxnCreateOrConnectWithoutBankAccountInput | SavingAccountTxnCreateOrConnectWithoutBankAccountInput[]
@@ -59441,6 +62193,13 @@ export namespace Prisma {
     connectOrCreate?: BookExpenseCreateOrConnectWithoutPaidAccountInput | BookExpenseCreateOrConnectWithoutPaidAccountInput[]
     createMany?: BookExpenseCreateManyPaidAccountInputEnvelope
     connect?: BookExpenseWhereUniqueInput | BookExpenseWhereUniqueInput[]
+  }
+
+  export type TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput = {
+    create?: XOR<TaxExpenseCreateWithoutPaidAccountInput, TaxExpenseUncheckedCreateWithoutPaidAccountInput> | TaxExpenseCreateWithoutPaidAccountInput[] | TaxExpenseUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutPaidAccountInput | TaxExpenseCreateOrConnectWithoutPaidAccountInput[]
+    createMany?: TaxExpenseCreateManyPaidAccountInputEnvelope
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
   }
 
   export type SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput = {
@@ -59521,6 +62280,20 @@ export namespace Prisma {
     update?: BookExpenseUpdateWithWhereUniqueWithoutPaidAccountInput | BookExpenseUpdateWithWhereUniqueWithoutPaidAccountInput[]
     updateMany?: BookExpenseUpdateManyWithWhereWithoutPaidAccountInput | BookExpenseUpdateManyWithWhereWithoutPaidAccountInput[]
     deleteMany?: BookExpenseScalarWhereInput | BookExpenseScalarWhereInput[]
+  }
+
+  export type TaxExpenseUpdateManyWithoutPaidAccountNestedInput = {
+    create?: XOR<TaxExpenseCreateWithoutPaidAccountInput, TaxExpenseUncheckedCreateWithoutPaidAccountInput> | TaxExpenseCreateWithoutPaidAccountInput[] | TaxExpenseUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutPaidAccountInput | TaxExpenseCreateOrConnectWithoutPaidAccountInput[]
+    upsert?: TaxExpenseUpsertWithWhereUniqueWithoutPaidAccountInput | TaxExpenseUpsertWithWhereUniqueWithoutPaidAccountInput[]
+    createMany?: TaxExpenseCreateManyPaidAccountInputEnvelope
+    set?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    disconnect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    delete?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    update?: TaxExpenseUpdateWithWhereUniqueWithoutPaidAccountInput | TaxExpenseUpdateWithWhereUniqueWithoutPaidAccountInput[]
+    updateMany?: TaxExpenseUpdateManyWithWhereWithoutPaidAccountInput | TaxExpenseUpdateManyWithWhereWithoutPaidAccountInput[]
+    deleteMany?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
   }
 
   export type SavingAccountTxnUpdateManyWithoutBankAccountNestedInput = {
@@ -59605,6 +62378,20 @@ export namespace Prisma {
     update?: BookExpenseUpdateWithWhereUniqueWithoutPaidAccountInput | BookExpenseUpdateWithWhereUniqueWithoutPaidAccountInput[]
     updateMany?: BookExpenseUpdateManyWithWhereWithoutPaidAccountInput | BookExpenseUpdateManyWithWhereWithoutPaidAccountInput[]
     deleteMany?: BookExpenseScalarWhereInput | BookExpenseScalarWhereInput[]
+  }
+
+  export type TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput = {
+    create?: XOR<TaxExpenseCreateWithoutPaidAccountInput, TaxExpenseUncheckedCreateWithoutPaidAccountInput> | TaxExpenseCreateWithoutPaidAccountInput[] | TaxExpenseUncheckedCreateWithoutPaidAccountInput[]
+    connectOrCreate?: TaxExpenseCreateOrConnectWithoutPaidAccountInput | TaxExpenseCreateOrConnectWithoutPaidAccountInput[]
+    upsert?: TaxExpenseUpsertWithWhereUniqueWithoutPaidAccountInput | TaxExpenseUpsertWithWhereUniqueWithoutPaidAccountInput[]
+    createMany?: TaxExpenseCreateManyPaidAccountInputEnvelope
+    set?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    disconnect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    delete?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    connect?: TaxExpenseWhereUniqueInput | TaxExpenseWhereUniqueInput[]
+    update?: TaxExpenseUpdateWithWhereUniqueWithoutPaidAccountInput | TaxExpenseUpdateWithWhereUniqueWithoutPaidAccountInput[]
+    updateMany?: TaxExpenseUpdateManyWithWhereWithoutPaidAccountInput | TaxExpenseUpdateManyWithWhereWithoutPaidAccountInput[]
+    deleteMany?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
   }
 
   export type SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput = {
@@ -59721,6 +62508,50 @@ export namespace Prisma {
     delete?: StaffWhereInput | boolean
     connect?: StaffWhereUniqueInput
     update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedBookExpensesInput, StaffUpdateWithoutCreatedBookExpensesInput>, StaffUncheckedUpdateWithoutCreatedBookExpensesInput>
+  }
+
+  export type BankAccountCreateNestedOneWithoutTaxExpensesInput = {
+    create?: XOR<BankAccountCreateWithoutTaxExpensesInput, BankAccountUncheckedCreateWithoutTaxExpensesInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutTaxExpensesInput
+    connect?: BankAccountWhereUniqueInput
+  }
+
+  export type GovernmentTaxOptionCreateNestedOneWithoutTaxExpensesInput = {
+    create?: XOR<GovernmentTaxOptionCreateWithoutTaxExpensesInput, GovernmentTaxOptionUncheckedCreateWithoutTaxExpensesInput>
+    connectOrCreate?: GovernmentTaxOptionCreateOrConnectWithoutTaxExpensesInput
+    connect?: GovernmentTaxOptionWhereUniqueInput
+  }
+
+  export type StaffCreateNestedOneWithoutCreatedTaxExpensesInput = {
+    create?: XOR<StaffCreateWithoutCreatedTaxExpensesInput, StaffUncheckedCreateWithoutCreatedTaxExpensesInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedTaxExpensesInput
+    connect?: StaffWhereUniqueInput
+  }
+
+  export type BankAccountUpdateOneRequiredWithoutTaxExpensesNestedInput = {
+    create?: XOR<BankAccountCreateWithoutTaxExpensesInput, BankAccountUncheckedCreateWithoutTaxExpensesInput>
+    connectOrCreate?: BankAccountCreateOrConnectWithoutTaxExpensesInput
+    upsert?: BankAccountUpsertWithoutTaxExpensesInput
+    connect?: BankAccountWhereUniqueInput
+    update?: XOR<XOR<BankAccountUpdateToOneWithWhereWithoutTaxExpensesInput, BankAccountUpdateWithoutTaxExpensesInput>, BankAccountUncheckedUpdateWithoutTaxExpensesInput>
+  }
+
+  export type GovernmentTaxOptionUpdateOneRequiredWithoutTaxExpensesNestedInput = {
+    create?: XOR<GovernmentTaxOptionCreateWithoutTaxExpensesInput, GovernmentTaxOptionUncheckedCreateWithoutTaxExpensesInput>
+    connectOrCreate?: GovernmentTaxOptionCreateOrConnectWithoutTaxExpensesInput
+    upsert?: GovernmentTaxOptionUpsertWithoutTaxExpensesInput
+    connect?: GovernmentTaxOptionWhereUniqueInput
+    update?: XOR<XOR<GovernmentTaxOptionUpdateToOneWithWhereWithoutTaxExpensesInput, GovernmentTaxOptionUpdateWithoutTaxExpensesInput>, GovernmentTaxOptionUncheckedUpdateWithoutTaxExpensesInput>
+  }
+
+  export type StaffUpdateOneWithoutCreatedTaxExpensesNestedInput = {
+    create?: XOR<StaffCreateWithoutCreatedTaxExpensesInput, StaffUncheckedCreateWithoutCreatedTaxExpensesInput>
+    connectOrCreate?: StaffCreateOrConnectWithoutCreatedTaxExpensesInput
+    upsert?: StaffUpsertWithoutCreatedTaxExpensesInput
+    disconnect?: StaffWhereInput | boolean
+    delete?: StaffWhereInput | boolean
+    connect?: StaffWhereUniqueInput
+    update?: XOR<XOR<StaffUpdateToOneWithWhereWithoutCreatedTaxExpensesInput, StaffUpdateWithoutCreatedTaxExpensesInput>, StaffUncheckedUpdateWithoutCreatedTaxExpensesInput>
   }
 
   export type BankAccountCreateNestedOneWithoutSavingAccountTxnsInput = {
@@ -60858,6 +63689,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TaxExpenseCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paidAccount: BankAccountCreateNestedOneWithoutTaxExpensesInput
+    governmentTax: GovernmentTaxOptionCreateNestedOneWithoutTaxExpensesInput
+  }
+
+  export type TaxExpenseUncheckedCreateWithoutCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    governmentTaxId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseCreateOrConnectWithoutCreatedByStaffInput = {
+    where: TaxExpenseWhereUniqueInput
+    create: XOR<TaxExpenseCreateWithoutCreatedByStaffInput, TaxExpenseUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type TaxExpenseCreateManyCreatedByStaffInputEnvelope = {
+    data: TaxExpenseCreateManyCreatedByStaffInput | TaxExpenseCreateManyCreatedByStaffInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SavingAccountTxnCreateWithoutCreatedByStaffInput = {
     id?: string
     date: Date | string
@@ -61337,6 +64202,38 @@ export namespace Prisma {
     createdByStaffId?: StringNullableFilter<"BookExpense"> | string | null
     createdAt?: DateTimeFilter<"BookExpense"> | Date | string
     updatedAt?: DateTimeFilter<"BookExpense"> | Date | string
+  }
+
+  export type TaxExpenseUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: TaxExpenseWhereUniqueInput
+    update: XOR<TaxExpenseUpdateWithoutCreatedByStaffInput, TaxExpenseUncheckedUpdateWithoutCreatedByStaffInput>
+    create: XOR<TaxExpenseCreateWithoutCreatedByStaffInput, TaxExpenseUncheckedCreateWithoutCreatedByStaffInput>
+  }
+
+  export type TaxExpenseUpdateWithWhereUniqueWithoutCreatedByStaffInput = {
+    where: TaxExpenseWhereUniqueInput
+    data: XOR<TaxExpenseUpdateWithoutCreatedByStaffInput, TaxExpenseUncheckedUpdateWithoutCreatedByStaffInput>
+  }
+
+  export type TaxExpenseUpdateManyWithWhereWithoutCreatedByStaffInput = {
+    where: TaxExpenseScalarWhereInput
+    data: XOR<TaxExpenseUpdateManyMutationInput, TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffInput>
+  }
+
+  export type TaxExpenseScalarWhereInput = {
+    AND?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
+    OR?: TaxExpenseScalarWhereInput[]
+    NOT?: TaxExpenseScalarWhereInput | TaxExpenseScalarWhereInput[]
+    id?: StringFilter<"TaxExpense"> | string
+    date?: DateTimeFilter<"TaxExpense"> | Date | string
+    paidAccountId?: StringFilter<"TaxExpense"> | string
+    governmentTaxId?: StringFilter<"TaxExpense"> | string
+    direction?: EnumPaymentDirectionFilter<"TaxExpense"> | $Enums.PaymentDirection
+    amount?: DecimalFilter<"TaxExpense"> | Decimal | DecimalJsLike | number | string
+    particular?: StringFilter<"TaxExpense"> | string
+    createdByStaffId?: StringNullableFilter<"TaxExpense"> | string | null
+    createdAt?: DateTimeFilter<"TaxExpense"> | Date | string
+    updatedAt?: DateTimeFilter<"TaxExpense"> | Date | string
   }
 
   export type SavingAccountTxnUpsertWithWhereUniqueWithoutCreatedByStaffInput = {
@@ -61927,6 +64824,56 @@ export namespace Prisma {
     data: XOR<BookExpenseUpdateManyMutationInput, BookExpenseUncheckedUpdateManyWithoutIndirectExpenseInput>
   }
 
+  export type TaxExpenseCreateWithoutGovernmentTaxInput = {
+    id?: string
+    date: Date | string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    paidAccount: BankAccountCreateNestedOneWithoutTaxExpensesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedTaxExpensesInput
+  }
+
+  export type TaxExpenseUncheckedCreateWithoutGovernmentTaxInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseCreateOrConnectWithoutGovernmentTaxInput = {
+    where: TaxExpenseWhereUniqueInput
+    create: XOR<TaxExpenseCreateWithoutGovernmentTaxInput, TaxExpenseUncheckedCreateWithoutGovernmentTaxInput>
+  }
+
+  export type TaxExpenseCreateManyGovernmentTaxInputEnvelope = {
+    data: TaxExpenseCreateManyGovernmentTaxInput | TaxExpenseCreateManyGovernmentTaxInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TaxExpenseUpsertWithWhereUniqueWithoutGovernmentTaxInput = {
+    where: TaxExpenseWhereUniqueInput
+    update: XOR<TaxExpenseUpdateWithoutGovernmentTaxInput, TaxExpenseUncheckedUpdateWithoutGovernmentTaxInput>
+    create: XOR<TaxExpenseCreateWithoutGovernmentTaxInput, TaxExpenseUncheckedCreateWithoutGovernmentTaxInput>
+  }
+
+  export type TaxExpenseUpdateWithWhereUniqueWithoutGovernmentTaxInput = {
+    where: TaxExpenseWhereUniqueInput
+    data: XOR<TaxExpenseUpdateWithoutGovernmentTaxInput, TaxExpenseUncheckedUpdateWithoutGovernmentTaxInput>
+  }
+
+  export type TaxExpenseUpdateManyWithWhereWithoutGovernmentTaxInput = {
+    where: TaxExpenseScalarWhereInput
+    data: XOR<TaxExpenseUpdateManyMutationInput, TaxExpenseUncheckedUpdateManyWithoutGovernmentTaxInput>
+  }
+
   export type MemberDocumentCreateWithoutMemberInput = {
     id?: string
     remarks?: string
@@ -62469,6 +65416,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -62497,6 +65445,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -62847,6 +65796,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -62875,6 +65825,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -63762,6 +66713,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -63790,6 +66742,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -64073,6 +67026,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -64101,6 +67055,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -64910,6 +67865,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -64938,6 +67894,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -65313,6 +68270,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -65341,6 +68299,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -65459,6 +68418,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
   }
@@ -65487,6 +68447,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
@@ -65610,6 +68571,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
   }
@@ -65638,6 +68600,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
@@ -65824,6 +68787,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
@@ -65839,6 +68803,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
@@ -65871,6 +68836,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -65899,6 +68865,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -66149,6 +69116,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
@@ -66164,6 +69132,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
@@ -66202,6 +69171,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -66230,6 +69200,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -66464,6 +69435,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -66492,6 +69464,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -66725,6 +69698,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -66753,6 +69727,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -66818,6 +69793,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -66846,6 +69822,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -66933,6 +69910,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -66961,6 +69939,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -67026,6 +70005,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -67054,6 +70034,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -67141,6 +70122,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -67169,6 +70151,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -67197,6 +70180,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -67225,6 +70209,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -67297,6 +70282,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -67325,6 +70311,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -67906,6 +70893,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
@@ -67921,6 +70909,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
@@ -68117,6 +71106,40 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type TaxExpenseCreateWithoutPaidAccountInput = {
+    id?: string
+    date: Date | string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    governmentTax: GovernmentTaxOptionCreateNestedOneWithoutTaxExpensesInput
+    createdByStaff?: StaffCreateNestedOneWithoutCreatedTaxExpensesInput
+  }
+
+  export type TaxExpenseUncheckedCreateWithoutPaidAccountInput = {
+    id?: string
+    date: Date | string
+    governmentTaxId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseCreateOrConnectWithoutPaidAccountInput = {
+    where: TaxExpenseWhereUniqueInput
+    create: XOR<TaxExpenseCreateWithoutPaidAccountInput, TaxExpenseUncheckedCreateWithoutPaidAccountInput>
+  }
+
+  export type TaxExpenseCreateManyPaidAccountInputEnvelope = {
+    data: TaxExpenseCreateManyPaidAccountInput | TaxExpenseCreateManyPaidAccountInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SavingAccountTxnCreateWithoutBankAccountInput = {
     id?: string
     date: Date | string
@@ -68270,6 +71293,22 @@ export namespace Prisma {
     data: XOR<BookExpenseUpdateManyMutationInput, BookExpenseUncheckedUpdateManyWithoutPaidAccountInput>
   }
 
+  export type TaxExpenseUpsertWithWhereUniqueWithoutPaidAccountInput = {
+    where: TaxExpenseWhereUniqueInput
+    update: XOR<TaxExpenseUpdateWithoutPaidAccountInput, TaxExpenseUncheckedUpdateWithoutPaidAccountInput>
+    create: XOR<TaxExpenseCreateWithoutPaidAccountInput, TaxExpenseUncheckedCreateWithoutPaidAccountInput>
+  }
+
+  export type TaxExpenseUpdateWithWhereUniqueWithoutPaidAccountInput = {
+    where: TaxExpenseWhereUniqueInput
+    data: XOR<TaxExpenseUpdateWithoutPaidAccountInput, TaxExpenseUncheckedUpdateWithoutPaidAccountInput>
+  }
+
+  export type TaxExpenseUpdateManyWithWhereWithoutPaidAccountInput = {
+    where: TaxExpenseScalarWhereInput
+    data: XOR<TaxExpenseUpdateManyMutationInput, TaxExpenseUncheckedUpdateManyWithoutPaidAccountInput>
+  }
+
   export type SavingAccountTxnUpsertWithWhereUniqueWithoutBankAccountInput = {
     where: SavingAccountTxnWhereUniqueInput
     update: XOR<SavingAccountTxnUpdateWithoutBankAccountInput, SavingAccountTxnUncheckedUpdateWithoutBankAccountInput>
@@ -68313,6 +71352,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutBankAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
@@ -68328,6 +71368,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
@@ -68348,6 +71389,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutBankAccountInput
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
@@ -68363,6 +71405,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
@@ -68395,6 +71438,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -68423,6 +71467,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -68455,6 +71500,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutBankAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
@@ -68470,6 +71516,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
@@ -68496,6 +71543,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutBankAccountNestedInput
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
@@ -68511,6 +71559,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
@@ -68549,6 +71598,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -68577,6 +71627,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -68593,6 +71644,7 @@ export namespace Prisma {
     payments?: PaymentCreateNestedManyWithoutBankAccountInput
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
@@ -68608,6 +71660,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
@@ -68659,6 +71712,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
@@ -68687,6 +71741,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
@@ -68719,6 +71774,7 @@ export namespace Prisma {
     payments?: PaymentUpdateManyWithoutBankAccountNestedInput
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
@@ -68734,6 +71790,7 @@ export namespace Prisma {
     payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
@@ -68797,6 +71854,7 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
@@ -68825,6 +71883,263 @@ export namespace Prisma {
     createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type BankAccountCreateWithoutTaxExpensesInput = {
+    id?: string
+    accountName: string
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accountType?: BankAccountTypeOptionCreateNestedOneWithoutBankAccountsInput
+    payments?: PaymentCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
+    bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
+  }
+
+  export type BankAccountUncheckedCreateWithoutTaxExpensesInput = {
+    id?: string
+    accountName: string
+    accountTypeId?: string | null
+    bankName: string
+    openingBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    payments?: PaymentUncheckedCreateNestedManyWithoutBankAccountInput
+    transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
+    transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
+    bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
+  }
+
+  export type BankAccountCreateOrConnectWithoutTaxExpensesInput = {
+    where: BankAccountWhereUniqueInput
+    create: XOR<BankAccountCreateWithoutTaxExpensesInput, BankAccountUncheckedCreateWithoutTaxExpensesInput>
+  }
+
+  export type GovernmentTaxOptionCreateWithoutTaxExpensesInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GovernmentTaxOptionUncheckedCreateWithoutTaxExpensesInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GovernmentTaxOptionCreateOrConnectWithoutTaxExpensesInput = {
+    where: GovernmentTaxOptionWhereUniqueInput
+    create: XOR<GovernmentTaxOptionCreateWithoutTaxExpensesInput, GovernmentTaxOptionUncheckedCreateWithoutTaxExpensesInput>
+  }
+
+  export type StaffCreateWithoutCreatedTaxExpensesInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerCreateNestedManyWithoutDealByInput
+    orders?: OrderCreateNestedManyWithoutOrderByInput
+    bills?: BillCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
+    createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffUncheckedCreateWithoutCreatedTaxExpensesInput = {
+    id?: string
+    name: string
+    role?: string | null
+    passwordHash?: string | null
+    pageKeys?: StaffCreatepageKeysInput | string[]
+    collectionSalesExecs?: StaffCreatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffCreatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffCreatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffCreatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffCreateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffCreatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    dealByCustomers?: CustomerUncheckedCreateNestedManyWithoutDealByInput
+    orders?: OrderUncheckedCreateNestedManyWithoutOrderByInput
+    bills?: BillUncheckedCreateNestedManyWithoutStaffInput
+    createdPayments?: PaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDiscounts?: DiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdDispatches?: DispatchUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegPayments?: VegPaymentUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
+  }
+
+  export type StaffCreateOrConnectWithoutCreatedTaxExpensesInput = {
+    where: StaffWhereUniqueInput
+    create: XOR<StaffCreateWithoutCreatedTaxExpensesInput, StaffUncheckedCreateWithoutCreatedTaxExpensesInput>
+  }
+
+  export type BankAccountUpsertWithoutTaxExpensesInput = {
+    update: XOR<BankAccountUpdateWithoutTaxExpensesInput, BankAccountUncheckedUpdateWithoutTaxExpensesInput>
+    create: XOR<BankAccountCreateWithoutTaxExpensesInput, BankAccountUncheckedCreateWithoutTaxExpensesInput>
+    where?: BankAccountWhereInput
+  }
+
+  export type BankAccountUpdateToOneWithWhereWithoutTaxExpensesInput = {
+    where?: BankAccountWhereInput
+    data: XOR<BankAccountUpdateWithoutTaxExpensesInput, BankAccountUncheckedUpdateWithoutTaxExpensesInput>
+  }
+
+  export type BankAccountUpdateWithoutTaxExpensesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accountType?: BankAccountTypeOptionUpdateOneWithoutBankAccountsNestedInput
+    payments?: PaymentUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
+    bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
+  }
+
+  export type BankAccountUncheckedUpdateWithoutTaxExpensesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accountName?: StringFieldUpdateOperationsInput | string
+    accountTypeId?: NullableStringFieldUpdateOperationsInput | string | null
+    bankName?: StringFieldUpdateOperationsInput | string
+    openingBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    payments?: PaymentUncheckedUpdateManyWithoutBankAccountNestedInput
+    transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
+    transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
+    bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+    unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
+  }
+
+  export type GovernmentTaxOptionUpsertWithoutTaxExpensesInput = {
+    update: XOR<GovernmentTaxOptionUpdateWithoutTaxExpensesInput, GovernmentTaxOptionUncheckedUpdateWithoutTaxExpensesInput>
+    create: XOR<GovernmentTaxOptionCreateWithoutTaxExpensesInput, GovernmentTaxOptionUncheckedCreateWithoutTaxExpensesInput>
+    where?: GovernmentTaxOptionWhereInput
+  }
+
+  export type GovernmentTaxOptionUpdateToOneWithWhereWithoutTaxExpensesInput = {
+    where?: GovernmentTaxOptionWhereInput
+    data: XOR<GovernmentTaxOptionUpdateWithoutTaxExpensesInput, GovernmentTaxOptionUncheckedUpdateWithoutTaxExpensesInput>
+  }
+
+  export type GovernmentTaxOptionUpdateWithoutTaxExpensesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GovernmentTaxOptionUncheckedUpdateWithoutTaxExpensesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StaffUpsertWithoutCreatedTaxExpensesInput = {
+    update: XOR<StaffUpdateWithoutCreatedTaxExpensesInput, StaffUncheckedUpdateWithoutCreatedTaxExpensesInput>
+    create: XOR<StaffCreateWithoutCreatedTaxExpensesInput, StaffUncheckedCreateWithoutCreatedTaxExpensesInput>
+    where?: StaffWhereInput
+  }
+
+  export type StaffUpdateToOneWithWhereWithoutCreatedTaxExpensesInput = {
+    where?: StaffWhereInput
+    data: XOR<StaffUpdateWithoutCreatedTaxExpensesInput, StaffUncheckedUpdateWithoutCreatedTaxExpensesInput>
+  }
+
+  export type StaffUpdateWithoutCreatedTaxExpensesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUpdateManyWithoutDealByNestedInput
+    orders?: OrderUpdateManyWithoutOrderByNestedInput
+    bills?: BillUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
+    createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
+    createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
+  }
+
+  export type StaffUncheckedUpdateWithoutCreatedTaxExpensesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    pageKeys?: StaffUpdatepageKeysInput | string[]
+    collectionSalesExecs?: StaffUpdatecollectionSalesExecsInput | string[]
+    salesEngineSalesExecs?: StaffUpdatesalesEngineSalesExecsInput | string[]
+    saleOrderSalesExecs?: StaffUpdatesaleOrderSalesExecsInput | string[]
+    purchaseOrderSalesExecs?: StaffUpdatepurchaseOrderSalesExecsInput | string[]
+    ageingReportSalesExecs?: StaffUpdateageingReportSalesExecsInput | string[]
+    customerLedgerSalesExecs?: StaffUpdatecustomerLedgerSalesExecsInput | string[]
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    dealByCustomers?: CustomerUncheckedUpdateManyWithoutDealByNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutOrderByNestedInput
+    bills?: BillUncheckedUpdateManyWithoutStaffNestedInput
+    createdPayments?: PaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDiscounts?: DiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdDispatches?: DispatchUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegPayments?: VegPaymentUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
@@ -68842,6 +72157,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutBankAccountInput
   }
 
@@ -68857,6 +72173,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
@@ -68889,6 +72206,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
@@ -68917,6 +72235,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
@@ -68949,6 +72268,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
 
@@ -68964,6 +72284,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
@@ -69002,6 +72323,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
@@ -69030,6 +72352,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdUnallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
@@ -69046,6 +72369,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutBankAccountInput
   }
 
@@ -69061,6 +72385,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedCreateNestedManyWithoutPaidAccountInput
     transfersReceived?: BankTransferUncheckedCreateNestedManyWithoutReceivedAccountInput
     bookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
+    taxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutPaidAccountInput
     savingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutBankAccountInput
   }
 
@@ -69093,6 +72418,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionCreateNestedManyWithoutCreatedByStaffInput
   }
@@ -69121,6 +72447,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBankTransfers?: BankTransferUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdBookExpenses?: BookExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
+    createdTaxExpenses?: TaxExpenseUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedCreateNestedManyWithoutCreatedByStaffInput
     createdCorrections?: DispatchCorrectionUncheckedCreateNestedManyWithoutCreatedByStaffInput
   }
@@ -69153,6 +72480,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
   }
 
@@ -69168,6 +72496,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
 
@@ -69206,6 +72535,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUpdateManyWithoutCreatedByStaffNestedInput
   }
@@ -69234,6 +72564,7 @@ export namespace Prisma {
     createdVegDiscounts?: VegDiscountUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBankTransfers?: BankTransferUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdBookExpenses?: BookExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
+    createdTaxExpenses?: TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdSavingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutCreatedByStaffNestedInput
     createdCorrections?: DispatchCorrectionUncheckedUpdateManyWithoutCreatedByStaffNestedInput
   }
@@ -69416,6 +72747,18 @@ export namespace Prisma {
     date: Date | string
     paidAccountId: string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseCreateManyCreatedByStaffInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    governmentTaxId: string
     direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
@@ -70029,6 +73372,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TaxExpenseUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccount?: BankAccountUpdateOneRequiredWithoutTaxExpensesNestedInput
+    governmentTax?: GovernmentTaxOptionUpdateOneRequiredWithoutTaxExpensesNestedInput
+  }
+
+  export type TaxExpenseUncheckedUpdateWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    governmentTaxId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseUncheckedUpdateManyWithoutCreatedByStaffInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    governmentTaxId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SavingAccountTxnUpdateWithoutCreatedByStaffInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -70619,6 +73998,54 @@ export namespace Prisma {
   }
 
   export type BookExpenseUncheckedUpdateManyWithoutIndirectExpenseInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseCreateManyGovernmentTaxInput = {
+    id?: string
+    date: Date | string
+    paidAccountId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseUpdateWithoutGovernmentTaxInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccount?: BankAccountUpdateOneRequiredWithoutTaxExpensesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedTaxExpensesNestedInput
+  }
+
+  export type TaxExpenseUncheckedUpdateWithoutGovernmentTaxInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    paidAccountId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseUncheckedUpdateManyWithoutGovernmentTaxInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     paidAccountId?: StringFieldUpdateOperationsInput | string
@@ -72374,6 +75801,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUpdateManyWithoutBankAccountNestedInput
   }
@@ -72389,6 +75817,7 @@ export namespace Prisma {
     transfersPaid?: BankTransferUncheckedUpdateManyWithoutPaidAccountNestedInput
     transfersReceived?: BankTransferUncheckedUpdateManyWithoutReceivedAccountNestedInput
     bookExpenses?: BookExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
+    taxExpenses?: TaxExpenseUncheckedUpdateManyWithoutPaidAccountNestedInput
     savingAccountTxns?: SavingAccountTxnUncheckedUpdateManyWithoutBankAccountNestedInput
     unallocatedReceiptTxns?: UnallocatedReceiptTxnUncheckedUpdateManyWithoutBankAccountNestedInput
   }
@@ -72441,6 +75870,18 @@ export namespace Prisma {
     id?: string
     date: Date | string
     indirectExpenseId: string
+    direction?: $Enums.PaymentDirection
+    amount: Decimal | DecimalJsLike | number | string
+    particular: string
+    createdByStaffId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TaxExpenseCreateManyPaidAccountInput = {
+    id?: string
+    date: Date | string
+    governmentTaxId: string
     direction?: $Enums.PaymentDirection
     amount: Decimal | DecimalJsLike | number | string
     particular: string
@@ -72612,6 +76053,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TaxExpenseUpdateWithoutPaidAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    governmentTax?: GovernmentTaxOptionUpdateOneRequiredWithoutTaxExpensesNestedInput
+    createdByStaff?: StaffUpdateOneWithoutCreatedTaxExpensesNestedInput
+  }
+
+  export type TaxExpenseUncheckedUpdateWithoutPaidAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    governmentTaxId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TaxExpenseUncheckedUpdateManyWithoutPaidAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    governmentTaxId?: StringFieldUpdateOperationsInput | string
+    direction?: EnumPaymentDirectionFieldUpdateOperationsInput | $Enums.PaymentDirection
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    particular?: StringFieldUpdateOperationsInput | string
+    createdByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SavingAccountTxnUpdateWithoutBankAccountInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -72707,6 +76184,10 @@ export namespace Prisma {
      * @deprecated Use IndirectExpenseOptionCountOutputTypeDefaultArgs instead
      */
     export type IndirectExpenseOptionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = IndirectExpenseOptionCountOutputTypeDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use GovernmentTaxOptionCountOutputTypeDefaultArgs instead
+     */
+    export type GovernmentTaxOptionCountOutputTypeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GovernmentTaxOptionCountOutputTypeDefaultArgs<ExtArgs>
     /**
      * @deprecated Use DocumentOptionCountOutputTypeDefaultArgs instead
      */
@@ -72807,6 +76288,10 @@ export namespace Prisma {
      * @deprecated Use IndirectExpenseOptionDefaultArgs instead
      */
     export type IndirectExpenseOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = IndirectExpenseOptionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use GovernmentTaxOptionDefaultArgs instead
+     */
+    export type GovernmentTaxOptionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GovernmentTaxOptionDefaultArgs<ExtArgs>
     /**
      * @deprecated Use DocumentOptionDefaultArgs instead
      */
@@ -72911,6 +76396,10 @@ export namespace Prisma {
      * @deprecated Use BookExpenseDefaultArgs instead
      */
     export type BookExpenseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = BookExpenseDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TaxExpenseDefaultArgs instead
+     */
+    export type TaxExpenseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TaxExpenseDefaultArgs<ExtArgs>
     /**
      * @deprecated Use SavingAccountTxnDefaultArgs instead
      */

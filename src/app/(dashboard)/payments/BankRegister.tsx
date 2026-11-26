@@ -1,15 +1,19 @@
 import { listBankAccountBalances } from "@/lib/actions/bankAccounts";
-import { listIndirectExpenseOptions } from "@/lib/actions/option-lists";
+import {
+  listGovernmentTaxOptions,
+  listIndirectExpenseOptions,
+} from "@/lib/actions/option-lists";
 import { BankRegisterClient } from "./BankRegisterClient";
 import { loadBankRegister } from "./bankRegisterData";
 import { loadFundFlowParties } from "./fundFlowParties";
 
 export async function BankRegister() {
-  const [register, accounts, parties, expenses] = await Promise.all([
+  const [register, accounts, parties, expenses, taxes] = await Promise.all([
     loadBankRegister(),
     listBankAccountBalances(),
     loadFundFlowParties(),
     listIndirectExpenseOptions(),
+    listGovernmentTaxOptions(),
   ]);
 
   return (
@@ -19,6 +23,7 @@ export async function BankRegister() {
       accounts={accounts}
       parties={parties}
       expenses={expenses.map((row) => ({ id: row.id, name: row.name }))}
+      taxes={taxes.map((row) => ({ id: row.id, name: row.name }))}
     />
   );
 }

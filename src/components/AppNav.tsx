@@ -35,6 +35,7 @@ const bankLinks: NavLeaf[] = [
   { href: "/payments/txn-saving", label: "Transaction with Saving A/c" },
   { href: "/payments/unallocated-receipt", label: "Unallocated Receipt A/c" },
   { href: "/payments/book-expenses", label: "Expenses" },
+  { href: "/payments/taxes", label: "Taxes" },
 ];
 
 const optionsLinks: NavLeaf[] = MASTER_OPTION_CATEGORIES.map((category) => ({
@@ -55,6 +56,7 @@ const mastersBankLinks: NavLeaf[] = [
   { href: "/bank-accounts", label: "Create Bank Account" },
   { href: "/bank-accounts/types", label: "Type of Bank Account" },
   { href: optionsHref("indirectExpenses"), label: "Indirect Expenses" },
+  { href: optionsHref("governmentTaxes"), label: "Government Taxes" },
 ];
 
 const mastersLinks: (NavLeaf | { label: string; children: NavLeaf[] })[] = [

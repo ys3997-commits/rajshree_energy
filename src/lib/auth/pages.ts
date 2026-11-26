@@ -121,6 +121,13 @@ export const BANK_SUB_PAGES = [
     group: "Pages" as const,
     bankSubPage: true,
   },
+  {
+    key: "taxes",
+    href: "/payments/taxes",
+    label: "Taxes",
+    group: "Pages" as const,
+    bankSubPage: true,
+  },
 ] satisfies AppPage[];
 
 export const BANK_SUB_PAGE_KEYS = BANK_SUB_PAGES.map((page) => page.key);
@@ -146,6 +153,14 @@ export const MASTER_BANK_SUB_PAGES = [
     key: "options-indirect-expenses",
     href: optionsHref("indirectExpenses"),
     label: "Indirect Expenses",
+    group: "Pages" as const,
+    masterSubPage: true,
+    masterBankSubPage: true,
+  },
+  {
+    key: "options-government-taxes",
+    href: optionsHref("governmentTaxes"),
+    label: "Government Taxes",
     group: "Pages" as const,
     masterSubPage: true,
     masterBankSubPage: true,
@@ -660,6 +675,7 @@ export function expandLegacyOptionsPageKeys(pageKeys: string[]): string[] {
       ...withoutLegacy,
       ...MASTER_OPTIONS_SUB_PAGE_KEYS,
       "options-indirect-expenses",
+      "options-government-taxes",
     ]),
   ];
 }
@@ -883,6 +899,9 @@ function bankSubPageKeyForPath(pathname: string): string | null {
     path.startsWith("/payments/book-expenses/")
   ) {
     return "book-expenses";
+  }
+  if (path === "/payments/taxes" || path.startsWith("/payments/taxes/")) {
+    return "taxes";
   }
   if (
     path === "/payments/txn-saving" ||

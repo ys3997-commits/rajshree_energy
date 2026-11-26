@@ -3,6 +3,7 @@ import {
   listCityOptions,
   listDealingCompanyOptions,
   listDocumentGroups,
+  listGovernmentTaxOptions,
   listIndirectExpenseOptions,
   listOwnerOptions,
   listSaleExecutiveOptions,
@@ -39,6 +40,7 @@ const emptyOptionsData = () => ({
   owners: [] as { id: string; name: string }[],
   dealingCompanies: [] as { id: string; name: string }[],
   indirectExpenses: [] as { id: string; name: string }[],
+  governmentTaxes: [] as { id: string; name: string }[],
   documentGroups: [] as DocumentGroup[],
 });
 
@@ -95,6 +97,9 @@ export async function loadOptionsData(categoryId: CategoryId) {
       break;
     case "indirectExpenses":
       data.indirectExpenses = await listIndirectExpenseOptions();
+      break;
+    case "governmentTaxes":
+      data.governmentTaxes = await listGovernmentTaxOptions();
       break;
   }
 

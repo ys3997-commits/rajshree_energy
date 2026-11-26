@@ -8,7 +8,8 @@ export type CategoryId =
   | "people"
   | "owners"
   | "dealingCompanies"
-  | "indirectExpenses";
+  | "indirectExpenses"
+  | "governmentTaxes";
 
 export const OPTION_CATEGORIES: {
   id: CategoryId;
@@ -89,6 +90,13 @@ export const OPTION_CATEGORIES: {
     description: "",
     placeholder: "New indirect expense",
   },
+  {
+    id: "governmentTaxes",
+    slug: "government-taxes",
+    label: "Government Taxes",
+    description: "",
+    placeholder: "New government tax",
+  },
 ];
 
 export const USER_MENU_CATEGORY_IDS = ["people", "owners"] as const satisfies readonly CategoryId[];
@@ -96,7 +104,10 @@ export const USER_MENU_CATEGORY_IDS = ["people", "owners"] as const satisfies re
 const userMenuCategoryIdSet = new Set<CategoryId>(USER_MENU_CATEGORY_IDS);
 
 /** Option lists shown under Masters → Bank instead of Masters → Options. */
-const BANK_MENU_CATEGORY_IDS = ["indirectExpenses"] as const satisfies readonly CategoryId[];
+const BANK_MENU_CATEGORY_IDS = [
+  "indirectExpenses",
+  "governmentTaxes",
+] as const satisfies readonly CategoryId[];
 
 const bankMenuCategoryIdSet = new Set<CategoryId>(BANK_MENU_CATEGORY_IDS);
 

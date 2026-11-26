@@ -139,6 +139,7 @@ function revalidateTransferPaths() {
   revalidatePath("/payments/book-expenses");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments/unallocated-receipt");
+  revalidatePath("/payments/taxes");
   revalidatePath("/payments");
   revalidatePath("/reports/bank-statement");
   revalidatePath("/reports/bank-balances");

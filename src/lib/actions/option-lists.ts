@@ -17,6 +17,9 @@ import { prisma } from "@/lib/prisma";
 
 const OPTION_PATHS = [
   "/options",
+  "/payments",
+  "/payments/taxes",
+  "/payments/book-expenses",
   "/customers",
   "/transporters",
   "/bills",
@@ -203,6 +206,32 @@ export async function updateIndirectExpenseOption(id: string, name: string) {
 
 export async function deleteIndirectExpenseOption(id: string) {
   await prisma.indirectExpenseOption.delete({ where: { id } });
+  revalidateOptionPaths();
+}
+
+export async function listGovernmentTaxOptions() {
+  return prisma.governmentTaxOption.findMany({ orderBy: { name: "asc" } });
+}
+
+export async function createGovernmentTaxOption(name: string) {
+  const row = await prisma.governmentTaxOption.create({
+    data: { name: trimName(name, "Name") },
+  });
+  revalidateOptionPaths();
+  return { id: row.id };
+}
+
+export async function updateGovernmentTaxOption(id: string, name: string) {
+  const row = await prisma.governmentTaxOption.update({
+    where: { id },
+    data: { name: trimName(name, "Name") },
+  });
+  revalidateOptionPaths();
+  return { id: row.id };
+}
+
+export async function deleteGovernmentTaxOption(id: string) {
+  await prisma.governmentTaxOption.delete({ where: { id } });
   revalidateOptionPaths();
 }
 
