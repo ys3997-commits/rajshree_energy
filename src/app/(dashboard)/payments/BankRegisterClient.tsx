@@ -128,7 +128,7 @@ function withCategory(current: EditState, nextKind: BankRegisterKind): EditState
       ? ""
       : current.direction === "RECEIVED" || current.direction === "SENT"
         ? current.direction
-        : "";
+        : "SENT";
   return {
     ...current,
     kind: nextKind,
@@ -141,12 +141,10 @@ function withCategory(current: EditState, nextKind: BankRegisterKind): EditState
     partyId: nextKind === "others" ? current.partyId : "",
     savingName: nextKind === "saving" ? current.savingName : "",
     receiptName: nextKind === "unallocated" ? current.receiptName : "",
-    expenseId:
-      nextKind === "expenses" || nextKind === "taxes" ? current.expenseId : "",
+    // Taxes and expenses use different master lists — never reuse the id across them.
+    expenseId: "",
     particular:
-      nextKind === "expenses" || nextKind === "taxes"
-        ? current.particular
-        : "",
+      nextKind === "expenses" || nextKind === "taxes" ? current.particular : "",
   };
 }
 
@@ -311,7 +309,12 @@ export function BankRegisterClient({
   function show(nextView: BankRegisterKind | "all") {
     setView(nextView);
     setPage(1);
-    setEditing(null);
+    // Keep an open edit row; only clear it if the filtered view would hide that row.
+    setEditing((current) => {
+      if (!current) return null;
+      if (nextView === "all" || nextView === current.originalKind) return current;
+      return null;
+    });
     setError(null);
   }
 
@@ -684,7 +687,14 @@ export function BankRegisterClient({
                     }}
                     onSave={saveEdit}
                     onDelete={() => onDelete(row)}
-                    onChange={(next) => setEditing(next)}
+                    onChange={(next) => {
+                      setEditing(next);
+                      // Stay on All while category is being changed so the row
+                      // does not disappear under the old filter after Update.
+                      if (next.kind !== next.originalKind) {
+                        setView("all");
+                      }
+                    }}
                   />
                 );
               })}
@@ -895,6 +905,10 @@ function EditFields({
           onChange={(event) =>
             onChange(withCategory(editing, event.target.value as BankRegisterKind))
           }
+          onKeyDown={(event) => {
+            // Enter on a <select> can submit the surrounding form and refresh.
+            if (event.key === "Enter") event.preventDefault();
+          }}
         >
           {kinds.map((kind) => (
             <option key={kind} value={kind}>
@@ -917,9 +931,14 @@ function EditFields({
           <span>Type</span>
           <select
             className="field-input"
+            aria-label="Type"
             value={editing.direction}
             onChange={(event) => onChange({ ...editing, direction: event.target.value })}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") event.preventDefault();
+            }}
           >
+            <option value="">Select</option>
             <option value="RECEIVED">Fund Received</option>
             <option value="SENT">Fund Paid</option>
           </select>
@@ -1197,7 +1216,12 @@ function EditFields({
         </label>
       ) : null}
       <div className="bank-register-edit-actions">
-        <button type="submit" className="btn btn-sm" disabled={pending}>
+        <button
+          type="button"
+          className="btn btn-sm"
+          disabled={pending}
+          onClick={onSave}
+        >
           Update
         </button>
         <button type="button" className="btn btn-secondary btn-sm" onClick={onCancel}>
