@@ -30,12 +30,12 @@ import {
 } from "@/lib/domain/bankAccountType";
 import {
   capitalizeName,
-  formatBankAccountLabel,
   formatCustomerCategory,
   formatIndianAmountTyping,
   parseAmountInput,
   toTitleCase,
 } from "@/lib/domain/format";
+import { resolveSavingTransfer } from "@/lib/domain/savingTransfer";
 import {
   parsePartyKey,
   partyKey,
@@ -178,40 +178,6 @@ function slotsFor(category: BankCategory, type: string): {
     category === "unallocated" ? "unallocated" : "party";
   if (type === "SENT") return { paid: "bank", received: other };
   return { paid: other, received: "bank" };
-}
-
-function resolveSavingTransfer(
-  accounts: BankAccountBalanceRow[],
-  paidAccountId: string,
-  receivedAccountId: string,
-): { bankAccountId: string; direction: "RECEIVED" | "SENT"; savingName: string } | string {
-  const paid = accounts.find((account) => account.id === paidAccountId);
-  const received = accounts.find((account) => account.id === receivedAccountId);
-  if (!paid || !received) return "Select fund paid and fund received accounts";
-
-  const paidSaving = isSavingAccountType(paid.accountTypeName);
-  const paidCurrent = isCurrentOrCcAccountType(paid.accountTypeName);
-  const receivedSaving = isSavingAccountType(received.accountTypeName);
-  const receivedCurrent = isCurrentOrCcAccountType(received.accountTypeName);
-
-  if (paidSaving && receivedCurrent) {
-    return {
-      bankAccountId: received.id,
-      direction: "RECEIVED",
-      savingName: formatBankAccountLabel(paid.accountName, paid.bankName),
-    };
-  }
-  if (paidCurrent && receivedSaving) {
-    return {
-      bankAccountId: paid.id,
-      direction: "SENT",
-      savingName: formatBankAccountLabel(
-        received.accountName,
-        received.bankName,
-      ),
-    };
-  }
-  return "Select one Saving A/c and one Current A/c or CC A/c";
 }
 
 const EMPTY_PICKER = {

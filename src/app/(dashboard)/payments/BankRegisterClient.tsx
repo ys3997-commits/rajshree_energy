@@ -27,7 +27,10 @@ import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
   categoryUsesCurrentOrCcAccounts,
   filterCurrentOrCcAccounts,
+  filterSavingAccounts,
+  filterSavingTransferAccounts,
   isCurrentOrCcAccountType,
+  isSavingAccountType,
 } from "@/lib/domain/bankAccountType";
 import {
   capitalizeName,
@@ -38,6 +41,7 @@ import {
   parseAmountInput,
   toTitleCase,
 } from "@/lib/domain/format";
+import { resolveSavingTransfer } from "@/lib/domain/savingTransfer";
 import {
   parsePartyKey,
   partyKey,
@@ -123,8 +127,9 @@ function showBalanceCard(account: BankAccountBalanceRow) {
 
 function withCategory(current: EditState, nextKind: BankRegisterKind): EditState {
   if (current.kind === nextKind) return current;
+  const dualBank = nextKind === "current" || nextKind === "saving";
   const direction =
-    nextKind === "current"
+    dualBank
       ? ""
       : current.direction === "RECEIVED" || current.direction === "SENT"
         ? current.direction
@@ -133,13 +138,15 @@ function withCategory(current: EditState, nextKind: BankRegisterKind): EditState
     ...current,
     kind: nextKind,
     direction,
-    bankAccountId:
-      nextKind === "current" ? "" : current.bankAccountId || current.paidAccountId,
-    paidAccountId:
-      nextKind === "current" ? current.paidAccountId || current.bankAccountId : "",
-    receivedAccountId: nextKind === "current" ? current.receivedAccountId : "",
+    bankAccountId: dualBank
+      ? ""
+      : current.bankAccountId || current.paidAccountId,
+    paidAccountId: dualBank
+      ? current.paidAccountId || current.bankAccountId
+      : "",
+    receivedAccountId: dualBank ? current.receivedAccountId : "",
     partyId: nextKind === "others" ? current.partyId : "",
-    savingName: nextKind === "saving" ? current.savingName : "",
+    savingName: "",
     receiptName: nextKind === "unallocated" ? current.receiptName : "",
     // Taxes and expenses use different master lists — never reuse the id across them.
     expenseId: "",
@@ -347,11 +354,12 @@ export function BankRegisterClient({
       }
     }
     if (form.kind === "saving") {
-      if (form.direction !== "RECEIVED" && form.direction !== "SENT") {
-        return "Select Fund Received or Fund Paid";
-      }
-      if (!form.bankAccountId) return "Select an account";
-      if (!form.savingName.trim()) return "Saving Account Name is required";
+      const resolved = resolveSavingTransfer(
+        accounts,
+        form.paidAccountId,
+        form.receivedAccountId,
+      );
+      if (typeof resolved === "string") return resolved;
     }
     if (form.kind === "unallocated") {
       if (form.direction !== "RECEIVED" && form.direction !== "SENT") {
@@ -386,7 +394,24 @@ export function BankRegisterClient({
       setError(message);
       return;
     }
-    const form = editing;
+    let form = editing;
+    if (form.kind === "saving") {
+      const resolved = resolveSavingTransfer(
+        accounts,
+        form.paidAccountId,
+        form.receivedAccountId,
+      );
+      if (typeof resolved === "string") {
+        setError(resolved);
+        return;
+      }
+      form = {
+        ...form,
+        bankAccountId: resolved.bankAccountId,
+        direction: resolved.direction,
+        savingName: resolved.savingName,
+      };
+    }
     setError(null);
     startTransition(async () => {
       try {
@@ -487,7 +512,7 @@ export function BankRegisterClient({
       entry.pickAccount(accountId);
       return;
     }
-    if (editing.kind !== "current") {
+    if (editing.kind !== "current" && editing.kind !== "saving") {
       setEditing({ ...editing, bankAccountId: accountId, paidAccountId: accountId });
       return;
     }
@@ -499,24 +524,49 @@ export function BankRegisterClient({
       ) {
         return current;
       }
-      const clicked = accounts.find((account) => account.id === accountId)?.accountName ?? "";
-      const paid = accounts.find((account) => account.id === current.paidAccountId)?.accountName ?? "";
+      const clicked = accounts.find((account) => account.id === accountId);
+      if (!clicked) return current;
+      if (current.kind === "saving") {
+        const eligible = filterSavingTransferAccounts([clicked]).length > 0;
+        if (!eligible) return current;
+        if (!current.paidAccountId) {
+          return { ...current, paidAccountId: accountId, receivedAccountId: "" };
+        }
+        const paid = accounts.find((account) => account.id === current.paidAccountId);
+        if (!paid) return { ...current, paidAccountId: accountId, receivedAccountId: "" };
+        const paidSaving = isSavingAccountType(paid.accountTypeName);
+        const clickedSaving = isSavingAccountType(clicked.accountTypeName);
+        const compatible =
+          (paidSaving && isCurrentOrCcAccountType(clicked.accountTypeName)) ||
+          (isCurrentOrCcAccountType(paid.accountTypeName) && clickedSaving);
+        if (!compatible) {
+          return { ...current, paidAccountId: accountId, receivedAccountId: "" };
+        }
+        return { ...current, receivedAccountId: accountId };
+      }
+      const clickedName = clicked.accountName;
+      const paid =
+        accounts.find((account) => account.id === current.paidAccountId)
+          ?.accountName ?? "";
       if (!current.paidAccountId) return { ...current, paidAccountId: accountId };
-      if (!current.receivedAccountId && !sameAccountName(clicked, paid)) {
+      if (!current.receivedAccountId && !sameAccountName(clickedName, paid)) {
         return { ...current, receivedAccountId: accountId };
       }
       const received =
-        accounts.find((account) => account.id === current.receivedAccountId)?.accountName ?? "";
+        accounts.find((account) => account.id === current.receivedAccountId)
+          ?.accountName ?? "";
       return {
         ...current,
         paidAccountId: accountId,
-        receivedAccountId: sameAccountName(clicked, received) ? "" : current.receivedAccountId,
+        receivedAccountId: sameAccountName(clickedName, received)
+          ? ""
+          : current.receivedAccountId,
       };
     });
   }
 
   function accountPressed(accountId: string) {
-    if (editing?.kind === "current") {
+    if (editing?.kind === "current" || editing?.kind === "saving") {
       return (
         editing.paidAccountId === accountId || editing.receivedAccountId === accountId
       );
@@ -869,22 +919,40 @@ function EditFields({
   const bankAccountOptions = categoryUsesCurrentOrCcAccounts(editing.kind)
     ? filterCurrentOrCcAccounts(accounts)
     : accounts;
+  const savingPaidAccounts = filterSavingTransferAccounts(accounts);
+  const savingAccounts = filterSavingAccounts(accounts);
+  const currentOrCcAccounts = filterCurrentOrCcAccounts(accounts);
   const paidName =
-    accounts.find((account) => account.id === editing.receivedAccountId)?.accountName ?? "";
+    accounts.find((account) => account.id === editing.receivedAccountId)
+      ?.accountName ?? "";
   const receivedName =
-    accounts.find((account) => account.id === editing.paidAccountId)?.accountName ?? "";
+    accounts.find((account) => account.id === editing.paidAccountId)
+      ?.accountName ?? "";
   const paidAccounts =
-    editing.kind === "current"
-      ? bankAccountOptions.filter(
-          (account) => !sameAccountName(account.accountName, paidName),
-        )
-      : bankAccountOptions;
-  const receivedAccounts =
-    editing.kind === "current"
-      ? bankAccountOptions.filter(
-          (account) => !sameAccountName(account.accountName, receivedName),
-        )
-      : bankAccountOptions;
+    editing.kind === "saving"
+      ? savingPaidAccounts
+      : editing.kind === "current"
+        ? bankAccountOptions.filter(
+            (account) => !sameAccountName(account.accountName, paidName),
+          )
+        : bankAccountOptions;
+  const receivedAccounts = (() => {
+    if (editing.kind === "saving") {
+      const paid = accounts.find(
+        (account) => account.id === editing.paidAccountId,
+      );
+      if (!paid) return [];
+      if (isSavingAccountType(paid.accountTypeName)) return currentOrCcAccounts;
+      if (isCurrentOrCcAccountType(paid.accountTypeName)) return savingAccounts;
+      return [];
+    }
+    if (editing.kind === "current") {
+      return bankAccountOptions.filter(
+        (account) => !sameAccountName(account.accountName, receivedName),
+      );
+    }
+    return bankAccountOptions;
+  })();
 
   return (
     <form
@@ -924,7 +992,7 @@ function EditFields({
           onChange={(event) => onChange({ ...editing, date: event.target.value })}
         />
       </label>
-      {editing.kind !== "current" ? (
+      {editing.kind !== "current" && editing.kind !== "saving" ? (
         <label>
           <span>Type</span>
           <select
@@ -942,16 +1010,30 @@ function EditFields({
           </select>
         </label>
       ) : null}
-      {editing.kind === "current" ? (
+      {editing.kind === "current" || editing.kind === "saving" ? (
         <>
           <label>
             <span>Fund paid account</span>
             <select
               className="field-input"
               value={editing.paidAccountId}
-              onChange={(event) =>
-                onChange({ ...editing, paidAccountId: event.target.value })
-              }
+              onChange={(event) => {
+                const paidAccountId = event.target.value;
+                const keepReceived =
+                  editing.kind !== "saving" ||
+                  typeof resolveSavingTransfer(
+                    accounts,
+                    paidAccountId,
+                    editing.receivedAccountId,
+                  ) !== "string";
+                onChange({
+                  ...editing,
+                  paidAccountId,
+                  receivedAccountId: keepReceived
+                    ? editing.receivedAccountId
+                    : "",
+                });
+              }}
             >
               <option value="">Select account</option>
               {paidAccounts.map((account) => (
@@ -968,11 +1050,19 @@ function EditFields({
             <select
               className="field-input"
               value={editing.receivedAccountId}
+              disabled={editing.kind === "saving" && !editing.paidAccountId}
               onChange={(event) =>
-                onChange({ ...editing, receivedAccountId: event.target.value })
+                onChange({
+                  ...editing,
+                  receivedAccountId: event.target.value,
+                })
               }
             >
-              <option value="">Select account</option>
+              <option value="">
+                {editing.kind === "saving" && !editing.paidAccountId
+                  ? "Select fund paid first"
+                  : "Select account"}
+              </option>
               {receivedAccounts.map((account) => (
                 <option key={account.id} value={account.id}>
                   {account.bankName
@@ -1060,38 +1150,21 @@ function EditFields({
           <label>
             <span>Fund paid account</span>
             {editing.direction === "RECEIVED" &&
-            (editing.kind === "saving" || editing.kind === "unallocated") ? (
+            editing.kind === "unallocated" ? (
               <input
                 type="text"
                 className="field-input"
-                value={
-                  editing.kind === "saving"
-                    ? editing.savingName
-                    : editing.receiptName
-                }
+                value={editing.receiptName}
                 onChange={(event) =>
-                  onChange(
-                    editing.kind === "saving"
-                      ? { ...editing, savingName: event.target.value }
-                      : { ...editing, receiptName: event.target.value },
-                  )
+                  onChange({ ...editing, receiptName: event.target.value })
                 }
                 onBlur={() =>
-                  onChange(
-                    editing.kind === "saving"
-                      ? {
-                          ...editing,
-                          savingName:
-                            capitalizeName(editing.savingName) ??
-                            editing.savingName,
-                        }
-                      : {
-                          ...editing,
-                          receiptName:
-                            capitalizeName(editing.receiptName) ??
-                            editing.receiptName,
-                        },
-                  )
+                  onChange({
+                    ...editing,
+                    receiptName:
+                      capitalizeName(editing.receiptName) ??
+                      editing.receiptName,
+                  })
                 }
               />
             ) : editing.direction === "RECEIVED" ? (
@@ -1123,70 +1196,52 @@ function EditFields({
             )}
           </label>
           <label>
-              <span>Fund received account</span>
-              {editing.direction === "SENT" &&
-              (editing.kind === "saving" || editing.kind === "unallocated") ? (
-                <input
-                  type="text"
-                  className="field-input"
-                  value={
-                    editing.kind === "saving"
-                      ? editing.savingName
-                      : editing.receiptName
-                  }
-                  onChange={(event) =>
-                    onChange(
-                      editing.kind === "saving"
-                        ? { ...editing, savingName: event.target.value }
-                        : { ...editing, receiptName: event.target.value },
-                    )
-                  }
-                  onBlur={() =>
-                    onChange(
-                      editing.kind === "saving"
-                        ? {
-                            ...editing,
-                            savingName:
-                              capitalizeName(editing.savingName) ??
-                              editing.savingName,
-                          }
-                        : {
-                            ...editing,
-                            receiptName:
-                              capitalizeName(editing.receiptName) ??
-                              editing.receiptName,
-                          },
-                    )
-                  }
-                />
-              ) : editing.direction === "SENT" ? (
-                <SearchableSelect
-                  className="field-input"
-                  ariaLabel="Fund received account"
-                  placeholder="Search customer, transporter, or investment"
-                  value={editing.partyId}
-                  onChange={(partyId) => onChange({ ...editing, partyId })}
-                  options={partyOptions}
-                />
-              ) : (
-                <select
-                  className="field-input"
-                  value={editing.bankAccountId}
-                  onChange={(event) =>
-                    onChange({ ...editing, bankAccountId: event.target.value })
-                  }
-                >
-                  <option value="">Select account</option>
-                  {bankAccountOptions.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.bankName
-                        ? `${account.accountName} (${account.bankName})`
-                        : account.accountName}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </label>
+            <span>Fund received account</span>
+            {editing.direction === "SENT" && editing.kind === "unallocated" ? (
+              <input
+                type="text"
+                className="field-input"
+                value={editing.receiptName}
+                onChange={(event) =>
+                  onChange({ ...editing, receiptName: event.target.value })
+                }
+                onBlur={() =>
+                  onChange({
+                    ...editing,
+                    receiptName:
+                      capitalizeName(editing.receiptName) ??
+                      editing.receiptName,
+                  })
+                }
+              />
+            ) : editing.direction === "SENT" ? (
+              <SearchableSelect
+                className="field-input"
+                ariaLabel="Fund received account"
+                placeholder="Search customer, transporter, or investment"
+                value={editing.partyId}
+                onChange={(partyId) => onChange({ ...editing, partyId })}
+                options={partyOptions}
+              />
+            ) : (
+              <select
+                className="field-input"
+                value={editing.bankAccountId}
+                onChange={(event) =>
+                  onChange({ ...editing, bankAccountId: event.target.value })
+                }
+              >
+                <option value="">Select account</option>
+                {bankAccountOptions.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.bankName
+                      ? `${account.accountName} (${account.bankName})`
+                      : account.accountName}
+                  </option>
+                ))}
+              </select>
+            )}
+          </label>
         </>
       )}
       <label>

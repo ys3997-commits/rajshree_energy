@@ -8,6 +8,7 @@ import { listUnallocatedReceiptTxns } from "@/lib/actions/unallocatedReceiptTxns
 import { getCurrentAccess } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
 import { formatBankAccountLabel } from "@/lib/domain/format";
+import { findAccountIdByLabel } from "@/lib/domain/savingTransfer";
 import { partyKey } from "@/lib/domain/paymentParty";
 
 export type BankRegisterKind =
@@ -186,6 +187,11 @@ export async function loadBankRegister(): Promise<{
             bankAccounts,
           );
           const received = row.direction === "RECEIVED";
+          const bankId = row.bankAccountId ?? "";
+          const savingId = findAccountIdByLabel(
+            bankAccounts,
+            row.savingAccountName,
+          );
           return {
             kind,
             id: row.id,
@@ -199,9 +205,9 @@ export async function loadBankRegister(): Promise<{
             particular: "",
             direction: row.direction,
             expenseId: "",
-            bankAccountId: row.bankAccountId ?? "",
-            paidAccountId: "",
-            receivedAccountId: "",
+            bankAccountId: bankId,
+            paidAccountId: received ? savingId : bankId,
+            receivedAccountId: received ? bankId : savingId,
             partyId: "",
             savingName: row.savingAccountName,
             receiptName: "",
