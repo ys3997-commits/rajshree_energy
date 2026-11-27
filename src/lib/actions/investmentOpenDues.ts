@@ -1,6 +1,11 @@
 "use server";
 
 import { Decimal } from "@prisma/client/runtime/library";
+import {
+  actionFail,
+  actionOk,
+  type ActionResult,
+} from "@/lib/actions/actionResult";
 import { toDecimal } from "@/lib/domain/computations";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
@@ -21,32 +26,45 @@ export type InvestmentOpenDueInput = {
   remark?: string | null;
 };
 
-function parseAmount(value: string | number): Decimal {
-  const d = toDecimal(value);
-  if (!d.isFinite()) {
-    throw new Error("Amount must be a valid number");
+type OpenDueData = {
+  companyId: string;
+  amount: Decimal;
+  dueDate: Date | null;
+  remark: string | null;
+};
+
+function parseAmount(value: string | number): Decimal | string {
+  try {
+    const d = toDecimal(value);
+    if (!d.isFinite()) return "Amount must be a valid number";
+    return d.toDecimalPlaces(2);
+  } catch {
+    return "Amount must be a valid number";
   }
-  return d.toDecimalPlaces(2);
 }
 
-function parseDueDate(value: string | null | undefined): Date | null {
+function parseDueDate(value: string | null | undefined): Date | null | string {
   const trimmed = value?.trim() ?? "";
   if (!trimmed) return null;
   const date = new Date(`${trimmed}T00:00:00.000Z`);
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Due date must be a valid date");
+    return "Due date must be a valid date";
   }
   return date;
 }
 
-function toOpenDueData(input: InvestmentOpenDueInput) {
+function toOpenDueData(input: InvestmentOpenDueInput): OpenDueData | string {
   if (!input.companyId.trim()) {
-    throw new Error("Company is required");
+    return "Company is required";
   }
+  const amount = parseAmount(input.amount);
+  if (typeof amount === "string") return amount;
+  const dueDate = parseDueDate(input.dueDate);
+  if (typeof dueDate === "string") return dueDate;
   return {
     companyId: input.companyId.trim(),
-    amount: parseAmount(input.amount),
-    dueDate: parseDueDate(input.dueDate),
+    amount,
+    dueDate,
     remark: input.remark?.trim() || null,
   };
 }
@@ -54,6 +72,11 @@ function toOpenDueData(input: InvestmentOpenDueInput) {
 function formatDueDate(value: Date | null): string | null {
   if (!value) return null;
   return value.toISOString().slice(0, 10);
+}
+
+function revalidateOpenDuePaths() {
+  revalidatePath("/investments");
+  revalidatePath("/investments/open-due");
 }
 
 export async function listInvestmentOpenDues(): Promise<
@@ -80,30 +103,38 @@ export async function listInvestmentOpenDues(): Promise<
   }));
 }
 
-export async function createInvestmentOpenDue(input: InvestmentOpenDueInput) {
+export async function createInvestmentOpenDue(
+  input: InvestmentOpenDueInput,
+): Promise<ActionResult> {
+  const data = toOpenDueData(input);
+  if (typeof data === "string") return actionFail(data);
   await prisma.investmentOpenDue.create({
-    data: toOpenDueData(input),
+    data,
     select: { id: true },
   });
-  revalidatePath("/investments");
-  revalidatePath("/investments/open-due");
+  revalidateOpenDuePaths();
+  return actionOk();
 }
 
 export async function updateInvestmentOpenDue(
   id: string,
   input: InvestmentOpenDueInput,
-) {
+): Promise<ActionResult> {
+  const data = toOpenDueData(input);
+  if (typeof data === "string") return actionFail(data);
   await prisma.investmentOpenDue.update({
     where: { id },
-    data: toOpenDueData(input),
+    data,
     select: { id: true },
   });
-  revalidatePath("/investments");
-  revalidatePath("/investments/open-due");
+  revalidateOpenDuePaths();
+  return actionOk();
 }
 
-export async function deleteInvestmentOpenDue(id: string) {
+export async function deleteInvestmentOpenDue(
+  id: string,
+): Promise<ActionResult> {
   await prisma.investmentOpenDue.delete({ where: { id } });
-  revalidatePath("/investments");
-  revalidatePath("/investments/open-due");
+  revalidateOpenDuePaths();
+  return actionOk();
 }

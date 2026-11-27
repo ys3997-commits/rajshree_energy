@@ -264,12 +264,15 @@ export function BankRegisterClient({
 
   const filtered = useMemo(() => {
     return rows.filter((row) => {
-      if (view !== "all" && row.kind !== view) return false;
+      const isActiveEdit =
+        editing?.originalKind === row.kind && editing.id === row.id;
+      // Keep the open edit row visible even if Category was changed away from this tab.
+      if (!isActiveEdit && view !== "all" && row.kind !== view) return false;
       if (dateFrom && row.date < dateFrom) return false;
       if (dateTo && row.date > dateTo) return false;
       return true;
     });
-  }, [rows, view, dateFrom, dateTo]);
+  }, [rows, view, dateFrom, dateTo, editing]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -689,11 +692,6 @@ export function BankRegisterClient({
                     onDelete={() => onDelete(row)}
                     onChange={(next) => {
                       setEditing(next);
-                      // Stay on All while category is being changed so the row
-                      // does not disappear under the old filter after Update.
-                      if (next.kind !== next.originalKind) {
-                        setView("all");
-                      }
                     }}
                   />
                 );

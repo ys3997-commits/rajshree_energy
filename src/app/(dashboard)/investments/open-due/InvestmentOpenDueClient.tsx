@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
+import { clientActionError } from "@/lib/actions/actionResult";
 import {
   createInvestmentOpenDue,
   deleteInvestmentOpenDue,
@@ -71,11 +72,15 @@ export function InvestmentOpenDueClient({
     setError(null);
     startTransition(async () => {
       try {
-        await createInvestmentOpenDue(addForm);
+        const result = await createInvestmentOpenDue(addForm);
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         setAddForm(emptyForm());
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
+        setError(clientActionError(err, "Save failed"));
       }
     });
   }
@@ -99,11 +104,15 @@ export function InvestmentOpenDueClient({
     const id = editingId;
     startTransition(async () => {
       try {
-        await updateInvestmentOpenDue(id, editForm);
+        const result = await updateInvestmentOpenDue(id, editForm);
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         cancelEdit();
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
+        setError(clientActionError(err, "Save failed"));
       }
     });
   }
@@ -113,12 +122,16 @@ export function InvestmentOpenDueClient({
     setError(null);
     startTransition(async () => {
       try {
-        await deleteInvestmentOpenDue(id);
+        const result = await deleteInvestmentOpenDue(id);
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         if (editingId === id) cancelEdit();
         setRows((prev) => prev.filter((r) => r.id !== id));
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Delete failed");
+        setError(clientActionError(err, "Delete failed"));
       }
     });
   }

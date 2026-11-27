@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
+import { clientActionError } from "@/lib/actions/actionResult";
 import {
   createInvestmentCompany,
   deleteInvestmentCompany,
@@ -77,11 +78,15 @@ export function InvestmentCompaniesClient({
     setError(null);
     startTransition(async () => {
       try {
-        await createInvestmentCompany(payloadFrom(addForm));
+        const result = await createInvestmentCompany(payloadFrom(addForm));
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         setAddForm(emptyForm());
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
+        setError(clientActionError(err, "Save failed"));
       }
     });
   }
@@ -105,11 +110,15 @@ export function InvestmentCompaniesClient({
     const id = editingId;
     startTransition(async () => {
       try {
-        await updateInvestmentCompany(id, payloadFrom(editForm));
+        const result = await updateInvestmentCompany(id, payloadFrom(editForm));
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         cancelEdit();
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Save failed");
+        setError(clientActionError(err, "Save failed"));
       }
     });
   }
@@ -119,12 +128,16 @@ export function InvestmentCompaniesClient({
     setError(null);
     startTransition(async () => {
       try {
-        await deleteInvestmentCompany(id);
+        const result = await deleteInvestmentCompany(id);
+        if (!result.ok) {
+          setError(result.error);
+          return;
+        }
         if (editingId === id) cancelEdit();
         setRows((prev) => prev.filter((r) => r.id !== id));
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Delete failed");
+        setError(clientActionError(err, "Delete failed"));
       }
     });
   }
