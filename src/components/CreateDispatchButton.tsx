@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { CustomerCategory } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
-import { NewDispatchForm } from "@/components/NewDispatchForm";
+
+const NewDispatchForm = dynamic(
+  () =>
+    import("@/components/NewDispatchForm").then((m) => ({
+      default: m.NewDispatchForm,
+    })),
+  { ssr: false },
+);
 
 type OrderOpt = {
   poNumber: string;
@@ -72,18 +80,20 @@ export function CreateDispatchButton({
         onClose={() => setOpen(false)}
         wide
       >
-        <NewDispatchForm
-          orders={orders}
-          purchaseOrders={purchaseOrders}
-          transporters={transporters}
-          customers={customers}
-          vessels={vessels}
-          suggestedPo={suggestedPo}
-          suggestedPurchasePo={suggestedPurchasePo}
-          suggestedDispatchNumber={suggestedDispatchNumber}
-          onCancel={() => setOpen(false)}
-          onSuccess={() => setOpen(false)}
-        />
+        {open ? (
+          <NewDispatchForm
+            orders={orders}
+            purchaseOrders={purchaseOrders}
+            transporters={transporters}
+            customers={customers}
+            vessels={vessels}
+            suggestedPo={suggestedPo}
+            suggestedPurchasePo={suggestedPurchasePo}
+            suggestedDispatchNumber={suggestedDispatchNumber}
+            onCancel={() => setOpen(false)}
+            onSuccess={() => setOpen(false)}
+          />
+        ) : null}
       </Modal>
     </>
   );

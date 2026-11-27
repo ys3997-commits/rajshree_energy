@@ -1,6 +1,7 @@
 "use server";
 
 import { capitalizeName } from "@/lib/domain/format";
+import { memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -30,7 +31,9 @@ function portStateForName(name: string): string {
 }
 
 export async function listPortOptions() {
-  return prisma.portOption.findMany({ orderBy: { name: "asc" } });
+  return memoize("opts:ports", 60_000, () =>
+    prisma.portOption.findMany({ orderBy: { name: "asc" } }),
+  );
 }
 
 export async function createPortOption(name: string, state: string) {

@@ -5,6 +5,7 @@ import { toDecimal } from "@/lib/domain/computations";
 import { hasDateFilter, utcDayRange } from "@/lib/domain/dateRange";
 import { capitalizeName } from "@/lib/domain/format";
 import { parseFundFlowType } from "@/app/(dashboard)/payments/paymentsHref";
+import { forgetMemo } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -166,6 +167,7 @@ async function assertBankAccountExists(id: string) {
 }
 
 function revalidatePaths() {
+  forgetMemo("bank:account-balances");
   revalidatePath("/payments/txn-saving");
   revalidatePath("/payments/unallocated-receipt");
   revalidatePath("/payments/taxes");

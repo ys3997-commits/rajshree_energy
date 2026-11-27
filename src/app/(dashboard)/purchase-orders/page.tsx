@@ -2,7 +2,7 @@ import {
   listPurchaseOrders,
   suggestNextPurchasePoNumber,
 } from "@/lib/actions/purchaseOrders";
-import { listCustomers } from "@/lib/actions/customers";
+import { listCustomersForSelect } from "@/lib/actions/customers";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
 import { listVessels } from "@/lib/actions/vessels";
@@ -56,15 +56,15 @@ export default async function PurchaseOrdersPage({
       qualityClassId: sp.qualityClassId || "",
       portId: sp.portId || "",
     }),
-    listCustomers({ activeOnly: true }),
-    listVessels(),
+    listCustomersForSelect({ activeOnly: true }),
+    listVessels({ activeOnly: true }),
     listPortOptions(),
     listQualityClasses(),
     suggestNextPurchasePoNumber(),
   ]);
 
   const importers = customers.map((c) => ({ id: c.id, name: c.name }));
-  const activeVessels = vessels.filter((v) => v.active);
+  const activeVessels = vessels;
 
   const exportColumns = [
     { key: "poNumber", header: "Purchase PO" },

@@ -1,5 +1,5 @@
 import { AppNav } from "@/components/AppNav";
-import { listBankAccounts } from "@/lib/actions/bankAccounts";
+import { listBankAccountsForNav } from "@/lib/actions/bankAccounts";
 import { countPendingCorrections } from "@/lib/actions/corrections";
 import { canVisit, getCurrentAccess, landingPath } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
@@ -28,7 +28,7 @@ export default async function DashboardLayout({
 
   const [documentGroups, bankAccounts, pendingCorrections] = await Promise.all([
     memoize("nav:document-groups", 20_000, () => listDocumentGroups()),
-    memoize("nav:bank-accounts", 20_000, () => listBankAccounts()),
+    listBankAccountsForNav(),
     canOpenCorrections
       ? memoize("nav:pending-corrections", 15_000, () =>
           countPendingCorrections(),
@@ -41,10 +41,7 @@ export default async function DashboardLayout({
       <AppNav
         access={access}
         documentGroups={documentGroups}
-        bankAccounts={bankAccounts.map((account) => ({
-          id: account.id,
-          accountName: account.accountName,
-        }))}
+        bankAccounts={bankAccounts}
         pendingCorrections={pendingCorrections}
       />
       <main className="app-main">

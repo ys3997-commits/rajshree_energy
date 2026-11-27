@@ -13,6 +13,7 @@ import {
   tryParsePartyKey,
   type PaymentParty,
 } from "@/lib/domain/paymentParty";
+import { forgetMemo, forgetMemoPrefix } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -217,6 +218,8 @@ async function assertBankAccountExists(id: string) {
 }
 
 function revalidatePaymentPaths(party?: PaymentParty) {
+  forgetMemo("bank:account-balances");
+  forgetMemoPrefix("home:");
   revalidatePath("/payments");
   revalidatePath("/customers");
   revalidatePath("/reports/bank-statement");

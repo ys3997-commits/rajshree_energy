@@ -11,7 +11,7 @@ import {
 import { Prisma } from "@/generated/prisma";
 import { capitalizeName } from "@/lib/domain/format";
 import { INDIAN_STATES_AND_UTS } from "@/lib/domain/indianStates";
-import { forgetMemo } from "@/lib/memoryCache";
+import { forgetMemo, memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -39,7 +39,9 @@ function trimName(name: string, label: string) {
 }
 
 export async function listSaleExecutiveOptions() {
-  return prisma.saleExecutiveOption.findMany({ orderBy: { name: "asc" } });
+  return memoize("opts:sale-executives", 60_000, () =>
+    prisma.saleExecutiveOption.findMany({ orderBy: { name: "asc" } }),
+  );
 }
 
 export async function createSaleExecutiveOption(name: string) {
@@ -184,7 +186,9 @@ export async function deleteDealingCompanyOption(id: string) {
 }
 
 export async function listIndirectExpenseOptions() {
-  return prisma.indirectExpenseOption.findMany({ orderBy: { name: "asc" } });
+  return memoize("opts:indirect-expenses", 60_000, () =>
+    prisma.indirectExpenseOption.findMany({ orderBy: { name: "asc" } }),
+  );
 }
 
 export async function createIndirectExpenseOption(name: string) {
@@ -210,7 +214,9 @@ export async function deleteIndirectExpenseOption(id: string) {
 }
 
 export async function listGovernmentTaxOptions() {
-  return prisma.governmentTaxOption.findMany({ orderBy: { name: "asc" } });
+  return memoize("opts:government-taxes", 60_000, () =>
+    prisma.governmentTaxOption.findMany({ orderBy: { name: "asc" } }),
+  );
 }
 
 export async function createGovernmentTaxOption(name: string) {

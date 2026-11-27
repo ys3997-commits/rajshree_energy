@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { capitalizeName, formatQualityClass } from "@/lib/domain/format";
+import { memoize } from "@/lib/memoryCache";
 import { prisma } from "@/lib/prisma";
 
 const qualityClassInclude = {
@@ -24,12 +25,14 @@ export async function listQualityOptions() {
 }
 
 export async function listQualityClasses() {
-  const rows = await prisma.qualityClass.findMany({
-    include: qualityClassInclude,
+  return memoize("opts:quality-classes", 30_000, async () => {
+    const rows = await prisma.qualityClass.findMany({
+      include: qualityClassInclude,
+    });
+    return rows.sort((a, b) =>
+      formatQualityClass(a).localeCompare(formatQualityClass(b)),
+    );
   });
-  return rows.sort((a, b) =>
-    formatQualityClass(a).localeCompare(formatQualityClass(b)),
-  );
 }
 
 export async function createOriginOption(name: string) {

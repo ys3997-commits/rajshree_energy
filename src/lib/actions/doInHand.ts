@@ -13,6 +13,7 @@ import {
   formatSaleOrderMt,
 } from "@/lib/domain/format";
 import { toDecimal, withPurchaseOrderComputed } from "@/lib/domain/computations";
+import { memoize } from "@/lib/memoryCache";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -223,58 +224,60 @@ export async function getHomeDoInHandLists(): Promise<{
   domestic: HomeDoInHandRow[];
   imported: HomeDoInHandRow[];
 }> {
-  const rows = await openBalancePurchaseOrders();
-  const vendorIds = [...new Set(rows.map((row) => row.importerId))];
-  const fundPaidMap = await fundPaidByVendorVessel(vendorIds);
+  return memoize("home:do-in-hand", 20_000, async () => {
+    const rows = await openBalancePurchaseOrders();
+    const vendorIds = [...new Set(rows.map((row) => row.importerId))];
+    const fundPaidMap = await fundPaidByVendorVessel(vendorIds);
 
-  const mapped = rows
-    .filter((row) => row.qualityClass != null)
-    .map((row) => {
-      const key = vendorVesselKey(row.importerId, row.vesselId);
-      const fundPaid = fundPaidMap.get(key) ?? toDecimal(0);
-      const doRate = row.doRate != null ? toDecimal(row.doRate) : null;
-      const blockAmount =
-        row.blockAmount != null ? toDecimal(row.blockAmount) : null;
-      const qc = row.qualityClass!;
+    const mapped = rows
+      .filter((row) => row.qualityClass != null)
+      .map((row) => {
+        const key = vendorVesselKey(row.importerId, row.vesselId);
+        const fundPaid = fundPaidMap.get(key) ?? toDecimal(0);
+        const doRate = row.doRate != null ? toDecimal(row.doRate) : null;
+        const blockAmount =
+          row.blockAmount != null ? toDecimal(row.blockAmount) : null;
+        const qc = row.qualityClass!;
 
-      const dispatched = toDecimal(row.dispatchedOrder);
-      const deliveryOrder = computeDeliveryOrderMt(
-        fundPaid,
-        blockAmount,
-        doRate,
-        dispatched,
-      );
+        const dispatched = toDecimal(row.dispatchedOrder);
+        const deliveryOrder = computeDeliveryOrderMt(
+          fundPaid,
+          blockAmount,
+          doRate,
+          dispatched,
+        );
 
-      return {
-        id: row.id,
-        vendorName: row.importer.name,
-        vesselName: row.vessel.vesselName,
-        domestic: qc.domestic === true,
-        origin: qc.origin.name,
-        quality: qc.qualityOption.name,
-        doInHand: deliveryOrder?.toString() ?? null,
-      };
-    })
-    // Running POs only (from openBalancePurchaseOrders). Show 0 MT rows too.
-    .filter((row) => row.doInHand != null);
+        return {
+          id: row.id,
+          vendorName: row.importer.name,
+          vesselName: row.vessel.vesselName,
+          domestic: qc.domestic === true,
+          origin: qc.origin.name,
+          quality: qc.qualityOption.name,
+          doInHand: deliveryOrder?.toString() ?? null,
+        };
+      })
+      // Running POs only (from openBalancePurchaseOrders). Show 0 MT rows too.
+      .filter((row) => row.doInHand != null);
 
-  function toList(domestic: boolean): HomeDoInHandRow[] {
-    return mapped
-      .filter((row) => row.domestic === domestic)
-      .map(({ id, vendorName, vesselName, origin, quality, doInHand }) => ({
-        id,
-        vendorName,
-        vesselName,
-        origin,
-        quality,
-        doInHand: doInHand!,
-      }));
-  }
+    function toList(domestic: boolean): HomeDoInHandRow[] {
+      return mapped
+        .filter((row) => row.domestic === domestic)
+        .map(({ id, vendorName, vesselName, origin, quality, doInHand }) => ({
+          id,
+          vendorName,
+          vesselName,
+          origin,
+          quality,
+          doInHand: doInHand!,
+        }));
+    }
 
-  return {
-    domestic: toList(true),
-    imported: toList(false),
-  };
+    return {
+      domestic: toList(true),
+      imported: toList(false),
+    };
+  });
 }
 
 export async function listDoInHandFunds(): Promise<DoInHandFundRow[]> {

@@ -3,6 +3,7 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import { capitalizeName } from "@/lib/domain/format";
 import { toDecimal } from "@/lib/domain/computations";
+import { memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -19,24 +20,26 @@ export type TransporterListRow = {
 };
 
 export async function listTransporters(): Promise<TransporterListRow[]> {
-  const rows = await prisma.transporter.findMany({
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      ownerName: true,
-      ownerContactNumber1: true,
-      ownerContactNumber2: true,
-      email: true,
-      city: true,
-      state: true,
-      openingDue: true,
-    },
+  return memoize("opts:transporters", 30_000, async () => {
+    const rows = await prisma.transporter.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        ownerName: true,
+        ownerContactNumber1: true,
+        ownerContactNumber2: true,
+        email: true,
+        city: true,
+        state: true,
+        openingDue: true,
+      },
+    });
+    return rows.map((row) => ({
+      ...row,
+      openingDue: row.openingDue.toString(),
+    }));
   });
-  return rows.map((row) => ({
-    ...row,
-    openingDue: row.openingDue.toString(),
-  }));
 }
 
 export async function getTransporter(id: string) {

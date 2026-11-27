@@ -3,6 +3,7 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import { capitalizeName } from "@/lib/domain/format";
 import { toDecimal } from "@/lib/domain/computations";
+import { memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -43,19 +44,21 @@ function toCompanyData(input: InvestmentCompanyInput) {
 export async function listInvestmentCompanies(): Promise<
   InvestmentCompanyListRow[]
 > {
-  const rows = await prisma.investmentCompany.findMany({
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      openingDue: true,
-      remark: true,
-    },
+  return memoize("opts:investment-companies", 30_000, async () => {
+    const rows = await prisma.investmentCompany.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        openingDue: true,
+        remark: true,
+      },
+    });
+    return rows.map((row) => ({
+      ...row,
+      openingDue: row.openingDue.toString(),
+    }));
   });
-  return rows.map((row) => ({
-    ...row,
-    openingDue: row.openingDue.toString(),
-  }));
 }
 
 export async function createInvestmentCompany(input: InvestmentCompanyInput) {

@@ -1,16 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  buildExcelWorkbook,
-  downloadExcelWorkbook,
-} from "@/lib/export/excelWorkbook";
-import {
-  downloadTablePdf,
-  shareTablePdfViaWhatsApp,
-  type ExportColumn,
-  type ExportRow,
-  type ExportTable,
+import type {
+  ExportColumn,
+  ExportRow,
+  ExportTable,
 } from "@/lib/export/tableDownload";
 
 type Props = {
@@ -35,9 +29,12 @@ export function TableDownloadButtons({
   const [busy, setBusy] = useState<"sheet" | "pdf" | "whatsapp" | null>(null);
   const disabled = rows.length === 0 || busy != null;
 
-  function downloadSheet() {
+  async function downloadSheet() {
     setBusy("sheet");
     try {
+      const { buildExcelWorkbook, downloadExcelWorkbook } = await import(
+        "@/lib/export/excelWorkbook"
+      );
       downloadExcelWorkbook(
         buildExcelWorkbook(columns, rows, title, extraTables),
         `${filenameBase}.xlsx`,
@@ -50,6 +47,7 @@ export function TableDownloadButtons({
   async function downloadPdf() {
     setBusy("pdf");
     try {
+      const { downloadTablePdf } = await import("@/lib/export/tableDownload");
       await downloadTablePdf({
         title,
         filename: `${filenameBase}.pdf`,
@@ -65,6 +63,9 @@ export function TableDownloadButtons({
   async function shareWhatsApp() {
     setBusy("whatsapp");
     try {
+      const { shareTablePdfViaWhatsApp } = await import(
+        "@/lib/export/tableDownload"
+      );
       await shareTablePdfViaWhatsApp({
         title,
         filename: `${filenameBase}.pdf`,
@@ -85,7 +86,7 @@ export function TableDownloadButtons({
         type="button"
         className="btn btn-secondary"
         disabled={disabled}
-        onClick={downloadSheet}
+        onClick={() => void downloadSheet()}
       >
         {busy === "sheet" ? "Downloading…" : "Download Excel"}
       </button>

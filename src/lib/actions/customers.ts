@@ -14,6 +14,7 @@ import {
 } from "@/lib/domain/collectionFollowUps";
 import { amountRoundsToZero, capitalizeName } from "@/lib/domain/format";
 import { Decimal } from "@prisma/client/runtime/library";
+import { memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -56,6 +57,28 @@ export async function listCustomers(options?: { activeOnly?: boolean }) {
       updatedAt: true,
     },
   });
+}
+
+/** Slim customer rows for selects / fund-flow — avoids shipping full customer payloads. */
+export async function listCustomersForSelect(options?: {
+  activeOnly?: boolean;
+}) {
+  const activeOnly = options?.activeOnly === true;
+  return memoize(
+    `opts:customers-select:${activeOnly ? "1" : "0"}`,
+    30_000,
+    () =>
+      prisma.customer.findMany({
+        where: activeOnly ? { active: true } : undefined,
+        orderBy: { name: "asc" },
+        select: {
+          id: true,
+          name: true,
+          category: true,
+          creditDays: true,
+        },
+      }),
+  );
 }
 
 const CUSTOMERS_PAGE_SIZE = 20;

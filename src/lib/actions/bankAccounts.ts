@@ -5,7 +5,7 @@ import { PaymentDirection, Prisma } from "@/generated/prisma";
 import { bankAccountBalance } from "@/lib/domain/bankBalance";
 import { capitalizeName } from "@/lib/domain/format";
 import { toDecimal } from "@/lib/domain/computations";
-import { forgetMemo } from "@/lib/memoryCache";
+import { forgetMemo, memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -102,6 +102,18 @@ export async function listBankAccounts(): Promise<BankAccountListRow[]> {
   }));
 }
 
+/** Nav-only bank rows — keeps the dashboard layout query tiny. */
+export async function listBankAccountsForNav(): Promise<
+  { id: string; accountName: string }[]
+> {
+  return memoize("nav:bank-accounts", 20_000, () =>
+    prisma.bankAccount.findMany({
+      orderBy: [{ bankName: "asc" }, { accountName: "asc" }],
+      select: { id: true, accountName: true },
+    }),
+  );
+}
+
 function movementFor(
   totals: Map<string, { received: Decimal; paid: Decimal }>,
   accountId: string,
@@ -116,6 +128,10 @@ function movementFor(
 
 /** Opening balance plus fund received, minus fund paid, for each bank account. */
 export async function listBankAccountBalances(): Promise<BankAccountBalanceRow[]> {
+  return memoize("bank:account-balances", 15_000, () => loadBankAccountBalances());
+}
+
+async function loadBankAccountBalances(): Promise<BankAccountBalanceRow[]> {
   const [
     accounts,
     groups,
@@ -262,6 +278,7 @@ export async function createBankAccount(input: BankAccountInput) {
     asUniqueAccountError(error);
   }
   forgetMemo("nav:bank-accounts");
+  forgetMemo("bank:account-balances");
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
@@ -284,6 +301,7 @@ export async function updateBankAccount(id: string, input: BankAccountInput) {
     asUniqueAccountError(error);
   }
   forgetMemo("nav:bank-accounts");
+  forgetMemo("bank:account-balances");
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");
@@ -308,6 +326,7 @@ export async function deleteBankAccount(id: string) {
     throw error;
   }
   forgetMemo("nav:bank-accounts");
+  forgetMemo("bank:account-balances");
   revalidatePath("/bank-accounts");
   revalidatePath("/payments");
   revalidatePath("/payments/transaction");

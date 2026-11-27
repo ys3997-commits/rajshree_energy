@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { CustomerCategory } from "@/generated/prisma";
 import { Modal } from "@/components/Modal";
-import { NewOrderForm } from "@/components/NewOrderForm";
 import type { QualityClassOpt } from "@/components/QualityClassSelect";
+
+const NewOrderForm = dynamic(
+  () =>
+    import("@/components/NewOrderForm").then((m) => ({
+      default: m.NewOrderForm,
+    })),
+  { ssr: false },
+);
 
 type CustomerOpt = {
   id: string;
@@ -42,14 +50,15 @@ export function CreateOrderButton({
         title="New sale order"
         onClose={() => setOpen(false)}
       >
-        <NewOrderForm
-          customers={customers}
-          ports={ports}
-          qualityClasses={qualityClasses}
-          suggestedPo={suggestedPo}
-          onCancel={() => setOpen(false)}
-          onSuccess={() => setOpen(false)}
-        />
+        {open ? (
+          <NewOrderForm
+            customers={customers}
+            ports={ports}
+            qualityClasses={qualityClasses}
+            suggestedPo={suggestedPo}
+            onCancel={() => setOpen(false)}
+          />
+        ) : null}
       </Modal>
     </>
   );

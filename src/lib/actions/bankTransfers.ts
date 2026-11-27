@@ -3,6 +3,7 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal } from "@/lib/domain/computations";
 import { formatBankAccountLabel } from "@/lib/domain/format";
+import { forgetMemo } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -142,6 +143,7 @@ async function assertDistinctAccounts(paidAccountId: string, receivedAccountId: 
 }
 
 function revalidateTransferPaths() {
+  forgetMemo("bank:account-balances");
   revalidatePath("/payments/transaction");
   revalidatePath("/payments/book-expenses");
   revalidatePath("/payments/txn-saving");

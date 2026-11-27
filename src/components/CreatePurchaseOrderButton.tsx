@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { Modal } from "@/components/Modal";
-import { NewPurchaseOrderForm } from "@/components/NewPurchaseOrderForm";
 import type { QualityClassLabel } from "@/lib/domain/format";
+
+const NewPurchaseOrderForm = dynamic(
+  () =>
+    import("@/components/NewPurchaseOrderForm").then((m) => ({
+      default: m.NewPurchaseOrderForm,
+    })),
+  { ssr: false },
+);
 
 type Option = { id: string; name: string };
 
@@ -40,12 +48,14 @@ export function CreatePurchaseOrderButton({
         title="New purchase order"
         onClose={() => setOpen(false)}
       >
-        <NewPurchaseOrderForm
-          importers={importers}
-          vessels={vessels}
-          suggestedPo={suggestedPo}
-          onCancel={() => setOpen(false)}
-        />
+        {open ? (
+          <NewPurchaseOrderForm
+            importers={importers}
+            vessels={vessels}
+            suggestedPo={suggestedPo}
+            onCancel={() => setOpen(false)}
+          />
+        ) : null}
       </Modal>
     </>
   );

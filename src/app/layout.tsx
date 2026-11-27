@@ -1,21 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Newsreader, Outfit } from "next/font/google";
+import { Newsreader, Outfit } from "next/font/google";
 import "./globals.css";
 
 const outfit = Outfit({
   variable: "--font-body",
   subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 const newsreader = Newsreader({
   variable: "--font-display",
   subsets: ["latin"],
   style: ["normal", "italic"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
+  preload: true,
 });
 
 export const viewport: Viewport = {
@@ -45,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${newsreader.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${newsreader.variable} h-full antialiased`}
     >
       <body className="h-full min-h-full">
         {children}

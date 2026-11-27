@@ -1,5 +1,5 @@
 import { listOrders } from "@/lib/actions/orders";
-import { listCustomers } from "@/lib/actions/customers";
+import { listCustomersForSelect } from "@/lib/actions/customers";
 import { listSaleExecutiveOptions } from "@/lib/actions/option-lists";
 import { listPortOptions } from "@/lib/actions/ports";
 import { listQualityClasses } from "@/lib/actions/qualities";
@@ -49,7 +49,7 @@ export default async function OrdersPage({
   const typeFilter = resolveOrderListTypeFilter(sp.orderType);
 
   // Keep concurrency under Prisma/Supabase pool (connection_limit=5).
-  const [orders, customers, ports, saleExecutives, qualityClasses] =
+  const [orders, customers, ports, saleExecutives, qualityClasses, suggestedPo] =
     await Promise.all([
       listOrders({
         status: statusFilter,
@@ -60,13 +60,12 @@ export default async function OrdersPage({
         saleExecutive: sp.saleExecutive || "",
         qualityClassId: sp.qualityClassId || "",
       }),
-      listCustomers({ activeOnly: true }),
+      listCustomersForSelect({ activeOnly: true }),
       listPortOptions(),
       listSaleExecutiveOptions(),
       listQualityClasses(),
+      suggestNextPoNumber(),
     ]);
-
-  const suggestedPo = await suggestNextPoNumber();
 
   const customerOpts = customers.map((c) => ({
     id: c.id,

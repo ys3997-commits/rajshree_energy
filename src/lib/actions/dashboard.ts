@@ -28,6 +28,9 @@ import {
   listQualityReport,
   listVesselSuppliedReport,
 } from "@/lib/actions/reports";
+import { memoize } from "@/lib/memoryCache";
+
+const HOME_CACHE_TTL_MS = 20_000;
 
 function startOfLocalDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -92,50 +95,52 @@ export type HomeTodayKpis = {
  */
 export async function getHomeTodayKpis(): Promise<HomeTodayKpis> {
   const todayDate = homeBusinessDayKey();
-  const date = addCalendarDays(todayDate, -1);
-  const range = utcDayRange(date);
+  return memoize(`home:today-kpis:${todayDate}`, HOME_CACHE_TTL_MS, async () => {
+    const date = addCalendarDays(todayDate, -1);
+    const range = utcDayRange(date);
 
-  const [dispatches, fundAgg] = await Promise.all([
-    prisma.dispatch.findMany({
-      where: { dispatchDate: range },
-      select: {
-        dispatchedQuantity: true,
-        dispatchTerms: true,
-        freight: true,
-        order: { select: { rate: true } },
-        purchaseOrder: { select: { rate: true } },
-      },
-    }),
-    prisma.payment.aggregate({
-      where: {
-        direction: "RECEIVED",
-        date: range,
-      },
-      _sum: { amount: true },
-    }),
-  ]);
+    const [dispatches, fundAgg] = await Promise.all([
+      prisma.dispatch.findMany({
+        where: { dispatchDate: range },
+        select: {
+          dispatchedQuantity: true,
+          dispatchTerms: true,
+          freight: true,
+          order: { select: { rate: true } },
+          purchaseOrder: { select: { rate: true } },
+        },
+      }),
+      prisma.payment.aggregate({
+        where: {
+          direction: "RECEIVED",
+          date: range,
+        },
+        _sum: { amount: true },
+      }),
+    ]);
 
-  let dispatchedQuantity = new Decimal(0);
-  let profit = new Decimal(0);
-  for (const row of dispatches) {
-    dispatchedQuantity = dispatchedQuantity.plus(row.dispatchedQuantity);
-    const line = lineProfit({
-      saleRate: row.order.rate,
-      costRate: row.purchaseOrder.rate,
-      quantity: row.dispatchedQuantity,
-      dispatchTerms: row.dispatchTerms,
-      freight: row.freight,
-    });
-    if (line != null) profit = profit.plus(line);
-  }
+    let dispatchedQuantity = new Decimal(0);
+    let profit = new Decimal(0);
+    for (const row of dispatches) {
+      dispatchedQuantity = dispatchedQuantity.plus(row.dispatchedQuantity);
+      const line = lineProfit({
+        saleRate: row.order.rate,
+        costRate: row.purchaseOrder.rate,
+        quantity: row.dispatchedQuantity,
+        dispatchTerms: row.dispatchTerms,
+        freight: row.freight,
+      });
+      if (line != null) profit = profit.plus(line);
+    }
 
-  return {
-    date,
-    todayDate,
-    dispatchedQuantity: dispatchedQuantity.toString(),
-    profit: profit.toDecimalPlaces(2).toString(),
-    fundReceived: (fundAgg._sum.amount ?? new Decimal(0)).toString(),
-  };
+    return {
+      date,
+      todayDate,
+      dispatchedQuantity: dispatchedQuantity.toString(),
+      profit: profit.toDecimalPlaces(2).toString(),
+      fundReceived: (fundAgg._sum.amount ?? new Decimal(0)).toString(),
+    };
+  });
 }
 
 export type HomePendingBillOwner = {
@@ -147,6 +152,7 @@ export type HomePendingBillOwner = {
 export async function getHomePendingBillsByOwner(): Promise<
   HomePendingBillOwner[]
 > {
+  return memoize("home:pending-bills", HOME_CACHE_TTL_MS, async () => {
   const [owners, grouped] = await Promise.all([
     prisma.ownerOption.findMany({
       orderBy: { name: "asc" },
@@ -173,6 +179,7 @@ export async function getHomePendingBillsByOwner(): Promise<
     name,
     pending: counts.get(name) ?? 0,
   }));
+  });
 }
 
 export type HomeLatestActivity = {
@@ -183,21 +190,23 @@ export type HomeLatestActivity = {
 
 /** Latest calendar dates entered for dispatch, bank, and discount. */
 export async function getHomeLatestActivity(): Promise<HomeLatestActivity> {
-  const [dispatchAgg, paymentAgg, discountAgg] = await Promise.all([
-    prisma.dispatch.aggregate({ _max: { dispatchDate: true } }),
-    prisma.payment.aggregate({ _max: { date: true } }),
-    prisma.discount.aggregate({ _max: { date: true } }),
-  ]);
+  return memoize("home:latest-activity", HOME_CACHE_TTL_MS, async () => {
+    const [dispatchAgg, paymentAgg, discountAgg] = await Promise.all([
+      prisma.dispatch.aggregate({ _max: { dispatchDate: true } }),
+      prisma.payment.aggregate({ _max: { date: true } }),
+      prisma.discount.aggregate({ _max: { date: true } }),
+    ]);
 
-  return {
-    purchaseSalesDate: dispatchAgg._max.dispatchDate
-      ? utcDayKey(dispatchAgg._max.dispatchDate)
-      : null,
-    paymentDate: paymentAgg._max.date ? utcDayKey(paymentAgg._max.date) : null,
-    discountDate: discountAgg._max.date
-      ? utcDayKey(discountAgg._max.date)
-      : null,
-  };
+    return {
+      purchaseSalesDate: dispatchAgg._max.dispatchDate
+        ? utcDayKey(dispatchAgg._max.dispatchDate)
+        : null,
+      paymentDate: paymentAgg._max.date ? utcDayKey(paymentAgg._max.date) : null,
+      discountDate: discountAgg._max.date
+        ? utcDayKey(discountAgg._max.date)
+        : null,
+    };
+  });
 }
 
 function formatUtcDayLabel(isoDay: string): string {
@@ -367,11 +376,12 @@ export async function getHomeDispatchCharts(): Promise<{
   profitCurrentMonthDiscount: ProfitDiscountSplit;
   profitDayDiscount: ProfitDiscountSplit;
 }> {
+  const todayKey = homeBusinessDayKey();
+  return memoize(`home:dispatch-charts:${todayKey}`, HOME_CACHE_TTL_MS, async () => {
   const today = startOfLocalDay(new Date());
   const monthStart = startOfMonth(addMonths(today, -5));
   const monthEnd = startOfMonth(addMonths(today, 1));
   const currentMonthKey = monthKey(today);
-  const todayKey = homeBusinessDayKey();
 
   const [rows, discounts] = await Promise.all([
     prisma.dispatch.findMany({
@@ -482,6 +492,7 @@ export async function getHomeDispatchCharts(): Promise<{
     profitCurrentMonthDiscount: sumSplit(monthDiscount, currentMonthKeys),
     profitDayDiscount: sumSplit(dayDiscount, dayKeys),
   };
+  });
 }
 
 /**
@@ -492,6 +503,7 @@ export async function getHomeFundCharts(): Promise<{
   days: DispatchSplitBucket[];
 }> {
   const todayKey = homeBusinessDayKey();
+  return memoize(`home:fund-charts:${todayKey}`, HOME_CACHE_TTL_MS, async () => {
   const dayStartKey = addCalendarDays(todayKey, -14);
   const dayEndKey = addCalendarDays(todayKey, 1);
 
@@ -529,71 +541,74 @@ export async function getHomeFundCharts(): Promise<{
   });
 
   return { days };
+  });
 }
 
 /**
  * One read of customers, dispatches, payments, and discounts for the home
  * overdue chart and debtor-due split. Both callers share this within a request.
  */
-const loadHomeLedger = cache(async () => {
-  const [customers, dispatches, payments, discounts] = await Promise.all([
-    prisma.customer.findMany({
-      where: {
-        category: {
-          in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
-        },
-      },
-      select: { id: true, openingDue: true, creditDays: true, due: true },
-    }),
-    prisma.dispatch.findMany({
-      select: {
-        id: true,
-        dispatchDate: true,
-        dispatchedQuantity: true,
-        createdAt: true,
-        order: {
-          select: {
-            customerId: true,
-            finalRate: true,
-            qualityClass: { select: { domestic: true } },
+const loadHomeLedger = cache(async () =>
+  memoize("home:ledger", HOME_CACHE_TTL_MS, async () => {
+    const [customers, dispatches, payments, discounts] = await Promise.all([
+      prisma.customer.findMany({
+        where: {
+          category: {
+            in: [CustomerCategory.INDUSTRY, CustomerCategory.TRADER],
           },
         },
-        purchaseOrder: {
-          select: {
-            importerId: true,
-            finalRate: true,
-            qualityClass: { select: { domestic: true } },
+        select: { id: true, openingDue: true, creditDays: true, due: true },
+      }),
+      prisma.dispatch.findMany({
+        select: {
+          id: true,
+          dispatchDate: true,
+          dispatchedQuantity: true,
+          createdAt: true,
+          order: {
+            select: {
+              customerId: true,
+              finalRate: true,
+              qualityClass: { select: { domestic: true } },
+            },
+          },
+          purchaseOrder: {
+            select: {
+              importerId: true,
+              finalRate: true,
+              qualityClass: { select: { domestic: true } },
+            },
+          },
+          vessel: {
+            select: { qualityClass: { select: { domestic: true } } },
           },
         },
-        vessel: {
-          select: { qualityClass: { select: { domestic: true } } },
+      }),
+      prisma.payment.findMany({
+        select: {
+          id: true,
+          customerId: true,
+          date: true,
+          amount: true,
+          direction: true,
+          createdAt: true,
         },
-      },
-    }),
-    prisma.payment.findMany({
-      select: {
-        id: true,
-        customerId: true,
-        date: true,
-        amount: true,
-        direction: true,
-        createdAt: true,
-      },
-    }),
-    prisma.discount.findMany({
-      select: {
-        id: true,
-        customerId: true,
-        date: true,
-        amount: true,
-        status: true,
-        coalOrigin: true,
-        createdAt: true,
-      },
-    }),
-  ]);
-  return { customers, dispatches, payments, discounts };
-});
+      }),
+      prisma.discount.findMany({
+        select: {
+          id: true,
+          customerId: true,
+          date: true,
+          amount: true,
+          status: true,
+          coalOrigin: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+    return { customers, dispatches, payments, discounts };
+  }),
+);
 
 /**
  * Home overdue chart: total overdue for Industry + Trader customers (excludes Vendor)
@@ -909,47 +924,49 @@ function addCustomerVolume(
 export async function getTopCustomersByCoalOrigin(limit = 7): Promise<{
   last30: { domestic: TopCustomerVolume[]; imported: TopCustomerVolume[] };
 }> {
-  const since30 = addDays(startOfLocalDay(new Date()), -30);
+  return memoize(`home:top-customers:${limit}`, HOME_CACHE_TTL_MS, async () => {
+    const since30 = addDays(startOfLocalDay(new Date()), -30);
 
-  const rows = await prisma.dispatch.findMany({
-    where: { dispatchDate: { gte: since30 } },
-    select: {
-      dispatchedQuantity: true,
-      purchaseOrder: {
-        select: { qualityClass: { select: { domestic: true } } },
-      },
-      vessel: {
-        select: { qualityClass: { select: { domestic: true } } },
-      },
-      order: {
-        select: {
-          qualityClass: { select: { domestic: true } },
-          customer: { select: { id: true, name: true } },
+    const rows = await prisma.dispatch.findMany({
+      where: { dispatchDate: { gte: since30 } },
+      select: {
+        dispatchedQuantity: true,
+        purchaseOrder: {
+          select: { qualityClass: { select: { domestic: true } } },
+        },
+        vessel: {
+          select: { qualityClass: { select: { domestic: true } } },
+        },
+        order: {
+          select: {
+            qualityClass: { select: { domestic: true } },
+            customer: { select: { id: true, name: true } },
+          },
         },
       },
-    },
+    });
+
+    const last30Domestic = new Map<string, CustomerVolumeAgg>();
+    const last30Imported = new Map<string, CustomerVolumeAgg>();
+
+    for (const row of rows) {
+      const customer = row.order.customer;
+      const isDomestic = isDomesticQuality(
+        row.purchaseOrder.qualityClass,
+        row.vessel.qualityClass,
+        row.order.qualityClass,
+      );
+      const last30Map = isDomestic ? last30Domestic : last30Imported;
+      addCustomerVolume(last30Map, customer, row.dispatchedQuantity);
+    }
+
+    return {
+      last30: {
+        domestic: toTopCustomerVolumes(last30Domestic, limit),
+        imported: toTopCustomerVolumes(last30Imported, limit),
+      },
+    };
   });
-
-  const last30Domestic = new Map<string, CustomerVolumeAgg>();
-  const last30Imported = new Map<string, CustomerVolumeAgg>();
-
-  for (const row of rows) {
-    const customer = row.order.customer;
-    const isDomestic = isDomesticQuality(
-      row.purchaseOrder.qualityClass,
-      row.vessel.qualityClass,
-      row.order.qualityClass,
-    );
-    const last30Map = isDomestic ? last30Domestic : last30Imported;
-    addCustomerVolume(last30Map, customer, row.dispatchedQuantity);
-  }
-
-  return {
-    last30: {
-      domestic: toTopCustomerVolumes(last30Domestic, limit),
-      imported: toTopCustomerVolumes(last30Imported, limit),
-    },
-  };
 }
 
 export type HomeQualityStockRow = {
@@ -969,43 +986,45 @@ export async function getHomeQualityStockLists(): Promise<{
   domestic: HomeQualityStockRow[];
   imported: HomeQualityStockRow[];
 }> {
-  const rows = await listQualityReport();
+  return memoize("home:quality-stock", HOME_CACHE_TTL_MS, async () => {
+    const rows = await listQualityReport();
 
-  const mapped = rows
-    .map((row) => {
-      const stock = Number(row.poBalance) || 0;
-      const order = Number(row.soBalance) || 0;
-      const unsold = Number(row.unsoldQuantity) || 0;
-      return {
-        id: row.id,
-        domestic: row.qualityClass.domestic,
-        origin: row.qualityClass.origin.name,
-        quality: row.qualityClass.qualityOption.name,
-        stockInHand: row.poBalance,
-        orderInHand: row.soBalance,
-        unsoldQty: row.unsoldQuantity,
-        allZero: stock === 0 && order === 0 && unsold === 0,
-      };
-    })
-    .filter((row) => !row.allZero);
+    const mapped = rows
+      .map((row) => {
+        const stock = Number(row.poBalance) || 0;
+        const order = Number(row.soBalance) || 0;
+        const unsold = Number(row.unsoldQuantity) || 0;
+        return {
+          id: row.id,
+          domestic: row.qualityClass.domestic,
+          origin: row.qualityClass.origin.name,
+          quality: row.qualityClass.qualityOption.name,
+          stockInHand: row.poBalance,
+          orderInHand: row.soBalance,
+          unsoldQty: row.unsoldQuantity,
+          allZero: stock === 0 && order === 0 && unsold === 0,
+        };
+      })
+      .filter((row) => !row.allZero);
 
-  function toList(domestic: boolean): HomeQualityStockRow[] {
-    return mapped
-      .filter((row) => row.domestic === domestic)
-      .map(({ id, origin, quality, stockInHand, orderInHand, unsoldQty }) => ({
-        id,
-        origin,
-        quality,
-        stockInHand,
-        orderInHand,
-        unsoldQty,
-      }));
-  }
+    function toList(domestic: boolean): HomeQualityStockRow[] {
+      return mapped
+        .filter((row) => row.domestic === domestic)
+        .map(({ id, origin, quality, stockInHand, orderInHand, unsoldQty }) => ({
+          id,
+          origin,
+          quality,
+          stockInHand,
+          orderInHand,
+          unsoldQty,
+        }));
+    }
 
-  return {
-    domestic: toList(true),
-    imported: toList(false),
-  };
+    return {
+      domestic: toList(true),
+      imported: toList(false),
+    };
+  });
 }
 
 export type HomeVesselStockRow = {
@@ -1024,39 +1043,41 @@ export async function getHomeVesselStockLists(): Promise<{
   domestic: HomeVesselStockRow[];
   imported: HomeVesselStockRow[];
 }> {
-  const rows = await listVesselSuppliedReport();
+  return memoize("home:vessel-stock", HOME_CACHE_TTL_MS, async () => {
+    const rows = await listVesselSuppliedReport();
 
-  const mapped = rows
-    .filter((row) => row.qualityClass != null)
-    .map((row) => {
-      const stock = Number(row.stockInHand) || 0;
-      const qc = row.qualityClass!;
-      return {
-        id: row.id,
-        vesselName: row.vesselName,
-        domestic: qc.domestic === true,
-        origin: qc.origin.name,
-        quality: qc.qualityOption.name,
-        stockInHand: row.stockInHand,
-        zero: stock === 0,
-      };
-    })
-    .filter((row) => !row.zero);
+    const mapped = rows
+      .filter((row) => row.qualityClass != null)
+      .map((row) => {
+        const stock = Number(row.stockInHand) || 0;
+        const qc = row.qualityClass!;
+        return {
+          id: row.id,
+          vesselName: row.vesselName,
+          domestic: qc.domestic === true,
+          origin: qc.origin.name,
+          quality: qc.qualityOption.name,
+          stockInHand: row.stockInHand,
+          zero: stock === 0,
+        };
+      })
+      .filter((row) => !row.zero);
 
-  function toList(domestic: boolean): HomeVesselStockRow[] {
-    return mapped
-      .filter((row) => row.domestic === domestic)
-      .map(({ id, vesselName, origin, quality, stockInHand }) => ({
-        id,
-        vesselName,
-        origin,
-        quality,
-        stockInHand,
-      }));
-  }
+    function toList(domestic: boolean): HomeVesselStockRow[] {
+      return mapped
+        .filter((row) => row.domestic === domestic)
+        .map(({ id, vesselName, origin, quality, stockInHand }) => ({
+          id,
+          vesselName,
+          origin,
+          quality,
+          stockInHand,
+        }));
+    }
 
-  return {
-    domestic: toList(true),
-    imported: toList(false),
-  };
+    return {
+      domestic: toList(true),
+      imported: toList(false),
+    };
+  });
 }

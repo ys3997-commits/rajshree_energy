@@ -1,6 +1,7 @@
 "use server";
 
 import { capitalizeName } from "@/lib/domain/format";
+import { memoize } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
@@ -10,14 +11,17 @@ const qualityClassInclude = {
 } as const;
 
 export async function listVessels(options?: { activeOnly?: boolean }) {
-  return prisma.vessel.findMany({
-    where: options?.activeOnly ? { active: true } : undefined,
-    include: {
-      qualityClass: { include: qualityClassInclude },
-      port: { select: { id: true, name: true, state: true } },
-    },
-    orderBy: { vesselName: "asc" },
-  });
+  const activeOnly = options?.activeOnly === true;
+  return memoize(`opts:vessels:${activeOnly ? "1" : "0"}`, 30_000, () =>
+    prisma.vessel.findMany({
+      where: activeOnly ? { active: true } : undefined,
+      include: {
+        qualityClass: { include: qualityClassInclude },
+        port: { select: { id: true, name: true, state: true } },
+      },
+      orderBy: { vesselName: "asc" },
+    }),
+  );
 }
 
 export type VesselInput = {

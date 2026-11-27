@@ -4,6 +4,7 @@ import { PaymentDirection } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal } from "@/lib/domain/computations";
 import { formatBankAccountLabel, toTitleCase } from "@/lib/domain/format";
+import { forgetMemo } from "@/lib/memoryCache";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -155,6 +156,7 @@ async function assertRefs(paidAccountId: string, indirectExpenseId: string) {
 }
 
 function revalidateExpensePaths() {
+  forgetMemo("bank:account-balances");
   revalidatePath("/payments/book-expenses");
   revalidatePath("/payments/taxes");
   revalidatePath("/payments/txn-saving");
