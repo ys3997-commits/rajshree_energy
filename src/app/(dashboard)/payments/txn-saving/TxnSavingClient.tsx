@@ -91,6 +91,22 @@ function accountLabel(
   return bankName ? `${accountName} (${bankName})` : accountName;
 }
 
+function labeledSavingName(
+  name: string,
+  accounts: BankAccountBalanceRow[],
+): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "—";
+  if (trimmed.includes("(")) return trimmed;
+  const match = accounts.find(
+    (account) =>
+      account.accountName.trim().toLowerCase() === trimmed.toLowerCase(),
+  );
+  return match
+    ? accountLabel(match.accountName, match.bankName)
+    : trimmed;
+}
+
 function hasListFilters(
   dateFrom: string,
   dateTo: string,
@@ -145,10 +161,10 @@ export function TxnSavingClient({
         date: formatDateDdMmYyyy(row.date),
         type: directionLabel(row.direction),
         account: accountLabel(row.accountName, row.bankName),
-        savingAccountName: row.savingAccountName,
+        savingAccountName: labeledSavingName(row.savingAccountName, accounts),
         amount: formatBankAmount(row.amount),
       })),
-    [exportRows],
+    [exportRows, accounts],
   );
 
   function changeAmount(form: FormState, value: string): FormState | null {
@@ -477,7 +493,9 @@ export function TxnSavingClient({
                           {directionLabel(row.direction)}
                         </td>
                         <td>{accountLabel(row.accountName, row.bankName)}</td>
-                        <td>{row.savingAccountName}</td>
+                        <td>
+                          {labeledSavingName(row.savingAccountName, accounts)}
+                        </td>
                         <td className={`cell-num ${typeClass(row.direction)}`}>
                           {formatBankAmount(row.amount)}
                         </td>

@@ -206,6 +206,17 @@ export function formatBankAmount(
   return formatIndianNumber(s, 2);
 }
 
+/** Display bank accounts as "Account name (Bank name)". */
+export function formatBankAccountLabel(
+  accountName: string | null | undefined,
+  bankName?: string | null,
+): string {
+  const name = (accountName ?? "").trim();
+  if (!name) return "—";
+  const bank = (bankName ?? "").trim();
+  return bank ? `${name} (${bank})` : name;
+}
+
 export function formatCustomerCategory(
   category: CustomerCategory | string | null | undefined,
 ): string {

@@ -21,7 +21,16 @@ import { createUnallocatedReceiptTxn } from "@/lib/actions/unallocatedReceiptTxn
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { canAccessPath } from "@/lib/auth/pages";
 import {
+  categoryUsesCurrentOrCcAccounts,
+  filterCurrentOrCcAccounts,
+  filterSavingAccounts,
+  filterSavingTransferAccounts,
+  isCurrentOrCcAccountType,
+  isSavingAccountType,
+} from "@/lib/domain/bankAccountType";
+import {
   capitalizeName,
+  formatBankAccountLabel,
   formatCustomerCategory,
   formatIndianAmountTyping,
   parseAmountInput,
@@ -156,7 +165,9 @@ function slotsFor(category: BankCategory, type: string): {
   paid: SlotKind;
   received: SlotKind;
 } {
-  if (category === "current") return { paid: "bank", received: "bank" };
+  if (category === "current" || category === "saving") {
+    return { paid: "bank", received: "bank" };
+  }
   if (category === "expenses" || category === "taxes") {
     return { paid: "bank", received: "none" };
   }
@@ -164,13 +175,43 @@ function slotsFor(category: BankCategory, type: string): {
     return { paid: "wait", received: "wait" };
   }
   const other: SlotKind =
-    category === "saving"
-      ? "saving"
-      : category === "unallocated"
-        ? "unallocated"
-        : "party";
+    category === "unallocated" ? "unallocated" : "party";
   if (type === "SENT") return { paid: "bank", received: other };
   return { paid: other, received: "bank" };
+}
+
+function resolveSavingTransfer(
+  accounts: BankAccountBalanceRow[],
+  paidAccountId: string,
+  receivedAccountId: string,
+): { bankAccountId: string; direction: "RECEIVED" | "SENT"; savingName: string } | string {
+  const paid = accounts.find((account) => account.id === paidAccountId);
+  const received = accounts.find((account) => account.id === receivedAccountId);
+  if (!paid || !received) return "Select fund paid and fund received accounts";
+
+  const paidSaving = isSavingAccountType(paid.accountTypeName);
+  const paidCurrent = isCurrentOrCcAccountType(paid.accountTypeName);
+  const receivedSaving = isSavingAccountType(received.accountTypeName);
+  const receivedCurrent = isCurrentOrCcAccountType(received.accountTypeName);
+
+  if (paidSaving && receivedCurrent) {
+    return {
+      bankAccountId: received.id,
+      direction: "RECEIVED",
+      savingName: formatBankAccountLabel(paid.accountName, paid.bankName),
+    };
+  }
+  if (paidCurrent && receivedSaving) {
+    return {
+      bankAccountId: paid.id,
+      direction: "SENT",
+      savingName: formatBankAccountLabel(
+        received.accountName,
+        received.bankName,
+      ),
+    };
+  }
+  return "Select one Saving A/c and one Current A/c or CC A/c";
 }
 
 const EMPTY_PICKER = {
@@ -225,7 +266,7 @@ export function BankEntryProvider({
 
   function pickAccount(accountId: string) {
     setForm((current) => {
-      if (category !== "current") {
+      if (category !== "current" && category !== "saving") {
         return { ...current, bankAccountId: accountId };
       }
       if (
@@ -234,7 +275,13 @@ export function BankEntryProvider({
       ) {
         return current;
       }
-      const clickedName = accountNameOf(accounts, accountId);
+      const clicked = accounts.find((account) => account.id === accountId);
+      if (!clicked) return current;
+      if (category === "saving") {
+        const eligible = filterSavingTransferAccounts([clicked]).length > 0;
+        if (!eligible) return current;
+      }
+      const clickedName = clicked.accountName;
       const paidName = accountNameOf(accounts, current.paidAccountId);
       if (!current.paidAccountId) {
         return { ...current, paidAccountId: accountId };
@@ -243,17 +290,42 @@ export function BankEntryProvider({
         !current.receivedAccountId &&
         !sameAccountName(clickedName, paidName)
       ) {
+        if (category === "saving") {
+          const paid = accounts.find(
+            (account) => account.id === current.paidAccountId,
+          );
+          if (!paid) return { ...current, paidAccountId: accountId };
+          const paidSaving = isSavingAccountType(paid.accountTypeName);
+          const clickedSaving = isSavingAccountType(clicked.accountTypeName);
+          const clickedCurrent = isCurrentOrCcAccountType(
+            clicked.accountTypeName,
+          );
+          const ok =
+            (paidSaving && clickedCurrent) ||
+            (isCurrentOrCcAccountType(paid.accountTypeName) && clickedSaving);
+          if (!ok) return { ...current, paidAccountId: accountId };
+        }
         return { ...current, receivedAccountId: accountId };
       }
+      const nextReceived =
+        category === "saving"
+          ? typeof resolveSavingTransfer(
+              accounts,
+              accountId,
+              current.receivedAccountId,
+            ) === "string"
+            ? ""
+            : current.receivedAccountId
+          : sameAccountName(
+                clickedName,
+                accountNameOf(accounts, current.receivedAccountId),
+              )
+            ? ""
+            : current.receivedAccountId;
       return {
         ...current,
         paidAccountId: accountId,
-        receivedAccountId: sameAccountName(
-          clickedName,
-          accountNameOf(accounts, current.receivedAccountId),
-        )
-          ? ""
-          : current.receivedAccountId,
+        receivedAccountId: nextReceived,
       };
     });
   }
@@ -285,11 +357,14 @@ export function BankEntryProvider({
       }
     }
     if (category === "saving") {
-      if (current.type !== "RECEIVED" && current.type !== "SENT") {
-        return "Select Fund Received or Fund Paid";
-      }
-      if (!current.bankAccountId) return "Select an account";
-      if (!current.savingName.trim()) return "Saving Account Name is required";
+      if (!current.paidAccountId) return "Select a fund paid account";
+      if (!current.receivedAccountId) return "Select a fund received account";
+      const resolved = resolveSavingTransfer(
+        accounts,
+        current.paidAccountId,
+        current.receivedAccountId,
+      );
+      if (typeof resolved === "string") return resolved;
     }
     if (category === "unallocated") {
       if (current.type !== "RECEIVED" && current.type !== "SENT") {
@@ -302,7 +377,11 @@ export function BankEntryProvider({
       if (current.type !== "RECEIVED" && current.type !== "SENT") {
         return "Select Fund Received or Fund Paid";
       }
-      if (!current.bankAccountId) return "Select a fund paid account";
+      if (!current.bankAccountId) {
+        return current.type === "RECEIVED"
+          ? "Select a fund received account"
+          : "Select a fund paid account";
+      }
       if (!current.expenseId) {
         return category === "taxes"
           ? "Select a government tax"
@@ -315,11 +394,7 @@ export function BankEntryProvider({
 
   function keptAfterSave(current: FormState): FormState {
     const next = { ...emptyForm(), date: current.date };
-    if (
-      category === "others" ||
-      category === "saving" ||
-      category === "unallocated"
-    ) {
+    if (category === "others" || category === "unallocated") {
       next.type = current.type;
       next.bankAccountId = current.bankAccountId;
     }
@@ -361,11 +436,17 @@ export function BankEntryProvider({
             amount: snapshot.amount,
           });
         } else if (category === "saving") {
+          const resolved = resolveSavingTransfer(
+            accounts,
+            snapshot.paidAccountId,
+            snapshot.receivedAccountId,
+          );
+          if (typeof resolved === "string") throw new Error(resolved);
           await createSavingAccountTxn({
             date: snapshot.date,
-            bankAccountId: snapshot.bankAccountId,
-            direction: snapshot.type,
-            savingAccountName: snapshot.savingName,
+            bankAccountId: resolved.bankAccountId,
+            direction: resolved.direction,
+            savingAccountName: resolved.savingName,
             amount: snapshot.amount,
           });
         } else if (category === "unallocated") {
@@ -499,8 +580,9 @@ function BankEntryBar({
     [parties],
   );
   const slots = slotsFor(category, form.type);
-  const showType = category !== "current";
+  const showType = category !== "current" && category !== "saving";
   const showParticular = category === "expenses" || category === "taxes";
+  const dualBankCategory = category === "current" || category === "saving";
 
   function onAmount(value: string) {
     const raw = parseAmountInput(value).replace(/[^\d.]/g, "");
@@ -512,47 +594,91 @@ function BankEntryBar({
     setForm((current) => ({ ...current, amount: raw }));
   }
 
+  function receivedCompatibleWithPaid(
+    paidAccountId: string,
+    receivedAccountId: string,
+  ): boolean {
+    if (!paidAccountId || !receivedAccountId) return true;
+    if (category !== "saving") {
+      return !sameAccountName(
+        accountNameOf(accounts, paidAccountId),
+        accountNameOf(accounts, receivedAccountId),
+      );
+    }
+    return typeof resolveSavingTransfer(
+      accounts,
+      paidAccountId,
+      receivedAccountId,
+    ) !== "string";
+  }
+
   function setPaidBank(accountId: string) {
     setForm((current) => {
-      if (category !== "current") {
+      if (!dualBankCategory) {
         return { ...current, bankAccountId: accountId };
       }
-      const paidName = accountNameOf(accounts, accountId);
-      const receivedName = accountNameOf(accounts, current.receivedAccountId);
+      const keepReceived = receivedCompatibleWithPaid(
+        accountId,
+        current.receivedAccountId,
+      );
       return {
         ...current,
         paidAccountId: accountId,
-        receivedAccountId: sameAccountName(paidName, receivedName)
-          ? ""
-          : current.receivedAccountId,
+        receivedAccountId: keepReceived ? current.receivedAccountId : "",
       };
     });
   }
 
   function setReceivedBank(accountId: string) {
     setForm((current) => {
-      const receivedName = accountNameOf(accounts, accountId);
-      const paidName = accountNameOf(accounts, current.paidAccountId);
+      const keepPaid = receivedCompatibleWithPaid(
+        current.paidAccountId,
+        accountId,
+      );
       return {
         ...current,
         receivedAccountId: accountId,
-        paidAccountId: sameAccountName(paidName, receivedName)
-          ? ""
-          : current.paidAccountId,
+        paidAccountId: keepPaid ? current.paidAccountId : "",
       };
     });
   }
 
+  const selectableAccounts = categoryUsesCurrentOrCcAccounts(category)
+    ? filterCurrentOrCcAccounts(accounts)
+    : accounts;
+  const savingPaidAccounts = filterSavingTransferAccounts(accounts);
+  const savingAccounts = filterSavingAccounts(accounts);
+  const currentOrCcAccounts = filterCurrentOrCcAccounts(accounts);
+
   function bankChoices(side: "paid" | "received") {
-    if (category !== "current") return accounts;
+    if (category === "saving") {
+      if (side === "paid") return savingPaidAccounts;
+      const paid = accounts.find((account) => account.id === form.paidAccountId);
+      if (!paid) return [];
+      if (isSavingAccountType(paid.accountTypeName)) return currentOrCcAccounts;
+      if (isCurrentOrCcAccountType(paid.accountTypeName)) return savingAccounts;
+      return [];
+    }
+    if (category !== "current") return selectableAccounts;
     const blockedId =
       side === "paid" ? form.receivedAccountId : form.paidAccountId;
-    return optionsExceptName(accounts, accountNameOf(accounts, blockedId));
+    return optionsExceptName(
+      selectableAccounts,
+      accountNameOf(accounts, blockedId),
+    );
   }
 
   function renderSlot(side: "paid" | "received", kind: SlotKind) {
     if (kind === "none") return null;
-    const label = side === "paid" ? "Fund paid account" : "Fund received account";
+    const expenseOrTaxBank =
+      (category === "expenses" || category === "taxes") &&
+      form.type === "RECEIVED";
+    const label =
+      side === "paid"
+        ? expenseOrTaxBank
+          ? "Fund received account"
+          : "Fund paid account"
+        : "Fund received account";
     if (kind === "wait") {
       return (
         <Field label={label}>
@@ -576,61 +702,50 @@ function BankEntryBar({
         </Field>
       );
     }
-    if (kind === "saving" || kind === "unallocated") {
-      const isSaving = kind === "saving";
-      const value = isSaving ? form.savingName : form.receiptName;
-      const placeholder = isSaving
-        ? "Saving account name"
-        : "Unallocated receipt name";
+    if (kind === "unallocated") {
       return (
         <Field label={label}>
           <input
             type="text"
             className="field-input"
             aria-label={label}
-            placeholder={placeholder}
-            value={value}
+            placeholder="Unallocated receipt name"
+            value={form.receiptName}
             onChange={(e) =>
-              setForm((current) =>
-                isSaving
-                  ? { ...current, savingName: e.target.value }
-                  : { ...current, receiptName: e.target.value },
-              )
+              setForm((current) => ({
+                ...current,
+                receiptName: e.target.value,
+              }))
             }
             onBlur={() =>
-              setForm((current) =>
-                isSaving
-                  ? {
-                      ...current,
-                      savingName:
-                        capitalizeName(current.savingName) ?? current.savingName,
-                    }
-                  : {
-                      ...current,
-                      receiptName:
-                        capitalizeName(current.receiptName) ??
-                        current.receiptName,
-                    },
-              )
+              setForm((current) => ({
+                ...current,
+                receiptName:
+                  capitalizeName(current.receiptName) ?? current.receiptName,
+              }))
             }
           />
         </Field>
       );
     }
-    const value =
-      category === "current"
-        ? side === "paid"
-          ? form.paidAccountId
-          : form.receivedAccountId
-        : form.bankAccountId;
+    const value = dualBankCategory
+      ? side === "paid"
+        ? form.paidAccountId
+        : form.receivedAccountId
+      : form.bankAccountId;
     const onChange = (accountId: string) => {
-      if (category === "current") {
+      if (dualBankCategory) {
         if (side === "paid") setPaidBank(accountId);
         else setReceivedBank(accountId);
         return;
       }
       setForm((current) => ({ ...current, bankAccountId: accountId }));
     };
+    const choices = bankChoices(side);
+    const emptyLabel =
+      category === "saving" && side === "received" && !form.paidAccountId
+        ? "Select fund paid first"
+        : "Select account";
     return (
       <Field label={label}>
         <select
@@ -638,13 +753,14 @@ function BankEntryBar({
           aria-label={label}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          disabled={
+            category === "saving" && side === "received" && !form.paidAccountId
+          }
         >
-          <option value="">Select account</option>
-          {bankChoices(side).map((account) => (
+          <option value="">{emptyLabel}</option>
+          {choices.map((account) => (
             <option key={account.id} value={account.id}>
-              {category === "current"
-                ? account.accountName
-                : accountLabel(account.accountName, account.bankName)}
+              {accountLabel(account.accountName, account.bankName)}
             </option>
           ))}
         </select>
@@ -654,14 +770,43 @@ function BankEntryBar({
 
   const addDisabled =
     pending ||
-    (category === "current" && accounts.length < 2) ||
+    (category === "current" && selectableAccounts.length < 2) ||
     (category === "expenses" &&
-      (accounts.length < 1 || expenses.length < 1)) ||
-    (category === "taxes" && (accounts.length < 1 || taxes.length < 1)) ||
-    ((category === "others" ||
-      category === "saving" ||
-      category === "unallocated") &&
-      accounts.length < 1);
+      (selectableAccounts.length < 1 || expenses.length < 1)) ||
+    (category === "taxes" &&
+      (selectableAccounts.length < 1 || taxes.length < 1)) ||
+    ((category === "others" || category === "unallocated") &&
+      selectableAccounts.length < 1) ||
+    (category === "saving" &&
+      (savingAccounts.length < 1 || currentOrCcAccounts.length < 1));
+
+  const showExpenseTaxField =
+    category === "expenses" || category === "taxes";
+  const expenseTaxFieldBeforeBank =
+    showExpenseTaxField && form.type === "RECEIVED";
+  const expenseTaxLabel =
+    category === "taxes" ? "Government Taxes" : "Expenses";
+  const expenseTaxField = showExpenseTaxField ? (
+    <Field label={expenseTaxLabel}>
+      <select
+        className="field-input"
+        aria-label={expenseTaxLabel}
+        value={form.expenseId}
+        onChange={(e) =>
+          setForm((current) => ({ ...current, expenseId: e.target.value }))
+        }
+      >
+        <option value="">
+          {category === "taxes" ? "Select tax" : "Select expense"}
+        </option>
+        {(category === "taxes" ? taxes : expenses).map((expense) => (
+          <option key={expense.id} value={expense.id}>
+            {expense.name}
+          </option>
+        ))}
+      </select>
+    </Field>
+  ) : null;
 
   return (
     <form className="bank-entry" onSubmit={onSubmit} noValidate>
@@ -707,31 +852,10 @@ function BankEntryBar({
             </select>
           </Field>
         ) : null}
+        {expenseTaxFieldBeforeBank ? expenseTaxField : null}
         {renderSlot("paid", slots.paid)}
         {renderSlot("received", slots.received)}
-        {category === "expenses" || category === "taxes" ? (
-          <Field label={category === "taxes" ? "Government Taxes" : "Expenses"}>
-            <select
-              className="field-input"
-              aria-label={
-                category === "taxes" ? "Government Taxes" : "Expenses"
-              }
-              value={form.expenseId}
-              onChange={(e) =>
-                setForm((current) => ({ ...current, expenseId: e.target.value }))
-              }
-            >
-              <option value="">
-                {category === "taxes" ? "Select tax" : "Select expense"}
-              </option>
-              {(category === "taxes" ? taxes : expenses).map((expense) => (
-                <option key={expense.id} value={expense.id}>
-                  {expense.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-        ) : null}
+        {!expenseTaxFieldBeforeBank ? expenseTaxField : null}
         <Field label="Amount" className="bank-entry-field-amount">
           <input
             type="text"

@@ -215,7 +215,9 @@ export function TransactionClient({
         <option value="">Select account</option>
         {options.map((account) => (
           <option key={account.id} value={account.id}>
-            {account.accountName}
+            {account.bankName
+              ? `${account.accountName} (${account.bankName})`
+              : account.accountName}
           </option>
         ))}
       </select>

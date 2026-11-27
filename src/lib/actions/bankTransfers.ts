@@ -2,6 +2,7 @@
 
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal } from "@/lib/domain/computations";
+import { formatBankAccountLabel } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -80,8 +81,8 @@ function canModify(
 }
 
 const transferInclude = {
-  paidAccount: { select: { id: true, accountName: true } },
-  receivedAccount: { select: { id: true, accountName: true } },
+  paidAccount: { select: { id: true, accountName: true, bankName: true } },
+  receivedAccount: { select: { id: true, accountName: true, bankName: true } },
 } as const;
 
 function toRow(
@@ -91,8 +92,8 @@ function toRow(
     amount: { toString(): string };
     createdAt: Date;
     createdByStaffId: string | null;
-    paidAccount: { id: string; accountName: string };
-    receivedAccount: { id: string; accountName: string };
+    paidAccount: { id: string; accountName: string; bankName: string };
+    receivedAccount: { id: string; accountName: string; bankName: string };
   },
   access: Exclude<Access, { kind: "none" }>,
 ): BankTransferRow {
@@ -101,9 +102,15 @@ function toRow(
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
     paidAccountId: row.paidAccount.id,
-    paidAccountName: row.paidAccount.accountName,
+    paidAccountName: formatBankAccountLabel(
+      row.paidAccount.accountName,
+      row.paidAccount.bankName,
+    ),
     receivedAccountId: row.receivedAccount.id,
-    receivedAccountName: row.receivedAccount.accountName,
+    receivedAccountName: formatBankAccountLabel(
+      row.receivedAccount.accountName,
+      row.receivedAccount.bankName,
+    ),
     amount: row.amount.toString(),
     canEdit: allowed,
     canDelete: allowed,

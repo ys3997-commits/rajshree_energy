@@ -1,3 +1,4 @@
+import { listBankAccountBalances } from "@/lib/actions/bankAccounts";
 import { listBankTransfers } from "@/lib/actions/bankTransfers";
 import { listBookExpenses } from "@/lib/actions/bookExpenses";
 import { listPayments } from "@/lib/actions/payments";
@@ -6,6 +7,7 @@ import { listTaxExpenses } from "@/lib/actions/taxExpenses";
 import { listUnallocatedReceiptTxns } from "@/lib/actions/unallocatedReceiptTxns";
 import { getCurrentAccess } from "@/lib/auth/access";
 import { canAccessPath } from "@/lib/auth/pages";
+import { formatBankAccountLabel } from "@/lib/domain/format";
 import { partyKey } from "@/lib/domain/paymentParty";
 
 export type BankRegisterKind =
@@ -56,8 +58,23 @@ const KIND_PATH: Record<BankRegisterKind, string> = {
 };
 
 function accountText(name: string | null | undefined, bank?: string | null) {
-  if (!name) return "—";
-  return bank ? `${name} (${bank})` : name;
+  return formatBankAccountLabel(name, bank);
+}
+
+function labeledAccountName(
+  name: string,
+  accounts: { accountName: string; bankName: string }[],
+) {
+  const trimmed = name.trim();
+  if (!trimmed) return "—";
+  if (trimmed.includes("(")) return trimmed;
+  const match = accounts.find(
+    (account) =>
+      account.accountName.trim().toLowerCase() === trimmed.toLowerCase(),
+  );
+  return match
+    ? formatBankAccountLabel(match.accountName, match.bankName)
+    : trimmed;
 }
 
 function partyText(
@@ -102,6 +119,7 @@ export async function loadBankRegister(): Promise<{
   const kinds = KIND_ORDER.filter((kind) =>
     canAccessPath(access.pageKeys, KIND_PATH[kind]),
   );
+  const bankAccounts = await listBankAccountBalances();
   const groups = await Promise.all(
     kinds.map(async (kind): Promise<BankRegisterRow[]> => {
       if (kind === "others") {
@@ -163,6 +181,10 @@ export async function loadBankRegister(): Promise<{
         const list = await listSavingAccountTxns({ all: true });
         return list.rows.map((row) => {
           const account = accountText(row.accountName, row.bankName);
+          const saving = labeledAccountName(
+            row.savingAccountName,
+            bankAccounts,
+          );
           const received = row.direction === "RECEIVED";
           return {
             kind,
@@ -172,8 +194,8 @@ export async function loadBankRegister(): Promise<{
             canEdit: row.canEdit,
             canDelete: row.canDelete,
             typeLabel: received ? "Fund Received" : "Fund Paid",
-            fundPaid: received ? row.savingAccountName : account,
-            fundReceived: received ? account : row.savingAccountName,
+            fundPaid: received ? saving : account,
+            fundReceived: received ? account : saving,
             particular: "",
             direction: row.direction,
             expenseId: "",

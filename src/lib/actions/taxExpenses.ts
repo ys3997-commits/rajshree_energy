@@ -3,7 +3,7 @@
 import { PaymentDirection } from "@/generated/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import { toDecimal } from "@/lib/domain/computations";
-import { toTitleCase } from "@/lib/domain/format";
+import { formatBankAccountLabel, toTitleCase } from "@/lib/domain/format";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { AccessDeniedError, requirePage, type Access } from "@/lib/auth/access";
@@ -96,7 +96,7 @@ function canModify(
 }
 
 const expenseInclude = {
-  paidAccount: { select: { id: true, accountName: true } },
+  paidAccount: { select: { id: true, accountName: true, bankName: true } },
   governmentTax: { select: { id: true, name: true } },
 } as const;
 
@@ -109,7 +109,7 @@ function toRow(
     direction: PaymentDirection;
     createdAt: Date;
     createdByStaffId: string | null;
-    paidAccount: { id: string; accountName: string };
+    paidAccount: { id: string; accountName: string; bankName: string };
     governmentTax: { id: string; name: string };
   },
   access: Exclude<Access, { kind: "none" }>,
@@ -119,7 +119,10 @@ function toRow(
     id: row.id,
     date: row.date.toISOString().slice(0, 10),
     paidAccountId: row.paidAccount.id,
-    paidAccountName: row.paidAccount.accountName,
+    paidAccountName: formatBankAccountLabel(
+      row.paidAccount.accountName,
+      row.paidAccount.bankName,
+    ),
     governmentTaxId: row.governmentTax.id,
     governmentTaxName: row.governmentTax.name,
     direction: row.direction,

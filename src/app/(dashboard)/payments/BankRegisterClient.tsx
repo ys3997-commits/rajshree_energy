@@ -25,6 +25,11 @@ import {
 import { SearchableSelect } from "@/components/SearchableSelect";
 import { TableDownloadButtons } from "@/components/TableDownloadButtons";
 import {
+  categoryUsesCurrentOrCcAccounts,
+  filterCurrentOrCcAccounts,
+  isCurrentOrCcAccountType,
+} from "@/lib/domain/bankAccountType";
+import {
   capitalizeName,
   formatCustomerCategory,
   formatDateDdMmYyyy,
@@ -109,9 +114,11 @@ function particularText(row: BankRegisterRow) {
 }
 
 function showBalanceCard(account: BankAccountBalanceRow) {
+  if (!isCurrentOrCcAccountType(account.accountTypeName)) return false;
   const name = account.accountName.trim().toLowerCase();
   const bank = account.bankName.trim().toLowerCase();
-  return !(name === "other" && bank.includes("icici"));
+  if (name === "other" && bank.includes("icici")) return false;
+  return true;
 }
 
 function withCategory(current: EditState, nextKind: BankRegisterKind): EditState {
@@ -351,7 +358,11 @@ export function BankRegisterClient({
       if (form.direction !== "RECEIVED" && form.direction !== "SENT") {
         return "Select Fund Received or Fund Paid";
       }
-      if (!form.bankAccountId) return "Select a fund paid account";
+      if (!form.bankAccountId) {
+        return form.direction === "RECEIVED"
+          ? "Select a fund received account"
+          : "Select a fund paid account";
+      }
       if (!form.expenseId) {
         return form.kind === "taxes"
           ? "Select a government tax"
@@ -847,18 +858,25 @@ function EditFields({
   onSave: () => void;
   onChange: (next: EditState) => void;
 }) {
+  const bankAccountOptions = categoryUsesCurrentOrCcAccounts(editing.kind)
+    ? filterCurrentOrCcAccounts(accounts)
+    : accounts;
   const paidName =
     accounts.find((account) => account.id === editing.receivedAccountId)?.accountName ?? "";
   const receivedName =
     accounts.find((account) => account.id === editing.paidAccountId)?.accountName ?? "";
   const paidAccounts =
     editing.kind === "current"
-      ? accounts.filter((account) => !sameAccountName(account.accountName, paidName))
-      : accounts;
+      ? bankAccountOptions.filter(
+          (account) => !sameAccountName(account.accountName, paidName),
+        )
+      : bankAccountOptions;
   const receivedAccounts =
     editing.kind === "current"
-      ? accounts.filter((account) => !sameAccountName(account.accountName, receivedName))
-      : accounts;
+      ? bankAccountOptions.filter(
+          (account) => !sameAccountName(account.accountName, receivedName),
+        )
+      : bankAccountOptions;
 
   return (
     <form
@@ -921,7 +939,9 @@ function EditFields({
               <option value="">Select account</option>
               {paidAccounts.map((account) => (
                 <option key={account.id} value={account.id}>
-                  {account.accountName}
+                  {account.bankName
+                    ? `${account.accountName} (${account.bankName})`
+                    : account.accountName}
                 </option>
               ))}
             </select>
@@ -938,7 +958,9 @@ function EditFields({
               <option value="">Select account</option>
               {receivedAccounts.map((account) => (
                 <option key={account.id} value={account.id}>
-                  {account.accountName}
+                  {account.bankName
+                    ? `${account.accountName} (${account.bankName})`
+                    : account.accountName}
                 </option>
               ))}
             </select>
@@ -946,8 +968,35 @@ function EditFields({
         </>
       ) : editing.kind === "expenses" || editing.kind === "taxes" ? (
         <>
+          {editing.direction === "RECEIVED" ? (
+            <label>
+              <span>
+                {editing.kind === "taxes" ? "Government Taxes" : "Expenses"}
+              </span>
+              <select
+                className="field-input"
+                value={editing.expenseId}
+                onChange={(event) =>
+                  onChange({ ...editing, expenseId: event.target.value })
+                }
+              >
+                <option value="">
+                  {editing.kind === "taxes" ? "Select tax" : "Select expense"}
+                </option>
+                {(editing.kind === "taxes" ? taxes : expenses).map((expense) => (
+                  <option key={expense.id} value={expense.id}>
+                    {expense.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <label>
-            <span>Fund paid account</span>
+            <span>
+              {editing.direction === "RECEIVED"
+                ? "Fund received account"
+                : "Fund paid account"}
+            </span>
             <select
               className="field-input"
               value={editing.bankAccountId}
@@ -956,7 +1005,7 @@ function EditFields({
               }
             >
               <option value="">Select account</option>
-              {accounts.map((account) => (
+              {bankAccountOptions.map((account) => (
                 <option key={account.id} value={account.id}>
                   {account.bankName
                     ? `${account.accountName} (${account.bankName})`
@@ -965,27 +1014,29 @@ function EditFields({
               ))}
             </select>
           </label>
-          <label>
-            <span>
-              {editing.kind === "taxes" ? "Government Taxes" : "Expenses"}
-            </span>
-            <select
-              className="field-input"
-              value={editing.expenseId}
-              onChange={(event) =>
-                onChange({ ...editing, expenseId: event.target.value })
-              }
-            >
-              <option value="">
-                {editing.kind === "taxes" ? "Select tax" : "Select expense"}
-              </option>
-              {(editing.kind === "taxes" ? taxes : expenses).map((expense) => (
-                <option key={expense.id} value={expense.id}>
-                  {expense.name}
+          {editing.direction !== "RECEIVED" ? (
+            <label>
+              <span>
+                {editing.kind === "taxes" ? "Government Taxes" : "Expenses"}
+              </span>
+              <select
+                className="field-input"
+                value={editing.expenseId}
+                onChange={(event) =>
+                  onChange({ ...editing, expenseId: event.target.value })
+                }
+              >
+                <option value="">
+                  {editing.kind === "taxes" ? "Select tax" : "Select expense"}
                 </option>
-              ))}
-            </select>
-          </label>
+                {(editing.kind === "taxes" ? taxes : expenses).map((expense) => (
+                  <option key={expense.id} value={expense.id}>
+                    {expense.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
         </>
       ) : (
         <>
@@ -1044,7 +1095,7 @@ function EditFields({
                 }
               >
                 <option value="">Select account</option>
-                {accounts.map((account) => (
+                {bankAccountOptions.map((account) => (
                   <option key={account.id} value={account.id}>
                     {account.bankName
                       ? `${account.accountName} (${account.bankName})`
@@ -1109,7 +1160,7 @@ function EditFields({
                   }
                 >
                   <option value="">Select account</option>
-                  {accounts.map((account) => (
+                  {bankAccountOptions.map((account) => (
                     <option key={account.id} value={account.id}>
                       {account.bankName
                         ? `${account.accountName} (${account.bankName})`
