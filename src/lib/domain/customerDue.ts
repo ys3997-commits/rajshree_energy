@@ -170,24 +170,68 @@ export function sumSalesSuppliedInCreditWindow(
  * openingDue + sale dispatches − purchase dispatches − received + sent
  * − discount paid + discount received.
  * Opening due is dated {@link OPENING_DUE_DATE} (01/08/2026).
- * Sales with no credit days are excluded from overdue (returns 0).
+ * Missing credit period (null/undefined) is treated as 0 days — full due is
+ * overdue.
  */
 export function computeOverdue(
   due: DecimalLike,
   creditDays: number | null | undefined,
   salesSuppliedInCreditWindow: DecimalLike,
 ): Decimal {
-  if (creditDays == null) return new Decimal(0);
-
   const balance = toDecimal(due);
   if (!balance.isFinite()) return new Decimal(0);
 
-  if (creditDays <= 0) {
+  const days = creditDays == null ? 0 : creditDays;
+  if (days <= 0) {
     return balance.gt(0) ? balance.toDecimalPlaces(2) : new Decimal(0);
   }
 
   const overdue = balance.minus(toDecimal(salesSuppliedInCreditWindow));
   return overdue.gt(0) ? overdue.toDecimalPlaces(2) : new Decimal(0);
+}
+
+/**
+ * Absolute amount we still owe a vendor (purchase payable). Positive due means
+ * nothing payable, so overdue is 0.
+ */
+export function vendorPayableDue(due: DecimalLike): Decimal {
+  const balance = toDecimal(due);
+  if (!balance.isFinite() || !balance.lt(0)) return new Decimal(0);
+  return balance.abs();
+}
+
+/**
+ * Absolute opening payable for a vendor. Negative opening due is dated
+ * {@link OPENING_DUE_DATE}; positive opening is not a payable.
+ */
+export function vendorOpeningPayable(
+  openingDue: DecimalLike | null | undefined,
+): Decimal | null {
+  if (openingDue == null) return null;
+  const opening = toDecimal(openingDue);
+  if (!opening.isFinite() || !opening.lt(0)) return null;
+  return opening.abs();
+}
+
+/**
+ * Vendor overdue = (opening payable + purchases) still inside the credit
+ * window − payable due. Same magnitude as buyer overdue, but signed negative
+ * because vendor payables are negative (e.g. 3,000 current − 10,000 payable
+ * = −7,000 overdue). Purchase supply on day D stays current through
+ * D + creditDays; unpaid after that is overdue. Clamped at 0 when nothing
+ * is past credit.
+ */
+export function computeVendorOverdue(
+  due: DecimalLike,
+  creditDays: number | null | undefined,
+  purchasesSuppliedInCreditWindow: DecimalLike,
+): Decimal {
+  const overdue = computeOverdue(
+    vendorPayableDue(due),
+    creditDays,
+    purchasesSuppliedInCreditWindow,
+  );
+  return overdue.gt(0) ? overdue.neg() : new Decimal(0);
 }
 
 /**

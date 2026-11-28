@@ -183,15 +183,12 @@ export async function listCustomerAgeingReport(): Promise<AgeingReportRow[]> {
     ) {
       continue;
     }
-    const recentSales =
-      customer.creditDays == null
-        ? toDecimal(0)
-        : sumSalesSuppliedInCreditWindow(
-            supplyLinesByCustomer.get(customer.id) ?? [],
-            customer.creditDays,
-            asOf,
-            customer.openingDue,
-          );
+    const recentSales = sumSalesSuppliedInCreditWindow(
+      supplyLinesByCustomer.get(customer.id) ?? [],
+      customer.creditDays ?? 0,
+      asOf,
+      customer.openingDue,
+    );
     const overdue = computeOverdue(
       customer.due,
       customer.creditDays,

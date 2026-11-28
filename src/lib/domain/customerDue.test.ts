@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   computeOverdue,
+  computeVendorOverdue,
   discountDueDelta,
   dispatchedAmount,
   purchaseDispatchDueDelta,
   saleDispatchDueDelta,
   sumSalesSuppliedInCreditWindow,
+  vendorOpeningPayable,
+  vendorPayableDue,
 } from "./customerDue";
 
 describe("dispatch-based due math", () => {
@@ -76,8 +79,9 @@ describe("overdue = due − sales in credit window", () => {
     expect(total.toString()).toBe("1000");
   });
 
-  it("returns 0 when credit days is null", () => {
-    expect(computeOverdue(10000, null, 2000).toString()).toBe("0");
+  it("treats missing credit days as 0 — fully overdue", () => {
+    expect(computeOverdue(10000, null, 2000).toString()).toBe("10000");
+    expect(computeOverdue(10000, undefined, 2000).toString()).toBe("10000");
   });
 
   it("subtracts recent sales from due", () => {
@@ -91,5 +95,51 @@ describe("overdue = due − sales in credit window", () => {
 
   it("treats creditDays 0 as fully overdue", () => {
     expect(computeOverdue(4500, 0, 2000).toString()).toBe("4500");
+  });
+});
+
+describe("vendor overdue = payable − purchases in credit window", () => {
+  const asOf = new Date("2026-08-07T12:00:00.000Z");
+
+  it("reads payable from negative due", () => {
+    expect(vendorPayableDue(-10000).toString()).toBe("10000");
+    expect(vendorPayableDue(5000).toString()).toBe("0");
+  });
+
+  it("reads opening payable only from negative opening due", () => {
+    expect(vendorOpeningPayable(-4000)?.toString()).toBe("4000");
+    expect(vendorOpeningPayable(4000)).toBeNull();
+  });
+
+  it("ages purchase supplies the same way as sales", () => {
+    const inWindow = sumSalesSuppliedInCreditWindow(
+      [
+        { amount: 1000, supplyDate: new Date("2026-07-20T00:00:00.000Z") },
+        { amount: 2000, supplyDate: new Date("2026-07-23T00:00:00.000Z") },
+        { amount: 3000, supplyDate: new Date("2026-08-01T00:00:00.000Z") },
+      ],
+      15,
+      asOf,
+      vendorOpeningPayable(-4000),
+    );
+    // window starts 2026-07-23; July 20 excluded; opening 01/08 included
+    expect(inWindow.toString()).toBe("9000");
+  });
+
+  it("marks unpaid payable past credit as negative overdue", () => {
+    // 3000 current − 10000 payable → overdue -7000
+    expect(computeVendorOverdue(-10000, 15, 3000).toString()).toBe("-7000");
+  });
+
+  it("returns 0 when nothing is payable", () => {
+    expect(computeVendorOverdue(10000, 15, 0).toString()).toBe("0");
+  });
+
+  it("treats creditDays 0 as fully overdue payable (negative)", () => {
+    expect(computeVendorOverdue(-4500, 0, 2000).toString()).toBe("-4500");
+  });
+
+  it("treats missing credit days as 0 — fully overdue payable", () => {
+    expect(computeVendorOverdue(-10000, null, 2000).toString()).toBe("-10000");
   });
 });

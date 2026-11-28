@@ -10,13 +10,18 @@ import { prisma } from "@/lib/prisma";
 import { lineProfit, toDecimal } from "@/lib/domain/computations";
 import {
   computeOverdue,
+  computeVendorOverdue,
   discountDueDelta,
+  dispatchedAmount,
   OPENING_DUE_DATE,
   paymentDueDelta,
   purchaseDispatchDueDelta,
   saleDispatchDueDelta,
   sumSalesSuppliedInCreditWindow,
+  vendorOpeningPayable,
+  vendorPayableDue,
 } from "@/lib/domain/customerDue";
+import { amountRoundsToZero } from "@/lib/domain/format";
 import {
   splitUnpaidDueByOrigin,
   unpaidDueByDate,
@@ -713,15 +718,12 @@ export async function getHomeOverdueCharts(): Promise<{
 
       const asOf = new Date(`${key}T23:59:59.999Z`);
 
-      const inWindow =
-        customer.creditDays == null
-          ? new Decimal(0)
-          : sumSalesSuppliedInCreditWindow(
-              supplyLines,
-              customer.creditDays,
-              asOf,
-              customer.openingDue,
-            );
+      const inWindow = sumSalesSuppliedInCreditWindow(
+        supplyLines,
+        customer.creditDays ?? 0,
+        asOf,
+        customer.openingDue,
+      );
 
       const overdue = computeOverdue(due, customer.creditDays, inWindow);
       if (overdue.gt(0)) {
@@ -1078,6 +1080,149 @@ export async function getHomeVesselStockLists(): Promise<{
     return {
       domestic: toList(true),
       imported: toList(false),
+    };
+  });
+}
+
+export type HomeVendorBalanceRow = {
+  id: string;
+  name: string;
+  /** Absolute amount for display (payable or advance). */
+  due: string;
+  /** Absolute overdue for payable vendors; omitted for advance. */
+  overdue?: string;
+};
+
+export type HomeVendorBalances = {
+  payable: HomeVendorBalanceRow[];
+  advance: HomeVendorBalanceRow[];
+  payableTotal: string;
+  payableOverdueTotal: string;
+  advanceTotal: string;
+};
+
+/**
+ * SUPPLIER balances for the home dashboard:
+ * - payable: due < 0 (we owe the vendor)
+ * - advance: due > 0 (paid ahead / vendor owes us)
+ */
+export async function getHomeVendorBalances(): Promise<HomeVendorBalances> {
+  return memoize("home:vendor-balances", HOME_CACHE_TTL_MS, async () => {
+    const empty: HomeVendorBalances = {
+      payable: [],
+      advance: [],
+      payableTotal: "0",
+      payableOverdueTotal: "0",
+      advanceTotal: "0",
+    };
+
+    const vendors = await prisma.customer.findMany({
+      where: {
+        category: CustomerCategory.SUPPLIER,
+        OR: [{ due: { gte: "0.5" } }, { due: { lt: "-0.5" } }],
+      },
+      select: {
+        id: true,
+        name: true,
+        due: true,
+        openingDue: true,
+        creditDays: true,
+      },
+      orderBy: { due: "asc" },
+    });
+
+    if (vendors.length === 0) return empty;
+
+    const payableVendors = vendors.filter(
+      (v) => !amountRoundsToZero(v.due) && toDecimal(v.due).lt(0),
+    );
+    const advanceVendors = vendors.filter(
+      (v) => !amountRoundsToZero(v.due) && toDecimal(v.due).gt(0),
+    );
+
+    const payableIds = payableVendors.map((v) => v.id);
+    const purchaseSupplyByVendor = new Map<
+      string,
+      { amount: Decimal; supplyDate: Date }[]
+    >();
+
+    if (payableIds.length > 0) {
+      const purchaseDispatches = await prisma.dispatch.findMany({
+        where: { purchaseOrder: { importerId: { in: payableIds } } },
+        select: {
+          dispatchDate: true,
+          dispatchedQuantity: true,
+          purchaseOrder: {
+            select: { importerId: true, finalRate: true },
+          },
+        },
+      });
+
+      for (const row of purchaseDispatches) {
+        const vendorId = row.purchaseOrder.importerId;
+        const amount = dispatchedAmount(
+          row.purchaseOrder.finalRate,
+          row.dispatchedQuantity,
+        );
+        if (amount.lte(0)) continue;
+        const list = purchaseSupplyByVendor.get(vendorId) ?? [];
+        list.push({ amount, supplyDate: row.dispatchDate });
+        purchaseSupplyByVendor.set(vendorId, list);
+      }
+    }
+
+    const asOf = new Date();
+    let payableTotal = new Decimal(0);
+    let payableOverdueTotal = new Decimal(0);
+    const payable: HomeVendorBalanceRow[] = [];
+
+    for (const vendor of payableVendors) {
+      const dueAbs = vendorPayableDue(vendor.due);
+      if (dueAbs.lte(0)) continue;
+      const creditDays = vendor.creditDays ?? 0;
+      const overdue = computeVendorOverdue(
+        vendor.due,
+        vendor.creditDays,
+        sumSalesSuppliedInCreditWindow(
+          purchaseSupplyByVendor.get(vendor.id) ?? [],
+          creditDays,
+          asOf,
+          vendorOpeningPayable(vendor.openingDue),
+        ),
+      );
+      const overdueAbs = overdue.abs();
+      payableTotal = payableTotal.plus(dueAbs);
+      payableOverdueTotal = payableOverdueTotal.plus(overdueAbs);
+      payable.push({
+        id: vendor.id,
+        name: vendor.name,
+        due: dueAbs.toDecimalPlaces(2).toString(),
+        overdue: overdueAbs.toDecimalPlaces(2).toString(),
+      });
+    }
+
+    payable.sort((a, b) => Number(b.due) - Number(a.due));
+
+    let advanceTotal = new Decimal(0);
+    const advance: HomeVendorBalanceRow[] = [];
+    for (const vendor of advanceVendors) {
+      const due = toDecimal(vendor.due);
+      if (!due.isFinite() || due.lte(0)) continue;
+      advanceTotal = advanceTotal.plus(due);
+      advance.push({
+        id: vendor.id,
+        name: vendor.name,
+        due: due.toDecimalPlaces(2).toString(),
+      });
+    }
+    advance.sort((a, b) => Number(b.due) - Number(a.due));
+
+    return {
+      payable,
+      advance,
+      payableTotal: payableTotal.toDecimalPlaces(2).toString(),
+      payableOverdueTotal: payableOverdueTotal.toDecimalPlaces(2).toString(),
+      advanceTotal: advanceTotal.toDecimalPlaces(2).toString(),
     };
   });
 }

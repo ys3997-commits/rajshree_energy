@@ -314,7 +314,6 @@ export type CreateRegularOrderInput = {
   customerId: string;
   orderDate?: string | null;
   portId?: string | null;
-  creditDays?: number | null;
   qualityClassId?: string | null;
   rate?: DecimalLike | null;
   quantity: DecimalLike;
@@ -323,14 +322,14 @@ export type CreateRegularOrderInput = {
   orderById?: string | null;
 };
 
-async function resolveCustomerCategory(customerId: string) {
+async function resolveCustomerForSaleOrder(customerId: string) {
   const customer = await prisma.customer.findUnique({
     where: { id: customerId },
-    select: { category: true, saleExecutive: true },
+    select: { category: true, creditDays: true, saleExecutive: true },
   });
   if (!customer) throw new Error("Customer not found");
   await assertSaleOrderCustomerAccess(customer.saleExecutive);
-  return customer.category;
+  return customer;
 }
 
 export async function createRegularOrder(input: CreateRegularOrderInput) {
@@ -359,8 +358,8 @@ async function createRegularOrderInner(input: CreateRegularOrderInput) {
   ) {
     throw new Error("Number of lorries must be a whole number ≥ 0");
   }
-  const category = await resolveCustomerCategory(input.customerId);
-  const finalRate = computeSaleFinalRate(rate, category);
+  const customer = await resolveCustomerForSaleOrder(input.customerId);
+  const finalRate = computeSaleFinalRate(rate, customer.category);
 
   const orderStatus = computeOrderStatus({
     orderType: OrderType.REGULAR,
@@ -376,7 +375,7 @@ async function createRegularOrderInner(input: CreateRegularOrderInput) {
         customerId: input.customerId,
         orderDate: input.orderDate ? new Date(input.orderDate) : null,
         portId: input.portId || null,
-        creditDays: input.creditDays ?? null,
+        creditDays: customer.creditDays,
         qualityClassId: input.qualityClassId || null,
         rate,
         finalRate,

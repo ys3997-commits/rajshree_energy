@@ -497,8 +497,8 @@ export function AgeingReportClient({
                               : "cell-num"
                           }
                           title={
-                            pastCredit && row.creditDays != null
-                              ? pastCreditTitle(row.creditDays)
+                            pastCredit
+                              ? pastCreditTitle(row.creditDays ?? 0)
                               : undefined
                           }
                         >

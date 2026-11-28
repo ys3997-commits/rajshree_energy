@@ -5,8 +5,10 @@ import { toDecimal } from "@/lib/domain/computations";
 import {
   adjustCustomerDue,
   computeOverdue,
+  computeVendorOverdue,
   dispatchedAmount,
   sumSalesSuppliedInCreditWindow,
+  vendorOpeningPayable,
 } from "@/lib/domain/customerDue";
 import {
   clearCollectionCallsBeforePayment,
@@ -305,7 +307,7 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
   if (customers.length === 0) return [];
 
   const ids = customers.map((c) => c.id);
-  const [saleDispatches, payments] = await Promise.all([
+  const [saleDispatches, purchaseDispatches, payments] = await Promise.all([
     prisma.dispatch.findMany({
       where: { order: { customerId: { in: ids } } },
       select: {
@@ -314,6 +316,19 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
         order: {
           select: {
             customerId: true,
+            finalRate: true,
+          },
+        },
+      },
+    }),
+    prisma.dispatch.findMany({
+      where: { purchaseOrder: { importerId: { in: ids } } },
+      select: {
+        dispatchDate: true,
+        dispatchedQuantity: true,
+        purchaseOrder: {
+          select: {
+            importerId: true,
             finalRate: true,
           },
         },
@@ -348,6 +363,22 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
     supplyLinesByCustomer.set(customerId, list);
   }
 
+  const purchaseSupplyLinesByCustomer = new Map<
+    string,
+    { amount: Decimal; supplyDate: Date }[]
+  >();
+  for (const row of purchaseDispatches) {
+    const customerId = row.purchaseOrder.importerId;
+    const amount = dispatchedAmount(
+      row.purchaseOrder.finalRate,
+      row.dispatchedQuantity,
+    );
+    if (amount.lte(0)) continue;
+    const list = purchaseSupplyLinesByCustomer.get(customerId) ?? [];
+    list.push({ amount, supplyDate: row.dispatchDate });
+    purchaseSupplyLinesByCustomer.set(customerId, list);
+  }
+
   const paymentsByCustomer = new Map<string, typeof payments>();
   for (const payment of payments) {
     if (!payment.customerId) continue;
@@ -359,20 +390,30 @@ export async function listCustomersWithDue(): Promise<CustomerDueRow[]> {
   return customers.flatMap((customer) => {
     if (amountRoundsToZero(customer.due)) return [];
     const customerPayments = paymentsByCustomer.get(customer.id) ?? [];
-    const recentSales =
-      customer.creditDays == null
-        ? new Decimal(0)
-        : sumSalesSuppliedInCreditWindow(
+    const isVendor = customer.category === CustomerCategory.SUPPLIER;
+    const asOf = new Date();
+    const creditDays = customer.creditDays ?? 0;
+    const overdue = isVendor
+      ? computeVendorOverdue(
+          customer.due,
+          customer.creditDays,
+          sumSalesSuppliedInCreditWindow(
+            purchaseSupplyLinesByCustomer.get(customer.id) ?? [],
+            creditDays,
+            asOf,
+            vendorOpeningPayable(customer.openingDue),
+          ),
+        )
+      : computeOverdue(
+          customer.due,
+          customer.creditDays,
+          sumSalesSuppliedInCreditWindow(
             supplyLinesByCustomer.get(customer.id) ?? [],
-            customer.creditDays,
-            new Date(),
+            creditDays,
+            asOf,
             customer.openingDue,
-          );
-    const overdue = computeOverdue(
-      customer.due,
-      customer.creditDays,
-      recentSales,
-    );
+          ),
+        );
     const last = customerPayments[0] ?? null;
     const calls = clearCollectionCallsBeforePayment(
       {

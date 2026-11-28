@@ -94,7 +94,6 @@ export function NewOrderForm({
         customerId,
         orderDate: String(fd.get("orderDate") || "") || null,
         portId: String(fd.get("portId") || "") || null,
-        creditDays: creditDays === "" ? null : Number(creditDays),
         qualityClassId: qualityClassId || null,
         rate: rate || null,
         quantity: String(fd.get("quantity") || ""),
@@ -188,11 +187,13 @@ export function NewOrderForm({
         <label>Credit Period</label>
         <div className="field-with-unit">
           <input
-            name="creditDays"
             type="number"
             min="0"
             value={creditDays}
-            onChange={(e) => setCreditDays(e.target.value)}
+            readOnly
+            disabled
+            title="From customer master — edit on the customer page"
+            aria-label="Credit period from customer master"
           />
           <span className="field-unit">days</span>
         </div>

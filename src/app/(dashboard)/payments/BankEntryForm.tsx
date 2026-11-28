@@ -61,16 +61,16 @@ export type BankEntryParty = {
 export type BankEntryExpense = { id: string; name: string };
 
 const CATEGORIES: { id: BankCategory; href: string; label: string }[] = [
-  { id: "others", href: "/payments", label: "Transaction with Coal" },
+  { id: "others", href: "/payments", label: "Debtors & Creditors Transactions" },
   {
     id: "current",
     href: "/payments/transaction",
-    label: "Transaction with Current A/c",
+    label: "Current–Current Transfer",
   },
   {
     id: "saving",
     href: "/payments/txn-saving",
-    label: "Transaction with Saving A/c",
+    label: "Current–Savings Transfer",
   },
   {
     id: "unallocated",

@@ -40,7 +40,7 @@ describe("ageing buckets", () => {
     expect(bucketIsPastCredit(bucket("d11_20"), 15)).toBe(false);
     expect(bucketIsPastCredit(bucket("d21_30"), 15)).toBe(true);
     expect(bucketIsPastCredit(bucket("d1_10"), 0)).toBe(true);
-    expect(bucketIsPastCredit(bucket("d121_plus"), null)).toBe(false);
+    expect(bucketIsPastCredit(bucket("d121_plus"), null)).toBe(true);
   });
 });
 

@@ -295,9 +295,9 @@ export function PaymentsClient({
   return (
     <div>
       <div className="page-header">
-        <h1 className="page-title">Transaction with Coal</h1>
+        <h1 className="page-title">Debtors & Creditors Transactions</h1>
         <TableDownloadButtons
-          title="Transaction with Coal"
+          title="Debtors & Creditors Transactions"
           filenameBase="fund-flow-transactions"
           columns={downloadColumns}
           rows={downloadRows}

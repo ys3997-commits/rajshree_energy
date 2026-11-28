@@ -9,6 +9,7 @@ import {
   getHomePendingBillsByOwner,
   getHomeTodayKpis,
   getHomeDebtorDueByCoal,
+  getHomeVendorBalances,
   getTopCustomersByCoalOrigin,
 } from "@/lib/actions/dashboard";
 import { getHomeDoInHandLists } from "@/lib/actions/doInHand";
@@ -35,6 +36,7 @@ import { HomeKpiStrip } from "@/components/HomeKpiStrip";
 import { HomeLatestActivityStrip } from "@/components/HomeLatestActivityStrip";
 import { HomePendingBillsStrip } from "@/components/HomePendingBillsStrip";
 import { HomeDebtorDuePanel } from "@/components/HomeDebtorDuePanel";
+import { HomeVendorBalancesPanel } from "@/components/HomeVendorBalancesPanel";
 
 function formatQty(value: string): string {
   return formatDispatchMt(value);
@@ -315,13 +317,19 @@ export async function HomeChartsSection() {
 }
 
 export async function HomeStockListsSection() {
-  const [qualityStockLists, vesselStockLists, doInHandLists, topCustomersByCoal] =
-    await Promise.all([
-      getHomeQualityStockLists(),
-      getHomeVesselStockLists(),
-      getHomeDoInHandLists(),
-      getTopCustomersByCoalOrigin(7),
-    ]);
+  const [
+    qualityStockLists,
+    vesselStockLists,
+    doInHandLists,
+    topCustomersByCoal,
+    vendorBalances,
+  ] = await Promise.all([
+    getHomeQualityStockLists(),
+    getHomeVesselStockLists(),
+    getHomeDoInHandLists(),
+    getTopCustomersByCoalOrigin(7),
+    getHomeVendorBalances(),
+  ]);
 
   const domesticQualityStock = qualityStockLists.domestic;
   const importedQualityStock = qualityStockLists.imported;
@@ -623,6 +631,8 @@ export async function HomeStockListsSection() {
           )}
         </section>
       </div>
+
+      <HomeVendorBalancesPanel balances={vendorBalances} />
 
       <div className="home-grid" style={{ marginTop: "1.25rem" }}>
         <section className="home-panel">

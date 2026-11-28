@@ -237,15 +237,12 @@ export async function listSalesEngineRows(): Promise<SalesEngineRow[]> {
   const clearIds: string[] = [];
   const rows = customers.map((customer) => {
     const customerOrders = ordersByCustomer.get(customer.id) ?? [];
-    const recentSales =
-      customer.creditDays == null
-        ? new Decimal(0)
-        : sumSalesSuppliedInCreditWindow(
-            supplyLinesByCustomer.get(customer.id) ?? [],
-            customer.creditDays,
-            new Date(),
-            customer.openingDue,
-          );
+    const recentSales = sumSalesSuppliedInCreditWindow(
+      supplyLinesByCustomer.get(customer.id) ?? [],
+      customer.creditDays ?? 0,
+      new Date(),
+      customer.openingDue,
+    );
     const overdue = computeOverdue(
       customer.due,
       customer.creditDays,

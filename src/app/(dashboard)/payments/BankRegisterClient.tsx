@@ -56,9 +56,9 @@ const EDIT_LOCK_HINT =
   "Staff can edit/delete only entries they created on the same day.";
 
 const KIND_LABEL: Record<BankRegisterKind, string> = {
-  others: "Transaction with Coal",
-  current: "Transaction with Current A/c",
-  saving: "Transaction with Saving A/c",
+  others: "Debtors & Creditors Transactions",
+  current: "Current–Current Transfer",
+  saving: "Current–Savings Transfer",
   unallocated: "Unallocated Receipt A/c",
   expenses: "Expenses",
   taxes: "Taxes",

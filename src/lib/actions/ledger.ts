@@ -401,15 +401,12 @@ export async function getCustomerLedger(
     if (amount.lte(0)) continue;
     supplyLines.push({ amount, supplyDate: d.dispatchDate });
   }
-  const recentSales =
-    customer.creditDays == null
-      ? new Decimal(0)
-      : sumSalesSuppliedInCreditWindow(
-          supplyLines,
-          customer.creditDays,
-          asOf,
-          customer.openingDue,
-        );
+  const recentSales = sumSalesSuppliedInCreditWindow(
+    supplyLines,
+    customer.creditDays ?? 0,
+    asOf,
+    customer.openingDue,
+  );
   const overdue = computeOverdue(due, customer.creditDays, recentSales);
 
   return {
